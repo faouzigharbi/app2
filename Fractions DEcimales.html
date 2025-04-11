@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمرين على الكسور العشرية</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            direction: rtl;
+        }
+        .fraction {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #nextButton {
+            background-color: #008CBA;
+        }
+        #nextButton:hover:not(:disabled) {
+            background-color: #007399;
+        }
+        #correction {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .score {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>هل الكسر عشري؟</h1>
+    <p>كسر عشري هو كسر يمكن كتابته كعدد عشري منتهي (غير دوري)</p>
+    <div class="fraction" id="fraction"></div>
+    <div class="button-container">
+        <button id="yesButton">نعم</button>
+        <button id="noButton">لا</button>
+        <button id="nextButton" disabled>السؤال التالي</button>
+    </div>
+    <div id="correction"></div>
+    <div class="score">
+        الإجابات الصحيحة: <span id="correctCount">0</span> من <span id="totalCount">0</span>
+    </div>
+    <script>
+        // Lists of denominators well-balanced between decimal and non-decimal fractions
+        const decimalDenominators = [2, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 125, 200, 250, 500];
+        const nonDecimalDenominators = [3, 6, 7, 9, 11, 12, 14, 15, 18, 21, 22, 24, 27, 28, 30, 33, 35];
+        
+        let currentFraction = {};
+        let correctCount = 0;
+        let totalCount = 0;
+        
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        
+        function simplifyFraction(num, den) {
+            const g = Math.abs(gcd(num, den));
+            return [num / g, den / g];
+        }
+        
+        function isDecimalFraction(den) {
+            // A fraction is decimal if its denominator's prime factorization only contains 2 and 5
+            let d = den;
+            while (d % 2 === 0) d /= 2;
+            while (d % 5 === 0) d /= 5;
+            return d === 1;
+        }
+        
+        function getPrimeFactors(n) {
+            const factors = [];
+            let d = n;
+            
+            // Check for factor 2
+            while (d % 2 === 0) {
+                factors.push(2);
+                d /= 2;
+            }
+            
+            // Check for odd factors
+            for (let i = 3; i <= Math.sqrt(d); i += 2) {
+                while (d % i === 0) {
+                    factors.push(i);
+                    d /= i;
+                }
+            }
+            
+            // If d is a prime number greater than 2
+            if (d > 2) {
+                factors.push(d);
+            }
+            
+            return factors;
+        }
+        
+        function generateFraction() {
+            // Choose if the fraction will be decimal or not (50% chance)
+            const isDecimal = Math.random() < 0.5;
+            const denominators = isDecimal ? decimalDenominators : nonDecimalDenominators;
+            
+            // Choose a random denominator
+            const den = denominators[Math.floor(Math.random() * denominators.length)];
+            
+            // Random numerator (1 to denominator-1)
+            // This ensures we don't get improper fractions
+            const num = Math.floor(Math.random() * (den - 1)) + 1;
+            
+            // Simplify the fraction
+            const [simpNum, simpDen] = simplifyFraction(num, den);
+            
+            currentFraction = { 
+                num: num, 
+                den: den, 
+                simpNum: simpNum, 
+                simpDen: simpDen, 
+                isDecimal: isDecimalFraction(simpDen) 
+            };
+            
+            // Display the fraction
+            document.getElementById('fraction').innerHTML = `\\(\\frac{${num}}{${den}}\\)`;
+            MathJax.typeset();
+            
+            // Reset the interface
+            document.getElementById('correction').style.display = 'none';
+            document.getElementById('nextButton').disabled = true;
+            document.getElementById('yesButton').disabled = false;
+            document.getElementById('noButton').disabled = false;
+        }
+        
+        function showCorrection(userAnswer) {
+            totalCount++;
+            document.getElementById('totalCount').textContent = totalCount;
+            
+            const { num, den, simpNum, simpDen, isDecimal } = currentFraction;
+            const correctAnswer = isDecimal ? 'نعم' : 'لا';
+            let correctionText = '';
+            
+            if (userAnswer === correctAnswer) {
+                correctionText += '<p style="color: green;">إجابتك صحيحة!</p>';
+                correctCount++;
+                document.getElementById('correctCount').textContent = correctCount;
+            } else {
+                correctionText += '<p style="color: red;">إجابتك غير صحيحة.</p>';
+            }
+            
+            correctionText += `<p>التحليل:</p>`;
+            correctionText += `<p>الكسر المعطى هو \\(\\frac{${num}}{${den}}\\).</p>`;
+            
+            // Simplification
+            if (num !== simpNum || den !== simpDen) {
+                correctionText += `<p>نبسط الكسر: \\(\\frac{${num}}{${den}} = \\frac{${simpNum}}{${simpDen}}\\) (بقسمة البسط والمقام على ${Math.abs(gcd(num, den))}).</p>`;
+            } else {
+                correctionText += `<p>الكسر \\(\\frac{${num}}{${den}}\\) مبسط بالفعل.</p>`;
+            }
+            
+            // Check if it's a decimal fraction
+            correctionText += `<p>لتحديد ما إذا كان الكسر عشريًا، ننظر إلى المقام بعد التبسيط: ${simpDen}.</p>`;
+            
+            // Get prime factorization
+            const primeFactors = getPrimeFactors(simpDen);
+            correctionText += `<p>العوامل الأولية للمقام ${simpDen} هي: ${primeFactors.join(' × ')}.</p>`;
+            
+            if (isDecimal) {
+                correctionText += `<p>جميع العوامل الأولية هي 2 و/أو 5 فقط، لذا الكسر عشري.</p>`;
+                const decimalValue = (simpNum / simpDen).toFixed(10).replace(/\.?0+$/, '');
+                correctionText += `<p>يمكن كتابته كعدد عشري منتهٍ: \\(${simpNum} \\div ${simpDen} = ${decimalValue}\\).</p>`;
+            } else {
+                // Find non-2, non-5 factors
+                const nonDecimalFactors = primeFactors.filter(f => f !== 2 && f !== 5);
+                correctionText += `<p>المقام يحتوي على عوامل أولية غير 2 و5 (${nonDecimalFactors.join('، ')}). لذا الكسر ليس عشريًا.</p>`;
+                correctionText += `<p>عند قسمة ${simpNum} على ${simpDen}، سنحصل على كسر عشري لا نهائي دوري.</p>`;
+            }
+            
+            document.getElementById('correction').innerHTML = correctionText;
+            document.getElementById('correction').style.display = 'block';
+            document.getElementById('nextButton').disabled = false;
+            document.getElementById('yesButton').disabled = true;
+            document.getElementById('noButton').disabled = true;
+            MathJax.typeset();
+        }
+        
+        // Button handlers
+        document.getElementById('yesButton').addEventListener('click', () => showCorrection('نعم'));
+        document.getElementById('noButton').addEventListener('click', () => showCorrection('لا'));
+        document.getElementById('nextButton').addEventListener('click', generateFraction);
+        
+        // Generate the first fraction
+        generateFraction();
+    </script>
+</body>
+</html>

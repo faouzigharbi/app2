@@ -1,195 +1,93 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تبسيط قوى الأعداد الصحيحة</title>
+    <title>تطبيق تبسيط التعبيرات</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            direction: rtl;
             text-align: center;
-            padding: 20px;
+            margin: 20px;
         }
-        .container {
-            margin: 0 auto;
-            max-width: 600px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"] {
-            padding: 10px;
-            width: 80%;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        .steps {
-            margin-top: 10px;
-            text-align: left;
-            display: none;
-        }
-        .math-expression {
-            direction: ltr;
-            unicode-bidi: bidi-override;
+        .expression {
+            font-size: 1.5em;
+            margin: 20px;
+            direction: ltr; /* Les expressions mathématiques de gauche à droite */
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>تبسيط قوى الأعداد الصحيحة</h1>
-        <p>اختر نوع العمليات:</p>
-        <select id="operationType">
-            <option value="all">جميع العمليات</option>
-            <option value="product">ضرب القوى</option>
-            <option value="power">قوة القوة</option>
-            <option value="negative">الأس السالب</option>
-            <option value="zero">الأس صفر</option>
+    <h1>تبسيط التعبيرات الرياضية</h1>
+    <div id="expression-container">
+        <p>اختر نوع التعبير:</p>
+        <select id="expression-type">
+            <option value="multiplication">تكرار الضرب</option>
+            <option value="addition">جمع القوى</option>
+            <option value="mixed">خلط بين الأنواع</option>
         </select>
-        <p id="operation" class="math-expression"></p>
-        <input type="text" id="userAnswer" placeholder="أدخل الأس الناتج">
-        <div>
-            <button onclick="checkAnswer()">تحقق من الإجابة</button>
-            <button onclick="showCorrection()">تصحيح مع الخطوات</button>
-            <button onclick="newOperation()">عملية جديدة</button>
-        </div>
-        <div class="result" id="result"></div>
-        <div class="steps" id="correctionSteps"></div>
+        <button onclick="generateExpression()">إنتاج التعبير</button>
+    </div>
+
+    <div id="interactive-container" style="display: none;">
+        <p class="expression" id="expression"></p>
+        <input type="number" id="user-input" placeholder="أدخل الأس هنا">
+        <button onclick="checkAnswer()">تحقق من الإجابة</button>
+        <button onclick="clearInput()">إعادة إدخال</button>
+        <button onclick="generateExpression()">تجربة تعبير جديد</button>
+        <p id="feedback"></p>
     </div>
 
     <script>
-        let base, exp1, exp2, operationType, correctAnswer;
+        let currentExpression = null;
 
-        function generateOperation() {
-            base = Math.floor(Math.random() * 9) + 2;
-            exp1 = Math.floor(Math.random() * 5) + 1;
-            exp2 = Math.floor(Math.random() * 5) + 1;
-            const selectedType = document.getElementById("operationType").value;
+        function generateExpression() {
+            const type = document.getElementById("expression-type").value;
+            const base = Math.floor(Math.random() * 10) + 1;
+            const exponent1 = Math.floor(Math.random() * 5) + 1;
+            const exponent2 = Math.floor(Math.random() * 5) + 1;
+            let expression, correctAnswer;
 
-            switch (selectedType) {
-                case "product":
-                    correctAnswer = exp1 + exp2;
-                    return `${base}<sup>${exp1}</sup> × ${base}<sup>${exp2}</sup>`;
-                case "power":
-                    correctAnswer = exp1 * exp2;
-                    return `(${base}<sup>${exp1}</sup>)<sup>${exp2}</sup>`;
-                case "negative":
-                    correctAnswer = -exp1;
-                    return `${base}<sup>${-exp1}</sup>`;
-                case "zero":
-                    correctAnswer = 0;
-                    return `${base}<sup>0</sup>`;
-                default:
-                    const types = ["product", "power", "negative", "zero"];
-                    const randomType = types[Math.floor(Math.random() * types.length)];
-                    switch (randomType) {
-                        case "product":
-                            correctAnswer = exp1 + exp2;
-                            return `${base}<sup>${exp1}</sup> × ${base}<sup>${exp2}</sup>`;
-                        case "power":
-                            correctAnswer = exp1 * exp2;
-                            return `(${base}<sup>${exp1}</sup>)<sup>${exp2}</sup>`;
-                        case "negative":
-                            correctAnswer = -exp1;
-                            return `${base}<sup>${-exp1}</sup>`;
-                        case "zero":
-                            correctAnswer = 0;
-                            return `${base}<sup>0</sup>`;
-                    }
+            if (type === "multiplication") {
+                expression = `${base}^${exponent1} * ${base}^${exponent2}`;
+                correctAnswer = exponent1 + exponent2;
+            } else if (type === "addition") {
+                expression = `${base}^${exponent1} + ${base}^${exponent2}`;
+                correctAnswer = "غير قابلة للتبسيط";
+            } else {
+                const randomType = Math.random() > 0.5 ? "multiplication" : "addition";
+                if (randomType === "multiplication") {
+                    expression = `${base}^${exponent1} * ${base}^${exponent2}`;
+                    correctAnswer = exponent1 + exponent2;
+                } else {
+                    expression = `${base}^${exponent1} + ${base}^${exponent2}`;
+                    correctAnswer = "غير قابلة للتبسيط";
+                }
             }
-        }
 
-        function newOperation() {
-            document.getElementById("operation").innerHTML = generateOperation();
-            document.getElementById("userAnswer").value = "";
-            document.getElementById("result").innerText = "";
-            document.getElementById("correctionSteps").style.display = "none";
+            currentExpression = { expression, correctAnswer };
+            document.getElementById("expression").textContent = expression;
+            document.getElementById("interactive-container").style.display = "block";
+            document.getElementById("feedback").textContent = "";
         }
 
         function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById("userAnswer").value);
-            if (userAnswer === correctAnswer) {
-                document.getElementById("result").innerText = "إجابتك صحيحة!";
-                document.getElementById("result").style.color = "green";
+            const userInput = document.getElementById("user-input").value;
+            const feedback = document.getElementById("feedback");
+            if (currentExpression.correctAnswer.toString() === userInput) {
+                feedback.textContent = "إجابة صحيحة!";
+                feedback.style.color = "green";
             } else {
-                document.getElementById("result").innerText = "إجابتك خاطئة. حاول مرة أخرى!";
-                document.getElementById("result").style.color = "red";
+                feedback.textContent = "إجابة خاطئة، حاول مرة أخرى.";
+                feedback.style.color = "red";
             }
         }
 
-        function showCorrection() {
-            const selectedType = document.getElementById("operationType").value;
-            let steps = "";
-            switch (selectedType) {
-                case "product":
-                    steps = `العملية: ${base}<sup>${exp1}</sup> × ${base}<sup>${exp2}</sup><br>
-                             الخطوة 1: جمع الأسس: ${exp1} + ${exp2} = ${correctAnswer}.<br>
-                             الأس الناتج: ${correctAnswer}`;
-                    break;
-                case "power":
-                    steps = `العملية: (${base}<sup>${exp1}</sup>)<sup>${exp2}</sup><br>
-                             الخطوة 1: ضرب الأسس: ${exp1} × ${exp2} = ${correctAnswer}.<br>
-                             الأس الناتج: ${correctAnswer}`;
-                    break;
-                case "negative":
-                    steps = `العملية: ${base}<sup>${-exp1}</sup><br>
-                             الخطوة 1: الأس السالب يعني المقلوب: 1 / ${base}<sup>${exp1}</sup>.<br>
-                             الأس الناتج: ${correctAnswer}`;
-                    break;
-                case "zero":
-                    steps = `العملية: ${base}<sup>0</sup><br>
-                             الخطوة 1: أي عدد مرفوع للأس صفر يساوي 1.<br>
-                             الأس الناتج: ${correctAnswer}`;
-                    break;
-                default:
-                    const types = ["product", "power", "negative", "zero"];
-                    const randomType = types[Math.floor(Math.random() * types.length)];
-                    switch (randomType) {
-                        case "product":
-                            steps = `العملية: ${base}<sup>${exp1}</sup> × ${base}<sup>${exp2}</sup><br>
-                                     الخطوة 1: جمع الأسس: ${exp1} + ${exp2} = ${correctAnswer}.<br>
-                                     الأس الناتج: ${correctAnswer}`;
-                            break;
-                        case "power":
-                            steps = `العملية: (${base}<sup>${exp1}</sup>)<sup>${exp2}</sup><br>
-                                     الخطوة 1: ضرب الأسس: ${exp1} × ${exp2} = ${correctAnswer}.<br>
-                                     الأس الناتج: ${correctAnswer}`;
-                            break;
-                        case "negative":
-                            steps = `العملية: ${base}<sup>${-exp1}</sup><br>
-                                     الخطوة 1: الأس السالب يعني المقلوب: 1 / ${base}<sup>${exp1}</sup>.<br>
-                                     الأس الناتج: ${correctAnswer}`;
-                            break;
-                        case "zero":
-                            steps = `العملية: ${base}<sup>0</sup><br>
-                                     الخطوة 1: أي عدد مرفوع للأس صفر يساوي 1.<br>
-                                     الأس الناتج: ${correctAnswer}`;
-                            break;
-                    }
-            }
-            document.getElementById("correctionSteps").style.display = "block";
-            document.getElementById("correctionSteps").innerHTML = `<strong>الخطوات:</strong><br>${steps}`;
+        function clearInput() {
+            document.getElementById("user-input").value = "";
+            document.getElementById("feedback").textContent = "";
         }
-
-        window.onload = newOperation;
     </script>
 </body>
 </html>

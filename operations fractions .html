@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين على العمليات الحسابية للكسور</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: right;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .problem {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            direction: ltr;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .fraction .num {
+            border-bottom: 1px solid black;
+            display: block;
+            font-size: 20px;
+        }
+        .fraction .den {
+            display: block;
+            font-size: 20px;
+        }
+        .input-area {
+            margin: 20px 0;
+            text-align: center;
+        }
+        input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            margin: 0 5px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            display: none;
+        }
+        #solution {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .step {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .problem {
+                font-size: 20px;
+            }
+            button {
+                padding: 8px 15px;
+                font-size: 14px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تمارين على العمليات الحسابية للكسور</h1>
+        <div class="problem" id="problem"></div>
+        <div class="input-area">
+            <span>الإجابة:</span>
+            <input type="number" id="numerator" placeholder="البسط">
+            <span>/</span>
+            <input type="number" id="denominator" placeholder="المقام">
+        </div>
+        <div class="buttons">
+            <button id="check">تحقق من الإجابة</button>
+            <button id="solution-btn">عرض الحل</button>
+            <button id="new-problem">تمرين جديد</button>
+        </div>
+        <div id="result"></div>
+        <div id="solution"></div>
+    </div>
+    <script>
+        let fractionA, fractionB, fractionC;
+        let operationType, correctAnswer;
+
+        // تبسيط الكسر
+        function simplifyFraction(numerator, denominator) {
+            const gcd = findGCD(Math.abs(numerator), Math.abs(denominator));
+            return {
+                numerator: numerator / gcd,
+                denominator: denominator / gcd
+            };
+        }
+
+        // إيجاد القاسم المشترك الأكبر
+        function findGCD(a, b) {
+            return b === 0 ? a : findGCD(b, a % b);
+        }
+
+        // جمع كسرين
+        function addFractions(frac1, frac2) {
+            const lcm = findLCM(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 + num2, lcm);
+        }
+
+        // طرح كسرين
+        function subtractFractions(frac1, frac2) {
+            const lcm = findLCM(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 - num2, lcm);
+        }
+
+        // إيجاد المضاعف المشترك الأصغر
+        function findLCM(a, b) {
+            return (a * b) / findGCD(a, b);
+        }
+
+        // توليد كسر عشوائي
+        function generateRandomFraction(min, max) {
+            const numerator = Math.floor(Math.random() * (max - min + 1)) + min;
+            const denominator = Math.floor(Math.random() * 9) + 2; // 2 إلى 10
+            return simplifyFraction(numerator, denominator);
+        }
+
+        // توليد ثلاثة كسور بحيث a > b > c
+        function generateFractions() {
+            const c = generateRandomFraction(1, 5);
+            const b = generateRandomFraction(6, 12);
+            const a = generateRandomFraction(13, 20);
+            const valA = a.numerator / a.denominator;
+            const valB = b.numerator / b.denominator;
+            const valC = c.numerator / c.denominator;
+            if (valA > valB && valB > valC) {
+                return { a, b, c };
+            } else {
+                return generateFractions();
+            }
+        }
+
+        // عرض كسر في واجهة المستخدم
+        function displayFraction(fraction) {
+            return `
+                <span class="fraction">
+                    <span class="num">${fraction.numerator}</span>
+                    <span class="den">${fraction.denominator}</span>
+                </span>
+            `;
+        }
+
+        // توليد تمرين جديد
+        function generateNewProblem() {
+            const fractions = generateFractions();
+            fractionA = fractions.a;
+            fractionB = fractions.b;
+            fractionC = fractions.c;
+            const operations = [
+                { type: "subtract", text: `${displayFraction(fractionA)} - ${displayFraction(fractionB)}` },
+                { type: "add", text: `${displayFraction(fractionA)} + ${displayFraction(fractionB)}` },
+                { type: "complex-subtract", text: `(${displayFraction(fractionA)} + ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} + ${displayFraction(fractionC)})` },
+                { type: "complex-subtract-2", text: `(${displayFraction(fractionA)} - ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} - ${displayFraction(fractionC)})` },
+                { type: "complex-add", text: `(${displayFraction(fractionA)} + ${displayFraction(fractionC)}) + (${displayFraction(fractionB)} - ${displayFraction(fractionC)})` }
+            ];
+            const randomIndex = Math.floor(Math.random() * operations.length);
+            operationType = operations[randomIndex];
+            switch (operationType.type) {
+                case "subtract":
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case "add":
+                    correctAnswer = addFractions(fractionA, fractionB);
+                    break;
+                case "complex-subtract":
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case "complex-subtract-2":
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case "complex-add":
+                    correctAnswer = addFractions(fractionA, fractionB);
+                    break;
+            }
+            document.getElementById("problem").innerHTML = operationType.text;
+            document.getElementById("result").style.display = "none";
+            document.getElementById("solution").style.display = "none";
+            document.getElementById("numerator").value = "";
+            document.getElementById("denominator").value = "";
+        }
+
+        // التحقق من الإجابة
+        function checkAnswer() {
+            const userNumerator = parseInt(document.getElementById("numerator").value);
+            const userDenominator = parseInt(document.getElementById("denominator").value);
+            if (isNaN(userNumerator) || isNaN(userDenominator) || userDenominator === 0) {
+                document.getElementById("result").innerHTML = "يرجى إدخال كسر صحيح.";
+                document.getElementById("result").className = "incorrect";
+                document.getElementById("result").style.display = "block";
+                return;
+            }
+            const userAnswer = simplifyFraction(userNumerator, userDenominator);
+            if (userAnswer.numerator === correctAnswer.numerator && userAnswer.denominator === correctAnswer.denominator) {
+                document.getElementById("result").innerHTML = "إجابة صحيحة! أحسنت.";
+                document.getElementById("result").className = "correct";
+            } else {
+                document.getElementById("result").innerHTML = "إجابة خاطئة. حاول مرة أخرى أو اعرض الحل.";
+                document.getElementById("result").className = "incorrect";
+            }
+            document.getElementById("result").style.display = "block";
+        }
+
+        // عرض الحل مع خطوات مفصلة
+      function showSolution() {
+    const solutionElement = document.getElementById('solution');
+    const stepsElement = document.getElementById('solution-steps');
+    let steps = '';
+
+    // Valeurs des fractions
+    const value1 = fraction1.numerator / fraction1.denominator;
+    const value2 = fraction2.numerator / fraction2.denominator;
+
+    // Générer les étapes de la solution
+    switch (comparisonMethod) {
+        case "one-greater":
+            steps += generateOneGreaterSolution();
+            break;
+        case "common-denominator":
+            steps += generateCommonDenominatorSolution();
+            break;
+        case "common-numerator":
+            steps += generateCommonNumeratorSolution();
+            break;
+        default:
+            steps += generateGeneralSolution();
+    }
+
+    // Ajouter l'expression mathématique avec la classe "math-expression"
+    steps += `<p><strong>الإجابة النهائية:</strong> <span class="math-expression">${fraction1.numerator}/${fraction1.denominator} ${correctAnswer} ${fraction2.numerator}/${fraction2.denominator}</span></p>`;
+
+    // Afficher les étapes
+    stepsElement.innerHTML = steps;
+    solutionElement.style.display = 'block';
+}
+    </script>
+</body>
+</html>

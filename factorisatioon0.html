@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)file:///C:/Users/USER/Documents/Html%202/Fractions/factorisatioon0.html -->
+<html dir="rtl" lang="ar"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين على التحليل بالعامل المشترك</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: right;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .problem {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            direction: ltr;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .fraction .num {
+            border-bottom: 1px solid black;
+            display: block;
+            font-size: 20px;
+        }
+        .fraction .den {
+            display: block;
+            font-size: 20px;
+        }
+        .input-area {
+            margin: 20px 0;
+            text-align: center;
+        }
+        input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            margin: 0 5px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            display: none;
+        }
+        #solution {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .step {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .problem {
+                font-size: 20px;
+            }
+            button {
+                padding: 8px 15px;
+                font-size: 14px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تمارين على التحليل بالعامل المشترك</h1>
+        <div class="problem" id="problem">
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">9</span>
+                </span>
+             × 
+                <span class="fraction">
+                    <span class="num">4</span>
+                    <span class="den">5</span>
+                </span>
+             + 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">9</span>
+                </span>
+             × 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">3</span>
+                </span>
+            </div>
+        <div class="input-area">
+            <span>الإجابة:</span>
+            <input type="number" id="numerator" placeholder="البسط">
+            <span>/</span>
+            <input type="number" id="denominator" placeholder="المقام">
+        </div>
+        <div class="buttons">
+            <button id="check">تحقق من الإجابة</button>
+            <button id="solution-btn">عرض الحل</button>
+            <button id="new-problem">تمرين جديد</button>
+        </div>
+        <div id="result" style="display: none;"></div>
+        <div id="solution" style="display: block;"><div class="step">العملية: 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">9</span>
+                </span>
+             × 
+                <span class="fraction">
+                    <span class="num">4</span>
+                    <span class="den">5</span>
+                </span>
+             + 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">9</span>
+                </span>
+             × 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">3</span>
+                </span>
+            </div><div class="step">نقوم بتحليل العامل المشترك: 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">9</span>
+                </span>
+             × (
+                <span class="fraction">
+                    <span class="num">4</span>
+                    <span class="den">5</span>
+                </span>
+             + 
+                <span class="fraction">
+                    <span class="num">1</span>
+                    <span class="den">3</span>
+                </span>
+            )</div><div class="step">نحسب ما بداخل القوس: 
+                <span class="fraction">
+                    <span class="num">17</span>
+                    <span class="den">15</span>
+                </span>
+            </div><div class="step">ثم نضرب الناتج في الكسر الأول: 
+                <span class="fraction">
+                    <span class="num">17</span>
+                    <span class="den">135</span>
+                </span>
+            </div></div>
+    </div>
+    <script>
+        let fractionA, fractionB, fractionC;
+        let operationType, correctAnswer;
+
+        // تبسيط الكسر
+        function simplifyFraction(numerator, denominator) {
+            const gcd = findGCD(Math.abs(numerator), Math.abs(denominator));
+            return {
+                numerator: numerator / gcd,
+                denominator: denominator / gcd
+            };
+        }
+
+        // إيجاد القاسم المشترك الأكبر
+        function findGCD(a, b) {
+            return b === 0 ? a : findGCD(b, a % b);
+        }
+
+        // ضرب كسرين
+        function multiplyFractions(frac1, frac2) {
+            const numerator = frac1.numerator * frac2.numerator;
+            const denominator = frac1.denominator * frac2.denominator;
+            return simplifyFraction(numerator, denominator);
+        }
+
+        // جمع كسرين
+        function addFractions(frac1, frac2) {
+            const lcm = (frac1.denominator * frac2.denominator) / findGCD(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 + num2, lcm);
+        }
+
+        // طرح كسرين
+        function subtractFractions(frac1, frac2) {
+            const lcm = (frac1.denominator * frac2.denominator) / findGCD(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 - num2, lcm);
+        }
+
+        // توليد كسر عشوائي
+        function generateRandomFraction(min, max) {
+            const numerator = Math.floor(Math.random() * (max - min + 1)) + min;
+            const denominator = Math.floor(Math.random() * 9) + 2; // 2 إلى 10
+            return simplifyFraction(numerator, denominator);
+        }
+
+        // عرض كسر في واجهة المستخدم
+        function displayFraction(fraction) {
+            return `
+                <span class="fraction">
+                    <span class="num">${fraction.numerator}</span>
+                    <span class="den">${fraction.denominator}</span>
+                </span>
+            `;
+        }
+
+        // توليد تمرين جديد
+        function generateNewProblem() {
+            fractionA = generateRandomFraction(1, 5);
+            fractionB = generateRandomFraction(1, 5);
+            fractionC = generateRandomFraction(1, 5);
+
+            operationType = Math.random() < 0.5 ? "add" : "subtract";
+
+            if (operationType === "add") {
+                correctAnswer = addFractions(multiplyFractions(fractionA, fractionB), multiplyFractions(fractionA, fractionC));
+                document.getElementById('problem').innerHTML = `${displayFraction(fractionA)} × ${displayFraction(fractionB)} + ${displayFraction(fractionA)} × ${displayFraction(fractionC)}`;
+            } else {
+                correctAnswer = subtractFractions(multiplyFractions(fractionA, fractionB), multiplyFractions(fractionA, fractionC));
+                document.getElementById('problem').innerHTML = `${displayFraction(fractionA)} × ${displayFraction(fractionB)} - ${displayFraction(fractionA)} × ${displayFraction(fractionC)}`;
+            }
+
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('solution').style.display = 'none';
+            document.getElementById('numerator').value = '';
+            document.getElementById('denominator').value = '';
+        }
+
+        // التحقق من الإجابة
+        function checkAnswer() {
+            const userNumerator = parseInt(document.getElementById('numerator').value);
+            const userDenominator = parseInt(document.getElementById('denominator').value);
+            if (isNaN(userNumerator) || isNaN(userDenominator) || userDenominator === 0) {
+                document.getElementById('result').innerHTML = 'يرجى إدخال كسر صحيح.';
+                document.getElementById('result').className = 'incorrect';
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+            const userAnswer = simplifyFraction(userNumerator, userDenominator);
+            if (userAnswer.numerator === correctAnswer.numerator && userAnswer.denominator === correctAnswer.denominator) {
+                document.getElementById('result').innerHTML = 'إجابة صحيحة! أحسنت.';
+                document.getElementById('result').className = 'correct';
+            } else {
+                document.getElementById('result').innerHTML = 'إجابة خاطئة. حاول مرة أخرى.';
+                document.getElementById('result').className = 'incorrect';
+            }
+            document.getElementById('result').style.display = 'block';
+        }
+
+        // عرض الحل مع الخطوات
+        function showSolution() {
+            const steps = [];
+            if (operationType === "add") {
+                steps.push(`العملية: ${displayFraction(fractionA)} × ${displayFraction(fractionB)} + ${displayFraction(fractionA)} × ${displayFraction(fractionC)}`);
+                steps.push(`نقوم بتحليل العامل المشترك: ${displayFraction(fractionA)} × (${displayFraction(fractionB)} + ${displayFraction(fractionC)})`);
+                steps.push(`نحسب ما بداخل القوس: ${displayFraction(addFractions(fractionB, fractionC))}`);
+                steps.push(`ثم نضرب الناتج في الكسر الأول: ${displayFraction(correctAnswer)}`);
+            } else {
+                steps.push(`العملية: ${displayFraction(fractionA)} × ${displayFraction(fractionB)} - ${displayFraction(fractionA)} × ${displayFraction(fractionC)}`);
+                steps.push(`نقوم بتحليل العامل المشترك: ${displayFraction(fractionA)} × (${displayFraction(fractionB)} - ${displayFraction(fractionC)})`);
+                steps.push(`نحسب ما بداخل القوس: ${displayFraction(subtractFractions(fractionB, fractionC))}`);
+                steps.push(`ثم نضرب الناتج في الكسر الأول: ${displayFraction(correctAnswer)}`);
+            }
+            document.getElementById('solution').innerHTML = steps.map(step => `<div class="step">${step}</div>`).join('');
+            document.getElementById('solution').style.display = 'block';
+        }
+
+        // تنفيذ عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNewProblem();
+            document.getElementById('check').addEventListener('click', checkAnswer);
+            document.getElementById('solution-btn').addEventListener('click', showSolution);
+            document.getElementById('new-problem').addEventListener('click', generateNewProblem);
+        });
+    </script>
+
+</body></html>

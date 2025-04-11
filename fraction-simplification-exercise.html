@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplification de Fractions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
+        .fraction {
+            font-size: 32px;
+            margin: 20px;
+            font-weight: bold;
+        }
+        input {
+            width: 60px;
+            text-align: center;
+            font-size: 18px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            min-height: 24px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .instructions {
+            margin: 20px auto;
+            text-align: left;
+            max-width: 500px;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simplifiez la Fraction</h1>
+    
+    <div class="instructions">
+        <p>Réduisez la fraction à sa forme la plus simple en trouvant le plus grand commun diviseur (PGCD) du numérateur et du dénominateur, puis en divisant les deux nombres par ce PGCD.</p>
+        <p>Par exemple : 8/12 se simplifie en 2/3 (car le PGCD de 8 et 12 est 4).</p>
+    </div>
+    
+    <div class="fraction">
+        <span id="numerator">?</span> / <span id="denominator">?</span>
+    </div>
+    
+    <div>
+        <input type="number" id="userNumerator" placeholder="Numérateur" min="1">
+        /
+        <input type="number" id="userDenominator" placeholder="Dénominateur" min="1">
+    </div>
+    
+    <button onclick="checkAnswer()">Valider</button>
+    <button onclick="showSolution()" id="showSolutionBtn" style="display: none; background-color: #f0ad4e;">Voir la solution</button>
+    <button onclick="nextQuestion()" id="nextQuestionBtn" style="display: none; background-color: #5bc0de;">Question suivante</button>
+    
+    <div class="message" id="message"></div>
+    <div class="score">Score: <span id="score">0</span> / <span id="total">0</span></div>
+    
+    <script>
+        // Variables pour le score
+        let score = 0;
+        let total = 0;
+        
+        // Fonction pour calculer le PGCD (Plus Grand Commun Diviseur)
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        
+        // Fonction pour générer une fraction réductible aléatoire
+        function generateFraction() {
+            let numerator, denominator, divisor;
+            
+            do {
+                // Générer deux nombres entre 2 et 50
+                numerator = Math.floor(Math.random() * 49) + 2;
+                denominator = Math.floor(Math.random() * 49) + 2;
+                
+                // Calculer leur PGCD
+                divisor = gcd(numerator, denominator);
+                
+                // Continuer jusqu'à ce qu'on ait une fraction réductible (PGCD > 1)
+            } while (divisor === 1 || numerator === denominator);
+            
+            document.getElementById('numerator').textContent = numerator;
+            document.getElementById('denominator').textContent = denominator;
+            
+            // Réinitialiser l'interface
+            document.getElementById('userNumerator').value = "";
+            document.getElementById('userDenominator').value = "";
+            document.getElementById('message').textContent = "";
+            document.getElementById('message').className = "message";
+            
+            // Cacher les boutons supplémentaires
+            document.getElementById('showSolutionBtn').style.display = 'none';
+            document.getElementById('nextQuestionBtn').style.display = 'none';
+            
+            return { numerator, denominator };
+        }
+        
+        // Fonction pour vérifier si deux fractions sont équivalentes
+        function areEquivalentFractions(n1, d1, n2, d2) {
+            return n1 * d2 === n2 * d1;
+        }
+        
+        // Initialisation de la fraction
+        let currentFraction = generateFraction();
+        
+        // Fonction pour vérifier la réponse de l'utilisateur
+        function checkAnswer() {
+            const userNumerator = parseInt(document.getElementById('userNumerator').value);
+            const userDenominator = parseInt(document.getElementById('userDenominator').value);
+            
+            if (isNaN(userNumerator) || isNaN(userDenominator)) {
+                document.getElementById('message').textContent = "Veuillez entrer des nombres valides.";
+                document.getElementById('message').className = "message incorrect";
+                return;
+            }
+            
+            if (userDenominator === 0) {
+                document.getElementById('message').textContent = "Le dénominateur ne peut pas être zéro.";
+                document.getElementById('message').className = "message incorrect";
+                return;
+            }
+            
+            const originalNumerator = currentFraction.numerator;
+            const originalDenominator = currentFraction.denominator;
+            
+            // Calculer la forme réduite de la fraction originale
+            const divisor = gcd(originalNumerator, originalDenominator);
+            const reducedNumerator = originalNumerator / divisor;
+            const reducedDenominator = originalDenominator / divisor;
+            
+            total++;
+            document.getElementById('total').textContent = total;
+            
+            // Vérifier si la réponse de l'utilisateur est correcte
+            const userGcd = gcd(userNumerator, userDenominator);
+            const isReduced = userGcd === 1;
+            
+            if (isReduced && areEquivalentFractions(userNumerator, userDenominator, originalNumerator, originalDenominator)) {
+                // La réponse est correcte et sous forme réduite
+                document.getElementById('message').textContent = "Correct ! La fraction est bien simplifiée.";
+                document.getElementById('message').className = "message correct";
+                score++;
+                document.getElementById('score').textContent = score;
+                
+                // Afficher le bouton pour la question suivante
+                document.getElementById('nextQuestionBtn').style.display = 'inline-block';
+            } else if (areEquivalentFractions(userNumerator, userDenominator, originalNumerator, originalDenominator) && !isReduced) {
+                // La fraction est équivalente mais pas simplifiée
+                document.getElementById('message').textContent = "La fraction est équivalente, mais elle n'est pas sous sa forme la plus simple.";
+                document.getElementById('message').className = "message incorrect";
+                document.getElementById('showSolutionBtn').style.display = 'inline-block';
+            } else {
+                // La réponse est incorrecte
+                document.getElementById('message').textContent = "Incorrect. Essayez encore.";
+                document.getElementById('message').className = "message incorrect";
+                document.getElementById('showSolutionBtn').style.display = 'inline-block';
+            }
+        }
+        
+        // Fonction pour afficher la solution
+        function showSolution() {
+            const originalNumerator = currentFraction.numerator;
+            const originalDenominator = currentFraction.denominator;
+            const divisor = gcd(originalNumerator, originalDenominator);
+            const reducedNumerator = originalNumerator / divisor;
+            const reducedDenominator = originalDenominator / divisor;
+            
+            document.getElementById('message').innerHTML = `La forme simplifiée de ${originalNumerator}/${originalDenominator} est ${reducedNumerator}/${reducedDenominator}.<br>Le PGCD de ${originalNumerator} et ${originalDenominator} est ${divisor}.`;
+            document.getElementById('message').className = "message";
+            
+            // Remplacer le bouton de solution par celui de question suivante
+            document.getElementById('showSolutionBtn').style.display = 'none';
+            document.getElementById('nextQuestionBtn').style.display = 'inline-block';
+        }
+        
+        // Fonction pour passer à la question suivante
+        function nextQuestion() {
+            currentFraction = generateFraction();
+        }
+        
+        // Permettre d'utiliser la touche Entrée pour valider
+        document.getElementById('userNumerator').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('userDenominator').focus();
+            }
+        });
+        
+        document.getElementById('userDenominator').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>

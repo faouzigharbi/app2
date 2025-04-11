@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين حساب الكسور</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            margin: 0 auto;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .steps {
+            margin-top: 10px;
+            text-align: left;
+            display: none;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        .numerator {
+            display: block;
+            border-bottom: 1px solid black;
+            font-size: 1.2em;
+        }
+        .denominator {
+            display: block;
+            font-size: 1.2em;
+        }
+        .math-expression {
+            direction: ltr;
+            unicode-bidi: bidi-override;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تمارين حساب الكسور</h1>
+        <p id="operation" class="math-expression"></p>
+        <input type="text" id="userAnswer" placeholder="أدخل إجابتك هنا (مثال: 3/4)">
+        <div>
+            <button onclick="checkAnswer()">تحقق من الإجابة</button>
+            <button onclick="showCorrection()">تصحيح مع الخطوات</button>
+            <button onclick="newOperation()">عملية جديدة</button>
+        </div>
+        <div class="result" id="result"></div>
+        <div class="steps" id="correctionSteps"></div>
+    </div>
+
+    <script>
+        let a, b, c, operationType, correctAnswer;
+
+        function generateFractions() {
+            a = `${Math.floor(Math.random() * 9) + 1}/${Math.floor(Math.random() * 4) + 2}`;
+            b = `${Math.floor(Math.random() * 9) + 1}/${Math.floor(Math.random() * 4) + 2}`;
+            c = `${Math.floor(Math.random() * 9) + 1}/${Math.floor(Math.random() * 4) + 2}`;
+        }
+
+        function generateOperation() {
+            generateFractions();
+            operationType = Math.floor(Math.random() * 2);
+
+            const formatFraction = (frac) => {
+                const [num, den] = frac.split('/');
+                return `<span class="fraction"><span class="numerator">${num}</span><span class="denominator">${den}</span></span>`;
+            };
+
+            switch (operationType) {
+                case 0:
+                    correctAnswer = simplifyFraction(addFractions(multiplyFractions(a, b), c));
+                    return `${formatFraction(a)} × ${formatFraction(b)} + ${formatFraction(c)}`;
+                case 1:
+                    correctAnswer = simplifyFraction(multiplyFractions(a, subtractFractions(b, c)));
+                    return `${formatFraction(a)} × (${formatFraction(b)} - ${formatFraction(c)})`;
+                default:
+                    return "";
+            }
+        }
+
+        function newOperation() {
+            document.getElementById("operation").innerHTML = generateOperation();
+            document.getElementById("userAnswer").value = "";
+            document.getElementById("result").innerText = "";
+            document.getElementById("correctionSteps").style.display = "none";
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById("userAnswer").value.trim();
+            if (userAnswer === correctAnswer) {
+                document.getElementById("result").innerText = "إجابتك صحيحة!";
+                document.getElementById("result").style.color = "green";
+            } else {
+                document.getElementById("result").innerText = "إجابتك خاطئة. حاول مرة أخرى!";
+                document.getElementById("result").style.color = "red";
+            }
+        }
+
+        function showCorrection() {
+            const steps = getCorrectionSteps();
+            document.getElementById("correctionSteps").style.display = "block";
+            document.getElementById("correctionSteps").innerHTML = `<strong>الخطوات:</strong><br>${steps}`;
+        }
+
+        function getCorrectionSteps() {
+            const formatFraction = (frac) => {
+                const [num, den] = frac.split('/');
+                return `<span class="fraction"><span class="numerator">${num}</span><span class="denominator">${den}</span></span>`;
+            };
+
+            switch (operationType) {
+                case 0:
+                    return `العملية: ${formatFraction(a)} × ${formatFraction(b)} + ${formatFraction(c)}<br>
+                            الخطوة 1: حساب ${formatFraction(a)} × ${formatFraction(b)}.<br>
+                            الخطوة 2: جمع ${formatFraction(c)} مع نتيجة الخطوة 1.<br>
+                            الخطوة 3: تبسيط النتيجة.<br>
+                            الإجابة الصحيحة: ${correctAnswer}`;
+                case 1:
+                    return `العملية: ${formatFraction(a)} × (${formatFraction(b)} - ${formatFraction(c)})<br>
+                            الخطوة 1: حساب ${formatFraction(b)} - ${formatFraction(c)}.<br>
+                            الخطوة 2: ضرب ${formatFraction(a)} في نتيجة الخطوة 1.<br>
+                            الخطوة 3: تبسيط النتيجة.<br>
+                            الإجابة الصحيحة: ${correctAnswer}`;
+                default:
+                    return "";
+            }
+        }
+
+        function simplifyFraction(fraction) {
+            const [numerator, denominator] = fraction.split('/').map(Number);
+            const gcd = greatestCommonDivisor(numerator, denominator);
+            return `${numerator / gcd}/${denominator / gcd}`;
+        }
+
+        function greatestCommonDivisor(a, b) {
+            while (b !== 0) {
+                [a, b] = [b, a % b];
+            }
+            return a;
+        }
+
+        function addFractions(f1, f2) {
+            const [n1, d1] = f1.split('/').map(Number);
+            const [n2, d2] = f2.split('/').map(Number);
+            const numerator = n1 * d2 + n2 * d1;
+            const denominator = d1 * d2;
+            return `${numerator}/${denominator}`;
+        }
+
+        function subtractFractions(f1, f2) {
+            const [n1, d1] = f1.split('/').map(Number);
+            const [n2, d2] = f2.split('/').map(Number);
+            const numerator = n1 * d2 - n2 * d1;
+            const denominator = d1 * d2;
+            return `${numerator}/${denominator}`;
+        }
+
+        function multiplyFractions(f1, f2) {
+            const [n1, d1] = f1.split('/').map(Number);
+            const [n2, d2] = f2.split('/').map(Number);
+            const numerator = n1 * n2;
+            const denominator = d1 * d2;
+            return `${numerator}/${denominator}`;
+        }
+
+        window.onload = newOperation;
+    </script>
+</body>
+</html>

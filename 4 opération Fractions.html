@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلسلة عمليات على الكسور</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .operation-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        .fraction span {
+            display: block;
+        }
+        .fraction span.denominator {
+            border-top: 1px solid black;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 60px;
+            text-align: center;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+        .correct {
+            color: #27ae60;
+        }
+        .incorrect {
+            color: #e74c3c;
+        }
+        .progress {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>سلسلة عمليات على الكسور</h1>
+        <p>حل المسائل التالية. سيظهر سؤال جديد بعد كل إجابة صحيحة.</p>
+        
+        <div class="progress">
+            <span id="progress">السؤال 1 من 5</span>
+        </div>
+        
+        <div id="current-operation" class="operation-section">
+            <!-- سيتم ملء هذا القسم ديناميكيًا -->
+        </div>
+        
+        <div id="completed-message" class="hidden">
+            <h2>أحسنت! لقد أكملت جميع المسائل!</h2>
+            <button onclick="resetOperations()">إعادة المحاولة</button>
+        </div>
+    </div>
+
+    <script>
+        // قائمة العمليات مع حلولها
+        const operations = [
+            {
+                type: "جمع",
+                problem: [
+                    { numerator: 1, denominator: 2 },
+                    { numerator: 1, denominator: 4 }
+                ],
+                solution: { numerator: 3, denominator: 4 }
+            },
+            {
+                type: "طرح",
+                problem: [
+                    { numerator: 3, denominator: 4 },
+                    { numerator: 1, denominator: 2 }
+                ],
+                solution: { numerator: 1, denominator: 4 }
+            },
+            {
+                type: "ضرب",
+                problem: [
+                    { numerator: 2, denominator: 3 },
+                    { numerator: 3, denominator: 5 }
+                ],
+                solution: { numerator: 2, denominator: 5 }
+            },
+            {
+                type: "قسمة",
+                problem: [
+                    { numerator: 3, denominator: 4 },
+                    { numerator: 2, denominator: 5 }
+                ],
+                solution: { numerator: 15, denominator: 8 }
+            },
+            {
+                type: "جمع",
+                problem: [
+                    { numerator: 2, denominator: 3 },
+                    { numerator: 3, denominator: 7 }
+                ],
+                solution: { numerator: 23, denominator: 21 }
+            }
+        ];
+        
+        let currentOperation = 0;
+        let score = 0;
+        
+        // عرض العملية الحالية
+        function displayCurrentOperation() {
+            if (currentOperation >= operations.length) {
+                document.getElementById('current-operation').classList.add('hidden');
+                document.getElementById('completed-message').classList.remove('hidden');
+                return;
+            }
+            
+            const op = operations[currentOperation];
+            const operationElement = document.getElementById('current-operation');
+            operationElement.innerHTML = '';
+            
+            // تحديث شريط التقدم
+            document.getElementById('progress').textContent = `السؤال ${currentOperation + 1} من ${operations.length}`;
+            
+            // إنشاء عناصر العملية
+            const title = document.createElement('h2');
+            title.textContent = op.type + ' الكسور';
+            operationElement.appendChild(title);
+            
+            const problemText = document.createElement('p');
+            problemText.textContent = 'حل المسألة التالية:';
+            operationElement.appendChild(problemText);
+            
+            const problemContainer = document.createElement('div');
+            
+            // الكسر الأول
+            const fraction1 = createFractionElement(op.problem[0].numerator, op.problem[0].denominator);
+            problemContainer.appendChild(fraction1);
+            
+            // علامة العملية
+            const operator = document.createElement('span');
+            operator.textContent = getOperatorSymbol(op.type);
+            operator.style.margin = '0 10px';
+            operator.style.fontSize = '20px';
+            problemContainer.appendChild(operator);
+            
+            // الكسر الثاني
+            const fraction2 = createFractionElement(op.problem[1].numerator, op.problem[1].denominator);
+            problemContainer.appendChild(fraction2);
+            
+            // علامة التساوي
+            const equals = document.createElement('span');
+            equals.textContent = '=';
+            equals.style.margin = '0 10px';
+            problemContainer.appendChild(equals);
+            
+            // حقول الإدخال
+            const numInput = document.createElement('input');
+            numInput.type = 'text';
+            numInput.id = 'current-num';
+            numInput.placeholder = 'البسط';
+            problemContainer.appendChild(numInput);
+            
+            const slash = document.createElement('span');
+            slash.textContent = '/';
+            slash.style.margin = '0 5px';
+            problemContainer.appendChild(slash);
+            
+            const denInput = document.createElement('input');
+            denInput.type = 'text';
+            denInput.id = 'current-den';
+            denInput.placeholder = 'المقام';
+            problemContainer.appendChild(denInput);
+            
+            // زر التحقق
+            const checkButton = document.createElement('button');
+            checkButton.textContent = 'تحقق';
+            checkButton.onclick = checkAnswer;
+            problemContainer.appendChild(checkButton);
+            
+            // نتيجة التحقق
+            const resultDiv = document.createElement('div');
+            resultDiv.id = 'current-result';
+            resultDiv.className = 'result';
+            problemContainer.appendChild(resultDiv);
+            
+            operationElement.appendChild(problemContainer);
+        }
+        
+        // إنشاء عنصر كسر
+        function createFractionElement(numerator, denominator) {
+            const fraction = document.createElement('div');
+            fraction.className = 'fraction';
+            
+            const numSpan = document.createElement('span');
+            numSpan.textContent = numerator;
+            
+            const denSpan = document.createElement('span');
+            denSpan.className = 'denominator';
+            denSpan.textContent = denominator;
+            
+            fraction.appendChild(numSpan);
+            fraction.appendChild(denSpan);
+            
+            return fraction;
+        }
+        
+        // الحصول على رمز العملية
+        function getOperatorSymbol(type) {
+            switch(type) {
+                case 'جمع': return '+';
+                case 'طرح': return '-';
+                case 'ضرب': return '×';
+                case 'قسمة': return '÷';
+                default: return '?';
+            }
+        }
+        
+        // التحقق من الإجابة
+        function checkAnswer() {
+            const num = document.getElementById('current-num').value;
+            const den = document.getElementById('current-den').value;
+            const resultDiv = document.getElementById('current-result');
+            const op = operations[currentOperation];
+            
+            if (num == op.solution.numerator && den == op.solution.denominator) {
+                resultDiv.textContent = 'إجابة صحيحة! أحسنت!';
+                resultDiv.className = 'result correct';
+                score++;
+                
+                // الانتقال إلى العملية التالية بعد تأخير قصير
+                setTimeout(() => {
+                    currentOperation++;
+                    displayCurrentOperation();
+                }, 1500);
+            } else {
+                resultDiv.textContent = 'إجابة خاطئة. حاول مرة أخرى.';
+                resultDiv.className = 'result incorrect';
+            }
+        }
+        
+        // إعادة تعيين العمليات
+        function resetOperations() {
+            currentOperation = 0;
+            score = 0;
+            document.getElementById('completed-message').classList.add('hidden');
+            document.getElementById('current-operation').classList.remove('hidden');
+            displayCurrentOperation();
+        }
+        
+        // بدء التطبيق
+        displayCurrentOperation();
+    </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين الكسور</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: right;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .problem {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            direction: ltr;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .fraction .num {
+            border-bottom: 1px solid black;
+            padding: 0 3px;
+        }
+        .fraction .den {
+            padding: 0 3px;
+        }
+        .input-area {
+            margin: 20px 0;
+            text-align: center;
+        }
+        input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            margin: 0 5px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            display: none;
+        }
+        #solution {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .step {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .problem {
+                font-size: 20px;
+            }
+            button {
+                padding: 8px 15px;
+                font-size: 14px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تمارين على العمليات الحسابية للكسور</h1>
+        
+        <div class="problem" id="problem"></div>
+        
+        <div class="input-area">
+            <span>الإجابة:</span>
+            <input type="number" id="numerator" placeholder="البسط">
+            <span>/</span>
+            <input type="number" id="denominator" placeholder="المقام">
+        </div>
+        
+        <div class="buttons">
+            <button id="check">تحقق من الإجابة</button>
+            <button id="solution-btn">عرض الحل</button>
+            <button id="new-problem">تمرين جديد</button>
+        </div>
+        
+        <div id="result"></div>
+        <div id="solution"></div>
+    </div>
+
+    <script>
+        let currentProblem = {};
+        let fractionA, fractionB, fractionC;
+        let operation, correctAnswer;
+        
+        // تبسيط الكسر
+        function simplifyFraction(numerator, denominator) {
+            const gcd = findGCD(Math.abs(numerator), Math.abs(denominator));
+            return {
+                numerator: numerator / gcd,
+                denominator: denominator / gcd
+            };
+        }
+        
+        // إيجاد القاسم المشترك الأكبر
+        function findGCD(a, b) {
+            return b === 0 ? a : findGCD(b, a % b);
+        }
+        
+        // إيجاد المضاعف المشترك الأصغر
+        function findLCM(a, b) {
+            return (a * b) / findGCD(a, b);
+        }
+        
+        // جمع كسرين
+        function addFractions(frac1, frac2) {
+            const lcm = findLCM(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 + num2, lcm);
+        }
+        
+        // طرح كسرين
+        function subtractFractions(frac1, frac2) {
+            const lcm = findLCM(frac1.denominator, frac2.denominator);
+            const num1 = frac1.numerator * (lcm / frac1.denominator);
+            const num2 = frac2.numerator * (lcm / frac2.denominator);
+            return simplifyFraction(num1 - num2, lcm);
+        }
+        
+        // توليد كسر عشوائي
+        function generateRandomFraction(min, max) {
+            const numerator = Math.floor(Math.random() * (max - min + 1)) + min;
+            const denominator = Math.floor(Math.random() * 9) + 2; // 2 إلى 10
+            return simplifyFraction(numerator, denominator);
+        }
+        
+        // توليد ثلاثة كسور بحيث a > b > c
+        function generateFractions() {
+            // توليد قيم أولية
+            const c = generateRandomFraction(1, 5);
+            const b = generateRandomFraction(6, 12);
+            const a = generateRandomFraction(13, 20);
+            
+            // تحويل إلى قيم عشرية للمقارنة
+            const valA = a.numerator / a.denominator;
+            const valB = b.numerator / b.denominator;
+            const valC = c.numerator / c.denominator;
+            
+            // ضمان أن a > b > c
+            if (valA > valB && valB > valC) {
+                return { a, b, c };
+            } else {
+                return generateFractions(); // حاول مرة أخرى
+            }
+        }
+        
+        // عرض كسر في واجهة المستخدم
+        function displayFraction(fraction) {
+            return `<span class="fraction"><span class="num">${fraction.numerator}</span><span class="den">${fraction.denominator}</span></span>`;
+        }
+        
+        // توليد تمرين جديد
+        function generateNewProblem() {
+            const fractions = generateFractions();
+            fractionA = fractions.a;
+            fractionB = fractions.b;
+            fractionC = fractions.c;
+            
+            // اختيار نوع العملية بشكل عشوائي
+            const operationTypes = [
+                { type: 1, text: `${displayFraction(fractionA)} - ${displayFraction(fractionB)}` },
+                { type: 2, text: `${displayFraction(fractionA)} + ${displayFraction(fractionB)}` },
+                { type: 3, text: `(${displayFraction(fractionA)} + ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} + ${displayFraction(fractionC)})` },
+                { type: 4, text: `(${displayFraction(fractionA)} - ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} - ${displayFraction(fractionC)})` },
+                { type: 5, text: `(${displayFraction(fractionA)} + ${displayFraction(fractionC)}) + (${displayFraction(fractionB)} - ${displayFraction(fractionC)})` }
+            ];
+            
+            const randomIndex = Math.floor(Math.random() * operationTypes.length);
+            operation = operationTypes[randomIndex];
+            
+            // حساب الإجابة الصحيحة
+            switch (operation.type) {
+                case 1: // a - b
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case 2: // a + b
+                    correctAnswer = addFractions(fractionA, fractionB);
+                    break;
+                case 3: // (a + c) - (b + c) = a - b
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case 4: // (a - c) - (b - c) = a - b
+                    correctAnswer = subtractFractions(fractionA, fractionB);
+                    break;
+                case 5: // (a + c) + (b - c) = a + b
+                    correctAnswer = addFractions(fractionA, fractionB);
+                    break;
+            }
+            
+            // تخزين معلومات التمرين الحالي
+            currentProblem = {
+                operation: operation,
+                fractionA: fractionA,
+                fractionB: fractionB,
+                fractionC: fractionC,
+                correctAnswer: correctAnswer
+            };
+            
+            // عرض التمرين
+            document.getElementById('problem').innerHTML = operation.text;
+            
+            // إخفاء النتيجة والحل
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('solution').style.display = 'none';
+            
+            // مسح حقول الإدخال
+            document.getElementById('numerator').value = '';
+            document.getElementById('denominator').value = '';
+        }
+        
+        // التحقق من الإجابة
+        function checkAnswer() {
+            const userNumerator = parseInt(document.getElementById('numerator').value);
+            const userDenominator = parseInt(document.getElementById('denominator').value);
+            
+            if (isNaN(userNumerator) || isNaN(userDenominator) || userDenominator === 0) {
+                document.getElementById('result').innerHTML = 'يرجى إدخال كسر صحيح.';
+                document.getElementById('result').className = 'incorrect';
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+            
+            const userAnswer = simplifyFraction(userNumerator, userDenominator);
+            
+            if (userAnswer.numerator === correctAnswer.numerator && userAnswer.denominator === correctAnswer.denominator) {
+                document.getElementById('result').innerHTML = 'إجابة صحيحة! أحسنت.';
+                document.getElementById('result').className = 'correct';
+            } else {
+                document.getElementById('result').innerHTML = 'إجابة خاطئة. حاول مرة أخرى.';
+                document.getElementById('result').className = 'incorrect';
+            }
+            
+            document.getElementById('result').style.display = 'block';
+        }
+        
+        // عرض الحل خطوة بخطوة
+        function showSolution() {
+            let solutionHTML = '<h3>الحل خطوة بخطوة:</h3>';
+            
+            switch (currentProblem.operation.type) {
+                case 1: // a - b
+                    solutionHTML += `
+                        <div class="step">لدينا: ${displayFraction(fractionA)} - ${displayFraction(fractionB)}</div>
+                    `;
+                    
+                    if (fractionA.denominator !== fractionB.denominator) {
+                        const lcm = findLCM(fractionA.denominator, fractionB.denominator);
+                        const newNumA = fractionA.numerator * (lcm / fractionA.denominator);
+                        const newNumB = fractionB.numerator * (lcm / fractionB.denominator);
+                        
+                        solutionHTML += `
+                            <div class="step">نوحد المقامات بإيجاد المضاعف المشترك الأصغر للمقامات: ${lcm}</div>
+                            <div class="step">
+                                ${displayFraction(fractionA)} = <span class="fraction"><span class="num">${newNumA}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                ${displayFraction(fractionB)} = <span class="fraction"><span class="num">${newNumB}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                <span class="fraction"><span class="num">${newNumA}</span><span class="den">${lcm}</span></span> - 
+                                <span class="fraction"><span class="num">${newNumB}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumA} - ${newNumB}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumA - newNumB}</span><span class="den">${lcm}</span></span>
+                            </div>
+                        `;
+                    } else {
+                        solutionHTML += `
+                            <div class="step">
+                                المقامات متساوية، لذا نطرح البسوط مباشرة:
+                                <span class="fraction"><span class="num">${fractionA.numerator} - ${fractionB.numerator}</span><span class="den">${fractionA.denominator}</span></span> = 
+                                <span class="fraction"><span class="num">${fractionA.numerator - fractionB.numerator}</span><span class="den">${fractionA.denominator}</span></span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (correctAnswer.numerator !== fractionA.numerator - fractionB.numerator || 
+                        correctAnswer.denominator !== fractionA.denominator) {
+                        solutionHTML += `
+                            <div class="step">
+                                تبسيط الكسر: ${displayFraction(correctAnswer)}
+                            </div>
+                        `;
+                    }
+                    
+                    break;
+                    
+                case 2: // a + b
+                    solutionHTML += `
+                        <div class="step">لدينا: ${displayFraction(fractionA)} + ${displayFraction(fractionB)}</div>
+                    `;
+                    
+                    if (fractionA.denominator !== fractionB.denominator) {
+                        const lcm = findLCM(fractionA.denominator, fractionB.denominator);
+                        const newNumA = fractionA.numerator * (lcm / fractionA.denominator);
+                        const newNumB = fractionB.numerator * (lcm / fractionB.denominator);
+                        
+                        solutionHTML += `
+                            <div class="step">نوحد المقامات بإيجاد المضاعف المشترك الأصغر للمقامات: ${lcm}</div>
+                            <div class="step">
+                                ${displayFraction(fractionA)} = <span class="fraction"><span class="num">${newNumA}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                ${displayFraction(fractionB)} = <span class="fraction"><span class="num">${newNumB}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                <span class="fraction"><span class="num">${newNumA}</span><span class="den">${lcm}</span></span> + 
+                                <span class="fraction"><span class="num">${newNumB}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumA} + ${newNumB}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumA + newNumB}</span><span class="den">${lcm}</span></span>
+                            </div>
+                        `;
+                    } else {
+                        solutionHTML += `
+                            <div class="step">
+                                المقامات متساوية، لذا نجمع البسوط مباشرة:
+                                <span class="fraction"><span class="num">${fractionA.numerator} + ${fractionB.numerator}</span><span class="den">${fractionA.denominator}</span></span> = 
+                                <span class="fraction"><span class="num">${fractionA.numerator + fractionB.numerator}</span><span class="den">${fractionA.denominator}</span></span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (correctAnswer.numerator !== fractionA.numerator + fractionB.numerator || 
+                        correctAnswer.denominator !== fractionA.denominator) {
+                        solutionHTML += `
+                            <div class="step">
+                                تبسيط الكسر: ${displayFraction(correctAnswer)}
+                            </div>
+                        `;
+                    }
+                    
+                    break;
+                    
+                case 3: // (a + c) - (b + c) = a - b
+                    solutionHTML += `
+                        <div class="step">لدينا: (${displayFraction(fractionA)} + ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} + ${displayFraction(fractionC)})</div>
+                        
+                        <div class="step">أولاً، نحسب ${displayFraction(fractionA)} + ${displayFraction(fractionC)}</div>
+                    `;
+                    
+                    const sumAC = addFractions(fractionA, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionA)} + ${displayFraction(fractionC)} = ${displayFraction(sumAC)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثانياً، نحسب ${displayFraction(fractionB)} + ${displayFraction(fractionC)}</div>`;
+                    
+                    const sumBC = addFractions(fractionB, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionB)} + ${displayFraction(fractionC)} = ${displayFraction(sumBC)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثالثاً، نطرح: ${displayFraction(sumAC)} - ${displayFraction(sumBC)}</div>`;
+                    
+                    if (sumAC.denominator !== sumBC.denominator) {
+                        const lcm = findLCM(sumAC.denominator, sumBC.denominator);
+                        const newNumAC = sumAC.numerator * (lcm / sumAC.denominator);
+                        const newNumBC = sumBC.numerator * (lcm / sumBC.denominator);
+                        
+                        solutionHTML += `
+                            <div class="step">نوحد المقامات بإيجاد المضاعف المشترك الأصغر: ${lcm}</div>
+                            <div class="step">
+                                ${displayFraction(sumAC)} = <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                ${displayFraction(sumBC)} = <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span> - 
+                                <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumAC - newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                        `;
+                    } else {
+                        solutionHTML += `
+                            <div class="step">
+                                <span class="fraction"><span class="num">${sumAC.numerator}</span><span class="den">${sumAC.denominator}</span></span> - 
+                                <span class="fraction"><span class="num">${sumBC.numerator}</span><span class="den">${sumBC.denominator}</span></span> = 
+                                <span class="fraction"><span class="num">${sumAC.numerator - sumBC.numerator}</span><span class="den">${sumAC.denominator}</span></span>
+                            </div>
+                        `;
+                    }
+                    
+                    solutionHTML += `
+                        <div class="step">نلاحظ أن (${displayFraction(fractionA)} + ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} + ${displayFraction(fractionC)}) = ${displayFraction(fractionA)} - ${displayFraction(fractionB)}</div>
+                        <div class="step">لأن ${displayFraction(fractionC)} يلغي نفسه من الطرفين</div>
+                        <div class="step">إذاً، الإجابة النهائية هي: ${displayFraction(correctAnswer)}</div>
+                    `;
+                    break;
+                    
+                case 4: // (a - c) - (b - c) = a - b
+                    solutionHTML += `
+                        <div class="step">لدينا: (${displayFraction(fractionA)} - ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} - ${displayFraction(fractionC)})</div>
+                        
+                        <div class="step">أولاً، نحسب ${displayFraction(fractionA)} - ${displayFraction(fractionC)}</div>
+                    `;
+                    
+                    const diffAC = subtractFractions(fractionA, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionA)} - ${displayFraction(fractionC)} = ${displayFraction(diffAC)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثانياً، نحسب ${displayFraction(fractionB)} - ${displayFraction(fractionC)}</div>`;
+                    
+                    const diffBC = subtractFractions(fractionB, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionB)} - ${displayFraction(fractionC)} = ${displayFraction(diffBC)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثالثاً، نطرح: ${displayFraction(diffAC)} - ${displayFraction(diffBC)}</div>`;
+                    
+                    if (diffAC.denominator !== diffBC.denominator) {
+                        const lcm = findLCM(diffAC.denominator, diffBC.denominator);
+                        const newNumAC = diffAC.numerator * (lcm / diffAC.denominator);
+                        const newNumBC = diffBC.numerator * (lcm / diffBC.denominator);
+                        
+                        solutionHTML += `
+                            <div class="step">نوحد المقامات بإيجاد المضاعف المشترك الأصغر: ${lcm}</div>
+                            <div class="step">
+                                ${displayFraction(diffAC)} = <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                ${displayFraction(diffBC)} = <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span> - 
+                                <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumAC - newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                        `;
+                    } else {
+                        solutionHTML += `
+                            <div class="step">
+                                <span class="fraction"><span class="num">${diffAC.numerator}</span><span class="den">${diffAC.denominator}</span></span> - 
+                                <span class="fraction"><span class="num">${diffBC.numerator}</span><span class="den">${diffBC.denominator}</span></span> = 
+                                <span class="fraction"><span class="num">${diffAC.numerator - diffBC.numerator}</span><span class="den">${diffAC.denominator}</span></span>
+                            </div>
+                        `;
+                    }
+                    
+                    solutionHTML += `
+                        <div class="step">نلاحظ أن (${displayFraction(fractionA)} - ${displayFraction(fractionC)}) - (${displayFraction(fractionB)} - ${displayFraction(fractionC)}) = ${displayFraction(fractionA)} - ${displayFraction(fractionB)}</div>
+                        <div class="step">لأن ${displayFraction(fractionC)} يلغي نفسه من الطرفين</div>
+                        <div class="step">إذاً، الإجابة النهائية هي: ${displayFraction(correctAnswer)}</div>
+                    `;
+                    break;
+                    
+                case 5: // (a + c) + (b - c) = a + b
+                    solutionHTML += `
+                        <div class="step">لدينا: (${displayFraction(fractionA)} + ${displayFraction(fractionC)}) + (${displayFraction(fractionB)} - ${displayFraction(fractionC)})</div>
+                        
+                        <div class="step">أولاً، نحسب ${displayFraction(fractionA)} + ${displayFraction(fractionC)}</div>
+                    `;
+                    
+                    const sumAC2 = addFractions(fractionA, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionA)} + ${displayFraction(fractionC)} = ${displayFraction(sumAC2)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثانياً، نحسب ${displayFraction(fractionB)} - ${displayFraction(fractionC)}</div>`;
+                    
+                    const diffBC2 = subtractFractions(fractionB, fractionC);
+                    solutionHTML += `<div class="step">${displayFraction(fractionB)} - ${displayFraction(fractionC)} = ${displayFraction(diffBC2)}</div>`;
+                    
+                    solutionHTML += `<div class="step">ثالثاً، نجمع: ${displayFraction(sumAC2)} + ${displayFraction(diffBC2)}</div>`;
+                    
+                    if (sumAC2.denominator !== diffBC2.denominator) {
+                        const lcm = findLCM(sumAC2.denominator, diffBC2.denominator);
+                        const newNumAC = sumAC2.numerator * (lcm / sumAC2.denominator);
+                        const newNumBC = diffBC2.numerator * (lcm / diffBC2.denominator);
+                        
+                        solutionHTML += `
+                            <div class="step">نوحد المقامات بإيجاد المضاعف المشترك الأصغر: ${lcm}</div>
+                            <div class="step">
+                                ${displayFraction(sumAC2)} = <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                ${displayFraction(diffBC2)} = <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                            <div class="step">
+                                <span class="fraction"><span class="num">${newNumAC}</span><span class="den">${lcm}</span></span> + 
+                                <span class="fraction"><span class="num">${newNumBC}</span><span class="den">${lcm}</span></span> = 
+                                <span class="fraction"><span class="num">${newNumAC + newNumBC}</span><span class="den">${lcm}</span></span>
+                            </div>
+                        `;
+                    } else {
+                        solutionHTML += `
+                            <div class="step">
+                                <span class="fraction"><span class="num">${sumAC2.numerator}</span><span class="den">${sumAC2.denominator}</span></span> + 
+                                <span class="fraction"><span class="num">${diffBC2.numerator}</span><span class="den">${diffBC2.denominator}</span></span> = 
+                                <span class="fraction"><span class="num">${sumAC2.numerator + diffBC2.numerator}</span><span class="den">${sumAC2.denominator}</span></span>
+                            </div>
+                        `;
+                    }
+                    
+                    solutionHTML += `
+                        <div class="step">نلاحظ أن (${displayFraction(fractionA)} + ${displayFraction(fractionC)}) + (${displayFraction(fractionB)} - ${displayFraction(fractionC)}) = ${displayFraction(fractionA)} + ${displayFraction(fractionB)}</div>
+                        <div class="step">لأن ${displayFraction(fractionC)} يلغي نفسه (جمع وطرح)</div>
+                        <div class="step">إذاً، الإجابة النهائية هي: ${displayFraction(correctAnswer)}</div>
+                    `;
+                    break;
+            }
+            
+            document.getElementById('solution').innerHTML = solutionHTML;
+            document.getElementById('solution').style.display = 'block';
+        }
+        
+        // تنفيذ الدوال عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNewProblem();
+            
+            document.getElementById('check').addEventListener('click', checkAnswer);
+            document.getElementById('solution-btn').addEventListener('click', showSolution);
+            document.getElementById('new-problem').addEventListener('click', generateNewProblem);
+        });
+    </script>
+</body>
+</html>

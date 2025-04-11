@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تبسيط الكسور</title>
+    <style>
+        body {
+            font-family: Arial, Tahoma, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        .fraction-display {
+            font-size: 32px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .numerator, .denominator {
+            padding: 5px;
+        }
+        .fraction-line {
+            border-bottom: 2px solid black;
+            margin: 5px 0;
+        }
+        .input-section {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .input-group {
+            margin: 10px 0;
+            text-align: center;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            font-size: 16px;
+            width: 80px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #004c99;
+        }
+        .result {
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .solution {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: right;
+            display: none;
+        }
+        .solution h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        .level-select {
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تبسيط الكسور</h1>
+        <p>قم بتبسيط الكسر التالي إلى أبسط صورة ممكنة</p>
+        
+        <div class="level-select">
+            <label for="difficulty">مستوى الصعوبة:</label>
+            <select id="difficulty">
+                <option value="easy">سهل</option>
+                <option value="medium" selected>متوسط</option>
+                <option value="hard">صعب</option>
+            </select>
+        </div>
+        
+        <div class="fraction-display">
+            <div class="fraction">
+                <div class="numerator" id="numerator">12</div>
+                <div class="fraction-line"></div>
+                <div class="denominator" id="denominator">18</div>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="user-numerator">البسط (العدد العلوي):</label>
+                <input type="number" id="user-numerator" min="1">
+            </div>
+            <div class="input-group">
+                <label for="user-denominator">المقام (العدد السفلي):</label>
+                <input type="number" id="user-denominator" min="1">
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="check-btn">تحقق من الإجابة</button>
+            <button id="solution-btn">عرض الحل</button>
+            <button id="new-fraction-btn">كسر جديد</button>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="solution" id="solution">
+            <h3>خطوات الحل:</h3>
+            <div id="solution-steps"></div>
+        </div>
+    </div>
+
+    <script>
+        let originalNumerator, originalDenominator;
+        let simplifiedNumerator, simplifiedDenominator;
+        
+        // عند تحميل الصفحة
+        window.onload = function() {
+            generateNewFraction();
+            
+            // إضافة الأحداث للأزرار
+            document.getElementById('check-btn').addEventListener('click', checkAnswer);
+            document.getElementById('solution-btn').addEventListener('click', showSolution);
+            document.getElementById('new-fraction-btn').addEventListener('click', generateNewFraction);
+            document.getElementById('difficulty').addEventListener('change', generateNewFraction);
+        };
+        
+        // إنشاء كسر جديد
+        function generateNewFraction() {
+            // إعادة تعيين حالة الصفحة
+            document.getElementById('result').innerText = '';
+            document.getElementById('solution').style.display = 'none';
+            document.getElementById('user-numerator').value = '';
+            document.getElementById('user-denominator').value = '';
+            
+            const difficulty = document.getElementById('difficulty').value;
+            
+            let num, denom;
+            
+            // إنشاء كسر غير مبسط بناءً على مستوى الصعوبة
+            switch(difficulty) {
+                case 'easy':
+                    // كسور بسيطة مثل 2/4, 3/6, 4/8
+                    const easyFactors = [2, 3, 4, 5];
+                    const factor = easyFactors[Math.floor(Math.random() * easyFactors.length)];
+                    num = getRandomInt(1, 10) * factor;
+                    denom = getRandomInt(Math.max(num, 2), 20) * factor;
+                    break;
+                    
+                case 'medium':
+                    // كسور متوسطة الصعوبة مثل 15/45, 24/36
+                    const gcd1 = getRandomInt(2, 6);
+                    const gcd2 = getRandomInt(2, 6);
+                    const commonFactor = gcd1 * gcd2;
+                    num = getRandomInt(2, 12) * commonFactor;
+                    denom = getRandomInt(Math.max(num, 3), 24) * commonFactor;
+                    break;
+                    
+                case 'hard':
+                    // كسور صعبة مثل 36/84, 48/120
+                    const hardFactors = [6, 8, 12, 24];
+                    const hardFactor = hardFactors[Math.floor(Math.random() * hardFactors.length)];
+                    num = getRandomInt(2, 20) * hardFactor;
+                    denom = getRandomInt(Math.max(num, 4), 30) * hardFactor;
+                    break;
+                    
+                default:
+                    num = getRandomInt(4, 24);
+                    denom = getRandomInt(Math.max(num, 4), 36);
+            }
+            
+            // التأكد من أن الكسر غير مبسط
+            if (gcd(num, denom) === 1) {
+                num *= 2;
+                denom *= 2;
+            }
+            
+            // تخزين القيم
+            originalNumerator = num;
+            originalDenominator = denom;
+            
+            // حساب الكسر المبسط
+            const greatestCommonDivisor = gcd(num, denom);
+            simplifiedNumerator = num / greatestCommonDivisor;
+            simplifiedDenominator = denom / greatestCommonDivisor;
+            
+            // عرض الكسر
+            document.getElementById('numerator').innerText = originalNumerator;
+            document.getElementById('denominator').innerText = originalDenominator;
+        }
+        
+        // التحقق من إجابة المستخدم
+        function checkAnswer() {
+            const userNumerator = parseInt(document.getElementById('user-numerator').value);
+            const userDenominator = parseInt(document.getElementById('user-denominator').value);
+            const resultElement = document.getElementById('result');
+            
+            if (isNaN(userNumerator) || isNaN(userDenominator)) {
+                resultElement.innerText = 'الرجاء إدخال أرقام صحيحة في خانتي البسط والمقام';
+                resultElement.className = 'result incorrect';
+                return;
+            }
+            
+            if (userDenominator === 0) {
+                resultElement.innerText = 'لا يمكن أن يكون المقام صفراً!';
+                resultElement.className = 'result incorrect';
+                return;
+            }
+            
+            // التحقق من صحة الإجابة
+            if (userNumerator * simplifiedDenominator === userDenominator * simplifiedNumerator) {
+                resultElement.innerText = 'إجابة صحيحة! أحسنت!';
+                resultElement.className = 'result correct';
+            } else {
+                resultElement.innerText = 'إجابة خاطئة. حاول مرة أخرى أو اعرض الحل.';
+                resultElement.className = 'result incorrect';
+            }
+        }
+        
+        // عرض خطوات الحل
+        function showSolution() {
+            const solutionElement = document.getElementById('solution');
+            const stepsElement = document.getElementById('solution-steps');
+            
+            // القاسم المشترك الأكبر
+            const greatestCommonDivisor = gcd(originalNumerator, originalDenominator);
+            
+            // إنشاء خطوات الحل
+            let steps = '';
+            
+            // الخطوة 1: إيجاد القاسم المشترك الأكبر
+            steps += `<p><strong>الخطوة 1:</strong> إيجاد القاسم المشترك الأكبر (ق.م.أ) بين البسط والمقام.</p>`;
+            if (greatestCommonDivisor === 1) {
+                steps += `<p>القاسم المشترك الأكبر بين ${originalNumerator} و ${originalDenominator} هو 1.</p>`;
+                steps += `<p>هذا يعني أن الكسر بالفعل في أبسط صورة!</p>`;
+            } else {
+                steps += `<p>القاسم المشترك الأكبر بين ${originalNumerator} و ${originalDenominator} هو ${greatestCommonDivisor}.</p>`;
+                
+                // الخطوة 2: قسمة البسط والمقام على القاسم المشترك الأكبر
+                steps += `<p><strong>الخطوة 2:</strong> قسمة البسط والمقام على القاسم المشترك الأكبر.</p>`;
+                steps += `<p>البسط: ${originalNumerator} ÷ ${greatestCommonDivisor} = ${simplifiedNumerator}</p>`;
+                steps += `<p>المقام: ${originalDenominator} ÷ ${greatestCommonDivisor} = ${simplifiedDenominator}</p>`;
+            }
+            
+            // عرض إيضاح العوامل المشتركة إذا كانت كبيرة
+            if (greatestCommonDivisor > 10) {
+                steps += `<p><strong>توضيح إضافي:</strong> لإيجاد القاسم المشترك الأكبر بين ${originalNumerator} و ${originalDenominator}:</p>`;
+                
+                // تحليل العدد الأول إلى عوامله الأولية
+                const factors1 = findPrimeFactors(originalNumerator);
+                steps += `<p>عوامل ${originalNumerator} الأولية هي: ${factors1.join(' × ')}</p>`;
+                
+                // تحليل العدد الثاني إلى عوامله الأولية
+                const factors2 = findPrimeFactors(originalDenominator);
+                steps += `<p>عوامل ${originalDenominator} الأولية هي: ${factors2.join(' × ')}</p>`;
+                
+                // استخراج العوامل المشتركة
+                const commonFactors = findCommonFactors(factors1, factors2);
+                steps += `<p>العوامل المشتركة هي: ${commonFactors.join(' × ')} = ${greatestCommonDivisor}</p>`;
+            }
+            
+            // الخطوة 3: الكسر المبسط النهائي
+            steps += `<p><strong>الكسر المبسط:</strong> <div style="display:inline-block;text-align:center;vertical-align:middle;"><div>${simplifiedNumerator}</div><div style="border-bottom: 2px solid black; margin: 3px 0;"></div><div>${simplifiedDenominator}</div></div></p>`;
+            
+            // عرض الحل
+            stepsElement.innerHTML = steps;
+            solutionElement.style.display = 'block';
+        }
+        
+        // دالة لحساب القاسم المشترك الأكبر
+        function gcd(a, b) {
+            if (b === 0) return a;
+            return gcd(b, a % b);
+        }
+        
+        // دالة لتحليل العدد إلى عوامله الأولية
+        function findPrimeFactors(num) {
+            const factors = [];
+            let divisor = 2;
+            
+            while (num > 1) {
+                while (num % divisor === 0) {
+                    factors.push(divisor);
+                    num /= divisor;
+                }
+                divisor++;
+            }
+            
+            return factors;
+        }
+        
+        // دالة لإيجاد العوامل المشتركة بين مجموعتين
+        function findCommonFactors(arr1, arr2) {
+            const common = [];
+            const arr2Copy = [...arr2];
+            
+            for (let i = 0; i < arr1.length; i++) {
+                const index = arr2Copy.indexOf(arr1[i]);
+                if (index !== -1) {
+                    common.push(arr1[i]);
+                    arr2Copy.splice(index, 1);
+                }
+            }
+            
+            return common;
+        }
+        
+        // دالة مساعدة لإنشاء رقم عشوائي بين الحد الأدنى والحد الأعلى
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+</body>
+</html>
