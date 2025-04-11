@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين على ضرب القوى</title>
+    <style>
+        body {
+            font-family: 'Arial', 'Tahoma', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .exercise {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #eaf2ff;
+            border-radius: 8px;
+        }
+        .math {
+            direction: ltr;
+            display: inline-block;
+            text-align: left;
+            unicode-bidi: embed;
+        }
+        .input-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .input-area input {
+            font-size: 18px;
+            padding: 8px;
+            width: 100px;
+            border: 2px solid #7f8c8d;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .counter {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            font-size: 16px;
+            display: none;
+            text-align: center;
+        }
+        .rules {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fffde7;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .rules p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ضرب القوى</h1>
+        
+        <div class="rules">
+            <h3>تذكير بالقواعد:</h3>
+            <p>لضرب قوتين لهما نفس الأساس، نحتفظ بنفس الأساس ونجمع الأسس:</p>
+            <p><span class="math"><strong>a<sup>m</sup> × a<sup>n</sup> = a<sup>m+n</sup></strong></span></p>
+        </div>
+        
+        <div class="exercise" id="exercise">
+            احسب: <span class="math">a<sup>3</sup> × a<sup>4</sup> = a<sup>?</sup></span>
+        </div>
+        
+        <div class="input-area">
+            <input type="number" id="userAnswer" placeholder="الأس">
+            <button id="checkButton">تحقق</button>
+            <button id="nextButton">التالي</button>
+            <button id="hintButton">تلميح</button>
+        </div>
+        
+        <div class="result" id="result"></div>
+        <div class="explanation" id="explanation"></div>
+        
+        <div class="counter">
+            النتيجة: <span id="score">0</span> / <span id="total">0</span>
+        </div>
+    </div>
+    <script>
+        // المتغيرات العامة
+        let currentExp1 = 3;
+        let currentExp2 = 4;
+        let correctAnswer = 7;
+        let score = 0;
+        let total = 0;
+        
+        // عناصر الواجهة
+        const exerciseElement = document.getElementById('exercise');
+        const userAnswerInput = document.getElementById('userAnswer');
+        const checkButton = document.getElementById('checkButton');
+        const nextButton = document.getElementById('nextButton');
+        const hintButton = document.getElementById('hintButton');
+        const resultElement = document.getElementById('result');
+        const explanationElement = document.getElementById('explanation');
+        const scoreElement = document.getElementById('score');
+        const totalElement = document.getElementById('total');
+        
+        // دالة لإنشاء تمرين جديد
+        function generateExercise() {
+            // إنشاء أسس عشوائية بين -10 و 15
+            currentExp1 = Math.floor(Math.random() * 26) - 10;
+            currentExp2 = Math.floor(Math.random() * 26) - 10;
+            
+            // حساب الإجابة الصحيحة
+            correctAnswer = currentExp1 + currentExp2;
+            
+            // عرض التمرين الجديد
+            exerciseElement.innerHTML = `احسب: <span class="math">a<sup>${currentExp1}</sup> × a<sup>${currentExp2}</sup> = a<sup>?</sup></span>`;
+            
+            // إعادة تعيين الواجهة
+            userAnswerInput.value = '';
+            resultElement.innerHTML = '';
+            resultElement.className = 'result';
+            explanationElement.style.display = 'none';
+            
+            // التركيز على حقل الإدخال
+            userAnswerInput.focus();
+        }
+        
+        // دالة للتحقق من الإجابة
+        function checkAnswer() {
+            const userAnswer = parseInt(userAnswerInput.value);
+            
+            if (isNaN(userAnswer)) {
+                resultElement.innerHTML = "الرجاء إدخال عدد صحيح.";
+                resultElement.className = 'result incorrect';
+                return;
+            }
+            
+            total++;
+            totalElement.textContent = total;
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                scoreElement.textContent = score;
+                resultElement.innerHTML = "صحيح! 👍";
+                resultElement.className = 'result correct';
+                showExplanation();
+            } else {
+                resultElement.innerHTML = `غير صحيح. الإجابة الصحيحة هي ${correctAnswer}.`;
+                resultElement.className = 'result incorrect';
+                showExplanation();
+            }
+        }
+        
+        // دالة لعرض الشرح
+        function showExplanation() {
+            let explanationHTML = `<strong>الشرح:</strong> <span class="math">a<sup>${currentExp1}</sup> × a<sup>${currentExp2}</sup> = a<sup>${currentExp1} + ${currentExp2}</sup> = a<sup>${correctAnswer}</sup></span>`;
+            
+            // عرض علامة الموجب فقط إذا كانت الإجابة موجبة
+            if (correctAnswer > 0 && currentExp1 + currentExp2 !== correctAnswer) {
+                explanationHTML = `<strong>الشرح:</strong> <span class="math">a<sup>${currentExp1}</sup> × a<sup>${currentExp2}</sup> = a<sup>${currentExp1} + ${currentExp2}</sup> = a<sup>+${correctAnswer}</sup></span>`;
+            }
+            
+            explanationElement.innerHTML = explanationHTML;
+            explanationElement.style.display = 'block';
+        }
+        
+        // دالة لإظهار التلميح
+        function showHint() {
+            explanationElement.innerHTML = `<strong>تلميح:</strong> لضرب قوى لها نفس الأساس، نقوم بجمع الأسس.`;
+            explanationElement.style.display = 'block';
+        }
+        
+        // مستمعي الأحداث
+        checkButton.addEventListener('click', checkAnswer);
+        
+        nextButton.addEventListener('click', generateExercise);
+        
+        hintButton.addEventListener('click', showHint);
+        
+        userAnswerInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        // تهيئة التمرين الأول
+        generateExercise();
+    </script>
+</body>
+</html>

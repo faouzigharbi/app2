@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب منتجات القوى</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f4f4f9;
+            direction: rtl; /* Direction du texte de droite à gauche */
+        }
+        .container {
+            display: inline-block;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            direction: ltr; /* Champ de saisie en mode gauche-à-droite */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>حساب منتجات القوى</h1>
+        <p>حل منتجات القوى التالية:</p>
+        <p id="operation"></p>
+        <input type="number" id="userAnswer" placeholder="أدخل إجابتك">
+        <button onclick="checkAnswer()">تأكيد</button>
+        <div class="result" id="feedback"></div>
+    </div>
+
+    <script>
+        let base, exp1, exp2, correctAnswer;
+
+        function generateOperation() {
+            // توليد أرقام عشوائية للأساس والأُسس
+            base = Math.floor(Math.random() * 9) + 2; // الأساس بين 2 و10
+            exp1 = Math.floor(Math.random() * 5) + 1; // الأس الأول بين 1 و5
+            exp2 = Math.floor(Math.random() * 5) + 1; // الأس الثاني بين 1 و5
+            correctAnswer = exp1 + exp2; // مجموع الأُسس هو الإجابة الصحيحة
+
+            // عرض العملية مع صيغة الأُسس المنسقة
+            document.getElementById('operation').innerHTML =
+                ` <sup>?</sup>${base}=<sup></sup>${base}<sup>${exp1}</sup> × ${base}<sup>${exp2}</sup> `;
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('userAnswer').value);
+            const feedbackElement = document.getElementById('feedback');
+
+            if (userAnswer === correctAnswer) {
+                feedbackElement.textContent = "إجابة صحيحة! عمل رائع.";
+                feedbackElement.className = "result correct";
+            } else {
+                feedbackElement.textContent = `إجابة خاطئة. الإجابة الصحيحة كانت ${correctAnswer}.`;
+                feedbackElement.className = "result incorrect";
+            }
+
+            // توليد عملية جديدة بعد التحقق
+            setTimeout(() => {
+                generateOperation();
+                document.getElementById('userAnswer').value = ''; // إعادة تعيين الحقل
+                feedbackElement.textContent = ''; // مسح الرسالة
+            }, 2000);
+        }
+
+        // توليد العملية الأولى
+        generateOperation();
+    </script>
+</body>
+</html>

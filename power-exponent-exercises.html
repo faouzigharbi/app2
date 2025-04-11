@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمارين على عمليات الأسس</title>
+    <style>
+        body {
+            font-family: 'Arial', 'Tahoma', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .exercise {
+            font-size: 28px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #eaf2ff;
+            border-radius: 8px;
+            direction: ltr; /* Pour que les équations mathématiques s'affichent de gauche à droite */
+        }
+        .math-formula {
+            direction: ltr;
+            display: inline-block;
+            text-align: left;
+        }
+        .input-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .input-area input {
+            font-size: 18px;
+            padding: 8px;
+            width: 100px;
+            border: 2px solid #7f8c8d;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .counter {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            font-size: 16px;
+            display: none;
+        }
+        .explanation .math-formula {
+            display: inline-block;
+            direction: ltr;
+        }
+        .rules {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fffde7;
+            border-radius: 8px;
+        }
+        .rules p {
+            text-align: center;
+        }
+        .operation-type {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .operation-selector {
+            margin: 10px;
+            padding: 8px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .operation-selector.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>عمليات الأسس</h1>
+        
+        <div class="rules">
+            <h3>تذكير بالقواعد:</h3>
+            <p><span class="math-formula"><strong>a<sup>m</sup> × a<sup>n</sup> = a<sup>m+n</sup></strong></span> :عند ضرب قوى لها نفس الأساس، نحتفظ بنفس الأساس ونجمع الأسس</p>
+            <p><span class="math-formula"><strong>a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m-n</sup></strong></span> :عند قسمة قوى لها نفس الأساس، نحتفظ بنفس الأساس ونطرح الأسس</p>
+            <p><span class="math-formula"><strong>(a<sup>m</sup>)<sup>n</sup> = a<sup>m×n</sup></strong></span> :عند رفع قوة إلى قوة، نحتفظ بنفس الأساس ونضرب الأسس</p>
+        </div>
+        
+        <div class="operation-type">
+            <button id="multiply" class="operation-selector active">ضرب (×)</button>
+            <button id="divide" class="operation-selector">قسمة (÷)</button>
+            <button id="power" class="operation-selector">قوة للقوة (^)</button>
+            <button id="mixed" class="operation-selector">مختلط</button>
+        </div>
+        
+        <div class="exercise" id="exercise">
+            2<sup>5</sup> × 2<sup>3</sup> = 2<sup>?</sup>
+        </div>
+        
+        <div class="input-area">
+            <input type="number" id="userAnswer" placeholder="الأس">
+            <button id="checkButton">تحقق</button>
+            <button id="nextButton">التالي</button>
+            <button id="hintButton">تلميح</button>
+        </div>
+        
+        <div class="result" id="result"></div>
+        <div class="explanation" id="explanation"></div>
+        
+        <div class="counter">
+            النتيجة: <span id="score">0</span> / <span id="total">0</span>
+        </div>
+    </div>
+    <script>
+        // المتغيرات العامة
+        let currentBase = 2;
+        let currentExp1 = 5;
+        let currentExp2 = 3;
+        let correctAnswer = 8;
+        let score = 0;
+        let total = 0;
+        let currentOperation = 'multiply'; // العملية الافتراضية هي الضرب
+        
+        // عناصر الواجهة
+        const exerciseElement = document.getElementById('exercise');
+        const userAnswerInput = document.getElementById('userAnswer');
+        const checkButton = document.getElementById('checkButton');
+        const nextButton = document.getElementById('nextButton');
+        const hintButton = document.getElementById('hintButton');
+        const resultElement = document.getElementById('result');
+        const explanationElement = document.getElementById('explanation');
+        const scoreElement = document.getElementById('score');
+        const totalElement = document.getElementById('total');
+        
+        // أزرار اختيار العملية
+        const multiplyButton = document.getElementById('multiply');
+        const divideButton = document.getElementById('divide');
+        const powerButton = document.getElementById('power');
+        const mixedButton = document.getElementById('mixed');
+        
+        // إعداد أزرار العمليات
+        multiplyButton.addEventListener('click', () => {
+            setOperation('multiply');
+            generateExercise();
+        });
+        
+        divideButton.addEventListener('click', () => {
+            setOperation('divide');
+            generateExercise();
+        });
+        
+        powerButton.addEventListener('click', () => {
+            setOperation('power');
+            generateExercise();
+        });
+        
+        mixedButton.addEventListener('click', () => {
+            setOperation('mixed');
+            generateExercise();
+        });
+        
+        function setOperation(operation) {
+            currentOperation = operation;
+            // إزالة الفئة النشطة من جميع الأزرار
+            multiplyButton.classList.remove('active');
+            divideButton.classList.remove('active');
+            powerButton.classList.remove('active');
+            mixedButton.classList.remove('active');
+            
+            // إضافة الفئة النشطة إلى الزر المحدد
+            document.getElementById(operation).classList.add('active');
+        }
+        
+        // دالة لإنشاء تمرين جديد
+        function generateExercise() {
+            // تعيين قاعدة عشوائية بين 2 و 10
+            currentBase = Math.floor(Math.random() * 9) + 2;
+            
+            // إنشاء أسس عشوائية بين 1 و 12
+            currentExp1 = Math.floor(Math.random() * 12) + 1;
+            currentExp2 = Math.floor(Math.random() * 8) + 1;
+            
+            let operationSymbol;
+            
+            // تحديد نوع العملية إذا كانت مختلطة
+            let operation = currentOperation;
+            if (operation === 'mixed') {
+                const operations = ['multiply', 'divide', 'power'];
+                operation = operations[Math.floor(Math.random() * operations.length)];
+            }
+            
+            // حساب الإجابة الصحيحة بناءً على نوع العملية
+            switch (operation) {
+                case 'multiply':
+                    operationSymbol = '×';
+                    correctAnswer = currentExp1 + currentExp2;
+                    break;
+                case 'divide':
+                    operationSymbol = '÷';
+                    correctAnswer = currentExp1 - currentExp2;
+                    break;
+                case 'power':
+                    operationSymbol = '<sup>' + currentExp2 + '</sup>';
+                    correctAnswer = currentExp1 * currentExp2;
+                    break;
+            }
+            
+            // عرض التمرين الجديد
+            if (operation === 'power') {
+                exerciseElement.innerHTML = `<span class="math-formula">(${currentBase}<sup>${currentExp1}</sup>)<sup>${currentExp2}</sup> = ${currentBase}<sup>?</sup></span>`;
+            } else {
+                exerciseElement.innerHTML = `<span class="math-formula">${currentBase}<sup>${currentExp1}</sup> ${operationSymbol} ${currentBase}<sup>${currentExp2}</sup> = ${currentBase}<sup>?</sup></span>`;
+            }
+            
+            // إعادة تعيين الواجهة
+            userAnswerInput.value = '';
+            resultElement.innerHTML = '';
+            resultElement.className = 'result';
+            explanationElement.style.display = 'none';
+            
+            // التركيز على حقل الإدخال
+            userAnswerInput.focus();
+        }
+        
+        // دالة للتحقق من الإجابة
+        function checkAnswer() {
+            const userAnswer = parseInt(userAnswerInput.value);
+            
+            if (isNaN(userAnswer)) {
+                resultElement.innerHTML = "الرجاء إدخال عدد صحيح.";
+                resultElement.className = 'result incorrect';
+                return;
+            }
+            
+            total++;
+            totalElement.textContent = total;
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                scoreElement.textContent = score;
+                resultElement.innerHTML = "صحيح! 👍";
+                resultElement.className = 'result correct';
+                showExplanation();
+            } else {
+                resultElement.innerHTML = `غير صحيح. الإجابة الصحيحة هي ${correctAnswer}.`;
+                resultElement.className = 'result incorrect';
+                showExplanation();
+            }
+        }
+        
+        // دالة لعرض الشرح
+        function showExplanation() {
+            let operation = currentOperation;
+            if (operation === 'mixed') {
+                // تحديد نوع العملية من التمرين الحالي
+                if (exerciseElement.innerHTML.includes('×')) {
+                    operation = 'multiply';
+                } else if (exerciseElement.innerHTML.includes('÷')) {
+                    operation = 'divide';
+                } else {
+                    operation = 'power';
+                }
+            }
+            
+            let explanationText;
+            
+            switch (operation) {
+                case 'multiply':
+                    explanationText = `<strong>الشرح:</strong> <span class="math-formula">${currentBase}<sup>${currentExp1}</sup> × ${currentBase}<sup>${currentExp2}</sup> = ${currentBase}<sup>${currentExp1} + ${currentExp2}</sup> = ${currentBase}<sup>${correctAnswer}</sup></span>`;
+                    break;
+                case 'divide':
+                    explanationText = `<strong>الشرح:</strong> <span class="math-formula">${currentBase}<sup>${currentExp1}</sup> ÷ ${currentBase}<sup>${currentExp2}</sup> = ${currentBase}<sup>${currentExp1} - ${currentExp2}</sup> = ${currentBase}<sup>${correctAnswer}</sup></span>`;
+                    break;
+                case 'power':
+                    explanationText = `<strong>الشرح:</strong> <span class="math-formula">(${currentBase}<sup>${currentExp1}</sup>)<sup>${currentExp2}</sup> = ${currentBase}<sup>${currentExp1} × ${currentExp2}</sup> = ${currentBase}<sup>${correctAnswer}</sup></span>`;
+                    break;
+            }
+            
+            explanationElement.innerHTML = explanationText;
+            explanationElement.style.display = 'block';
+        }
+        
+        // دالة لإظهار التلميح
+        function showHint() {
+            let operation = currentOperation;
+            if (operation === 'mixed') {
+                // تحديد نوع العملية من التمرين الحالي
+                if (exerciseElement.innerHTML.includes('×')) {
+                    operation = 'multiply';
+                } else if (exerciseElement.innerHTML.includes('÷')) {
+                    operation = 'divide';
+                } else {
+                    operation = 'power';
+                }
+            }
+            
+            let hintText;
+            
+            switch (operation) {
+                case 'multiply':
+                    hintText = "<strong>تلميح:</strong> عند ضرب قوى لها نفس الأساس، نجمع الأسس.";
+                    break;
+                case 'divide':
+                    hintText = "<strong>تلميح:</strong> عند قسمة قوى لها نفس الأساس، نطرح الأسس.";
+                    break;
+                case 'power':
+                    hintText = "<strong>تلميح:</strong> عند رفع قوة إلى قوة، نضرب الأسس.";
+                    break;
+            }
+            
+            explanationElement.innerHTML = hintText;
+            explanationElement.style.display = 'block';
+        }
+        
+        // مستمعي الأحداث
+        checkButton.addEventListener('click', checkAnswer);
+        
+        nextButton.addEventListener('click', generateExercise);
+        
+        hintButton.addEventListener('click', showHint);
+        
+        userAnswerInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        // تهيئة التمرين الأول
+        generateExercise();
+    </script>
+</body>
+</html>

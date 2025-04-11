@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تبسيط تعابير القوى</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      text-align: right;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    select, input {
+      font-size: 16px;
+      padding: 5px;
+      margin-top: 10px;
+    }
+    .expression {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>تبسيط تعابير القوى (بدون القسمة)</h2>
+
+  <label>اختر نوع التمرين:</label>
+  <select id="type">
+    <option value="mix">خليط</option>
+    <option value="sameBase">ضرب قواعد بنفس الأساس</option>
+    <option value="sameExp">ضرب قواعد بنفس الأس</option>
+    <option value="powerOfPower">قوة لقوة</option>
+  </select>
+
+  <div class="expression" id="expression">\( 2^3 \times 2^4 \)</div>
+
+  <label>أدخل الأس الناتج:</label>
+  <input type="number" id="answer" />
+
+  <div>
+    <button onclick="checkAnswer()">تحقق</button>
+    <button onclick="clearInput()">تصحيح</button>
+    <button onclick="generateExpression()">عملية جديدة</button>
+  </div>
+
+  <p id="feedback"></p>
+</div>
+
+<script>
+  let currentCorrectExponent = 0;
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function generateExpression() {
+    const type = document.getElementById("type").value;
+    let expression = "";
+    let base = randomInt(2, 5);
+    let exp1 = randomInt(1, 5);
+    let exp2 = randomInt(1, 5);
+    let finalExp;
+
+    let chosenType = type;
+    if (type === "mix") {
+      const types = ["sameBase", "sameExp", "powerOfPower"];
+      chosenType = types[randomInt(0, 2)];
+    }
+
+    switch (chosenType) {
+      case "sameBase":
+        finalExp = exp1 + exp2;
+        expression = `\\( ${base}^${exp1} \\times ${base}^${exp2} \\)`;
+        break;
+      case "sameExp":
+        finalExp = exp1;
+        let base2 = randomInt(2, 5);
+        expression = `\\( ${base}^${exp1} \\times ${base2}^${exp1} \\)`;
+        break;
+      case "powerOfPower":
+        finalExp = exp1 * exp2;
+        expression = `\\( (${base}^${exp1})^${exp2} \\)`;
+        break;
+    }
+
+    currentCorrectExponent = finalExp;
+    document.getElementById("expression").innerHTML = expression;
+    MathJax.typesetPromise();
+    document.getElementById("answer").value = "";
+    document.getElementById("feedback").innerText = "";
+  }
+
+  function checkAnswer() {
+    const userAnswer = parseInt(document.getElementById("answer").value);
+    const feedback = document.getElementById("feedback");
+    if (isNaN(userAnswer)) {
+      feedback.innerText = "الرجاء إدخال رقم صحيح.";
+      feedback.style.color = "red";
+    } else if (userAnswer === currentCorrectExponent) {
+      feedback.innerText = "إجابة صحيحة!";
+      feedback.style.color = "green";
+    } else {
+      feedback.innerText = "إجابة غير صحيحة. حاول مرة أخرى.";
+      feedback.style.color = "red";
+    }
+  }
+
+  function clearInput() {
+    document.getElementById("answer").value = "";
+    document.getElementById("feedback").innerText = "";
+  }
+
+  window.onload = generateExpression;
+</script>
+
+</body>
+</html>
