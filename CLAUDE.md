@@ -9,9 +9,31 @@ for the **Devoirati** learning application (see `README.md` — *"fichier pour
 l'application devoirati"*). Each `.html` file is an independent, interactive
 worksheet that a student opens in a browser to practice a math topic.
 
-There is **no build system, no framework, no package manager, and no server**.
-Every file is plain HTML + inline `<style>` + inline `<script>`. Opening a file
-directly in a browser (`file://`) is the entire "run" story.
+Every exercise file is plain HTML + inline `<style>` + inline `<script>`.
+Opening a file directly in a browser (`file://`) is the entire "run" story for
+the exercises themselves — there is no build system, framework, or package
+manager for them.
+
+### The platform layer (in progress)
+
+The repo is being extended from standalone exercises into the **Devoirati
+platform**: user accounts (élève / parent / prof), gamification (XP, levels,
+streaks, badges), and diagnostics for parents and teachers. Two new areas:
+
+- **`db/schema.sql`** — the MySQL/MariaDB schema. The 3 tables (`dv_users`,
+  `dv_progress`, `dv_analytics`) already exist on the host and are
+  **student-centric with UUID ids**; Part 2 of the file holds non-destructive
+  `ALTER TABLE`s that add the accounts/roles layer (`role`, `login`, `email`,
+  `password_hash`, `parent_id`, `classe`).
+- **`backend/`** — a small **PHP + PDO** backend (auth, account creation,
+  `save_progress` with XP/level/streak/badge logic). See `backend/README.md`
+  for deployment. It runs on the host's shared hosting alongside the exercises.
+
+⚠️ **The database is `latin1` and does not store Arabic.** Store **latin-letter
+codes** (`debutant`, `fractions`, `division_fractions`) and translate them to
+Arabic **at display time** (see `backend/labels.php`). Never store Arabic
+strings in the DB. Real database credentials live only in `backend/config.php`,
+which is git-ignored — never commit it.
 
 ### Topics covered
 
