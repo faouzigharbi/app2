@@ -97,7 +97,12 @@ function current_user(): ?array
     if (empty($_SESSION['user_id'])) {
         return null;
     }
-    $stmt = db()->prepare('SELECT id, role, prenom, nom, identifiant, email, classe, parent_id, xp, niveau, serie_jours FROM dv_users WHERE id = ? AND actif = 1');
+    // Colonnes alignées sur la structure réelle (tables de Dhia + ajouts "comptes & rôles").
+    $stmt = db()->prepare(
+        'SELECT id, nom, role, login, email, classe, parent_id, annee,
+                xp, niveau, niveau_titre, streak
+         FROM dv_users WHERE id = ?'
+    );
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
     return $user ?: null;
