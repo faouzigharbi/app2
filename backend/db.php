@@ -66,6 +66,17 @@ function db(): PDO
 }
 
 /**
+ * Génère un identifiant unique (UUID v4) — les id de dv_users sont des VARCHAR(36).
+ */
+function uuid4(): string
+{
+    $data = random_bytes(16);
+    $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+    $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+/**
  * Lit le corps JSON de la requête et le renvoie en tableau associatif.
  */
 function json_input(): array
