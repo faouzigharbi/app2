@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon espace — Devoirati</title>
+<link rel="stylesheet" href="../assets/devoirati.css">
+</head>
+<body>
+<div id="top"></div>
+<main><div class="dv-wrap">
+  <h1 id="hello">Bonjour 👋</h1>
+  <p class="sub" id="subtitle">Voici ta progression</p>
+
+  <div class="grid cols-4" id="tiles"></div>
+
+  <div class="grid cols-2" style="margin-top:16px">
+    <div class="card">
+      <h3>Mes badges</h3>
+      <div class="badges" id="badges"><span class="faint">Aucun badge pour l'instant.</span></div>
+    </div>
+    <div class="card">
+      <h3>Activité récente</h3>
+      <div class="list" id="recent"><span class="faint">Pas encore d'activité.</span></div>
+    </div>
+  </div>
+</div></main>
+
+<script src="../assets/devoirati.js"></script>
+<script>
+var BADGES = {
+  premier_exercice:{e:'🎯',t:'Premier exercice'}, sans_faute:{e:'💯',t:'Sans faute'},
+  serie_5:{e:'🔥',t:'Série de 5'}, serie_30:{e:'💎',t:'Série de 30'}, niveau_10:{e:'🏆',t:'Niveau 10'}
+};
+(async function(){
+  var user = await Dev.requireRole(['eleve']); if(!user) return;
+  Dev.el('top').innerHTML = Dev.topbar(user, 'Espace élève'); Dev.wireLogout();
+  Dev.el('hello').textContent = 'Bonjour ' + (user.prenom || user.nom) + ' 👋';
+
+  var r = await Dev.get('student_overview.php');
+  if(!r.ok){ Dev.el('subtitle').textContent = "Impossible de charger tes données."; return; }
+  var e = r.eleve, s = r.stats;
+  var pct = e.xp_next_level ? Math.min(100, Math.round(e.xp / e.xp_next_level * 100)) : 0;
+
+  Dev.el('tiles').innerHTML =
+    tile('Niveau', e.niveau, e.niveau_titre_label, '<div class="bar xpbar" style="margin-top:9px"><i style="width:'+pct+'%"></i></div>') +
+    tile('Points XP', e.xp, 'total') +
+    tile('Série', e.streak + ' 🔥', 'jours d\'affilée') +
+    tile('Sessions', s.total_sessions, s.total_minutes + ' min au total');
+
+  if (e.badges && e.badges.length) {
+    Dev.el('badges').innerHTML = e.badges.map(function(code){
+      var b = BADGES[code] || {e:'⭐',t:code};
+      return '<div class="badge"><span class="em">'+b.e+'</span>'+Dev.esc(b.t)+'</div>';
+    }).join('');
+  }
+  if (r.activite_recente && r.activite_recente.length) {
+    Dev.el('recent').innerHTML = r.activite_recente.map(function(a){
+      return '<div class="li"><span class="avatar">✓</span><div class="grow">'+
+        '<div class="t1">'+Dev.esc(a.activite_nom || a.chapitre_id || 'Exercice')+'</div>'+
+        '<div class="t2">'+Dev.esc(a.completed_at || a.updated_at || '')+'</div></div>'+
+        '<span class="chip good">'+Dev.esc(a.score || '')+'</span></div>';
+    }).join('');
+  }
+})();
+function tile(lbl,big,foot,extra){
+  return '<div class="card tile"><div class="lbl">'+Dev.esc(lbl)+'</div>'+
+    '<div class="big tnum">'+Dev.esc(big)+'</div>'+
+    '<div class="foot">'+Dev.esc(foot||'')+'</div>'+(extra||'')+'</div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace professeur — Devoirati</title>
+<link rel="stylesheet" href="../assets/devoirati.css">
+</head>
+<body>
+<div id="top"></div>
+<main><div class="dv-wrap">
+  <h1>Espace professeur</h1>
+  <p class="sub">Gérez vos classes, vos élèves et leurs comptes</p>
+
+  <div class="grid cols-2">
+    <!-- Colonne classes -->
+    <div>
+      <h2 class="eyebrow">Mes classes</h2>
+      <div class="list" id="classes"><span class="faint">Chargement…</span></div>
+      <div class="card" style="margin-top:14px">
+        <h3>Créer une classe</h3>
+        <div class="alert" id="ccErr"></div>
+        <div class="field"><label>Nom (ex. 1AC-B)</label><input class="input" id="ccNom"></div>
+        <div class="row">
+          <div class="field"><label>Niveau</label>
+            <select class="input" id="ccNiveau">
+              <option value="7EME">7ᵉ</option><option value="8EME">8ᵉ</option><option value="9EME">9ᵉ</option>
+            </select>
+          </div>
+          <div class="field"><label>Année scolaire</label><select class="input" id="ccAnnee"></select></div>
+        </div>
+        <button class="btn primary" id="ccBtn">Créer la classe</button>
+      </div>
+    </div>
+
+    <!-- Colonne élèves -->
+    <div>
+      <h2 class="eyebrow" id="stTitle">Élèves</h2>
+      <div id="stArea"><div class="card"><span class="faint">Sélectionnez une classe à gauche.</span></div></div>
+    </div>
+  </div>
+</div></main>
+
+<script src="../assets/devoirati.js"></script>
+<script>
+var USER=null, CLASSES=[], SELECTED=null;
+
+(async function(){
+  USER = await Dev.requireRole(['prof','admin']); if(!USER) return;
+  Dev.el('top').innerHTML = Dev.topbar(USER, 'Espace professeur'); Dev.wireLogout();
+  await loadAnnees();
+  await loadClasses();
+})();
+
+async function loadAnnees(){
+  var r = await Dev.get('annees_scolaires.php');
+  var sel = Dev.el('ccAnnee');
+  if(r.ok && r.annees.length){
+    sel.innerHTML = r.annees.map(function(a){ return '<option value="'+a.id+'">'+Dev.esc(a.libelle)+'</option>'; }).join('');
+  } else {
+    sel.innerHTML = '<option value="">(aucune — à créer par l\'admin)</option>';
+  }
+}
+
+async function loadClasses(){
+  var r = await Dev.get('my_classes.php');
+  var box = Dev.el('classes');
+  CLASSES = r.ok ? r.classes : [];
+  if(!CLASSES.length){ box.innerHTML='<span class="faint">Aucune classe. Créez-en une ci-dessous.</span>'; return; }
+  box.innerHTML = CLASSES.map(function(c){
+    return '<div class="li" style="cursor:pointer" data-id="'+c.id+'">'+
+      '<span class="avatar">'+Dev.esc((c.nom||'?').slice(0,2))+'</span>'+
+      '<div class="grow"><div class="t1">'+Dev.esc(c.nom)+'</div>'+
+      '<div class="t2">'+Dev.esc(c.niveau_label||c.niveau_code)+'</div></div>'+
+      '<span class="chip mut">'+c.nb_eleves+' élèves</span></div>';
+  }).join('');
+  Array.prototype.forEach.call(box.querySelectorAll('[data-id]'), function(el){
+    el.addEventListener('click', function(){ selectClass(el.getAttribute('data-id')); });
+  });
+}
+
+function selectClass(id){
+  SELECTED = CLASSES.filter(function(c){return c.id===id;})[0] || null;
+  Dev.el('stTitle').textContent = 'Élèves — ' + (SELECTED ? SELECTED.nom : '');
+  loadStudents();
+}
+
+async function loadStudents(){
+  if(!SELECTED) return;
+  var area = Dev.el('stArea');
+  area.innerHTML = '<div class="card"><span class="faint">Chargement…</span></div>';
+  var r = await Dev.get('class_students.php?classe_id='+encodeURIComponent(SELECTED.id));
+  var rows = (r.ok ? r.eleves : []).map(function(e){
+    return '<tr><td><b>'+Dev.esc((e.prenom?e.prenom+' ':'')+e.nom)+'</b><div class="faint" style="font-size:11px">'+Dev.esc(e.login)+'</div></td>'+
+      '<td class="tnum">'+e.niveau+'</td><td class="tnum">'+e.xp+'</td><td class="tnum">'+e.streak+' 🔥</td>'+
+      '<td><button class="btn ghost sm" data-code="'+e.id+'">Code parent</button> '+
+      '<button class="btn ghost sm" data-reset="'+e.id+'">Réinit. MDP</button></td></tr>';
+  }).join('') || '<tr><td colspan="5" class="faint">Aucun élève. Ajoutez-en un ci-dessous.</td></tr>';
+
+  area.innerHTML =
+    '<div class="alert" id="stErr"></div><div class="alert ok" id="stOk"></div>'+
+    '<div class="tablewrap"><table><thead><tr><th>Élève</th><th>Niv.</th><th>XP</th><th>Série</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="card" style="margin-top:14px"><h3>Ajouter un élève</h3>'+
+      '<div class="row"><div class="field"><label>Prénom</label><input class="input" id="asPrenom"></div>'+
+      '<div class="field"><label>Nom</label><input class="input" id="asNom"></div></div>'+
+      '<div class="field"><label>Identifiant (laisser vide = généré)</label><input class="input" id="asLogin"></div>'+
+      '<button class="btn primary" id="asBtn">Créer l\'élève</button></div>';
+
+  Array.prototype.forEach.call(area.querySelectorAll('[data-code]'), function(b){ b.addEventListener('click', function(){ genCode(b.getAttribute('data-code')); }); });
+  Array.prototype.forEach.call(area.querySelectorAll('[data-reset]'), function(b){ b.addEventListener('click', function(){ resetPwd(b.getAttribute('data-reset')); }); });
+  Dev.el('asBtn').addEventListener('click', addStudent);
+}
+
+async function addStudent(){
+  Dev.clearAlert('stErr'); Dev.clearAlert('stOk');
+  var r = await Dev.post('students_create.php', {
+    classe_id: SELECTED.id,
+    prenom: Dev.el('asPrenom').value.trim(),
+    nom: Dev.el('asNom').value.trim(),
+    login: Dev.el('asLogin').value.trim()
+  });
+  if(!r.ok){ Dev.alert('stErr', r.error || "Création impossible."); return; }
+  Dev.alert('stOk', "Élève créé. Identifiant : "+r.identifiants.login+" · Mot de passe : "+r.identifiants.mot_de_passe+" (à transmettre, changement demandé à la 1ʳᵉ connexion).", 'ok');
+  loadClasses(); loadStudents();
+}
+async function genCode(eleveId){
+  Dev.clearAlert('stErr'); Dev.clearAlert('stOk');
+  var r = await Dev.post('parent_invite_create.php', { eleve_id: eleveId });
+  if(!r.ok){ Dev.alert('stErr', r.error || "Génération impossible."); return; }
+  Dev.alert('stOk', "Code d'association parent : "+r.code+" (valable jusqu'au "+r.invitation.expire_le+", usage unique).", 'ok');
+}
+async function resetPwd(eleveId){
+  Dev.clearAlert('stErr'); Dev.clearAlert('stOk');
+  var r = await Dev.post('password_reset.php', { eleve_id: eleveId });
+  if(!r.ok){ Dev.alert('stErr', r.error || "Réinitialisation impossible."); return; }
+  Dev.alert('stOk', "Nouveau mot de passe temporaire : "+r.mot_de_passe_temporaire+" (à transmettre à l'élève).", 'ok');
+}
+
+Dev.el('ccBtn').addEventListener('click', async function(){
+  Dev.clearAlert('ccErr');
+  var r = await Dev.post('classes_create.php', {
+    nom: Dev.el('ccNom').value.trim(),
+    niveau_code: Dev.el('ccNiveau').value,
+    annee_scolaire_id: Dev.el('ccAnnee').value
+  });
+  if(!r.ok){ Dev.alert('ccErr', r.error || "Création impossible."); return; }
+  Dev.el('ccNom').value='';
+  loadClasses();
+});
+</script>
+</body>
+</html>

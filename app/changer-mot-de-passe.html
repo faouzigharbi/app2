@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changer le mot de passe — Devoirati</title>
+<link rel="stylesheet" href="assets/devoirati.css">
+</head>
+<body>
+<div class="auth"><div class="box">
+  <div class="head">
+    <div class="dv-logo">د</div>
+    <h1>Nouveau mot de passe</h1>
+    <p class="sub">Choisis un mot de passe personnel</p>
+  </div>
+  <div class="card">
+    <div class="alert" id="err"></div>
+    <div class="alert ok" id="ok"></div>
+    <form id="form">
+      <div class="field"><label for="ancien">Mot de passe actuel</label><input class="input" id="ancien" type="password" autocomplete="current-password" required></div>
+      <div class="field"><label for="nouveau">Nouveau mot de passe (min. 6)</label><input class="input" id="nouveau" type="password" autocomplete="new-password" required></div>
+      <button class="btn primary block" id="submit" type="submit">Enregistrer</button>
+    </form>
+  </div>
+</div></div>
+
+<script src="assets/devoirati.js"></script>
+<script>
+var currentUser = null;
+Dev.session().then(function(s){
+  if(!s.ok || !s.connecte){ location.href='login.html'; return; }
+  currentUser = s.user;
+});
+Dev.el('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  Dev.clearAlert('err'); Dev.clearAlert('ok');
+  var btn = Dev.el('submit'); btn.disabled = true;
+  var r = await Dev.post('password_change.php', {
+    ancien_mot_de_passe: Dev.el('ancien').value,
+    nouveau_mot_de_passe: Dev.el('nouveau').value
+  });
+  btn.disabled = false;
+  if (!r.ok) { Dev.alert('err', r.error || "Modification impossible."); return; }
+  Dev.alert('ok', "Mot de passe modifié. Redirection…", 'ok');
+  setTimeout(function(){ location.href = Dev.homeFor(currentUser ? currentUser.role : 'eleve'); }, 900);
+});
+</script>
+</body>
+</html>

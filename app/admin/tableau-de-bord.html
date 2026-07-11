@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration — Devoirati</title>
+<link rel="stylesheet" href="../assets/devoirati.css">
+</head>
+<body>
+<div id="top"></div>
+<main><div class="dv-wrap">
+  <h1>Administration</h1>
+  <p class="sub">Vue d'ensemble de la plateforme</p>
+
+  <div class="grid cols-4" id="tiles"></div>
+
+  <div class="grid cols-2" style="margin-top:16px">
+    <div class="card">
+      <h3>Nouvel établissement</h3>
+      <div class="alert" id="etErr"></div><div class="alert ok" id="etOk"></div>
+      <div class="field"><label>Nom</label><input class="input" id="etNom"></div>
+      <div class="row">
+        <div class="field"><label>Code</label><input class="input" id="etCode"></div>
+        <div class="field"><label>Ville</label><input class="input" id="etVille"></div>
+      </div>
+      <button class="btn primary" id="etBtn">Créer</button>
+    </div>
+    <div class="card">
+      <h3>Nouvelle année scolaire</h3>
+      <div class="alert" id="anErr"></div><div class="alert ok" id="anOk"></div>
+      <div class="field"><label>Libellé (ex. 2025-2026)</label><input class="input" id="anLib"></div>
+      <div class="row">
+        <div class="field"><label>Début</label><input class="input" id="anDeb" type="date"></div>
+        <div class="field"><label>Fin</label><input class="input" id="anFin" type="date"></div>
+      </div>
+      <label style="font-size:13px"><input type="checkbox" id="anActive" checked> Année active</label>
+      <div style="margin-top:12px"><button class="btn primary" id="anBtn">Créer</button></div>
+    </div>
+  </div>
+
+  <h2 class="eyebrow">Journal de sécurité (20 dernières actions)</h2>
+  <div class="tablewrap">
+    <table><thead><tr><th>Date</th><th>Action</th><th>Cible</th><th>Acteur</th></tr></thead>
+    <tbody id="audit"><tr><td colspan="4" class="faint">Chargement…</td></tr></tbody></table>
+  </div>
+</div></main>
+
+<script src="../assets/devoirati.js"></script>
+<script>
+(async function(){
+  var user = await Dev.requireRole(['admin']); if(!user) return;
+  Dev.el('top').innerHTML = Dev.topbar(user, 'Administration'); Dev.wireLogout();
+  load();
+})();
+
+async function load(){
+  var r = await Dev.get('admin_overview.php');
+  if(!r.ok){ return; }
+  var c = r.compteurs;
+  Dev.el('tiles').innerHTML =
+    tile('Élèves', c.eleves) + tile('Parents', c.parents) +
+    tile('Professeurs', c.professeurs) + tile('Classes', c.classes);
+  var rows = (r.journal||[]).map(function(a){
+    return '<tr><td class="faint">'+Dev.esc(a.created_at||'')+'</td>'+
+      '<td><span class="chip mut">'+Dev.esc(a.action)+'</span></td>'+
+      '<td class="faint">'+Dev.esc((a.cible_type||'')+' '+(a.cible_id||'').slice(0,8))+'</td>'+
+      '<td class="faint">'+Dev.esc((a.acteur_id||'').slice(0,8))+'</td></tr>';
+  }).join('') || '<tr><td colspan="4" class="faint">Aucune action journalisée.</td></tr>';
+  Dev.el('audit').innerHTML = rows;
+}
+function tile(l,b){return '<div class="card tile"><div class="lbl">'+Dev.esc(l)+'</div><div class="big tnum">'+b+'</div></div>';}
+
+Dev.el('etBtn').addEventListener('click', async function(){
+  Dev.clearAlert('etErr'); Dev.clearAlert('etOk');
+  var r = await Dev.post('etablissements.php', {
+    nom: Dev.el('etNom').value.trim(), code: Dev.el('etCode').value.trim(), ville: Dev.el('etVille').value.trim()
+  });
+  if(!r.ok){ Dev.alert('etErr', r.error||'Erreur'); return; }
+  Dev.alert('etOk', "Établissement créé.", 'ok'); Dev.el('etNom').value='';
+});
+Dev.el('anBtn').addEventListener('click', async function(){
+  Dev.clearAlert('anErr'); Dev.clearAlert('anOk');
+  var r = await Dev.post('annees_scolaires.php', {
+    libelle: Dev.el('anLib').value.trim(), date_debut: Dev.el('anDeb').value,
+    date_fin: Dev.el('anFin').value, active: Dev.el('anActive').checked ? 1 : 0
+  });
+  if(!r.ok){ Dev.alert('anErr', r.error||'Erreur'); return; }
+  Dev.alert('anOk', "Année scolaire créée.", 'ok'); Dev.el('anLib').value='';
+});
+</script>
+</body>
+</html>

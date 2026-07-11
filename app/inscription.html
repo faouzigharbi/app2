@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un compte — Devoirati</title>
+<link rel="stylesheet" href="assets/devoirati.css">
+</head>
+<body>
+<div class="auth"><div class="box">
+  <div class="head">
+    <div class="dv-logo">د</div>
+    <h1>Créer un compte</h1>
+    <p class="sub">Parent ou professeur</p>
+  </div>
+  <div class="card">
+    <div class="alert" id="err"></div>
+    <form id="form">
+      <div class="field">
+        <label for="role">Je suis…</label>
+        <select class="input" id="role">
+          <option value="parent">Un parent</option>
+          <option value="prof">Un professeur</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="field"><label for="prenom">Prénom</label><input class="input" id="prenom"></div>
+        <div class="field"><label for="nom">Nom</label><input class="input" id="nom" required></div>
+      </div>
+      <div class="field"><label for="email">E-mail</label><input class="input" id="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="password">Mot de passe (min. 8 caractères)</label><input class="input" id="password" type="password" autocomplete="new-password" required></div>
+      <button class="btn primary block" id="submit" type="submit">Créer mon compte</button>
+    </form>
+    <p class="center muted" style="margin:16px 0 0;font-size:13px">
+      Déjà un compte ? <a href="login.html">Se connecter</a>
+    </p>
+  </div>
+</div></div>
+
+<script src="assets/devoirati.js"></script>
+<script>
+Dev.el('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  Dev.clearAlert('err');
+  var btn = Dev.el('submit'); btn.disabled = true;
+  var r = await Dev.post('register.php', {
+    role: Dev.el('role').value,
+    prenom: Dev.el('prenom').value.trim(),
+    nom: Dev.el('nom').value.trim(),
+    email: Dev.el('email').value.trim(),
+    password: Dev.el('password').value
+  });
+  btn.disabled = false;
+  if (!r.ok) { Dev.alert('err', r.error || "Inscription impossible."); return; }
+  location.href = Dev.homeFor(r.user.role);
+});
+</script>
+</body>
+</html>

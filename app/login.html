@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Devoirati</title>
+<link rel="stylesheet" href="assets/devoirati.css">
+</head>
+<body>
+<div class="auth"><div class="box">
+  <div class="head">
+    <div class="dv-logo">د</div>
+    <h1>Devoirati</h1>
+    <p class="sub">Connexion à ton espace</p>
+  </div>
+  <div class="card">
+    <div class="alert" id="err"></div>
+    <form id="form">
+      <div class="field">
+        <label for="identifiant">Identifiant ou e-mail</label>
+        <input class="input" id="identifiant" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input class="input" id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn primary block" id="submit" type="submit">Se connecter</button>
+    </form>
+    <p class="center muted" style="margin:16px 0 0;font-size:13px">
+      Parent ou professeur ? <a href="inscription.html">Créer un compte</a>
+    </p>
+  </div>
+</div></div>
+
+<script src="assets/devoirati.js"></script>
+<script>
+Dev.session().then(function(s){ if(s.ok && s.connecte){ location.href = Dev.homeFor(s.user.role); } });
+Dev.el('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  Dev.clearAlert('err');
+  var btn = Dev.el('submit'); btn.disabled = true;
+  var r = await Dev.post('login.php', {
+    identifiant: Dev.el('identifiant').value.trim(),
+    password: Dev.el('password').value
+  });
+  btn.disabled = false;
+  if (!r.ok) { Dev.alert('err', r.error || "Connexion impossible."); return; }
+  if (r.must_change_password) { location.href = 'changer-mot-de-passe.html'; return; }
+  location.href = Dev.homeFor(r.user.role);
+});
+</script>
+</body>
+</html>

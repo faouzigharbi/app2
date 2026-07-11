@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace parent — Devoirati</title>
+<link rel="stylesheet" href="../assets/devoirati.css">
+</head>
+<body>
+<div id="top"></div>
+<main><div class="dv-wrap">
+  <h1>Espace parent</h1>
+  <p class="sub">Suivez la progression de vos enfants</p>
+
+  <div class="card" style="margin-bottom:16px">
+    <h3>Associer un enfant</h3>
+    <p class="muted" style="margin:0 0 12px;font-size:13px">Saisissez le code d'association fourni par l'enseignant (ou généré pour votre enfant).</p>
+    <div class="alert" id="assocErr"></div>
+    <div class="alert ok" id="assocOk"></div>
+    <div class="row" style="max-width:420px">
+      <input class="input" id="code" placeholder="Code (ex. WKGH9BTB)" style="text-transform:uppercase">
+      <button class="btn primary" id="assocBtn" style="flex:none">Associer</button>
+    </div>
+  </div>
+
+  <h2 class="eyebrow">Mes enfants</h2>
+  <div class="grid cols-3" id="children"><span class="faint">Chargement…</span></div>
+
+  <div id="detail" class="hidden" style="margin-top:20px"></div>
+</div></main>
+
+<script src="../assets/devoirati.js"></script>
+<script>
+var USER=null;
+(async function(){
+  USER = await Dev.requireRole(['parent']); if(!USER) return;
+  Dev.el('top').innerHTML = Dev.topbar(USER, 'Espace parent'); Dev.wireLogout();
+  loadChildren();
+})();
+
+async function loadChildren(){
+  var r = await Dev.get('my_children.php');
+  var box = Dev.el('children');
+  if(!r.ok){ box.innerHTML='<span class="faint">Impossible de charger.</span>'; return; }
+  if(!r.enfants.length){ box.innerHTML='<span class="faint">Aucun enfant associé pour l\'instant. Utilisez un code ci-dessus.</span>'; return; }
+  box.innerHTML = r.enfants.map(function(c){
+    return '<div class="card" style="cursor:pointer" data-id="'+c.id+'" role="button" tabindex="0">'+
+      '<div class="li" style="border:0;padding:0">'+
+        '<span class="avatar">'+Dev.initials(c.nom,c.prenom)+'</span>'+
+        '<div class="grow"><div class="t1">'+Dev.esc((c.prenom?c.prenom+' ':'')+c.nom)+'</div>'+
+        '<div class="t2">'+Dev.esc(c.relation_label||'')+'</div></div></div>'+
+      '<div class="row" style="margin-top:12px">'+
+        '<div><div class="faint" style="font-size:11px">Niveau</div><b class="tnum">'+c.niveau+'</b> <span class="faint">'+Dev.esc(c.niveau_titre_label)+'</span></div>'+
+        '<div><div class="faint" style="font-size:11px">XP</div><b class="tnum">'+c.xp+'</b></div>'+
+        '<div><div class="faint" style="font-size:11px">Série</div><b class="tnum">'+c.streak+'</b> 🔥</div>'+
+      '</div></div>';
+  }).join('');
+  Array.prototype.forEach.call(box.querySelectorAll('[data-id]'), function(el){
+    el.addEventListener('click', function(){ showDetail(el.getAttribute('data-id')); });
+  });
+}
+
+async function showDetail(id){
+  var d = Dev.el('detail'); d.classList.remove('hidden');
+  d.innerHTML = '<div class="card"><span class="faint">Chargement…</span></div>';
+  var r = await Dev.get('student_overview.php?eleve_id='+encodeURIComponent(id));
+  if(!r.ok){ d.innerHTML='<div class="card"><span class="faint">'+Dev.esc(r.error||'Erreur')+'</span></div>'; return; }
+  var e=r.eleve, s=r.stats;
+  var rec = (r.activite_recente||[]).map(function(a){
+    return '<div class="li"><span class="avatar">✓</span><div class="grow"><div class="t1">'+
+      Dev.esc(a.activite_nom||a.chapitre_id||'Exercice')+'</div><div class="t2">'+Dev.esc(a.completed_at||a.updated_at||'')+
+      '</div></div><span class="chip good">'+Dev.esc(a.score||'')+'</span></div>';
+  }).join('') || '<span class="faint">Pas encore d\'activité.</span>';
+  d.innerHTML =
+    '<h2 class="eyebrow">Détail — '+Dev.esc((e.prenom?e.prenom+' ':'')+e.nom)+'</h2>'+
+    '<div class="grid cols-4" style="margin-bottom:16px">'+
+      tile('Niveau', e.niveau, e.niveau_titre_label)+
+      tile('Points XP', e.xp, 'total')+
+      tile('Série', e.streak+' 🔥','jours')+
+      tile('Temps', s.total_minutes+' min', s.total_sessions+' sessions')+
+    '</div>'+
+    '<div class="card"><h3>Activité récente</h3><div class="list">'+rec+'</div></div>';
+}
+function tile(l,b,f){return '<div class="card tile"><div class="lbl">'+Dev.esc(l)+'</div><div class="big tnum">'+Dev.esc(b)+'</div><div class="foot">'+Dev.esc(f||'')+'</div></div>';}
+
+Dev.el('assocBtn').addEventListener('click', async function(){
+  Dev.clearAlert('assocErr'); Dev.clearAlert('assocOk');
+  var code = Dev.el('code').value.trim().toUpperCase();
+  if(!code){ Dev.alert('assocErr','Saisissez un code.'); return; }
+  var r = await Dev.post('parent_invite_accept.php', { code: code });
+  if(!r.ok){ Dev.alert('assocErr', r.error || "Association impossible."); return; }
+  Dev.alert('assocOk', "Enfant associé avec succès.", 'ok');
+  Dev.el('code').value='';
+  loadChildren();
+});
+</script>
+</body>
+</html>

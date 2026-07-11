@@ -44,6 +44,15 @@ Convention : `backend/` = API PHP (PDO) ; `app/` = pages front (HTML/JS) ;
 | `backend/classes_teachers.php` | créer | Affecter/retirer des profs (`dv_classe_professeur`) |
 | `backend/enrollments.php` | créer | Inscrire/retirer un élève (historisé) |
 
+## API — Lecture pour les tableaux de bord
+| Fichier | Action | Rôle |
+|---|---|---|
+| `backend/my_classes.php` | créé | Classes du prof (+ nb élèves) |
+| `backend/class_students.php` | créé | Élèves d'une classe |
+| `backend/my_children.php` | créé | Enfants associés d'un parent |
+| `backend/student_overview.php` | créé | Synthèse d'un élève (gamification, stats, activité) |
+| `backend/admin_overview.php` | créé | Compteurs + journal d'audit (admin) |
+
 ## API — Association parent–élève
 | Fichier | Action | Rôle |
 |---|---|---|
