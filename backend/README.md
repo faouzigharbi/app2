@@ -1,5 +1,10 @@
 # Backend Devoirati — guide de mise en ligne
 
+> ⛔ **PROTOTYPE — NE PAS DÉPLOYER pour l'instant.** Ce guide décrit une version
+> antérieure à la revue d'architecture de Dhia. Voir [`NOTICE.md`](NOTICE.md) et
+> le dossier de planification [`../docs/README.md`](../docs/README.md). Le code
+> définitif et son guide de déploiement viendront après validation de la base.
+
 Ce dossier contient le « moteur » PHP de la plateforme : comptes, connexion
 sécurisée, enregistrement des scores et gamification (XP, niveaux, séries, badges).
 
