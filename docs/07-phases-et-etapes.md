@@ -41,6 +41,20 @@ Chaque étape n'est close que si ses **tests** passent (doc 05) et que la
 
 ## État actuel
 
-> **Nous sommes AVANT la Porte 1.** Le présent dossier est la mise à jour
-> demandée. **Aucun code applicatif n'est écrit, aucune table n'est modifiée.**
-> Prochaine action attendue : **retour de Dhia** sur les docs 01–04.
+> **Porte 1 VALIDÉE.** Développement de la Phase 1 en cours.
+>
+> | Sous-étape | État |
+> |---|---|
+> | 1. Audit base existante | ✅ (doc 01) |
+> | 2. Schéma final & migration | ✅ (`db/migrations/phase1_up.sql` + `_down.sql`) |
+> | 3. Authentification | ✅ code livré (`register`,`login`,`logout`,`session`,`password_change`,`password_reset`) |
+> | 4. Rôles & autorisations | ✅ code livré (`authz.php`,`audit.php`) — 16/16 tests logiques |
+> | 5. Établissements & années | ✅ code livré |
+> | 6. Classes & inscriptions | ✅ code livré (multi-profs, historisé) |
+> | 7. Association parent-élève | ✅ code livré (invitations sécurisées) |
+> | 8. Tests de bout en bout | ⏳ à faire sur le serveur après migration |
+> | 9. Activation progressive | ⏳ |
+>
+> **Prochaine action** : Dhia applique `phase1_up.sql` (après sauvegarde), on crée
+> `config.php`, puis tests de bout en bout (doc 05). Ensuite : pages front (doc 06)
+> et branchement de la maquette aux vraies données.

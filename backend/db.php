@@ -1,63 +1,55 @@
 <?php
 /**
- * Fondations partagées par toutes les API :
- *  - connexion à la base (PDO, sécurisée)
- *  - démarrage de session
- *  - petites fonctions utilitaires pour lire l'entrée JSON et répondre en JSON
+ * Socle bas niveau, requis par toutes les API :
+ *   - chargement de la configuration (identifiants base)
+ *   - connexion PDO sécurisée
+ *   - session cookie
+ *   - utilitaires : uuid4(), now(), json_input(), json_response(), require_method()
  *
- * Aucun fichier public n'a besoin de dupliquer ce code : il fait  require 'db.php';
+ * L'authentification et les autorisations sont dans auth.php / authz.php.
  */
 
 declare(strict_types=1);
 
-// -- Erreurs : on ne les affiche jamais à l'écran (fuite d'infos), on les logge.
 error_reporting(E_ALL);
-ini_set('display_errors', '0');
+ini_set('display_errors', '0');   // on ne divulgue jamais d'erreur à l'écran
 
-// -- Chargement de la configuration (identifiants de la base).
 $configFile = __DIR__ . '/config.php';
 if (!is_file($configFile)) {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok' => false, 'error' => "config.php manquant. Copie config.sample.php en config.php et renseigne tes identifiants."]);
+    echo json_encode(['ok' => false, 'error' => "config.php manquant. Copier config.sample.php en config.php."]);
     exit;
 }
-$config = require $configFile;
+$GLOBALS['dv_config'] = require $configFile;
 
-// -- Session (cookie) sécurisée. Doit être appelé avant tout envoi de contenu.
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
-        'lifetime' => 0,
-        'path'     => '/',
-        'httponly' => true,
-        'samesite' => 'Lax',
-        // 'secure' => true,  // ← décommente quand le site est en HTTPS
+        'lifetime' => 0, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax',
+        // 'secure' => true,  // ← décommenter en HTTPS
     ]);
     session_name('devoirati_session');
     session_start();
 }
 
-/**
- * Renvoie une connexion PDO unique à la base (réutilisée à chaque appel).
- */
+/** Connexion PDO unique (réutilisée). */
 function db(): PDO
 {
     static $pdo = null;
-    global $config;
-
     if ($pdo === null) {
-        $dsn = sprintf(
-            'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
-            $config['db_host'],
-            $config['db_port'],
-            $config['db_name']
-        );
+        $c = $GLOBALS['dv_config'];
+        $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+            $c['db_host'], $c['db_port'], $c['db_name']);
         try {
-            $pdo = new PDO($dsn, $config['db_user'], $config['db_pass'], [
+            $pdo = new PDO($dsn, $c['db_user'], $c['db_pass'], [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
+            // Sécurité de portabilité : garantir que les guillemets doubles
+            // dans nos requêtes sont bien traités comme des chaînes, quel que
+            // soit le sql_mode de l'hébergement (retrait éventuel d'ANSI_QUOTES).
+            $pdo->exec("SET SESSION sql_mode = REPLACE(@@sql_mode, 'ANSI_QUOTES', '')");
         } catch (PDOException $e) {
             json_response(['ok' => false, 'error' => "Connexion à la base impossible."], 500);
         }
@@ -65,33 +57,28 @@ function db(): PDO
     return $pdo;
 }
 
-/**
- * Génère un identifiant unique (UUID v4) — les id de dv_users sont des VARCHAR(36).
- */
+/** Identifiant unique (UUID v4). */
 function uuid4(): string
 {
-    $data = random_bytes(16);
-    $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-    $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    $d = random_bytes(16);
+    $d[6] = chr((ord($d[6]) & 0x0f) | 0x40);
+    $d[8] = chr((ord($d[8]) & 0x3f) | 0x80);
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($d), 4));
 }
 
-/**
- * Lit le corps JSON de la requête et le renvoie en tableau associatif.
- */
+/** Horodatage courant, format SQL DATETIME. */
+function now(): string { return date('Y-m-d H:i:s'); }
+
+/** Corps JSON de la requête -> tableau. */
 function json_input(): array
 {
     $raw = file_get_contents('php://input');
-    if ($raw === '' || $raw === false) {
-        return [];
-    }
-    $data = json_decode($raw, true);
-    return is_array($data) ? $data : [];
+    if ($raw === '' || $raw === false) return [];
+    $d = json_decode($raw, true);
+    return is_array($d) ? $d : [];
 }
 
-/**
- * Répond en JSON puis arrête le script.
- */
+/** Réponse JSON puis arrêt. */
 function json_response(array $payload, int $status = 200): void
 {
     http_response_code($status);
@@ -100,44 +87,7 @@ function json_response(array $payload, int $status = 200): void
     exit;
 }
 
-/**
- * Renvoie l'utilisateur connecté (tableau) ou null.
- */
-function current_user(): ?array
-{
-    if (empty($_SESSION['user_id'])) {
-        return null;
-    }
-    // Colonnes alignées sur la structure réelle (tables de Dhia + ajouts "comptes & rôles").
-    $stmt = db()->prepare(
-        'SELECT id, nom, role, login, email, classe, parent_id, annee,
-                xp, niveau, niveau_titre, streak
-         FROM dv_users WHERE id = ?'
-    );
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch();
-    return $user ?: null;
-}
-
-/**
- * Exige un utilisateur connecté (et éventuellement un rôle précis),
- * sinon répond 401/403 et arrête.
- */
-function require_user(?string $role = null): array
-{
-    $user = current_user();
-    if (!$user) {
-        json_response(['ok' => false, 'error' => "Non connecté."], 401);
-    }
-    if ($role !== null && $user['role'] !== $role && $user['role'] !== 'admin') {
-        json_response(['ok' => false, 'error' => "Accès refusé."], 403);
-    }
-    return $user;
-}
-
-/**
- * N'accepte qu'une méthode HTTP donnée (ex : 'POST').
- */
+/** N'accepte qu'une méthode HTTP donnée. */
 function require_method(string $method): void
 {
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== $method) {

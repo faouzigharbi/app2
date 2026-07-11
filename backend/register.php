@@ -1,64 +1,55 @@
 <?php
 /**
- * Inscription d'un PARENT ou d'un PROFESSEUR (avec e-mail + mot de passe).
- * Les comptes ÉLÈVES ne se créent pas ici : voir create_student.php
- * (créés par le prof ou le parent).
+ * Inscription d'un PARENT ou d'un PROFESSEUR (e-mail + mot de passe).
+ * Les comptes élèves sont créés via students_create.php.
  *
- * POST JSON : { role: "parent"|"prof", nom, email, password, classe? }
+ * POST JSON : { role:"parent"|"prof", nom, prenom?, email, password }
  */
 
 declare(strict_types=1);
 require __DIR__ . '/db.php';
+require __DIR__ . '/util.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/audit.php';
 
 require_method('POST');
 $in = json_input();
 
-$role     = $in['role']     ?? '';
-$nom      = trim((string)($in['nom']   ?? ''));
-$email    = trim((string)($in['email'] ?? ''));
+$role     = clean_str($in['role'] ?? '', 20);
+$nom      = clean_str($in['nom'] ?? '', 80);
+$prenom   = clean_str($in['prenom'] ?? '', 80);
+$email    = clean_str($in['email'] ?? '', 190);
 $password = (string)($in['password'] ?? '');
-$classe   = trim((string)($in['classe'] ?? '')) ?: null;
 
-// --- Validation ---
 $errors = [];
-if (!in_array($role, ['parent', 'prof'], true)) {
-    $errors[] = "Rôle invalide.";
-}
-if (mb_strlen($nom) < 2) {
-    $errors[] = "Le nom est requis.";
-}
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = "L'adresse e-mail n'est pas valide.";
-}
-if (strlen($password) < 6) {
-    $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
-}
-if ($errors) {
-    json_response(['ok' => false, 'error' => implode(' ', $errors)], 422);
-}
+if (!in_array($role, ['parent', 'prof'], true)) $errors[] = "Rôle invalide.";
+if (mb_strlen($nom) < 2)      $errors[] = "Le nom est requis.";
+if (!is_email($email))        $errors[] = "L'adresse e-mail n'est pas valide.";
+if (strlen($password) < 8)    $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
+if ($errors) json_response(['ok' => false, 'error' => implode(' ', $errors)], 422);
 
-// --- E-mail déjà utilisé ? ---
-$stmt = db()->prepare('SELECT id FROM dv_users WHERE email = ? LIMIT 1');
-$stmt->execute([$email]);
-if ($stmt->fetch()) {
+// E-mail / login déjà utilisés ?
+$s = db()->prepare('SELECT 1 FROM dv_users WHERE email = ? OR login = ? LIMIT 1');
+$s->execute([$email, $email]);
+if ($s->fetchColumn()) {
     json_response(['ok' => false, 'error' => "Cette adresse e-mail est déjà utilisée."], 409);
 }
 
-// --- Création du compte ---
-$id   = uuid4();
-$hash = password_hash($password, PASSWORD_DEFAULT);
-$today = date('Y-m-d');
-
-$stmt = db()->prepare(
-    'INSERT INTO dv_users (id, nom, role, login, email, password_hash, annee, classe, created_at, last_seen, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())'
+$id = uuid4();
+$ins = db()->prepare(
+    'INSERT INTO dv_users
+       (id, role, nom, prenom, login, email, password_hash, statut, annee,
+        created_at, last_seen, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, "actif", "", ?, ?, ?)'
 );
-$stmt->execute([$id, $nom, $role, $email, $email, $hash, '', $classe, $today, $today]);
+$today = date('Y-m-d');
+$ins->execute([$id, $role, $nom, $prenom ?: null, $email, $email,
+    hash_password($password), $today, $today, now()]);
 
-// Connexion immédiate après inscription.
-$_SESSION['user_id'] = $id;
+journaliser('user.create', 'user', $id, ['role' => $role, 'self' => true], $id);
+login_user($id);
 
 json_response([
     'ok'   => true,
-    'user' => ['id' => $id, 'nom' => $nom, 'role' => $role, 'email' => $email, 'classe' => $classe],
+    'user' => ['id' => $id, 'role' => $role, 'nom' => $nom, 'prenom' => $prenom, 'email' => $email],
 ]);

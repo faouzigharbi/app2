@@ -1,17 +1,27 @@
-# ⚠️ Prototype — NE PAS DÉPLOYER en l'état
+# État du backend — Phase 1 (authentification, rôles, classes, associations)
 
-Les fichiers PHP de ce dossier ont été écrits **avant** la revue d'architecture
-de Dhia (14 points) et **avant** la validation du modèle de données.
+Ce dossier contient désormais le **code réel de la Phase 1**, conforme au schéma
+validé (Porte 1) et à la revue de Dhia.
 
-Ils sont donc **désormais incomplets / non conformes** au schéma cible :
-ils ne gèrent pas encore les établissements, les années scolaires, la matrice de
-permissions côté serveur, les invitations parent-élève sécurisées, le journal
-d'audit, la suppression logique, etc.
+## ✅ Livré et vérifié (hors base réelle)
+- Socle : `db.php`, `util.php`, `labels.php`, `auth.php`, `authz.php`, `audit.php`
+- Authentification : `register.php`, `login.php`, `logout.php`, `session.php`,
+  `password_change.php`, `password_reset.php`
+- Scolarité : `etablissements.php`, `annees_scolaires.php`, `classes_create.php`,
+  `classes_teachers.php`, `students_create.php`, `enrollments.php`
+- Association parent-élève : `parent_invite_create.php`, `parent_invite_accept.php`,
+  `parent_invite_revoke.php`
+- **Tests** : lint PHP OK sur tous les fichiers ; **16/16** tests de la logique
+  d'autorisation (matrice de permissions) passés.
 
-**Statut : prototype conservé à titre indicatif. À NE PAS mettre en ligne.**
+## ⏳ À faire pour la mise en service (dans l'ordre)
+1. **Dhia** applique la migration `db/migrations/phase1_up.sql` **après sauvegarde**.
+2. Créer `backend/config.php` depuis `config.sample.php` (identifiants réels).
+3. Déposer `backend/` sur l'hébergement.
+4. Tests de bout en bout sur le serveur (scénarios `docs/05-tests-phase1.md`).
 
-Le code applicatif définitif sera (ré)écrit **après** :
-1. la validation de Dhia sur la base de données (docs 01–04), puis
-2. l'autorisation explicite de démarrer le développement.
+> Tant que la migration n'est pas appliquée, les API renverront une erreur de
+> base (colonnes manquantes). C'est normal : **le code précède l'exécution de la
+> migration**, comme convenu.
 
-Voir le dossier de planification : [`../docs/README.md`](../docs/README.md).
+Voir le guide : [`README.md`](README.md) et le dossier [`../docs/`](../docs/README.md).

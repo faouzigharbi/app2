@@ -1,73 +1,57 @@
-# Backend Devoirati — guide de mise en ligne
+# Backend Devoirati — Phase 1
 
-> ⛔ **PROTOTYPE — NE PAS DÉPLOYER pour l'instant.** Ce guide décrit une version
-> antérieure à la revue d'architecture de Dhia. Voir [`NOTICE.md`](NOTICE.md) et
-> le dossier de planification [`../docs/README.md`](../docs/README.md). Le code
-> définitif et son guide de déploiement viendront après validation de la base.
+Moteur PHP + PDO : comptes (élève/parent/prof/admin), authentification
+sécurisée, rôles et autorisations **côté serveur**, classes multi-professeurs,
+inscriptions historisées, association parent-élève par code, journal d'audit.
 
-Ce dossier contient le « moteur » PHP de la plateforme : comptes, connexion
-sécurisée, enregistrement des scores et gamification (XP, niveaux, séries, badges).
+> **Rappel encodage** : la base est en `latin1`, on ne stocke **jamais** d'arabe.
+> Uniquement des **codes latins** (`debutant`, `MATHEMATIQUES`, `pere`…) traduits
+> à l'affichage (`labels.php`).
 
-> **Rappel important**
-> La base n'accepte pas l'arabe : on stocke des **codes en lettres latines**
-> (`debutant`, `fractions`…) et le code les **traduit en arabe à l'affichage**
-> (voir `labels.php`). On ne stocke jamais d'arabe dans la base.
+## Déploiement (dans l'ordre)
 
-## Étape 1 — Préparer la base (à faire par Dhia)
+### 1. Migration de la base — par Dhia, après SAUVEGARDE
+Exécuter `../db/migrations/phase1_up.sql` dans l'onglet SQL de phpMyAdmin.
+Migration **additive** (voir `../docs/04-migration-sauvegarde-rollback.md`).
+Rollback disponible : `../db/migrations/phase1_down.sql`.
 
-Dans phpMyAdmin, onglet **SQL**, exécuter la **Partie 2** de `../db/schema.sql`
-(les commandes `ALTER TABLE`). Elles **ajoutent** les colonnes des comptes
-(`role`, `login`, `email`, `password_hash`, `parent_id`, `classe`) **sans rien
-effacer**.
+### 2. Configuration
+Copier `config.sample.php` en `config.php` et renseigner les identifiants réels
+de la base + un `app_secret` long et aléatoire. `config.php` est git-ignoré.
 
-## Étape 2 — Déposer les fichiers sur l'hébergement
+### 3. Fichiers
+Déposer le dossier `backend/` dans `public_html/`.
 
-Copier le dossier `backend/` dans `public_html/` (via le gestionnaire de
-fichiers du panneau d'hébergement, ou par FTP). On obtient par exemple :
+### 4. Vérification
+`https://TON-SITE/backend/session.php` → `{"ok":true,"connecte":false,...}`.
 
-```
-public_html/
-├── backend/
-│   ├── db.php, labels.php, gamification.php
-│   ├── register.php, login.php, logout.php, session.php
-│   ├── create_student.php, save_progress.php
-│   └── config.php   ← à créer à l'étape 3
-└── (les exercices .html)
-```
+## API (Phase 1)
 
-## Étape 3 — Renseigner les identifiants de la base
+| Fichier | Méthode | Rôle requis | Description |
+|---|---|---|---|
+| `register.php` | POST | public | Inscription parent/prof (e-mail + mot de passe) |
+| `login.php` | POST | public | Connexion (login **ou** e-mail) |
+| `logout.php` | POST | connecté | Déconnexion |
+| `session.php` | GET | — | Utilisateur courant (+ libellés arabes) |
+| `password_change.php` | POST | connecté | Changer **son** mot de passe |
+| `password_reset.php` | POST | prof/parent/admin | Réinit. mot de passe d'un élève (autorisé) |
+| `etablissements.php` | GET/POST | admin (POST) | Établissements |
+| `annees_scolaires.php` | GET/POST | admin (POST) | Années scolaires |
+| `classes_create.php` | POST | prof/admin | Créer une classe (prof = principal) |
+| `classes_teachers.php` | POST | prof princ./admin | Ajouter un prof à une classe |
+| `students_create.php` | POST | prof/parent/admin | Créer un compte élève |
+| `enrollments.php` | POST | prof/admin | Inscrire/retirer un élève (historisé) |
+| `parent_invite_create.php` | POST | prof/parent/admin | Générer un code d'association |
+| `parent_invite_accept.php` | POST | parent | Utiliser un code d'association |
+| `parent_invite_revoke.php` | POST | prof/parent/admin | Révoquer code/association |
 
-1. Copier `config.sample.php` en `config.php` (dans le même dossier `backend/`).
-2. Ouvrir `config.php` et remplacer par les vrais identifiants de la base
-   (`db_user`, `db_pass`, et `db_name` = `iusp6955_faouzigharbi`).
-3. Mettre une longue valeur au hasard dans `app_secret`.
-
-> `config.php` n'est **pas** envoyé sur GitHub (voir `.gitignore`) : les
-> identifiants restent privés, uniquement sur le serveur.
-
-## Étape 4 — Vérifier
-
-Ouvrir dans un navigateur : `https://TON-SITE/backend/session.php`
-→ doit afficher `{"ok":true,"connecte":false,"user":null}`.
-Si tu vois une erreur « config.php manquant » ou « Connexion à la base
-impossible », c'est que l'étape 3 n'est pas bonne.
-
-## Les API disponibles
-
-| Fichier | Méthode | Rôle |
-|---|---|---|
-| `register.php` | POST | Inscription parent/prof (e-mail + mot de passe) |
-| `login.php` | POST | Connexion (e-mail ou identifiant + mot de passe) |
-| `logout.php` | POST | Déconnexion |
-| `session.php` | GET | Qui est connecté ? |
-| `create_student.php` | POST | Un prof/parent crée un compte élève |
-| `save_progress.php` | POST | Enregistre un résultat + XP/niveau/série/badges |
-
-Toutes les API échangent du **JSON** et répondent `{ "ok": true/false, ... }`.
+Toutes échangent du **JSON** et répondent `{ "ok": true/false, ... }`.
 
 ## Sécurité
-
-- Mots de passe **hachés** (`password_hash`), jamais stockés en clair.
-- Requêtes **préparées** partout (protège des injections SQL).
-- Sessions par cookie `HttpOnly`. **Active le cookie `secure`** (une ligne à
-  décommenter dans `db.php`) une fois le site en **HTTPS**.
+- Mots de passe **hachés** (`password_hash`), jamais en clair — même les codes
+  d'association sont stockés hachés (HMAC).
+- **Autorisations côté serveur** systématiques (`authz.php` + `require_can`).
+- Requêtes **préparées** partout. Sessions régénérées à la connexion.
+- **Suppression logique** (statut / `archived_at` / `deleted_at`).
+- **Journal d'audit** des actions sensibles (`dv_audit_logs`).
+- En HTTPS, décommenter le cookie `secure` dans `db.php`.
