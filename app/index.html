@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devoirati — Plateforme d'apprentissage</title>
+<link rel="stylesheet" href="assets/devoirati.css">
+</head>
+<body>
+<div class="auth"><div class="box" style="max-width:460px">
+  <div class="head">
+    <div class="dv-logo" style="width:52px;height:52px;font-size:26px;border-radius:14px">د</div>
+    <h1 style="margin-top:14px">Devoirati</h1>
+    <p class="sub">Apprends les maths, gagne des points, progresse 🚀</p>
+  </div>
+  <div class="card">
+    <a class="btn primary block" href="login.html">Se connecter</a>
+    <div style="height:10px"></div>
+    <a class="btn ghost block" href="inscription.html">Créer un compte parent ou professeur</a>
+    <p class="center muted" style="margin:16px 0 0;font-size:12.5px">
+      Élève ? Demande ton identifiant à ton professeur ou à ton parent.
+    </p>
+  </div>
+</div></div>
+
+<script src="assets/devoirati.js"></script>
+<script>
+Dev.session().then(function(s){ if(s.ok && s.connecte){ location.href = Dev.homeFor(s.user.role); } });
+</script>
+</body>
+</html>

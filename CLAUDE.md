@@ -25,9 +25,15 @@ streaks, badges), and diagnostics for parents and teachers. Two new areas:
   **student-centric with UUID ids**; Part 2 of the file holds non-destructive
   `ALTER TABLE`s that add the accounts/roles layer (`role`, `login`, `email`,
   `password_hash`, `parent_id`, `classe`).
-- **`backend/`** — a small **PHP + PDO** backend (auth, account creation,
-  `save_progress` with XP/level/streak/badge logic). See `backend/README.md`
-  for deployment. It runs on the host's shared hosting alongside the exercises.
+- **`backend/`** — a small **PHP + PDO** backend (auth, roles/authz, account
+  creation, classes, parent links, `save_progress` with XP/level/streak/badge
+  logic). See `backend/README.md` for deployment. Runs on the host's shared
+  hosting alongside the exercises.
+- **`app/`** — the platform front-end (login/signup + élève/parent/prof/admin
+  dashboards) calling the `backend/` APIs. Shared assets in `app/assets/`.
+- **`docs/`** — the planning dossier (schema, permissions, migration, tests).
+  Exercises connect to the platform via `app/assets/devoirati-exercice.js`
+  (see `docs/integration-exercices.md`); wiring is optional and non-destructive.
 
 ⚠️ **The database is `latin1` and does not store Arabic.** Store **latin-letter
 codes** (`debutant`, `fractions`, `division_fractions`) and translate them to

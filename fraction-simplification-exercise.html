@@ -180,7 +180,18 @@
                 document.getElementById('message').className = "message correct";
                 score++;
                 document.getElementById('score').textContent = score;
-                
+
+                // Devoirati : enregistrer le résultat si l'élève est connecté
+                // (sans effet si la page est ouverte hors plateforme).
+                if (window.Devoirati) {
+                    Devoirati.enregistrer({
+                        chapitre_id: 'fraction-simplification',
+                        theme: 'fractions',
+                        activite_nom: 'Simplification de fractions',
+                        score: 1, total: 1
+                    });
+                }
+
                 // Afficher le bouton pour la question suivante
                 document.getElementById('nextQuestionBtn').style.display = 'inline-block';
             } else if (areEquivalentFractions(userNumerator, userDenominator, originalNumerator, originalDenominator) && !isReduced) {
@@ -230,5 +241,6 @@
             }
         });
     </script>
+    <script src="app/assets/devoirati-exercice.js"></script>
 </body>
 </html>
