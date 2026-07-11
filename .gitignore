@@ -1,0 +1,8 @@
+# Ne JAMAIS versionner les vrais identifiants de la base de données.
+# Chacun crée son propre backend/config.php à partir de config.sample.php.
+backend/config.php
+
+# Divers
+.DS_Store
+Thumbs.db
+*.log
