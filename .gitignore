@@ -1,0 +1,9 @@
+# Secrets & API keys — ne jamais committer
+API*.txt
+*.key
+.env
+.env.*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
