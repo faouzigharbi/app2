@@ -1,0 +1,127 @@
+{
+  "format": "D2D",
+  "version": 4,
+  "savedAt": "2026-07-21T00:56:18.926Z",
+  "points": {
+    "p1": {
+      "x": 520.425377290315,
+      "y": 499.0027573392719,
+      "visible": true,
+      "label": "A"
+    },
+    "p2": {
+      "x": 214.1571924906823,
+      "y": 921.9658079444591,
+      "visible": true,
+      "label": "B"
+    },
+    "p3": {
+      "x": 201.48568575287655,
+      "y": 450.79743568930746,
+      "visible": true,
+      "label": "C"
+    },
+    "p5": {
+      "x": 376.9741688726669,
+      "y": 472.04924875262077,
+      "visible": true,
+      "label": "D"
+    },
+    "p6": {
+      "x": 231.84951714170208,
+      "y": 908.4890841682476,
+      "visible": true,
+      "label": "E"
+    },
+    "p10": {
+      "x": 361.4336843239683,
+      "y": 1105.4571582956337,
+      "visible": true,
+      "label": "F"
+    },
+    "p11": {
+      "x": 214.39629939019753,
+      "y": 945.2908927030802,
+      "visible": true,
+      "label": "G"
+    },
+    "p12": {
+      "x": -220.30290320757842,
+      "y": 709.2250835845597,
+      "visible": true,
+      "label": "H",
+      "def": {
+        "type": "rotation",
+        "center": "p3",
+        "source": "p11",
+        "angle": 60
+      }
+    }
+  },
+  "objects": [
+    {
+      "id": "p4",
+      "stroke": "#243b53",
+      "width": 5,
+      "dash": "",
+      "type": "polygon",
+      "pts": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "label": "poly1"
+    },
+    {
+      "id": "p7",
+      "stroke": "#243b53",
+      "width": 5,
+      "dash": "",
+      "type": "perpBisector",
+      "a": "p5",
+      "b": "p6",
+      "label": "m1"
+    },
+    {
+      "id": "p8",
+      "stroke": "#243b53",
+      "width": 5,
+      "dash": "",
+      "type": "circleRadius",
+      "c": "p1",
+      "radius": 100,
+      "label": "c1"
+    },
+    {
+      "id": "p9",
+      "stroke": "#243b53",
+      "width": 5,
+      "dash": "",
+      "type": "circleCP",
+      "c": "p3",
+      "rp": "p2",
+      "label": "c2"
+    },
+    {
+      "id": "p13",
+      "stroke": "#243b53",
+      "width": 5,
+      "dash": "",
+      "type": "angle",
+      "a": "p11",
+      "v": "p3",
+      "b": "p12",
+      "label": "α1"
+    }
+  ],
+  "pointCounter": 13,
+  "showAxes": true,
+  "showLabels": true,
+  "snapToGrid": false,
+  "zoomLevel": 1,
+  "viewOffset": {
+    "x": 0,
+    "y": 0
+  },
+  "gridCell": 20
+}

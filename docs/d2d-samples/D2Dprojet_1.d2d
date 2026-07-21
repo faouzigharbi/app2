@@ -1,0 +1,17 @@
+{
+  "format": "D2D",
+  "version": 4,
+  "savedAt": "2026-07-21T00:51:22.796Z",
+  "points": {},
+  "objects": [],
+  "pointCounter": 0,
+  "showAxes": true,
+  "showLabels": true,
+  "snapToGrid": false,
+  "zoomLevel": 1,
+  "viewOffset": {
+    "x": 0,
+    "y": 0
+  },
+  "gridCell": 20
+}
