@@ -1,0 +1,9 @@
+# Rapports generes par scan_defauts_devoirati.py.
+# Ce sont des artefacts de scan, regeneres a chaque execution et
+# dependants du corpus analyse : ils n'ont pas vocation a etre versionnes.
+rapport_style_casse.csv
+rapport_banniere_flex.csv
+rapport_erreurs.csv
+
+__pycache__/
+*.pyc
