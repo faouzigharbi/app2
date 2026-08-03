@@ -204,7 +204,133 @@
     };
   }
 
+
+  // ---------------------------------------------------------------------
+  // Les éléments remarquables : 0 absorbe, 1 ne change rien, -1 donne
+  // l'opposé, et deux inverses donnent 1. Les reconnaître, c'est ne pas
+  // calculer du tout.
+  // ---------------------------------------------------------------------
+  function remarquable(a, cas) {
+    const REGLES = {
+      zero:    { b: rat(0),  val: rat(0),
+                 regle: 'كل عدد مضروب في 0 يساوي 0',
+                 vu: 'أحد العاملين منعدم' },
+      un:      { b: rat(1),  val: a,
+                 regle: 'كل عدد مضروب في 1 لا يتغيّر',
+                 vu: 'أحد العاملين يساوي 1' },
+      moinsUn: { b: rat(-1), val: neg(a),
+                 regle: 'الضرب في -1 يعطي المقابل',
+                 vu: 'أحد العاملين يساوي -1' },
+      inverse: { b: rat(a.d * Math.sign(a.n), Math.abs(a.n)), val: rat(1),
+                 regle: 'جداء عدد في مقلوبه يساوي 1',
+                 vu: 'العاملان مقلوبان' }
+    };
+    const r = REGLES[cas];
+    return {
+      enonce: ['احسب دون إجراء عملية الضرب:', 'P = ' + par(a) + ' × ' + par(r.b)],
+      indice: 'انظر إلى العاملين قبل أن تحسب: أحدهما مميّز',
+      etapes: [
+        ['نلاحظ', r.vu],
+        ['القاعدة', r.regle],
+        ['نطبّق', 'P = ' + txt(r.val)],
+        ['نتحقّق', par(a) + ' × ' + par(r.b) + ' = ' + txt(r.val)]
+      ],
+      controle: { type: 'produit', facteurs: [a, r.b], val: r.val,
+                  negs: [a, r.b].filter(x => signe(x) < 0).length,
+                  env: { P: r.val }, expr: par(a) + ' × ' + par(r.b) }
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // L'ESSENTIEL de la leçon : le signe se lit, il ne se calcule pas.
+  // « 915486254 × (-5169428735) = -n » : personne ne fera ce produit. On
+  // compte les facteurs négatifs, et n est connu de signe.
+  // ---------------------------------------------------------------------
+  function signeSansCalculer(g1, g2, cote) {
+    // g1 × g2 = -n  (cote = 'oppose')  ou  g1 × n = g2  (cote = 'facteur')
+    const s1 = g1 < 0 ? -1 : 1, s2 = g2 < 0 ? -1 : 1;
+    const sProduit = s1 * s2;
+    if (cote === 'oppose') {
+      // g1 × g2 = -n  ⟹  n = -(g1 × g2)
+      const sn = -sProduit;
+      return {
+        enonce: ['حدّد علامة العدد الكسري النسبي n، علما و أنّ:',
+                 g1 + ' × (' + g2 + ') = -n'],
+        indice: 'لا تحسب شيئا: عُدّ العوامل السالبة',
+        etapes: [
+          ['لا داعي للحساب', 'إشارة الجداء تُقرأ من إشارتي العاملين'],
+          ['إشارة العامل الأول', g1 + (s1 < 0 ? ' < 0' : ' > 0')],
+          ['إشارة العامل الثاني', g2 + (s2 < 0 ? ' < 0' : ' > 0')],
+          ['إشارة الجداء', sProduit < 0
+            ? 'عامل سالب واحد: الجداء سالب' : 'العوامل من نفس الإشارة: الجداء موجب'],
+          ['نستنتج إشارة -n', '-n' + (sProduit < 0 ? ' < 0' : ' > 0')],
+          ['النتيجة', 'n' + (sn < 0 ? ' < 0' : ' > 0')]
+        ],
+        controle: { type: 'signe-produit', s1, s2, attendu: sn, cote,
+                    env: { n: rat(sn * 7, 3) } }
+      };
+    }
+    // g1 × n = g2  ⟹  n a le signe de g2 / g1
+    const sn = s1 * s2;
+    return {
+      enonce: ['حدّد علامة العدد الكسري النسبي n، علما و أنّ:',
+               g1 + ' × n = ' + g2],
+      indice: 'لا تحسب شيئا: أيّ إشارة يجب أن تحمل n ليكون الجداء بهذه الإشارة ؟',
+      etapes: [
+        ['لا داعي للحساب', 'إشارة الجداء تُقرأ من إشارتي العاملين'],
+        ['إشارة العامل المعلوم', g1 + (s1 < 0 ? ' < 0' : ' > 0')],
+        ['إشارة الجداء', g2 + (s2 < 0 ? ' < 0' : ' > 0')],
+        ['القاعدة', sn < 0 ? 'ليكون الجداء بهذه الإشارة، يجب أن يخالف n العامل المعلوم'
+                           : 'ليكون الجداء بهذه الإشارة، يجب أن يوافق n العامل المعلوم'],
+        ['النتيجة', 'n' + (sn < 0 ? ' < 0' : ' > 0')]
+      ],
+      controle: { type: 'signe-produit', s1, s2, attendu: sn, cote,
+                  env: { n: rat(sn * 7, 3) } }
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // « ℚ₊ ou ℚ₋ ? » — a et b sont négatifs, et l'expression est littérale :
+  // il n'y a rien à calculer, il n'y a que des signes à composer.
+  // ---------------------------------------------------------------------
+  function classeSigne(texte, signes, description) {
+    // signes : liste de {quoi, signe} — la lecture, terme à terme
+    const s = signes.reduce((r, x) => r * x.signe, 1);
+    return {
+      enonce: ['أكمل بـ « ℚ+ » أو « ℚ- »، حيث a و b عددان صحيحان نسبيان سالبان:',
+               texte + ' ∈ ...'],
+      indice: 'اقرأ إشارة كل جزء، ثمّ اضربها',
+      etapes: signes.map(x => ['إشارة ' + x.quoi, x.txt + (x.signe < 0 ? ' < 0' : ' > 0')])
+        .concat([
+          ['نضرب الإشارات', s < 0 ? 'عدد فردي من العوامل السالبة' : 'عدد زوجي من العوامل السالبة'],
+          ['النتيجة', 'العبارة تنتمي إلى ' + (s < 0 ? 'ℚ-' : 'ℚ+')]
+        ]),
+      controle: { type: 'classe', texte, attendu: s, description,
+                  env: { a: rat(-5, 2), b: rat(-3) } }
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // |a × b| = |a| × |b| — la valeur absolue traverse le produit.
+  // ---------------------------------------------------------------------
+  function absoluProduit(a, b) {
+    const p = mul(a, b), val = abs(p);
+    return {
+      enonce: ['احسب:', 'V = |' + txt(a) + ' × ' + txt(b) + '|'],
+      indice: 'القيمة المطلقة تعبر الجداء',
+      etapes: [
+        ['القاعدة', 'القيمة المطلقة لجداء هي جداء القيمتين المطلقتين'],
+        ['نطبّق القاعدة', '|' + txt(a) + ' × ' + txt(b) + '| = |' + txt(a) + '| × |' + txt(b) + '|'],
+        ['نحسب القيمتين', '|' + txt(a) + '| = ' + txt(abs(a)) + ' و |' + txt(b) + '| = ' + txt(abs(b))],
+        ['نضرب', txt(abs(a)) + ' × ' + txt(abs(b)) + ' = ' + txt(val)],
+        ['النتيجة', 'V = ' + txt(val)]
+      ],
+      controle: { type: 'absolu', a, b, val, env: { V: val } }
+    };
+  }
+
   const API = { produit, quotient, etagee, developper, produitBinomes,
+                remarquable, signeSansCalculer, classeSigne, absoluProduit,
                 factoriser, lin, quad, mono, joindre, nonNul, pgcd };
   if (M) module.exports = API;
   else racine.Produits = API;

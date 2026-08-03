@@ -98,4 +98,51 @@
     };
     return [un(), un(), un(), un()];
   } });
+
+  // --- 7 : les éléments remarquables — reconnaître plutôt que calculer ----
+  F.enregistrer(7, { titre: 'عناصر مميّزة — نتعرّف بدل أن نحسب', questions: 4, f() {
+    const cas = ['zero', 'un', 'moinsUn', 'inverse'];
+    return cas.map(c => P.remarquable(frac(), c));
+  } });
+
+  // --- 8 : le signe, sans jamais calculer ---------------------------------
+  F.enregistrer(8, { titre: 'إشارة عدد دون إجراء أيّ حساب', questions: 4, f() {
+    // De grands nombres, exprès : le calcul est hors de portée, seul le
+    // raisonnement sur les signes reste possible.
+    const grand = () => String(ent(10000000, 999999999)) + String(ent(100, 999));
+    const sg = () => (Math.random() < 0.5 ? '-' : '');
+    return [
+      P.signeSansCalculer(sg() + grand(), sg() + grand(), 'oppose'),
+      P.signeSansCalculer(sg() + grand(), sg() + grand(), 'oppose'),
+      P.signeSansCalculer(sg() + grand(), sg() + grand(), 'facteur'),
+      P.signeSansCalculer(sg() + grand(), sg() + grand(), 'facteur')
+    ];
+  } });
+
+  // --- 9 : ℚ₊ ou ℚ₋, avec a et b négatifs ---------------------------------
+  F.enregistrer(9, { titre: 'ℚ+ أو ℚ- — تركيب الإشارات', questions: 4, f() {
+    const n1 = ent(2, 9), n2 = ent(2, 9), n3 = ent(2, 9);
+    // a < 0 et b < 0 : chaque morceau se lit, aucun ne se calcule.
+    return [
+      P.classeSigne('a / b', [
+        { quoi: 'البسط', txt: 'a', signe: -1 },
+        { quoi: 'المقام', txt: 'b', signe: -1 }], 'a/b'),
+      P.classeSigne('-' + n1 + ' / a', [
+        { quoi: 'البسط', txt: '-' + n1, signe: -1 },
+        { quoi: 'المقام', txt: 'a', signe: -1 }], 'neg/a'),
+      P.classeSigne('|a| / b', [
+        { quoi: 'البسط', txt: '|a|', signe: 1 },
+        { quoi: 'المقام', txt: 'b', signe: -1 }], 'abs/b'),
+      P.classeSigne('(-' + n2 + ' / a) × (b / ' + n3 + ')', [
+        { quoi: 'الكسر الأول', txt: '-' + n2 + ' / a', signe: 1 },
+        { quoi: 'الكسر الثاني', txt: 'b / ' + n3, signe: -1 }], 'produit')
+    ];
+  } });
+
+  // --- 10 : la valeur absolue traverse le produit -------------------------
+  F.enregistrer(10, { titre: 'القيمة المطلقة و الجداء', questions: 3, f() {
+    const un = () => { const [a, b] = simplifiable(); return P.absoluProduit(a, b); };
+    return [un(), un(), un()];
+  } });
+
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -79,6 +79,29 @@ function controlerClaim(c) {
       }
       controles++;
     }
+  } else if (c.type === 'signe-produit') {
+    // Le signe annoncé doit se déduire des seuls signes des facteurs.
+    const attendu = c.cote === 'oppose' ? -(c.s1 * c.s2) : c.s1 * c.s2;
+    if (attendu !== c.attendu) p.push('الإشارة المعلنة لا توافق تركيب الإشارتين');
+    controles++;
+  } else if (c.type === 'classe') {
+    // On refait le raisonnement en donnant à a et b des valeurs négatives
+    // au hasard : le signe obtenu doit être celui qu'annonce la chaîne.
+    for (let i = 0; i < ECHANTILLONS; i++) {
+      const a = F.rat(-F.ent(1, 20), F.ent(1, 9)), b = F.rat(-F.ent(1, 20), F.ent(1, 9));
+      const v = F.analyser(c.texte.replace(/×/g, '*'), { a, b });
+      if (F.signe(v) !== c.attendu) {
+        p.push(`${c.texte} vaut ${F.txt(v)} pour a = ${F.txt(a)}, b = ${F.txt(b)}`);
+        break;
+      }
+      controles++;
+    }
+  } else if (c.type === 'absolu') {
+    const vrai = F.abs(F.mul(c.a, c.b));
+    if (!F.egaux(vrai, c.val)) p.push('القيمة المطلقة محسوبة خطأ');
+    if (!F.egaux(vrai, F.mul(F.abs(c.a), F.abs(c.b)))) p.push('|ab| ≠ |a||b|');
+    if (F.signe(c.val) < 0) p.push('قيمة مطلقة سالبة');
+    controles += 2;
   } else {
     p.push('نوع غير معروف: ' + c.type);
   }
@@ -102,7 +125,11 @@ function verifierBrut(brut) {
     }
     verifiees++;
   });
-  if (verifiees < 2) probs.push(`مراحل قابلة للتحقق: ${verifiees} فقط`);
+  // Les questions de signe ne contiennent, par construction, AUCUNE égalité
+  // à recalculer : c'est tout leur propos. On ne leur impose donc pas le
+  // minimum d'étapes calculables.
+  const mini = (c.type === 'signe-produit' || c.type === 'classe') ? 0 : 2;
+  if (verifiees < mini) probs.push(`مراحل قابلة للتحقق: ${verifiees} فقط`);
   probs.push(...controlerClaim(c));
   const textes = brut.etapes.map(e => e.join(': '));
   if (new Set(textes).size !== textes.length) probs.push('مراحل مكرّرة');
@@ -149,7 +176,12 @@ if (process.env.CONTRE_EXEMPLES) {
   a3.controle.droite = a3.controle.droite.replace(/x\^2/, 'x');
   cas.push(['carré oublié dans le développement', a3]);
   const a4 = copie(l5[1]);
-  a4.controle.droite = a4.controle.droite.replace(/ \+ /, ' - ');
+  // La falsification doit MORDRE quelle que soit la forme tirée : si aucun
+  // « + » n'est là à retourner, on retourne un « - », et à défaut on décale.
+  a4.controle.droite = / \+ /.test(a4.controle.droite)
+    ? a4.controle.droite.replace(/ \+ /, ' - ')
+    : (/ - /.test(a4.controle.droite) ? a4.controle.droite.replace(/ - /, ' + ')
+                                      : a4.controle.droite + ' + 1');
   cas.push(['signe faussé dans le développement', a4]);
   const l6 = F.tirer(6);
   const a5 = copie(l6[0]);
@@ -160,6 +192,15 @@ if (process.env.CONTRE_EXEMPLES) {
   cas.push(['quotient faussé', a6]);
   const a7 = copie(l1[2]); a7.etapes[3] = a7.etapes[2].slice();
   cas.push(['étape dupliquée', a7]);
+  const l8 = F.tirer(8);
+  const a8 = copie(l8[0]); a8.controle.attendu = -a8.controle.attendu;
+  cas.push(['signe déduit à l\'envers', a8]);
+  const l9 = F.tirer(9);
+  const a9 = copie(l9[0]); a9.controle.attendu = -a9.controle.attendu;
+  cas.push(['classe ℚ+/ℚ- inversée', a9]);
+  const l10 = F.tirer(10);
+  const a10 = copie(l10[0]); a10.controle.val = F.neg(a10.controle.val);
+  cas.push(['valeur absolue négative', a10]);
 
   let bon = 0;
   for (const [nom, q] of cas) {
