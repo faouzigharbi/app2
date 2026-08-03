@@ -4,6 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+  <style>
+    #feuille { display:none }
+    .feuille-titre { text-align:center; margin:0 0 4mm; font-size:1.15em }
+    .feuille-sous { text-align:center; color:#666; font-size:.85em; margin:0 0 6mm }
+    .fq { margin:0 0 7mm; page-break-inside:avoid }
+    .fq h4 { margin:0 0 2mm; font-size:1em }
+    .fq .enonce { border:1px solid #999; border-radius:4px; padding:2mm 3mm; margin-bottom:2mm }
+    .fq ol, .fq ul { margin:0; padding-inline-start:8mm }
+    .fq li { margin:1.2mm 0; line-height:1.9 }
+    .fq .case { display:inline-block; width:9mm; height:6mm; border:1px solid #999;
+                border-radius:3px; margin-inline-end:3mm; vertical-align:middle }
+    .coupure { page-break-before:always }
+    @media print {
+      header, main > .card, .btn, .badge, .row { display:none !important }
+      #feuille { display:block }
+      body { background:#fff; margin:0; padding:0 }
+      @page { margin:12mm }
+    }
+  </style>
   <title>التمرين 8 — نفس الأساس — العامل المشترك</title>
 </head>
 <body>
@@ -35,6 +54,7 @@
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn secondary" id="btnReset">🔁 إعادة</button>
         <button class="btn secondary" id="btnNew">🎲 أرقام جديدة</button>
+        <button class="btn secondary" id="btnPrint">🖨 ورقة للطباعة</button>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn secondary" id="btnHint">💡 مساعدة</button>
@@ -44,6 +64,7 @@
     <div class="hint" id="hint"></div>
     <div class="feedback" id="feedback"></div>
   </div>
+  <div id="feuille"></div>
 </main>
 
 <script src="moteur.js"></script>
@@ -65,6 +86,38 @@
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+
+  // La feuille imprimable : l'élève reçoit les étapes dans le désordre avec
+  // des cases à numéroter, le parent les reçoit dans l'ordre. Le parent peut
+  // ainsi corriger sans savoir refaire l'exercice.
+  //
+  // Cette page n'affiche qu'une question à la fois : le désordre imprimé est
+  // donc tiré au moment de l'impression, il ne peut pas reproduire celui d'une
+  // question que l'élève n'a pas encore vue.
+  function feuille() {
+    const f = document.getElementById('feuille');
+    if (!f) return;
+    const bloc = function (q, i, corrige) {
+      const etapes = corrige ? q.steps : shuffle(q.steps);
+      return '<div class="fq"><h4>السؤال ' + (i + 1) + '</h4>'
+        + '<div class="enonce">' + (q.operation || '') + '</div>'
+        + (corrige
+            ? '<ol>' + etapes.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>'
+            : '<ul style="list-style:none;padding-inline-start:0">'
+              + etapes.map(function (s) { return '<li><span class="case"></span>' + s + '</li>'; }).join('')
+              + '</ul>')
+        + '</div>';
+    };
+    f.innerHTML =
+      '<h3 class="feuille-titre">' + data.title + '</h3>'
+      + '<p class="feuille-sous">ورقة التلميذ — رتّب المراحل بكتابة رقمها في المربّع</p>'
+      + data.questions.map(function (q, i) { return bloc(q, i, false); }).join('')
+      + '<div class="coupure"></div>'
+      + '<h3 class="feuille-titre">' + data.title + '</h3>'
+      + '<p class="feuille-sous">ورقة الوليّ — الترتيب الصحيح، للمراجعة مع التلميذ</p>'
+      + data.questions.map(function (q, i) { return bloc(q, i, true); }).join('');
   }
 
   function loadQuestion() {
@@ -155,6 +208,11 @@
     }
   });
 
+  document.getElementById('btnPrint').addEventListener('click', function() {
+    feuille();
+    window.print();
+  });
+
   document.getElementById('btnReset').addEventListener('click', loadQuestion);
 
   // Nouveau tirage : les nombres changent, la correction est recalculée.
@@ -170,7 +228,9 @@
     document.getElementById('hint').innerHTML = '💡 ' + (q.hint || q.steps[0]);
   });
 
-  window.onload = loadQuestion;
+  // La feuille est prête dès le chargement : on peut imprimer sans avoir
+  // parcouru toutes les questions à l'écran.
+  window.onload = function () { loadQuestion(); feuille(); };
 })();
 </script>
 
