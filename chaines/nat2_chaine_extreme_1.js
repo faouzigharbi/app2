@@ -36,7 +36,7 @@ const exerciceData = {
       "operation": "احسب بأيسر طريقة (4): <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">(320 - 127 - 11) + (140 - 127 - 11)</span>",
       "steps": [
         "نلاحظ: الجزء المشترك مطروح في القوسين، فلا يُحذف",
-        "نجمّع الحدود المتكاملة: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">(320 - 138) + (140 - 138)</span>",
+        "نعيد التجميع: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">(320 - 138) + (140 - 138)</span>",
         "ننجز الأقواس: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">182 + 2</span>",
         "النتيجة: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">= 184</span>"
       ],
