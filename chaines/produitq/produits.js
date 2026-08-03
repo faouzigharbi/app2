@@ -210,11 +210,52 @@
   // l'opposé, et deux inverses donnent 1. Les reconnaître, c'est ne pas
   // calculer du tout.
   // ---------------------------------------------------------------------
+  // Les ÉQUATIONS où l'élément remarquable est ce qui permet de conclure.
+  // « P = 3/4 × 0 » n'est pas une question : la réponse est écrite dans
+  // l'énoncé. « P + 3/4 = 0 » en est une, et elle porte exactement la même
+  // notion — l'opposé, l'inverse, l'élément neutre, l'élément absorbant.
+  function equationRemarquable(a, cas) {
+    const inv = rat(a.d * Math.sign(a.n), Math.abs(a.n));
+    const CAS = {
+      // « P + -7/12 » collerait deux signes : le signe se replie sur
+      // l'opérateur, comme on l'écrit au tableau.
+      oppose:  { eq: 'P' + plus(a) + ' = 0', sol: neg(a),
+                 vu: 'مجموع العددين منعدم',
+                 regle: 'العددان اللذان مجموعهما منعدم متقابلان',
+                 quoi: 'نكتب المقابل',
+                 verif: txt(neg(a)) + plus(a) + ' = 0' },
+      inverse: { eq: 'P × ' + par(a) + ' = 1', sol: inv,
+                 vu: 'جداء العددين يساوي 1',
+                 regle: 'العددان اللذان جداؤهما 1 مقلوبان',
+                 quoi: 'نكتب المقلوب',
+                 verif: par(inv) + ' × ' + par(a) + ' = 1' },
+      absorbe: { eq: 'P × ' + par(a) + ' = 0', sol: rat(0),
+                 vu: 'الجداء منعدم و العامل الثاني غير منعدم',
+                 regle: 'إذا كان جداء منعدما و أحد عامليه غير منعدم فإنّ الآخر منعدم',
+                 quoi: 'نستنتج',
+                 verif: '0 × ' + par(a) + ' = 0' },
+      neutre:  { eq: 'P × 1 = ' + txt(a), sol: a,
+                 vu: 'أحد العاملين يساوي 1',
+                 regle: 'الضرب في 1 لا يغيّر العدد',
+                 quoi: 'نستنتج',
+                 verif: par(a) + ' × 1 = ' + txt(a) }
+    };
+    const c = CAS[cas];
+    return {
+      enonce: ['جد العدد الكسري النسبي P بحيث:', c.eq],
+      indice: 'لا تحسب: تعرّف على الحالة المميّزة',
+      etapes: [
+        ['نلاحظ', c.vu],
+        ['القاعدة', c.regle],
+        [c.quoi, 'P = ' + txt(c.sol)],
+        ['نتحقّق', c.verif]
+      ],
+      controle: { type: 'equation-p', eq: c.eq, sol: c.sol, env: { P: c.sol } }
+    };
+  }
+
   function remarquable(a, cas) {
     const REGLES = {
-      zero:    { b: rat(0),  val: rat(0),
-                 regle: 'كل عدد مضروب في 0 يساوي 0',
-                 vu: 'أحد العاملين منعدم' },
       un:      { b: rat(1),  val: a,
                  regle: 'كل عدد مضروب في 1 لا يتغيّر',
                  vu: 'أحد العاملين يساوي 1' },
@@ -330,7 +371,7 @@
   }
 
   const API = { produit, quotient, etagee, developper, produitBinomes,
-                remarquable, signeSansCalculer, classeSigne, absoluProduit,
+                remarquable, equationRemarquable, signeSansCalculer, classeSigne, absoluProduit,
                 factoriser, lin, quad, mono, joindre, nonNul, pgcd };
   if (M) module.exports = API;
   else racine.Produits = API;

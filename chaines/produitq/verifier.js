@@ -56,6 +56,20 @@ function controlerClaim(c) {
       p.push("العبارة المكتوبة لا تساوي النتيجة");
     }
     controles += 3;
+  } else if (c.type === 'equation-p') {
+    // On re-résout l'équation À PARTIR DE SON TEXTE : elle est affine en P,
+    // donc évaluée en P = 0 puis P = 1 elle livre sa solution.
+    const k = c.eq.indexOf('=');
+    const g = c.eq.slice(0, k).replace(/×/g, '*'), d = c.eq.slice(k + 1).replace(/×/g, '*');
+    const f = P => F.sub(F.analyser(g, { P }), F.analyser(d, { P }));
+    const b0 = f(F.rat(0)), a1 = F.sub(f(F.rat(1)), b0);
+    if (a1.n === 0) p.push("l'équation n'est pas du premier degré en P");
+    else {
+      const vrai = F.div(F.neg(b0), a1);
+      if (!F.egaux(vrai, c.sol)) p.push(`الحلّ الحقيقي ${F.txt(vrai)} ≠ ${F.txt(c.sol)}`);
+    }
+    if (f(c.sol).n !== 0) p.push('التعويض بالحلّ لا يحقّق المعادلة');
+    controles += 2;
   } else if (c.type === 'quotient') {
     if (c.b.n === 0) p.push('القسمة على صفر');
     else if (!F.egaux(F.div(c.a, c.b), c.val)) p.push('الخارج الحقيقي مختلف');
@@ -204,6 +218,8 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.attendu = -c.controle.attendu; });
   pousse('valeur absolue négative', trouver('absolu'),
     c => { c.controle.val = F.neg(c.controle.val); });
+  pousse('solution d\'équation décalée', trouver('equation-p'),
+    c => { c.controle.sol = F.add(c.controle.sol, F.rat(1)); });
   pousse('étape dupliquée', trouver('produit'),
     c => { c.etapes[3] = c.etapes[2].slice(); });
 

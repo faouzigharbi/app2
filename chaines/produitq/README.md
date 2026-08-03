@@ -1,7 +1,7 @@
 # الجداء و القسمة في ℚ (8 أساسي)
 
 Bâti sur la leçon *الضرب و القسمة في ℚ* (riadhyet) et sur les devoirs de la
-*المدرسة الإعدادية النموذجية ضفاف البحيرة*. **6 types, 21 modèles, 24 questions par
+*المدرسة الإعدادية النموذجية ضفاف البحيرة*. **6 types, 24 modèles, 24 questions par
 tirage.**
 
 Ces cinq devoirs partagent un même noyau algébrique — produit et quotient de
@@ -21,7 +21,7 @@ sortent vraiment. Le validateur les compte et affiche leur nombre.
 | Page | Type | Modèles tirés |
 |---|---|---|
 | 1 | **le produit** | deux fractions ; trois fractions ; entier × fraction ; \|a×b\| |
-| 2 | **éléments remarquables** | ×0 ; ×1 ; ×(−1) ; deux inverses |
+| 2 | **éléments remarquables** | reconnaître : ×1, ×(−1), deux inverses — puis résoudre : `P + a = 0`, `P × a = 1`, `P × a = 0`, `P × 1 = a` |
 | 3 | **le signe sans calculer** | produit = −n ; produit = valeur ; a/b ; \|a\|/b ; produit de deux quotients |
 | 4 | **division et fractions étagées** | division ; étagée simple ; étagée à sommes |
 | 5 | **développer et réduire** | k(ax+b) ; produit de deux parenthèses ; avec un terme de plus |
@@ -81,10 +81,16 @@ Deux régimes, selon la nature de l'affirmation :
 
 ```
 200 tirages par type, 4800 questions,
-153264 relations recalculées et 164239 affirmations re-démontrées, 0 erreur.
-11/11 falsifications détectées (sur dix exécutions).
+154369 relations recalculées et 163928 affirmations re-démontrées, 0 erreur.
+12/12 falsifications détectées (sur six exécutions).
 6 pages — 0 en défaut (Chromium).
 ```
+
+Le type 2 a d'ailleurs dû être repris : « P = 3/4 × 0 » n'était pas une
+question, la réponse figurait dans l'énoncé. Les quatre modèles d'équation
+(`P + a = 0`, `P × a = 1`, `P × a = 0`, `P × 1 = a`) portent exactement la
+même notion — opposé, inverse, élément neutre, élément absorbant — mais
+demandent quelque chose.
 
 Les falsifications ne sont plus désignées par le rang de leur page mais
 **cherchées par leur type de contrôle** : les pages ont été renumérotées une

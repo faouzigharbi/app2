@@ -50,11 +50,17 @@
   }, 4);
 
   // === TYPE 2 — les éléments remarquables : reconnaître, pas calculer =====
-  page(2, 'عناصر مميّزة — نتعرّف بدل أن نحسب', {
-    zero:    () => P.remarquable(frac(), 'zero'),
-    un:      () => P.remarquable(frac(), 'un'),
-    moinsUn: () => P.remarquable(frac(), 'moinsUn'),
-    inverse: () => P.remarquable(frac(), 'inverse')
+  // Les trois premiers modèles font RECONNAÎTRE l'élément dans un produit ;
+  // les quatre suivants s'en servent pour RÉSOUDRE. « P = 3/4 × 0 » n'était
+  // pas une question — la réponse figurait dans l'énoncé.
+  page(2, 'عناصر مميّزة — تعرّف ثمّ استنتج', {
+    un:        () => P.remarquable(frac(), 'un'),
+    moinsUn:   () => P.remarquable(frac(), 'moinsUn'),
+    inverse:   () => P.remarquable(frac(), 'inverse'),
+    eqOppose:  () => P.equationRemarquable(frac(), 'oppose'),
+    eqInverse: () => P.equationRemarquable(frac(), 'inverse'),
+    eqAbsorbe: () => P.equationRemarquable(frac(), 'absorbe'),
+    eqNeutre:  () => P.equationRemarquable(frac(), 'neutre')
   }, 4);
 
   // === TYPE 3 — l'ESSENTIEL : le signe se lit, il ne se calcule pas ======
