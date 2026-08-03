@@ -3,29 +3,29 @@ const exerciceData = {
   "title": "أولوية العمليات — سلسلة — متوسط",
   "questions": [
     {
-      "operation": "احسب: 4×2³-5",
+      "operation": "احسب: <span dir=\"ltr\">4×2³-5</span>",
       "steps": [
-        "2³=8",
-        "4×8=32",
-        "32-5=27"
+        "<span dir=\"ltr\">2³=8</span>",
+        "<span dir=\"ltr\">4×8=32</span>",
+        "<span dir=\"ltr\">32-5=27</span>"
       ],
       "hint": "القوة ← الضرب ← الطرح"
     },
     {
-      "operation": "احسب: (2+3)²×2",
+      "operation": "احسب: <span dir=\"ltr\">(2+3)²×2</span>",
       "steps": [
-        "الأقواس أولا: 2+3=5",
-        "5²=25",
-        "25×2=50"
+        "الأقواس أولا: <span dir=\"ltr\">2+3=5</span>",
+        "<span dir=\"ltr\">5²=25</span>",
+        "<span dir=\"ltr\">25×2=50</span>"
       ],
       "hint": "أقواس ← قوة ← ضرب"
     },
     {
-      "operation": "احسب: 3²×2+5²",
+      "operation": "احسب: <span dir=\"ltr\">3²×2+5²</span>",
       "steps": [
-        "3²=9, 5²=25",
-        "9×2=18",
-        "18+25=43"
+        "<span dir=\"ltr\">3²=9, 5²=25</span>",
+        "<span dir=\"ltr\">9×2=18</span>",
+        "<span dir=\"ltr\">18+25=43</span>"
       ],
       "hint": "القوى ← الضرب ← الجمع"
     }

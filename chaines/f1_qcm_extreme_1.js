@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f1_qcm_extreme_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — اختيارات — متقدّم",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — اختيارات — متقدّم",
   "questions": [
     {
-      "prompt": "125×625 كـ 5:",
+      "prompt": "<span dir=\"ltr\">125×625</span> كـ 5:",
       "steps": [],
       "options": [
         "5⁵",
@@ -12,10 +12,10 @@ const quizData = {
         "5⁸"
       ],
       "correct": 2,
-      "explanation": "5³×5⁴=5⁷"
+      "explanation": "<span dir=\"ltr\">5³×5⁴=5⁷</span>"
     },
     {
-      "prompt": "3⁴×9³×27² كـ 3:",
+      "prompt": "<span dir=\"ltr\">3⁴×9³×27²</span> كـ 3:",
       "steps": [],
       "options": [
         "3⁹",
@@ -24,10 +24,10 @@ const quizData = {
         "3¹⁸"
       ],
       "correct": 2,
-      "explanation": "3⁴⁺⁶⁺⁶=3¹⁶"
+      "explanation": "3⁴⁺⁶⁺<span dir=\"ltr\">⁶=3¹⁶</span>"
     },
     {
-      "prompt": "2⁵⁰×4²⁵ =",
+      "prompt": "<span dir=\"ltr\">2⁵⁰×4²⁵ =</span>",
       "steps": [],
       "options": [
         "2⁷⁵",
@@ -36,22 +36,22 @@ const quizData = {
         "6⁷⁵"
       ],
       "correct": 1,
-      "explanation": "4²⁵=2⁵⁰→2¹⁰⁰"
+      "explanation": "<span dir=\"ltr\">4²⁵=2⁵⁰</span>→2¹⁰⁰"
     },
     {
-      "prompt": "aⁿ×a = a<sup>?</sup>",
+      "prompt": "aⁿ<span dir=\"ltr\">×a = a<sup></span>?</sup>",
       "steps": [],
       "options": [
         "aⁿ",
-        "a<sup>n+1</sup>",
+        "<span dir=\"ltr\">a<sup>n+1</sup></span>",
         "a²ⁿ",
         "aⁿ²"
       ],
       "correct": 1,
-      "explanation": "a=a¹→n+1"
+      "explanation": "a=a¹→<span dir=\"ltr\">n+1</span>"
     },
     {
-      "prompt": "1024×1024 كـ 2:",
+      "prompt": "<span dir=\"ltr\">1024×1024</span> كـ 2:",
       "steps": [],
       "options": [
         "2¹⁸",
@@ -60,7 +60,7 @@ const quizData = {
         "2¹⁰⁰"
       ],
       "correct": 1,
-      "explanation": "2¹⁰×2¹⁰=2²⁰"
+      "explanation": "<span dir=\"ltr\">2¹⁰×2¹⁰=2²⁰</span>"
     }
   ]
 };

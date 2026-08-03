@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f2_erreur_medium_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — خطأ — متوسط",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — خطأ — متوسط",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "5²×3² = (5×3)<sup>2×2</sup>",
-        "= 15⁴",
-        "= 50625"
+        "<span dir=\"ltr\">5²×3² = (5×3)<sup>2×2</sup></span>",
+        "<span dir=\"ltr\">= 15⁴</span>",
+        "<span dir=\"ltr\">= 50625</span>"
       ],
       "options": [
         "L1",
@@ -15,14 +15,14 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "الدليل لا يتغير! (5×3)²=15²=225"
+      "explanation": "الدليل لا يتغير! <span dir=\"ltr\">(5×3)²=15²=225</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "4⁵×25⁵ = (4×25)⁵",
-        "= 100⁵",
-        "= 10 000 000 000"
+        "<span dir=\"ltr\">4⁵×25⁵ = (4×25)⁵</span>",
+        "<span dir=\"ltr\">= 100⁵</span>",
+        "<span dir=\"ltr\">= 10 000 000 000</span>"
       ],
       "options": [
         "L1",
@@ -35,9 +35,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2ⁿ×3ⁿ = 6ⁿ",
-        "لأن (2×3)ⁿ=6ⁿ",
-        "تحقق n=4: 16×81=1296=6⁴ ✓"
+        "2ⁿ<span dir=\"ltr\">×3</span>ⁿ <span dir=\"ltr\">= 6</span>ⁿ",
+        "لأن <span dir=\"ltr\">(2×3)</span>ⁿ<span dir=\"ltr\">=6</span>ⁿ",
+        "تحقق <span dir=\"ltr\">n=4: 16×81=1296=6⁴</span> ✓"
       ],
       "options": [
         "L1",
@@ -50,9 +50,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "7²×3² = (7+3)² = 10²",
-        "= 100",
-        "لكن 49×9 = 441"
+        "<span dir=\"ltr\">7²×3² = (7+3)² = 10²</span>",
+        "<span dir=\"ltr\">= 100</span>",
+        "لكن <span dir=\"ltr\">49×9 = 441</span>"
       ],
       "options": [
         "L1",
@@ -60,14 +60,14 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "نضرب! (7×3)²=21²=441"
+      "explanation": "نضرب! <span dir=\"ltr\">(7×3)²=21²=441</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "3³×2³ = (3×2)³ = 6³",
-        "= 216",
-        "27×8 = 216 ✓"
+        "<span dir=\"ltr\">3³×2³ = (3×2)³ = 6³</span>",
+        "<span dir=\"ltr\">= 216</span>",
+        "<span dir=\"ltr\">27×8 = 216</span> ✓"
       ],
       "options": [
         "L1",

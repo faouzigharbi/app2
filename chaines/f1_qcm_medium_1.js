@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f1_qcm_medium_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — اختيارات — متوسط",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — اختيارات — متوسط",
   "questions": [
     {
-      "prompt": "5ⁿ×5³=5⁸. n=?",
+      "prompt": "5ⁿ<span dir=\"ltr\">×5³=5⁸. n=</span>?",
       "steps": [],
       "options": [
         "3",
@@ -12,22 +12,22 @@ const quizData = {
         "24"
       ],
       "correct": 1,
-      "explanation": "n+3=8→n=5"
+      "explanation": "<span dir=\"ltr\">n+3=8</span>→<span dir=\"ltr\">n=5</span>"
     },
     {
       "prompt": "أي خاطئ؟",
       "steps": [],
       "options": [
-        "3²×3⁴=3⁶",
-        "5¹×5¹=5²",
-        "2³+2⁴=2⁷",
-        "4²×4³=4⁵"
+        "<span dir=\"ltr\">3²×3⁴=3⁶</span>",
+        "<span dir=\"ltr\">5¹×5¹=5²</span>",
+        "<span dir=\"ltr\">2³+2⁴=2⁷</span>",
+        "<span dir=\"ltr\">4²×4³=4⁵</span>"
       ],
       "correct": 2,
       "explanation": "القاعدة للضرب لا الجمع"
     },
     {
-      "prompt": "8×16 كقوة لـ 2:",
+      "prompt": "<span dir=\"ltr\">8×16</span> كقوة لـ 2:",
       "steps": [],
       "options": [
         "2⁷",
@@ -36,10 +36,10 @@ const quizData = {
         "128¹"
       ],
       "correct": 0,
-      "explanation": "2³×2⁴=2⁷"
+      "explanation": "<span dir=\"ltr\">2³×2⁴=2⁷</span>"
     },
     {
-      "prompt": "4²×4ⁿ=4⁷. n=?",
+      "prompt": "<span dir=\"ltr\">4²×4</span>ⁿ<span dir=\"ltr\">=4⁷. n=</span>?",
       "steps": [],
       "options": [
         "3",
@@ -48,10 +48,10 @@ const quizData = {
         "14"
       ],
       "correct": 1,
-      "explanation": "2+n=7→n=5"
+      "explanation": "<span dir=\"ltr\">2+n=7</span>→<span dir=\"ltr\">n=5</span>"
     },
     {
-      "prompt": "2³×2³×2³ = ?",
+      "prompt": "<span dir=\"ltr\">2³×2³×2³ =</span> ?",
       "steps": [],
       "options": [
         "2⁹",
@@ -60,7 +60,7 @@ const quizData = {
         "6⁹"
       ],
       "correct": 0,
-      "explanation": "2<sup>3+3+3</sup>=2⁹"
+      "explanation": "<span dir=\"ltr\">2<sup>3+3+3</sup>=2⁹</span>"
     }
   ]
 };

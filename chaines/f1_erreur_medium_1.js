@@ -1,12 +1,12 @@
 const quizData = {
   "id": "f1_erreur_medium_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — خطأ — متوسط",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — خطأ — متوسط",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2<sup>4</sup>×3<sup>2</sup> = 6<sup>6</sup>",
-        "= 46656",
+        "<span dir=\"ltr\">2<sup>4</sup>×3<sup>2</sup> = 6<sup>6</sup></span>",
+        "<span dir=\"ltr\">= 46656</span>",
         "تحقق"
       ],
       "options": [
@@ -20,8 +20,8 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "10<sup>3</sup>×10<sup>4</sup> = 10<sup>7</sup>",
-        "10<sup>7</sup> = 1 000 000",
+        "<span dir=\"ltr\">10<sup>3</sup>×10<sup>4</sup> = 10<sup>7</sup></span>",
+        "<span dir=\"ltr\">10<sup>7</sup> = 1 000 000</span>",
         "أي مليون"
       ],
       "options": [
@@ -30,14 +30,14 @@ const quizData = {
         "L3"
       ],
       "correct": 1,
-      "explanation": "10<sup>7</sup> = 10 000 000 (7 أصفار)"
+      "explanation": "<span dir=\"ltr\">10<sup>7</sup> = 10 000 000 (7</span> أصفار)"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "6<sup>2</sup>×6<sup>3</sup> = 6<sup>2×3</sup>",
-        "= 6<sup>6</sup>",
-        "= 46656"
+        "<span dir=\"ltr\">6<sup>2</sup>×6<sup>3</sup> = 6<sup>2×3</sup></span>",
+        "<span dir=\"ltr\">= 6<sup>6</sup></span>",
+        "<span dir=\"ltr\">= 46656</span>"
       ],
       "options": [
         "L1",
@@ -45,13 +45,13 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "نجمع! 6<sup>2+3</sup>=6<sup>5</sup>=7776"
+      "explanation": "نجمع! <span dir=\"ltr\">6<sup>2+3</sup>=6<sup>5</sup>=7776</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "5<sup>2</sup>×5<sup>0</sup> = 5<sup>2</sup>",
-        "= 25",
+        "<span dir=\"ltr\">5<sup>2</sup>×5<sup>0</sup> = 5<sup>2</sup></span>",
+        "<span dir=\"ltr\">= 25</span>",
         "✓"
       ],
       "options": [
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "a<sup>3</sup>×a<sup>7</sup> = a<sup>10</sup>",
-        "= 10 أعداد",
-        "a<sup>10</sup> = 10a"
+        "<span dir=\"ltr\">a<sup>3</sup>×a<sup>7</sup> = a<sup>10</sup></span>",
+        "<span dir=\"ltr\">= 10</span> أعداد",
+        "<span dir=\"ltr\">a<sup>10</sup> = 10a</span>"
       ],
       "options": [
         "L1",
@@ -75,7 +75,7 @@ const quizData = {
         "L3"
       ],
       "correct": 2,
-      "explanation": "a<sup>10</sup> ≠ 10a!"
+      "explanation": "<span dir=\"ltr\">a<sup>10</sup></span> ≠ 10a!"
     }
   ]
 };

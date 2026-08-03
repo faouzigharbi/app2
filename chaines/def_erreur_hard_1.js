@@ -5,9 +5,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "5<sup>4</sup> = 25 × 25",
-        "25 × 25 = 525",
-        "إذن 5<sup>4</sup> = 525"
+        "<span dir=\"ltr\">5<sup>4</sup> = 25 × 25</span>",
+        "<span dir=\"ltr\">25 × 25 = 525</span>",
+        "إذن <span dir=\"ltr\">5<sup>4</sup> = 525</span>"
       ],
       "options": [
         "L1",
@@ -15,14 +15,14 @@ const quizData = {
         "L3"
       ],
       "correct": 1,
-      "explanation": "25×25 = 625 وليس 525"
+      "explanation": "<span dir=\"ltr\">25×25 = 625</span> وليس 525"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "11<sup>2</sup> = 111",
-        "11 × 11 = 121",
-        "إذن 11<sup>2</sup> = 121"
+        "<span dir=\"ltr\">11<sup>2</sup> = 111</span>",
+        "<span dir=\"ltr\">11 × 11 = 121</span>",
+        "إذن <span dir=\"ltr\">11<sup>2</sup> = 121</span>"
       ],
       "options": [
         "L1",
@@ -30,14 +30,14 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "11<sup>2</sup> = 121 وليس 111"
+      "explanation": "<span dir=\"ltr\">11<sup>2</sup> = 121</span> وليس 111"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "9<sup>3</sup> = 9×9×9",
-        "9×9 = 81",
-        "81×9 = 819"
+        "<span dir=\"ltr\">9<sup>3</sup> = 9×9×9</span>",
+        "<span dir=\"ltr\">9×9 = 81</span>",
+        "<span dir=\"ltr\">81×9 = 819</span>"
       ],
       "options": [
         "L1",
@@ -45,14 +45,14 @@ const quizData = {
         "L3"
       ],
       "correct": 2,
-      "explanation": "81×9 = 729 وليس 819"
+      "explanation": "<span dir=\"ltr\">81×9 = 729</span> وليس 819"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2<sup>10</sup> = (2<sup>5</sup>)<sup>2</sup> = 32<sup>2</sup>",
-        "32<sup>2</sup> = 1044",
-        "إذن 2<sup>10</sup> = 1044"
+        "<span dir=\"ltr\">2<sup>10</sup> = (2<sup>5</sup>)<sup>2</sup> = 32<sup>2</sup></span>",
+        "<span dir=\"ltr\">32<sup>2</sup> = 1044</span>",
+        "إذن <span dir=\"ltr\">2<sup>10</sup> = 1044</span>"
       ],
       "options": [
         "L1",
@@ -60,14 +60,14 @@ const quizData = {
         "L3"
       ],
       "correct": 1,
-      "explanation": "32<sup>2</sup> = 1024 وليس 1044"
+      "explanation": "<span dir=\"ltr\">32<sup>2</sup> = 1024</span> وليس 1044"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "12<sup>2</sup> = (10+2)<sup>2</sup> = 10<sup>2</sup>+2<sup>2</sup>",
-        "= 100+4 = 104",
-        "لكن 12×12 = 144"
+        "<span dir=\"ltr\">12<sup>2</sup> = (10+2)<sup>2</sup> = 10<sup>2</sup>+2<sup>2</sup></span>",
+        "<span dir=\"ltr\">= 100+4 = 104</span>",
+        "لكن <span dir=\"ltr\">12×12 = 144</span>"
       ],
       "options": [
         "L1",

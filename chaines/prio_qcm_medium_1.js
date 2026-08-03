@@ -3,7 +3,7 @@ const quizData = {
   "title": "أولوية العمليات — اختيارات — متوسط",
   "questions": [
     {
-      "prompt": "2³+3²=?",
+      "prompt": "<span dir=\"ltr\">2³+3²=</span>?",
       "steps": [],
       "options": [
         "17",
@@ -12,10 +12,10 @@ const quizData = {
         "11"
       ],
       "correct": 0,
-      "explanation": "8+9=17"
+      "explanation": "<span dir=\"ltr\">8+9=17</span>"
     },
     {
-      "prompt": "2×3²=?",
+      "prompt": "<span dir=\"ltr\">2×3²=</span>?",
       "steps": [],
       "options": [
         "36",
@@ -24,10 +24,10 @@ const quizData = {
         "72"
       ],
       "correct": 1,
-      "explanation": "2×9=18"
+      "explanation": "<span dir=\"ltr\">2×9=18</span>"
     },
     {
-      "prompt": "4×2³-5=?",
+      "prompt": "<span dir=\"ltr\">4×2³-5=</span>?",
       "steps": [],
       "options": [
         "27",
@@ -36,10 +36,10 @@ const quizData = {
         "37"
       ],
       "correct": 0,
-      "explanation": "32-5=27"
+      "explanation": "<span dir=\"ltr\">32-5=27</span>"
     },
     {
-      "prompt": "3²×2+1=?",
+      "prompt": "<span dir=\"ltr\">3²×2+1=</span>?",
       "steps": [],
       "options": [
         "19",
@@ -48,10 +48,10 @@ const quizData = {
         "82"
       ],
       "correct": 0,
-      "explanation": "18+1=19"
+      "explanation": "<span dir=\"ltr\">18+1=19</span>"
     },
     {
-      "prompt": "(1+2)³=?",
+      "prompt": "<span dir=\"ltr\">(1+2)³=</span>?",
       "steps": [],
       "options": [
         "9",
@@ -60,7 +60,7 @@ const quizData = {
         "6"
       ],
       "correct": 1,
-      "explanation": "3³=27"
+      "explanation": "<span dir=\"ltr\">3³=27</span>"
     }
   ]
 };

@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f2_erreur_expert_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — خطأ — خبير",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — خطأ — خبير",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "4³×25³ = 100³",
-        "= 100 000",
-        "لكن 64×15625=1000000"
+        "<span dir=\"ltr\">4³×25³ = 100³</span>",
+        "<span dir=\"ltr\">= 100 000</span>",
+        "لكن <span dir=\"ltr\">64×15625=1000000</span>"
       ],
       "options": [
         "L1",
@@ -15,14 +15,14 @@ const quizData = {
         "L3"
       ],
       "correct": 1,
-      "explanation": "100³=1000000 وليس 100000"
+      "explanation": "<span dir=\"ltr\">100³=1000000</span> وليس 100000"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "14² = (2×7)² = 2²×7²",
-        "= 4×49",
-        "= 196 ✓"
+        "<span dir=\"ltr\">14² = (2×7)² = 2²×7²</span>",
+        "<span dir=\"ltr\">= 4×49</span>",
+        "<span dir=\"ltr\">= 196</span> ✓"
       ],
       "options": [
         "L1",
@@ -35,9 +35,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "50³ = 5³×10³",
-        "= 125×1000",
-        "= 12500"
+        "<span dir=\"ltr\">50³ = 5³×10³</span>",
+        "<span dir=\"ltr\">= 125×1000</span>",
+        "<span dir=\"ltr\">= 12500</span>"
       ],
       "options": [
         "L1",
@@ -45,13 +45,13 @@ const quizData = {
         "L3"
       ],
       "correct": 2,
-      "explanation": "125×1000=125000"
+      "explanation": "<span dir=\"ltr\">125×1000=125000</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2¹⁰×5¹⁰ = 10¹⁰",
-        "= 10 milliards",
+        "<span dir=\"ltr\">2¹⁰×5¹⁰ = 10¹⁰</span>",
+        "<span dir=\"ltr\">= 10 milliards</span>",
         "✓"
       ],
       "options": [
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "6² = (2×3)² = 2²+3²",
-        "= 4+9 = 13",
-        "لكن 6²=36"
+        "<span dir=\"ltr\">6² = (2×3)² = 2²+3²</span>",
+        "<span dir=\"ltr\">= 4+9 = 13</span>",
+        "لكن <span dir=\"ltr\">6²=36</span>"
       ],
       "options": [
         "L1",

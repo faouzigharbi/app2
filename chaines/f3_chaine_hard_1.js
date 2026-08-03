@@ -1,25 +1,25 @@
 const exerciceData = {
   "id": "f3_chaine_hard_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — سلسلة — صعب",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — سلسلة — صعب",
   "questions": [
     {
       "operation": "(2³)⁴ كقوة لـ 2",
       "steps": [
-        "(2³)⁴=2<sup>3×4</sup>",
-        "=2¹²",
-        "=4096"
+        "<span dir=\"ltr\">(2³)⁴=2<sup>3×4</sup></span>",
+        "<span dir=\"ltr\">=2¹²</span>",
+        "<span dir=\"ltr\">=4096</span>"
       ],
       "hint": "نضرب"
     },
     {
       "operation": "8² كقوة لـ 2",
       "steps": [
-        "8=2³",
-        "8²=(2³)²",
-        "=2<sup>3×2</sup>=2⁶",
-        "=64"
+        "<span dir=\"ltr\">8=2³</span>",
+        "<span dir=\"ltr\">8²=(2³)²</span>",
+        "<span dir=\"ltr\">=2<sup>3×2</sup>=2⁶</span>",
+        "<span dir=\"ltr\">=64</span>"
       ],
-      "hint": "8=2³"
+      "hint": "<span dir=\"ltr\">8=2³</span>"
     }
   ]
 };

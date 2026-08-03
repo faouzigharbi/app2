@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f1_qcm_easy_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — اختيارات — سهل",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — اختيارات — سهل",
   "questions": [
     {
-      "prompt": "3²×3³ = ?",
+      "prompt": "<span dir=\"ltr\">3²×3³ =</span> ?",
       "steps": [],
       "options": [
         "3⁶",
@@ -12,10 +12,10 @@ const quizData = {
         "3²³"
       ],
       "correct": 1,
-      "explanation": "3<sup>2+3</sup>=3⁵"
+      "explanation": "<span dir=\"ltr\">3<sup>2+3</sup>=3⁵</span>"
     },
     {
-      "prompt": "2⁴×2⁶ = ?",
+      "prompt": "<span dir=\"ltr\">2⁴×2⁶ =</span> ?",
       "steps": [],
       "options": [
         "2²⁴",
@@ -24,10 +24,10 @@ const quizData = {
         "2⁴⁶"
       ],
       "correct": 2,
-      "explanation": "2<sup>4+6</sup>=2¹⁰"
+      "explanation": "<span dir=\"ltr\">2<sup>4+6</sup>=2¹⁰</span>"
     },
     {
-      "prompt": "7⁵×7⁰ = ?",
+      "prompt": "<span dir=\"ltr\">7⁵×7⁰ =</span> ?",
       "steps": [],
       "options": [
         "7⁵",
@@ -36,7 +36,7 @@ const quizData = {
         "49⁵"
       ],
       "correct": 0,
-      "explanation": "7<sup>5+0</sup>=7⁵"
+      "explanation": "<span dir=\"ltr\">7<sup>5+0</sup>=7⁵</span>"
     },
     {
       "prompt": "a³×a⁴ = ?",
@@ -48,10 +48,10 @@ const quizData = {
         "a³⁴"
       ],
       "correct": 1,
-      "explanation": "a<sup>3+4</sup>=a⁷"
+      "explanation": "<span dir=\"ltr\">a<sup>3+4</sup>=a⁷</span>"
     },
     {
-      "prompt": "10²×10⁴ = ?",
+      "prompt": "<span dir=\"ltr\">10²×10⁴ =</span> ?",
       "steps": [],
       "options": [
         "10⁸",
@@ -60,7 +60,7 @@ const quizData = {
         "10²⁴"
       ],
       "correct": 2,
-      "explanation": "10<sup>2+4</sup>=10⁶"
+      "explanation": "<span dir=\"ltr\">10<sup>2+4</sup>=10⁶</span>"
     }
   ]
 };

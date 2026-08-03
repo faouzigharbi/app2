@@ -3,19 +3,19 @@ const quizData = {
   "title": "تعريف القوة — اختيارات — سهل",
   "questions": [
     {
-      "prompt": "ماذا تعني 4<sup>3</sup>؟",
+      "prompt": "ماذا تعني <span dir=\"ltr\">4<sup>3</sup></span>؟",
       "steps": [],
       "options": [
-        "4×3=12",
-        "4×4×4=64",
-        "3×3×3×3",
-        "4+4+4"
+        "<span dir=\"ltr\">4×3=12</span>",
+        "<span dir=\"ltr\">4×4×4=64</span>",
+        "<span dir=\"ltr\">3×3×3×3</span>",
+        "<span dir=\"ltr\">4+4+4</span>"
       ],
       "correct": 1,
-      "explanation": "4<sup>3</sup> = 64"
+      "explanation": "<span dir=\"ltr\">4<sup>3</sup> = 64</span>"
     },
     {
-      "prompt": "ما قيمة 10<sup>5</sup>؟",
+      "prompt": "ما قيمة <span dir=\"ltr\">10<sup>5</sup></span>؟",
       "steps": [],
       "options": [
         "50",
@@ -27,7 +27,7 @@ const quizData = {
       "explanation": "5 أصفار"
     },
     {
-      "prompt": "ما قيمة 2<sup>0</sup>؟",
+      "prompt": "ما قيمة <span dir=\"ltr\">2<sup>0</sup></span>؟",
       "steps": [],
       "options": [
         "0",
@@ -36,10 +36,10 @@ const quizData = {
         "غير معرّف"
       ],
       "correct": 2,
-      "explanation": "أي عدد غير معدوم أُسّه 0 = 1"
+      "explanation": "أي عدد غير معدوم أُسّه <span dir=\"ltr\">0 = 1</span>"
     },
     {
-      "prompt": "3<sup>2</sup> تُقرأ:",
+      "prompt": "<span dir=\"ltr\">3<sup>2</sup></span> تُقرأ:",
       "steps": [],
       "options": [
         "3 ضرب 2",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "3 تربيع أو 3 أُسّ 2"
     },
     {
-      "prompt": "1<sup>50</sup> = ?",
+      "prompt": "<span dir=\"ltr\">1<sup>50</sup> =</span> ?",
       "steps": [],
       "options": [
         "50",
@@ -60,7 +60,7 @@ const quizData = {
         "100"
       ],
       "correct": 1,
-      "explanation": "1 مرفوع لأي قوة = 1"
+      "explanation": "1 مرفوع لأي قوة <span dir=\"ltr\">= 1</span>"
     }
   ]
 };

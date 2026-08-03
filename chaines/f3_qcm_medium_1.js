@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f3_qcm_medium_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — اختيارات — متوسط",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — اختيارات — متوسط",
   "questions": [
     {
-      "prompt": "(2⁴)³=?",
+      "prompt": "<span dir=\"ltr\">(2⁴)³=</span>?",
       "steps": [],
       "options": [
         "2⁷",
@@ -12,7 +12,7 @@ const quizData = {
         "8⁴"
       ],
       "correct": 1,
-      "explanation": "2<sup>4×3</sup>=2¹²"
+      "explanation": "<span dir=\"ltr\">2<sup>4×3</sup>=2¹²</span>"
     },
     {
       "prompt": "(aⁿ)¹=?",
@@ -24,10 +24,10 @@ const quizData = {
         "aⁿ¹"
       ],
       "correct": 1,
-      "explanation": "×1 لا يغيّر"
+      "explanation": "<span dir=\"ltr\">×1</span> لا يغيّر"
     },
     {
-      "prompt": "(4²)³=4<sup>?</sup>",
+      "prompt": "<span dir=\"ltr\">(4²)³=4<sup></span>?</sup>",
       "steps": [],
       "options": [
         "5",
@@ -36,10 +36,10 @@ const quizData = {
         "23"
       ],
       "correct": 1,
-      "explanation": "2×3=6"
+      "explanation": "<span dir=\"ltr\">2×3=6</span>"
     },
     {
-      "prompt": "(10³)²=?",
+      "prompt": "<span dir=\"ltr\">(10³)²=</span>?",
       "steps": [],
       "options": [
         "10⁵",
@@ -48,10 +48,10 @@ const quizData = {
         "10³²"
       ],
       "correct": 1,
-      "explanation": "10<sup>3×2</sup>"
+      "explanation": "<span dir=\"ltr\">10<sup>3×2</sup></span>"
     },
     {
-      "prompt": "(3³)³=?",
+      "prompt": "<span dir=\"ltr\">(3³)³=</span>?",
       "steps": [],
       "options": [
         "3⁶",
@@ -60,7 +60,7 @@ const quizData = {
         "9³"
       ],
       "correct": 1,
-      "explanation": "3<sup>3×3</sup>=3⁹"
+      "explanation": "<span dir=\"ltr\">3<sup>3×3</sup>=3⁹</span>"
     }
   ]
 };

@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f2_qcm_hard_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — اختيارات — صعب",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — اختيارات — صعب",
   "questions": [
     {
-      "prompt": "12³=3³×?",
+      "prompt": "<span dir=\"ltr\">12³=3³×</span>?",
       "steps": [],
       "options": [
         "4³",
@@ -12,10 +12,10 @@ const quizData = {
         "36³"
       ],
       "correct": 0,
-      "explanation": "12=3×4"
+      "explanation": "<span dir=\"ltr\">12=3×4</span>"
     },
     {
-      "prompt": "6ⁿ=2ⁿ×?",
+      "prompt": "6ⁿ<span dir=\"ltr\">=2</span>ⁿ×?",
       "steps": [],
       "options": [
         "3ⁿ",
@@ -24,10 +24,10 @@ const quizData = {
         "6"
       ],
       "correct": 0,
-      "explanation": "6=2×3"
+      "explanation": "<span dir=\"ltr\">6=2×3</span>"
     },
     {
-      "prompt": "15⁴=3⁴×5⁴=81×?",
+      "prompt": "<span dir=\"ltr\">15⁴=3⁴×5⁴=81×</span>?",
       "steps": [],
       "options": [
         "625",
@@ -36,14 +36,14 @@ const quizData = {
         "3125"
       ],
       "correct": 0,
-      "explanation": "5⁴=625"
+      "explanation": "<span dir=\"ltr\">5⁴=625</span>"
     },
     {
-      "prompt": "20³=(4×5)³=?",
+      "prompt": "<span dir=\"ltr\">20³=(4×5)³=</span>?",
       "steps": [],
       "options": [
-        "4³×5³",
-        "4³+5³",
+        "<span dir=\"ltr\">4³×5³</span>",
+        "<span dir=\"ltr\">4³+5³</span>",
         "20⁶",
         "9³"
       ],
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "(ab)ⁿ=aⁿ×bⁿ"
     },
     {
-      "prompt": "2³×3³×5³=?",
+      "prompt": "<span dir=\"ltr\">2³×3³×5³=</span>?",
       "steps": [],
       "options": [
         "10³",
@@ -60,7 +60,7 @@ const quizData = {
         "30⁹"
       ],
       "correct": 1,
-      "explanation": "(2×3×5)³=30³"
+      "explanation": "<span dir=\"ltr\">(2×3×5)³=30³</span>"
     }
   ]
 };

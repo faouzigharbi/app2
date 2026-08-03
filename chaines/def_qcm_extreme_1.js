@@ -3,7 +3,7 @@ const quizData = {
   "title": "تعريف القوة — اختيارات — متقدّم",
   "questions": [
     {
-      "prompt": "أصغر n: 3<sup>n</sup>>1000",
+      "prompt": "أصغر <span dir=\"ltr\">n: 3<sup>n</sup></span>>1000",
       "steps": [],
       "options": [
         "6",
@@ -12,10 +12,10 @@ const quizData = {
         "10"
       ],
       "correct": 1,
-      "explanation": "3⁶=729, 3⁷=2187"
+      "explanation": "<span dir=\"ltr\">3⁶=729, 3⁷=2187</span>"
     },
     {
-      "prompt": "1024 =",
+      "prompt": "<span dir=\"ltr\">1024 =</span>",
       "steps": [],
       "options": [
         "2¹⁰",
@@ -27,7 +27,7 @@ const quizData = {
       "explanation": "جميع الكتابات صحيحة"
     },
     {
-      "prompt": "99² = ?",
+      "prompt": "<span dir=\"ltr\">99² =</span> ?",
       "steps": [],
       "options": [
         "9801",
@@ -36,7 +36,7 @@ const quizData = {
         "9601"
       ],
       "correct": 0,
-      "explanation": "99²=9801"
+      "explanation": "<span dir=\"ltr\">99²=9801</span>"
     },
     {
       "prompt": "5⁵ أم 3⁸؟",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "3125<6561"
     },
     {
-      "prompt": "2⁰+2¹+2²+2³ = ?",
+      "prompt": "<span dir=\"ltr\">2⁰+2¹+2²+2³ =</span> ?",
       "steps": [],
       "options": [
         "6",
@@ -60,7 +60,7 @@ const quizData = {
         "16"
       ],
       "correct": 2,
-      "explanation": "1+2+4+8=15"
+      "explanation": "<span dir=\"ltr\">1+2+4+8=15</span>"
     }
   ]
 };

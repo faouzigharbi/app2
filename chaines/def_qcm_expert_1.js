@@ -3,7 +3,7 @@ const quizData = {
   "title": "تعريف القوة — اختيارات — خبير",
   "questions": [
     {
-      "prompt": "آخر رقم 3<sup>100</sup>؟",
+      "prompt": "آخر رقم <span dir=\"ltr\">3<sup>100</sup></span>؟",
       "steps": [],
       "options": [
         "1",
@@ -12,10 +12,10 @@ const quizData = {
         "9"
       ],
       "correct": 0,
-      "explanation": "الدورة: 3,9,7,1 → 100÷4=25 → 1"
+      "explanation": "الدورة: 3,9,7,1 → <span dir=\"ltr\">100÷4=25</span> → 1"
     },
     {
-      "prompt": "2<sup>10</sup> أم 10³؟",
+      "prompt": "<span dir=\"ltr\">2<sup>10</sup></span> أم 10³؟",
       "steps": [],
       "options": [
         "2¹⁰>10³",
@@ -27,7 +27,7 @@ const quizData = {
       "explanation": "1024>1000"
     },
     {
-      "prompt": "4<sup>n</sup>=256, n=?",
+      "prompt": "<span dir=\"ltr\">4<sup>n</sup>=256, n=</span>?",
       "steps": [],
       "options": [
         "3",
@@ -36,10 +36,10 @@ const quizData = {
         "64"
       ],
       "correct": 1,
-      "explanation": "4⁴=256"
+      "explanation": "<span dir=\"ltr\">4⁴=256</span>"
     },
     {
-      "prompt": "2<sup>20</sup> ≈ ?",
+      "prompt": "<span dir=\"ltr\">2<sup>20</sup></span> ≈ ?",
       "steps": [],
       "options": [
         "ألف",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "≈ مليون"
     },
     {
-      "prompt": "كم n: 2<sup>n</sup><100؟",
+      "prompt": "كم <span dir=\"ltr\">n: 2<sup>n</sup></span><100؟",
       "steps": [],
       "options": [
         "5",

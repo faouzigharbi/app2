@@ -3,7 +3,7 @@ const quizData = {
   "title": "أولوية العمليات — اختيارات — خبير",
   "questions": [
     {
-      "prompt": "2⁴+2³=?",
+      "prompt": "<span dir=\"ltr\">2⁴+2³=</span>?",
       "steps": [],
       "options": [
         "128",
@@ -12,10 +12,10 @@ const quizData = {
         "48"
       ],
       "correct": 1,
-      "explanation": "16+8=24"
+      "explanation": "<span dir=\"ltr\">16+8=24</span>"
     },
     {
-      "prompt": "2×3³-3×2³=?",
+      "prompt": "<span dir=\"ltr\">2×3³-3×2³=</span>?",
       "steps": [],
       "options": [
         "30",
@@ -24,10 +24,10 @@ const quizData = {
         "6"
       ],
       "correct": 0,
-      "explanation": "54-24=30"
+      "explanation": "<span dir=\"ltr\">54-24=30</span>"
     },
     {
-      "prompt": "(2³+1)²=?",
+      "prompt": "<span dir=\"ltr\">(2³+1)²=</span>?",
       "steps": [],
       "options": [
         "81",
@@ -36,10 +36,10 @@ const quizData = {
         "64"
       ],
       "correct": 0,
-      "explanation": "9²=81"
+      "explanation": "<span dir=\"ltr\">9²=81</span>"
     },
     {
-      "prompt": "3²×2²=?",
+      "prompt": "<span dir=\"ltr\">3²×2²=</span>?",
       "steps": [],
       "options": [
         "36",
@@ -48,10 +48,10 @@ const quizData = {
         "25"
       ],
       "correct": 0,
-      "explanation": "9×4=36"
+      "explanation": "<span dir=\"ltr\">9×4=36</span>"
     },
     {
-      "prompt": "10³-2×10²=?",
+      "prompt": "<span dir=\"ltr\">10³-2×10²=</span>?",
       "steps": [],
       "options": [
         "800",
@@ -60,7 +60,7 @@ const quizData = {
         "100"
       ],
       "correct": 0,
-      "explanation": "1000-200=800"
+      "explanation": "<span dir=\"ltr\">1000-200=800</span>"
     }
   ]
 };

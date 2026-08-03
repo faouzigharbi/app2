@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f3_erreur_extreme_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — خطأ — متقدّم",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — خطأ — متقدّم",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(2³)⁵ = 2¹⁵ = 32768",
-        "(8)⁵ = 32768",
-        "32768 = 32768 ✓"
+        "<span dir=\"ltr\">(2³)⁵ = 2¹⁵ = 32768</span>",
+        "<span dir=\"ltr\">(8)⁵ = 32768</span>",
+        "<span dir=\"ltr\">32768 = 32768</span> ✓"
       ],
       "options": [
         "L1",
@@ -20,9 +20,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(3²)⁴ × (3³)² = 3⁸ × 3⁶",
-        "= 3¹⁴",
-        "= 4782969"
+        "<span dir=\"ltr\">(3²)⁴ × (3³)² = 3⁸ × 3⁶</span>",
+        "<span dir=\"ltr\">= 3¹⁴</span>",
+        "<span dir=\"ltr\">= 4782969</span>"
       ],
       "options": [
         "L1",
@@ -35,9 +35,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(5²)³ × (5³)² = 5⁶ × 5⁶",
-        "= 5¹²",
-        "= 244140625"
+        "<span dir=\"ltr\">(5²)³ × (5³)² = 5⁶ × 5⁶</span>",
+        "<span dir=\"ltr\">= 5¹²</span>",
+        "<span dir=\"ltr\">= 244140625</span>"
       ],
       "options": [
         "L1",
@@ -51,8 +51,8 @@ const quizData = {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
         "(aⁿ)ᵖ = aⁿ⁺ᵖ",
-        "مثال: (2³)² = 2⁵",
-        "= 32"
+        "مثال: <span dir=\"ltr\">(2³)² = 2⁵</span>",
+        "<span dir=\"ltr\">= 32</span>"
       ],
       "options": [
         "L1",
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(4²)³ = (2⁴)³ = 2¹²",
-        "= 4096",
-        "4⁶ = 4096 ✓"
+        "<span dir=\"ltr\">(4²)³ = (2⁴)³ = 2¹²</span>",
+        "<span dir=\"ltr\">= 4096</span>",
+        "<span dir=\"ltr\">4⁶ = 4096</span> ✓"
       ],
       "options": [
         "L1",

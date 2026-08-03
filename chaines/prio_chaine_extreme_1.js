@@ -3,21 +3,21 @@ const exerciceData = {
   "title": "أولوية العمليات — سلسلة — متقدّم",
   "questions": [
     {
-      "operation": "(2²+1)×(3²-1)",
+      "operation": "<span dir=\"ltr\">(2²+1)×(3²-1)</span>",
       "steps": [
-        "2²=4→4+1=5",
-        "3²=9→9-1=8",
-        "5×8",
-        "= 40"
+        "<span dir=\"ltr\">2²=4</span>→<span dir=\"ltr\">4+1=5</span>",
+        "<span dir=\"ltr\">3²=9</span>→<span dir=\"ltr\">9-1=8</span>",
+        "<span dir=\"ltr\">5×8</span>",
+        "<span dir=\"ltr\">= 40</span>"
       ],
       "hint": "أقواس أولا"
     },
     {
-      "operation": "2⁵-3×2³+2²",
+      "operation": "<span dir=\"ltr\">2⁵-3×2³+2²</span>",
       "steps": [
-        "32-3×8+4",
-        "32-24+4",
-        "= 12"
+        "<span dir=\"ltr\">32-3×8+4</span>",
+        "<span dir=\"ltr\">32-24+4</span>",
+        "<span dir=\"ltr\">= 12</span>"
       ],
       "hint": "القوى ← الضرب ← بقية"
     }

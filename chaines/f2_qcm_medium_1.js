@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f2_qcm_medium_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — اختيارات — متوسط",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — اختيارات — متوسط",
   "questions": [
     {
-      "prompt": "25³×4³=?",
+      "prompt": "<span dir=\"ltr\">25³×4³=</span>?",
       "steps": [],
       "options": [
         "100³",
@@ -12,10 +12,10 @@ const quizData = {
         "100⁹"
       ],
       "correct": 0,
-      "explanation": "(25×4)³"
+      "explanation": "<span dir=\"ltr\">(25×4)³</span>"
     },
     {
-      "prompt": "2ⁿ×5ⁿ=?",
+      "prompt": "2ⁿ<span dir=\"ltr\">×5</span>ⁿ=?",
       "steps": [],
       "options": [
         "10ⁿ",
@@ -30,16 +30,16 @@ const quizData = {
       "prompt": "أي خاطئ؟",
       "steps": [],
       "options": [
-        "2³×5³=10³",
-        "3²×4²=12²",
-        "2⁴×3⁴=5⁴",
-        "7²×1²=7²"
+        "<span dir=\"ltr\">2³×5³=10³</span>",
+        "<span dir=\"ltr\">3²×4²=12²</span>",
+        "<span dir=\"ltr\">2⁴×3⁴=5⁴</span>",
+        "<span dir=\"ltr\">7²×1²=7²</span>"
       ],
       "correct": 2,
-      "explanation": "(2×3)⁴=6⁴≠5⁴"
+      "explanation": "<span dir=\"ltr\">(2×3)⁴=6⁴</span>≠5⁴"
     },
     {
-      "prompt": "50²×2²=?",
+      "prompt": "<span dir=\"ltr\">50²×2²=</span>?",
       "steps": [],
       "options": [
         "100²",
@@ -48,7 +48,7 @@ const quizData = {
         "2500¹"
       ],
       "correct": 0,
-      "explanation": "(50×2)²=100²"
+      "explanation": "<span dir=\"ltr\">(50×2)²=100²</span>"
     },
     {
       "prompt": "a⁵×b⁵×c⁵=?",

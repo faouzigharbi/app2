@@ -3,7 +3,7 @@ const quizData = {
   "title": "تعريف القوة — اختيارات — صعب",
   "questions": [
     {
-      "prompt": "15<sup>2</sup> = ?",
+      "prompt": "<span dir=\"ltr\">15<sup>2</sup> =</span> ?",
       "steps": [],
       "options": [
         "215",
@@ -12,10 +12,10 @@ const quizData = {
         "30"
       ],
       "correct": 1,
-      "explanation": "15²=225"
+      "explanation": "<span dir=\"ltr\">15²=225</span>"
     },
     {
-      "prompt": "كم صفرا في 10<sup>8</sup>؟",
+      "prompt": "كم صفرا في <span dir=\"ltr\">10<sup>8</sup></span>؟",
       "steps": [],
       "options": [
         "6",
@@ -30,16 +30,16 @@ const quizData = {
       "prompt": "أي عبارة خاطئة؟",
       "steps": [],
       "options": [
-        "5⁰=1",
-        "0⁵=0",
-        "1¹⁰⁰⁰=1",
-        "2³=2×3"
+        "<span dir=\"ltr\">5⁰=1</span>",
+        "<span dir=\"ltr\">0⁵=0</span>",
+        "<span dir=\"ltr\">1¹⁰⁰⁰=1</span>",
+        "<span dir=\"ltr\">2³=2×3</span>"
       ],
       "correct": 3,
-      "explanation": "2³≠2×3"
+      "explanation": "2³≠<span dir=\"ltr\">2×3</span>"
     },
     {
-      "prompt": "125 = 5<sup>?</sup>",
+      "prompt": "<span dir=\"ltr\">125 = 5<sup></span>?</sup>",
       "steps": [],
       "options": [
         "2",
@@ -48,7 +48,7 @@ const quizData = {
         "25"
       ],
       "correct": 1,
-      "explanation": "5³=125"
+      "explanation": "<span dir=\"ltr\">5³=125</span>"
     },
     {
       "prompt": "رتّب: 3³, 2⁵, 5²",

@@ -3,7 +3,7 @@ const quizData = {
   "title": "أولوية العمليات — اختيارات — سهل",
   "questions": [
     {
-      "prompt": "3+2²=?",
+      "prompt": "<span dir=\"ltr\">3+2²=</span>?",
       "steps": [],
       "options": [
         "7",
@@ -12,10 +12,10 @@ const quizData = {
         "12"
       ],
       "correct": 0,
-      "explanation": "3+4=7"
+      "explanation": "<span dir=\"ltr\">3+4=7</span>"
     },
     {
-      "prompt": "5×2³=?",
+      "prompt": "<span dir=\"ltr\">5×2³=</span>?",
       "steps": [],
       "options": [
         "1000",
@@ -24,10 +24,10 @@ const quizData = {
         "13"
       ],
       "correct": 1,
-      "explanation": "5×8=40"
+      "explanation": "<span dir=\"ltr\">5×8=40</span>"
     },
     {
-      "prompt": "10-3²=?",
+      "prompt": "<span dir=\"ltr\">10-3²=</span>?",
       "steps": [],
       "options": [
         "1",
@@ -36,7 +36,7 @@ const quizData = {
         "19"
       ],
       "correct": 0,
-      "explanation": "10-9=1"
+      "explanation": "<span dir=\"ltr\">10-9=1</span>"
     },
     {
       "prompt": "الأولوية:",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "القوة أولا ثم الضرب ثم الجمع"
     },
     {
-      "prompt": "(2+3)²=?",
+      "prompt": "<span dir=\"ltr\">(2+3)²=</span>?",
       "steps": [],
       "options": [
         "13",
@@ -60,7 +60,7 @@ const quizData = {
         "7"
       ],
       "correct": 1,
-      "explanation": "5²=25"
+      "explanation": "<span dir=\"ltr\">5²=25</span>"
     }
   ]
 };

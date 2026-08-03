@@ -3,39 +3,39 @@ const exerciceData = {
   "title": "أولوية العمليات — سلسلة — سهل",
   "questions": [
     {
-      "operation": "احسب: 3+2²×4",
+      "operation": "احسب: <span dir=\"ltr\">3+2²×4</span>",
       "steps": [
-        "القوة أولا: 2²=4",
-        "ثم الضرب: 4×4=16",
-        "ثم الجمع: 3+16",
-        "= 19"
+        "القوة أولا: <span dir=\"ltr\">2²=4</span>",
+        "ثم الضرب: <span dir=\"ltr\">4×4=16</span>",
+        "ثم الجمع: <span dir=\"ltr\">3+16</span>",
+        "<span dir=\"ltr\">= 19</span>"
       ],
       "hint": "القوة ← الضرب ← الجمع"
     },
     {
-      "operation": "احسب: 10-2³",
+      "operation": "احسب: <span dir=\"ltr\">10-2³</span>",
       "steps": [
-        "2³=8",
-        "10-8",
-        "= 2"
+        "<span dir=\"ltr\">2³=8</span>",
+        "<span dir=\"ltr\">10-8</span>",
+        "<span dir=\"ltr\">= 2</span>"
       ],
       "hint": "القوة أولا"
     },
     {
-      "operation": "احسب: 5×3²",
+      "operation": "احسب: <span dir=\"ltr\">5×3²</span>",
       "steps": [
-        "3²=9",
-        "5×9",
-        "= 45"
+        "<span dir=\"ltr\">3²=9</span>",
+        "<span dir=\"ltr\">5×9</span>",
+        "<span dir=\"ltr\">= 45</span>"
       ],
       "hint": "القوة ثم الضرب"
     },
     {
-      "operation": "احسب: 2³+3²",
+      "operation": "احسب: <span dir=\"ltr\">2³+3²</span>",
       "steps": [
-        "2³=8",
-        "3²=9",
-        "8+9=17"
+        "<span dir=\"ltr\">2³=8</span>",
+        "<span dir=\"ltr\">3²=9</span>",
+        "<span dir=\"ltr\">8+9=17</span>"
       ],
       "hint": "كل قوة على حدة"
     }

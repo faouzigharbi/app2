@@ -1,23 +1,23 @@
 const exerciceData = {
   "id": "f2_chaine_expert_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — سلسلة — خبير",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — سلسلة — خبير",
   "questions": [
     {
-      "operation": "6ⁿ=2ⁿ×3ⁿ",
+      "operation": "6ⁿ<span dir=\"ltr\">=2</span>ⁿ<span dir=\"ltr\">×3</span>ⁿ",
       "steps": [
-        "6=2×3",
-        "(2×3)ⁿ=2ⁿ×3ⁿ"
+        "<span dir=\"ltr\">6=2×3</span>",
+        "<span dir=\"ltr\">(2×3)</span>ⁿ<span dir=\"ltr\">=2</span>ⁿ<span dir=\"ltr\">×3</span>ⁿ"
       ],
-      "hint": "6=2×3"
+      "hint": "<span dir=\"ltr\">6=2×3</span>"
     },
     {
       "operation": "50³",
       "steps": [
-        "50=5×10",
-        "5³×10³=125×1000",
-        "=125 000"
+        "<span dir=\"ltr\">50=5×10</span>",
+        "<span dir=\"ltr\">5³×10³=125×1000</span>",
+        "<span dir=\"ltr\">=125 000</span>"
       ],
-      "hint": "50=5×10"
+      "hint": "<span dir=\"ltr\">50=5×10</span>"
     }
   ]
 };

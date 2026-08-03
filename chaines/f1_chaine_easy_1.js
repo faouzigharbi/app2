@@ -1,40 +1,40 @@
 const exerciceData = {
   "id": "f1_chaine_easy_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — سلسلة — سهل",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — سلسلة — سهل",
   "questions": [
     {
-      "operation": "بسّط: 2<sup>3</sup>×2<sup>4</sup>",
+      "operation": "بسّط: <span dir=\"ltr\">2<sup>3</sup>×2<sup>4</sup></span>",
       "steps": [
         "الأساس نفسه: 2",
-        "2<sup>3+4</sup> = 2<sup>7</sup>",
-        "= 128"
+        "<span dir=\"ltr\">2<sup>3+4</sup> = 2<sup>7</sup></span>",
+        "<span dir=\"ltr\">= 128</span>"
       ],
       "hint": "نجمع الأدلة"
     },
     {
-      "operation": "بسّط: 5<sup>2</sup>×5<sup>3</sup>",
+      "operation": "بسّط: <span dir=\"ltr\">5<sup>2</sup>×5<sup>3</sup></span>",
       "steps": [
-        "5<sup>2+3</sup> = 5<sup>5</sup>",
-        "= 3125"
+        "<span dir=\"ltr\">5<sup>2+3</sup> = 5<sup>5</sup></span>",
+        "<span dir=\"ltr\">= 3125</span>"
       ],
       "hint": "نجمع"
     },
     {
-      "operation": "بسّط: 10<sup>2</sup>×10<sup>3</sup>",
+      "operation": "بسّط: <span dir=\"ltr\">10<sup>2</sup>×10<sup>3</sup></span>",
       "steps": [
-        "10<sup>2+3</sup> = 10<sup>5</sup>",
-        "= 100 000"
+        "<span dir=\"ltr\">10<sup>2+3</sup> = 10<sup>5</sup></span>",
+        "<span dir=\"ltr\">= 100 000</span>"
       ],
       "hint": "أصفار"
     },
     {
-      "operation": "بسّط: 3<sup>4</sup>×3",
+      "operation": "بسّط: <span dir=\"ltr\">3<sup>4</sup>×3</span>",
       "steps": [
-        "3 = 3<sup>1</sup>",
-        "3<sup>4+1</sup> = 3<sup>5</sup>",
-        "= 243"
+        "<span dir=\"ltr\">3 = 3<sup>1</sup></span>",
+        "<span dir=\"ltr\">3<sup>4+1</sup> = 3<sup>5</sup></span>",
+        "<span dir=\"ltr\">= 243</span>"
       ],
-      "hint": "3 = 3¹"
+      "hint": "<span dir=\"ltr\">3 = 3¹</span>"
     }
   ]
 };

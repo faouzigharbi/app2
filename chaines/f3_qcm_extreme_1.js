@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f3_qcm_extreme_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — اختيارات — متقدّم",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — اختيارات — متقدّم",
   "questions": [
     {
-      "prompt": "(2³)⁵×(2²)³=?",
+      "prompt": "<span dir=\"ltr\">(2³)⁵×(2²)³=</span>?",
       "steps": [],
       "options": [
         "2¹⁸",
@@ -12,10 +12,10 @@ const quizData = {
         "2⁶"
       ],
       "correct": 1,
-      "explanation": "2¹⁵×2⁶=2²¹"
+      "explanation": "<span dir=\"ltr\">2¹⁵×2⁶=2²¹</span>"
     },
     {
-      "prompt": "(3²)ⁿ×3=3¹³. n=?",
+      "prompt": "(3²)ⁿ<span dir=\"ltr\">×3=3¹³. n=</span>?",
       "steps": [],
       "options": [
         "5",
@@ -24,10 +24,10 @@ const quizData = {
         "12"
       ],
       "correct": 1,
-      "explanation": "2n+1=13→n=6"
+      "explanation": "<span dir=\"ltr\">2n+1=13</span>→<span dir=\"ltr\">n=6</span>"
     },
     {
-      "prompt": "(5ⁿ)²=5⁸ⁿ. n=?",
+      "prompt": "(5ⁿ<span dir=\"ltr\">)²=5⁸</span>ⁿ. n=?",
       "steps": [],
       "options": [
         "2",
@@ -36,7 +36,7 @@ const quizData = {
         "لا حل"
       ],
       "correct": 3,
-      "explanation": "2n=8n impossible sauf n=0"
+      "explanation": "<span dir=\"ltr\">2n=8n impossible sauf n=0</span>"
     },
     {
       "prompt": "16³ كقوة لـ 2:",
@@ -48,7 +48,7 @@ const quizData = {
         "2⁶"
       ],
       "correct": 1,
-      "explanation": "16=2⁴→(2⁴)³=2¹²"
+      "explanation": "<span dir=\"ltr\">16=2⁴</span>→<span dir=\"ltr\">(2⁴)³=2¹²</span>"
     },
     {
       "prompt": "81² كقوة لـ 3:",
@@ -60,7 +60,7 @@ const quizData = {
         "3⁸¹"
       ],
       "correct": 1,
-      "explanation": "81=3⁴→(3⁴)²=3⁸"
+      "explanation": "<span dir=\"ltr\">81=3⁴</span>→<span dir=\"ltr\">(3⁴)²=3⁸</span>"
     }
   ]
 };

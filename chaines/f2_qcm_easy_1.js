@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f2_qcm_easy_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — اختيارات — سهل",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — اختيارات — سهل",
   "questions": [
     {
-      "prompt": "2³×5³=?",
+      "prompt": "<span dir=\"ltr\">2³×5³=</span>?",
       "steps": [],
       "options": [
         "10³",
@@ -12,10 +12,10 @@ const quizData = {
         "7⁶"
       ],
       "correct": 0,
-      "explanation": "(2×5)³=10³"
+      "explanation": "<span dir=\"ltr\">(2×5)³=10³</span>"
     },
     {
-      "prompt": "3²×4²=?",
+      "prompt": "<span dir=\"ltr\">3²×4²=</span>?",
       "steps": [],
       "options": [
         "7²",
@@ -24,7 +24,7 @@ const quizData = {
         "12⁴"
       ],
       "correct": 1,
-      "explanation": "(3×4)²=12²"
+      "explanation": "<span dir=\"ltr\">(3×4)²=12²</span>"
     },
     {
       "prompt": "شرط القاعدة:",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "(ab)³"
     },
     {
-      "prompt": "5⁴×2⁴=?",
+      "prompt": "<span dir=\"ltr\">5⁴×2⁴=</span>?",
       "steps": [],
       "options": [
         "10⁴",
@@ -60,7 +60,7 @@ const quizData = {
         "10¹⁶"
       ],
       "correct": 0,
-      "explanation": "(5×2)⁴"
+      "explanation": "<span dir=\"ltr\">(5×2)⁴</span>"
     }
   ]
 };

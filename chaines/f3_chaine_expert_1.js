@@ -1,24 +1,24 @@
 const exerciceData = {
   "id": "f3_chaine_expert_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — سلسلة — خبير",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — سلسلة — خبير",
   "questions": [
     {
       "operation": "((2²)³)²",
       "steps": [
-        "الداخلي أولا: (2²)³=2⁶",
-        "ثم (2⁶)²=2¹²",
-        "=4096"
+        "الداخلي أولا: <span dir=\"ltr\">(2²)³=2⁶</span>",
+        "ثم <span dir=\"ltr\">(2⁶)²=2¹²</span>",
+        "<span dir=\"ltr\">=4096</span>"
       ],
       "hint": "من الداخل"
     },
     {
       "operation": "(9²)³ كقوة لـ 3",
       "steps": [
-        "9=3²",
-        "(3²)²=3⁴ → 9²=3⁴",
-        "(3⁴)³=3¹²"
+        "<span dir=\"ltr\">9=3²</span>",
+        "<span dir=\"ltr\">(3²)²=3⁴</span> → <span dir=\"ltr\">9²=3⁴</span>",
+        "<span dir=\"ltr\">(3⁴)³=3¹²</span>"
       ],
-      "hint": "9=3²"
+      "hint": "<span dir=\"ltr\">9=3²</span>"
     }
   ]
 };

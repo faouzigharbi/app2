@@ -3,22 +3,22 @@ const exerciceData = {
   "title": "أولوية العمليات — سلسلة — صعب",
   "questions": [
     {
-      "operation": "2³×3+5²-4×2",
+      "operation": "<span dir=\"ltr\">2³×3+5²-4×2</span>",
       "steps": [
-        "2³=8, 5²=25",
-        "8×3=24, 4×2=8",
-        "24+25-8",
-        "=41"
+        "<span dir=\"ltr\">2³=8, 5²=25</span>",
+        "<span dir=\"ltr\">8×3=24, 4×2=8</span>",
+        "<span dir=\"ltr\">24+25-8</span>",
+        "<span dir=\"ltr\">=41</span>"
       ],
       "hint": "القوى ← الضرب ← الجمع/الطرح"
     },
     {
-      "operation": "(3+1)³-2⁴",
+      "operation": "<span dir=\"ltr\">(3+1)³-2⁴</span>",
       "steps": [
-        "3+1=4",
-        "4³=64, 2⁴=16",
-        "64-16",
-        "=48"
+        "<span dir=\"ltr\">3+1=4</span>",
+        "<span dir=\"ltr\">4³=64, 2⁴=16</span>",
+        "<span dir=\"ltr\">64-16</span>",
+        "<span dir=\"ltr\">=48</span>"
       ],
       "hint": "أقواس ← القوى ← الطرح"
     }

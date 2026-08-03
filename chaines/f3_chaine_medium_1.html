@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <title>(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — سلسلة — متوسط</title>
+  <title>(an)p=an×p — سلسلة — متوسط</title>
 </head>
 <body>
 
@@ -64,7 +64,7 @@
 
   function loadQuestion() {
     const q = data.questions[currentQ];
-    document.getElementById('title').textContent = data.title;
+    document.getElementById('title').innerHTML = data.title;
     document.getElementById('meta').textContent = 'السؤال ' + (currentQ+1) + '/' + total + ' — النتيجة: ' + score + '/' + total;
     document.getElementById('operation').innerHTML = q.operation || '';
     document.getElementById('hint').textContent = '';
@@ -159,9 +159,9 @@
     const q = data.questions[currentQ];
     const hint = document.getElementById('hint');
     if (q.hint) {
-      hint.textContent = '💡 ' + q.hint;
+      hint.innerHTML = '💡 ' + q.hint;
     } else {
-      hint.textContent = '💡 المرحلة الأولى هي: ' + q.steps[0];
+      hint.innerHTML = '💡 المرحلة الأولى هي: ' + q.steps[0];
     }
   });
 

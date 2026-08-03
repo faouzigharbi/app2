@@ -3,7 +3,7 @@ const quizData = {
   "title": "أولوية العمليات — اختيارات — متقدّم",
   "questions": [
     {
-      "prompt": "2⁵-3×2³+2²=?",
+      "prompt": "<span dir=\"ltr\">2⁵-3×2³+2²=</span>?",
       "steps": [],
       "options": [
         "12",
@@ -12,10 +12,10 @@ const quizData = {
         "36"
       ],
       "correct": 0,
-      "explanation": "32-24+4=12"
+      "explanation": "<span dir=\"ltr\">32-24+4=12</span>"
     },
     {
-      "prompt": "(2²+1)(3²-1)=?",
+      "prompt": "<span dir=\"ltr\">(2²+1)(3²-1)=</span>?",
       "steps": [],
       "options": [
         "40",
@@ -24,10 +24,10 @@ const quizData = {
         "24"
       ],
       "correct": 0,
-      "explanation": "5×8=40"
+      "explanation": "<span dir=\"ltr\">5×8=40</span>"
     },
     {
-      "prompt": "3⁴-2⁴=?",
+      "prompt": "<span dir=\"ltr\">3⁴-2⁴=</span>?",
       "steps": [],
       "options": [
         "65",
@@ -36,10 +36,10 @@ const quizData = {
         "49"
       ],
       "correct": 0,
-      "explanation": "81-16=65"
+      "explanation": "<span dir=\"ltr\">81-16=65</span>"
     },
     {
-      "prompt": "2×5³-3×5²=?",
+      "prompt": "<span dir=\"ltr\">2×5³-3×5²=</span>?",
       "steps": [],
       "options": [
         "175",
@@ -48,10 +48,10 @@ const quizData = {
         "100"
       ],
       "correct": 0,
-      "explanation": "250-75=175"
+      "explanation": "<span dir=\"ltr\">250-75=175</span>"
     },
     {
-      "prompt": "(1+2+3)²=?",
+      "prompt": "<span dir=\"ltr\">(1+2+3)²=</span>?",
       "steps": [],
       "options": [
         "14",
@@ -60,7 +60,7 @@ const quizData = {
         "12"
       ],
       "correct": 1,
-      "explanation": "6²=36"
+      "explanation": "<span dir=\"ltr\">6²=36</span>"
     }
   ]
 };

@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f3_qcm_hard_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — اختيارات — صعب",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — اختيارات — صعب",
   "questions": [
     {
-      "prompt": "(2²)⁵=?",
+      "prompt": "<span dir=\"ltr\">(2²)⁵=</span>?",
       "steps": [],
       "options": [
         "2⁷",
@@ -12,10 +12,10 @@ const quizData = {
         "4⁵"
       ],
       "correct": 1,
-      "explanation": "2<sup>2×5</sup>=2¹⁰ (=4⁵ aussi)"
+      "explanation": "<span dir=\"ltr\">2<sup>2×5</sup>=2¹⁰ (=4⁵ aussi)</span>"
     },
     {
-      "prompt": "8²=2<sup>?</sup>",
+      "prompt": "<span dir=\"ltr\">8²=2<sup></span>?</sup>",
       "steps": [],
       "options": [
         "5",
@@ -24,10 +24,10 @@ const quizData = {
         "16"
       ],
       "correct": 1,
-      "explanation": "8=2³→(2³)²=2⁶"
+      "explanation": "<span dir=\"ltr\">8=2³</span>→<span dir=\"ltr\">(2³)²=2⁶</span>"
     },
     {
-      "prompt": "(5²)³×5²=?",
+      "prompt": "<span dir=\"ltr\">(5²)³×5²=</span>?",
       "steps": [],
       "options": [
         "5⁶",
@@ -36,10 +36,10 @@ const quizData = {
         "5¹²"
       ],
       "correct": 1,
-      "explanation": "5⁶×5²=5⁸"
+      "explanation": "<span dir=\"ltr\">5⁶×5²=5⁸</span>"
     },
     {
-      "prompt": "أوجد p: (2³)ᵖ=2⁹",
+      "prompt": "أوجد p: (2³)ᵖ<span dir=\"ltr\">=2⁹</span>",
       "steps": [],
       "options": [
         "2",
@@ -48,10 +48,10 @@ const quizData = {
         "6"
       ],
       "correct": 1,
-      "explanation": "3p=9→p=3"
+      "explanation": "<span dir=\"ltr\">3p=9</span>→<span dir=\"ltr\">p=3</span>"
     },
     {
-      "prompt": "(3²)⁴=?",
+      "prompt": "<span dir=\"ltr\">(3²)⁴=</span>?",
       "steps": [],
       "options": [
         "3⁶",
@@ -60,7 +60,7 @@ const quizData = {
         "3²⁴"
       ],
       "correct": 1,
-      "explanation": "3<sup>2×4</sup>=3⁸"
+      "explanation": "<span dir=\"ltr\">3<sup>2×4</sup>=3⁸</span>"
     }
   ]
 };

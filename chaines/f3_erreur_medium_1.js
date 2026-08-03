@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f3_erreur_medium_1",
-  "title": "(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup> — خطأ — متوسط",
+  "title": "<span dir=\"ltr\">(a<sup>n</sup>)<sup>p</sup>=a<sup>n×p</sup></span> — خطأ — متوسط",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(2⁴)³ = 2<sup>4×3</sup> = 2¹²",
-        "= 4096",
-        "تحقق: 16³=4096 ✓"
+        "<span dir=\"ltr\">(2⁴)³ = 2<sup>4×3</sup> = 2¹²</span>",
+        "<span dir=\"ltr\">= 4096</span>",
+        "تحقق: <span dir=\"ltr\">16³=4096</span> ✓"
       ],
       "options": [
         "L1",
@@ -20,9 +20,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(3³)² = 3<sup>3+2</sup>",
-        "= 3⁵",
-        "= 243"
+        "<span dir=\"ltr\">(3³)² = 3<sup>3+2</sup></span>",
+        "<span dir=\"ltr\">= 3⁵</span>",
+        "<span dir=\"ltr\">= 243</span>"
       ],
       "options": [
         "L1",
@@ -30,14 +30,14 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "نضرب! 3<sup>3×2</sup>=3⁶=729"
+      "explanation": "نضرب! <span dir=\"ltr\">3<sup>3×2</sup>=3⁶=729</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(5¹)⁴ = 5<sup>1×4</sup>",
-        "= 5⁴",
-        "= 625"
+        "<span dir=\"ltr\">(5¹)⁴ = 5<sup>1×4</sup></span>",
+        "<span dir=\"ltr\">= 5⁴</span>",
+        "<span dir=\"ltr\">= 625</span>"
       ],
       "options": [
         "L1",
@@ -50,9 +50,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(2²)⁴ = 2⁸",
-        "= 256",
-        "16⁴ = 256"
+        "<span dir=\"ltr\">(2²)⁴ = 2⁸</span>",
+        "<span dir=\"ltr\">= 256</span>",
+        "<span dir=\"ltr\">16⁴ = 256</span>"
       ],
       "options": [
         "L1",
@@ -60,13 +60,13 @@ const quizData = {
         "L3"
       ],
       "correct": 2,
-      "explanation": "16⁴ = 65536 ≠ 256. لكن 2⁸=256 صحيح."
+      "explanation": "<span dir=\"ltr\">16⁴ = 65536</span> ≠ 256. لكن <span dir=\"ltr\">2⁸=256</span> صحيح."
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(10³)² = 10⁶",
-        "= 1 000 000",
+        "<span dir=\"ltr\">(10³)² = 10⁶</span>",
+        "<span dir=\"ltr\">= 1 000 000</span>",
         "أي مليون ✓"
       ],
       "options": [

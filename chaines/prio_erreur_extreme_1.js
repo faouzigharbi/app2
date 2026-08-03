@@ -5,9 +5,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2×3³-3×2³ = 2×27-3×8",
-        "= 54-24",
-        "= 30"
+        "<span dir=\"ltr\">2×3³-3×2³ = 2×27-3×8</span>",
+        "<span dir=\"ltr\">= 54-24</span>",
+        "<span dir=\"ltr\">= 30</span>"
       ],
       "options": [
         "L1",
@@ -20,8 +20,8 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "(2³+1)² = (8+1)²",
-        "= 9² = 81",
+        "<span dir=\"ltr\">(2³+1)² = (8+1)²</span>",
+        "<span dir=\"ltr\">= 9² = 81</span>",
         "✓"
       ],
       "options": [
@@ -35,8 +35,8 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "10³-2×10²+3×10 = 1000-200+30",
-        "= 830",
+        "<span dir=\"ltr\">10³-2×10²+3×10 = 1000-200+30</span>",
+        "<span dir=\"ltr\">= 830</span>",
         "✓"
       ],
       "options": [
@@ -50,9 +50,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "3⁴-2⁴ = (3-2)⁴",
-        "= 1⁴ = 1",
-        "لكن 81-16=65"
+        "<span dir=\"ltr\">3⁴-2⁴ = (3-2)⁴</span>",
+        "<span dir=\"ltr\">= 1⁴ = 1</span>",
+        "لكن <span dir=\"ltr\">81-16=65</span>"
       ],
       "options": [
         "L1",
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2×(3²+4²) = 2×(9+16)",
-        "= 2×25",
-        "= 50 ✓"
+        "<span dir=\"ltr\">2×(3²+4²) = 2×(9+16)</span>",
+        "<span dir=\"ltr\">= 2×25</span>",
+        "<span dir=\"ltr\">= 50</span> ✓"
       ],
       "options": [
         "L1",

@@ -3,33 +3,33 @@ const exerciceData = {
   "title": "تعريف القوة — سلسلة — صعب",
   "questions": [
     {
-      "operation": "بيّن أن 2<sup>10</sup> = 1024",
+      "operation": "بيّن أن <span dir=\"ltr\">2<sup>10</sup> = 1024</span>",
       "steps": [
-        "2<sup>10</sup> = (2<sup>5</sup>)<sup>2</sup>",
-        "2<sup>5</sup> = 32",
-        "32<sup>2</sup> = 32×32",
-        "= 960+64",
-        "= 1024"
+        "<span dir=\"ltr\">2<sup>10</sup> = (2<sup>5</sup>)<sup>2</sup></span>",
+        "<span dir=\"ltr\">2<sup>5</sup> = 32</span>",
+        "<span dir=\"ltr\">32<sup>2</sup> = 32×32</span>",
+        "<span dir=\"ltr\">= 960+64</span>",
+        "<span dir=\"ltr\">= 1024</span>"
       ],
-      "hint": "استعمل (2<sup>5</sup>)<sup>2</sup>"
+      "hint": "استعمل <span dir=\"ltr\">(2<sup>5</sup>)<sup>2</sup></span>"
     },
     {
-      "operation": "قارن 3<sup>4</sup> و 4<sup>3</sup>",
+      "operation": "قارن <span dir=\"ltr\">3<sup>4</sup></span> و <span dir=\"ltr\">4<sup>3</sup></span>",
       "steps": [
-        "3<sup>4</sup> = 81",
-        "4<sup>3</sup> = 64",
+        "<span dir=\"ltr\">3<sup>4</sup> = 81</span>",
+        "<span dir=\"ltr\">4<sup>3</sup> = 64</span>",
         "81 > 64",
-        "إذن 3<sup>4</sup> > 4<sup>3</sup>"
+        "إذن <span dir=\"ltr\">3<sup>4</sup></span> > <span dir=\"ltr\">4<sup>3</sup></span>"
       ],
       "hint": "احسب"
     },
     {
-      "operation": "أوجد n: 3<sup>n</sup> = 729",
+      "operation": "أوجد <span dir=\"ltr\">n: 3<sup>n</sup> = 729</span>",
       "steps": [
-        "729÷3=243, 243÷3=81",
-        "81÷3=27, 27÷3=9",
-        "9÷3=3, 3÷3=1",
-        "قسمنا 6 مرات → n = 6"
+        "<span dir=\"ltr\">729÷3=243, 243÷3=81</span>",
+        "<span dir=\"ltr\">81÷3=27, 27÷3=9</span>",
+        "<span dir=\"ltr\">9÷3=3, 3÷3=1</span>",
+        "قسمنا 6 مرات → <span dir=\"ltr\">n = 6</span>"
       ],
       "hint": "قسّم على 3"
     }

@@ -1,24 +1,24 @@
 const exerciceData = {
   "id": "f2_chaine_extreme_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — سلسلة — متقدّم",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — سلسلة — متقدّم",
   "questions": [
     {
-      "operation": "2⁵×3⁵×5⁵",
+      "operation": "<span dir=\"ltr\">2⁵×3⁵×5⁵</span>",
       "steps": [
-        "(2×3×5)⁵=30⁵",
-        "30²=900, 30³=27000",
-        "30⁴=810000, 30⁵=24300000"
+        "<span dir=\"ltr\">(2×3×5)⁵=30⁵</span>",
+        "<span dir=\"ltr\">30²=900, 30³=27000</span>",
+        "<span dir=\"ltr\">30⁴=810000, 30⁵=24300000</span>"
       ],
       "hint": "القاعدة تمتد"
     },
     {
       "operation": "18²",
       "steps": [
-        "18=2×9",
-        "2²×9²=4×81",
-        "=324"
+        "<span dir=\"ltr\">18=2×9</span>",
+        "<span dir=\"ltr\">2²×9²=4×81</span>",
+        "<span dir=\"ltr\">=324</span>"
       ],
-      "hint": "18=2×9"
+      "hint": "<span dir=\"ltr\">18=2×9</span>"
     }
   ]
 };

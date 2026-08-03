@@ -1,9 +1,9 @@
 const quizData = {
   "id": "f2_qcm_expert_1",
-  "title": "a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup> — اختيارات — خبير",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×b<sup>n</sup>=(ab)<sup>n</sup></span> — اختيارات — خبير",
   "questions": [
     {
-      "prompt": "2¹⁰×5¹⁰=?",
+      "prompt": "<span dir=\"ltr\">2¹⁰×5¹⁰=</span>?",
       "steps": [],
       "options": [
         "10¹⁰",
@@ -12,22 +12,22 @@ const quizData = {
         "10¹⁰⁰"
       ],
       "correct": 0,
-      "explanation": "(2×5)¹⁰"
+      "explanation": "<span dir=\"ltr\">(2×5)¹⁰</span>"
     },
     {
-      "prompt": "14²=(2×7)²=?",
+      "prompt": "<span dir=\"ltr\">14²=(2×7)²=</span>?",
       "steps": [],
       "options": [
-        "2²+7²",
-        "2²×7²",
+        "<span dir=\"ltr\">2²+7²</span>",
+        "<span dir=\"ltr\">2²×7²</span>",
         "14⁴",
         "196⁰"
       ],
       "correct": 1,
-      "explanation": "4×49=196"
+      "explanation": "<span dir=\"ltr\">4×49=196</span>"
     },
     {
-      "prompt": "50³=5³×10³=?",
+      "prompt": "<span dir=\"ltr\">50³=5³×10³=</span>?",
       "steps": [],
       "options": [
         "125000",
@@ -36,7 +36,7 @@ const quizData = {
         "1250000"
       ],
       "correct": 0,
-      "explanation": "125×1000"
+      "explanation": "<span dir=\"ltr\">125×1000</span>"
     },
     {
       "prompt": "(ab)ⁿ=?",
@@ -51,7 +51,7 @@ const quizData = {
       "explanation": "aⁿ×bⁿ"
     },
     {
-      "prompt": "4⁵×25⁵=?",
+      "prompt": "<span dir=\"ltr\">4⁵×25⁵=</span>?",
       "steps": [],
       "options": [
         "100⁵",
@@ -60,7 +60,7 @@ const quizData = {
         "100²⁵"
       ],
       "correct": 0,
-      "explanation": "(4×25)⁵=100⁵"
+      "explanation": "<span dir=\"ltr\">(4×25)⁵=100⁵</span>"
     }
   ]
 };

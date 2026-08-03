@@ -1,30 +1,30 @@
 const exerciceData = {
   "id": "f1_chaine_medium_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — سلسلة — متوسط",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — سلسلة — متوسط",
   "questions": [
     {
-      "operation": "بسّط: 3<sup>2</sup>×3<sup>4</sup>×3",
+      "operation": "بسّط: <span dir=\"ltr\">3<sup>2</sup>×3<sup>4</sup>×3</span>",
       "steps": [
-        "3=3¹",
-        "3<sup>2+4+1</sup>=3<sup>7</sup>",
-        "= 2187"
+        "<span dir=\"ltr\">3=3¹</span>",
+        "<span dir=\"ltr\">3<sup>2+4+1</sup>=3<sup>7</sup></span>",
+        "<span dir=\"ltr\">= 2187</span>"
       ],
-      "hint": "3=3¹"
+      "hint": "<span dir=\"ltr\">3=3¹</span>"
     },
     {
-      "operation": "أوجد n: 2<sup>n</sup>×2<sup>3</sup>=2<sup>8</sup>",
+      "operation": "أوجد <span dir=\"ltr\">n: 2<sup>n</sup>×2<sup>3</sup>=2<sup>8</sup></span>",
       "steps": [
-        "2<sup>n+3</sup>=2<sup>8</sup>",
-        "n+3=8",
-        "n=5"
+        "<span dir=\"ltr\">2<sup>n+3</sup>=2<sup>8</sup></span>",
+        "<span dir=\"ltr\">n+3=8</span>",
+        "<span dir=\"ltr\">n=5</span>"
       ],
       "hint": "ساوِ الأدلة"
     },
     {
-      "operation": "بسّط: 10³×10²×10⁴",
+      "operation": "بسّط: <span dir=\"ltr\">10³×10²×10⁴</span>",
       "steps": [
-        "10<sup>3+2+4</sup>",
-        "= 10<sup>9</sup>",
+        "<span dir=\"ltr\">10<sup>3+2+4</sup></span>",
+        "<span dir=\"ltr\">= 10<sup>9</sup></span>",
         "= مليار"
       ],
       "hint": "اجمع"

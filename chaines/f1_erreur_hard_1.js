@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f1_erreur_hard_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — خطأ — صعب",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — خطأ — صعب",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2<sup>3</sup>+2<sup>4</sup> = 2<sup>7</sup>",
-        "= 128",
-        "8+16 = 128"
+        "<span dir=\"ltr\">2<sup>3</sup>+2<sup>4</sup> = 2<sup>7</sup></span>",
+        "<span dir=\"ltr\">= 128</span>",
+        "<span dir=\"ltr\">8+16 = 128</span>"
       ],
       "options": [
         "L1",
@@ -15,13 +15,13 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "القاعدة للجداء × وليس الجمع! 8+16=24"
+      "explanation": "القاعدة للجداء × وليس الجمع! <span dir=\"ltr\">8+16=24</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "3<sup>2</sup>×3<sup>3</sup>×3<sup>2</sup> = 3<sup>7</sup>",
-        "= 2187",
+        "<span dir=\"ltr\">3<sup>2</sup>×3<sup>3</sup>×3<sup>2</sup> = 3<sup>7</sup></span>",
+        "<span dir=\"ltr\">= 2187</span>",
         "✓"
       ],
       "options": [
@@ -35,9 +35,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "5<sup>n</sup>×5<sup>3</sup> = 5<sup>n+3</sup>",
-        "إذا النتيجة 5<sup>7</sup>: n+3=7",
-        "n = 3"
+        "<span dir=\"ltr\">5<sup>n</sup>×5<sup>3</sup> = 5<sup>n+3</sup></span>",
+        "إذا النتيجة <span dir=\"ltr\">5<sup>7</sup>: n+3=7</span>",
+        "<span dir=\"ltr\">n = 3</span>"
       ],
       "options": [
         "L1",
@@ -45,13 +45,13 @@ const quizData = {
         "L3"
       ],
       "correct": 2,
-      "explanation": "n+3=7 → n=4"
+      "explanation": "<span dir=\"ltr\">n+3=7</span> → <span dir=\"ltr\">n=4</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2<sup>3</sup>×2<sup>4</sup>×2<sup>5</sup> = 2<sup>12</sup>",
-        "= 4096",
+        "<span dir=\"ltr\">2<sup>3</sup>×2<sup>4</sup>×2<sup>5</sup> = 2<sup>12</sup></span>",
+        "<span dir=\"ltr\">= 4096</span>",
         "✓"
       ],
       "options": [
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "3<sup>n</sup>×3<sup>n</sup> = 3<sup>n²</sup>",
-        "مثال: 3²×3²=3⁴",
-        "n=2: 2²=4 ✓"
+        "<span dir=\"ltr\">3<sup>n</sup>×3<sup>n</sup> = 3<sup>n²</sup></span>",
+        "مثال: <span dir=\"ltr\">3²×3²=3⁴</span>",
+        "<span dir=\"ltr\">n=2: 2²=4</span> ✓"
       ],
       "options": [
         "L1",
@@ -75,7 +75,7 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "3<sup>n</sup>×3<sup>n</sup>=3<sup>2n</sup> وليس 3<sup>n²</sup>!"
+      "explanation": "<span dir=\"ltr\">3<sup>n</sup>×3<sup>n</sup>=3<sup>2n</sup></span> وليس <span dir=\"ltr\">3<sup>n²</sup></span>!"
     }
   ]
 };

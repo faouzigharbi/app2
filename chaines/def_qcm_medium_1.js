@@ -3,7 +3,7 @@ const quizData = {
   "title": "تعريف القوة — اختيارات — متوسط",
   "questions": [
     {
-      "prompt": "2<sup>7</sup> = ?",
+      "prompt": "<span dir=\"ltr\">2<sup>7</sup> =</span> ?",
       "steps": [],
       "options": [
         "64",
@@ -12,22 +12,22 @@ const quizData = {
         "14"
       ],
       "correct": 1,
-      "explanation": "2<sup>7</sup>=128"
+      "explanation": "<span dir=\"ltr\">2<sup>7</sup>=128</span>"
     },
     {
       "prompt": "81 كقوة:",
       "steps": [],
       "options": [
-        "9<sup>2</sup>",
-        "3<sup>4</sup>",
+        "<span dir=\"ltr\">9<sup>2</sup></span>",
+        "<span dir=\"ltr\">3<sup>4</sup></span>",
         "الإجابتان",
-        "8<sup>1</sup>"
+        "<span dir=\"ltr\">8<sup>1</sup></span>"
       ],
       "correct": 2,
-      "explanation": "81 = 9² = 3⁴"
+      "explanation": "<span dir=\"ltr\">81 = 9² = 3⁴</span>"
     },
     {
-      "prompt": "n<sup>2</sup>=49, n=?",
+      "prompt": "<span dir=\"ltr\">n<sup>2</sup>=49, n=</span>?",
       "steps": [],
       "options": [
         "6",
@@ -36,10 +36,10 @@ const quizData = {
         "24"
       ],
       "correct": 1,
-      "explanation": "7²=49"
+      "explanation": "<span dir=\"ltr\">7²=49</span>"
     },
     {
-      "prompt": "الدليل في 5<sup>3</sup>:",
+      "prompt": "الدليل في <span dir=\"ltr\">5<sup>3</sup></span>:",
       "steps": [],
       "options": [
         "5",
@@ -48,19 +48,19 @@ const quizData = {
         "125"
       ],
       "correct": 1,
-      "explanation": "الأُسّ = 3"
+      "explanation": "الأُسّ <span dir=\"ltr\">= 3</span>"
     },
     {
       "prompt": "أي تساوٍ صحيح؟",
       "steps": [],
       "options": [
-        "2³=3²",
-        "2⁴=4²",
-        "2⁵=5²",
-        "2⁶=6²"
+        "<span dir=\"ltr\">2³=3²</span>",
+        "<span dir=\"ltr\">2⁴=4²</span>",
+        "<span dir=\"ltr\">2⁵=5²</span>",
+        "<span dir=\"ltr\">2⁶=6²</span>"
       ],
       "correct": 1,
-      "explanation": "2⁴=4²=16"
+      "explanation": "<span dir=\"ltr\">2⁴=4²=16</span>"
     }
   ]
 };

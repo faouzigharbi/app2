@@ -1,13 +1,13 @@
 const quizData = {
   "id": "f1_erreur_easy_1",
-  "title": "a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup> — خطأ — سهل",
+  "title": "<span dir=\"ltr\">a<sup>n</sup>×a<sup>p</sup>=a<sup>n+p</sup></span> — خطأ — سهل",
   "questions": [
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "5<sup>3</sup>×5<sup>2</sup> = 5<sup>3×2</sup>",
-        "= 5<sup>6</sup>",
-        "= 15625"
+        "<span dir=\"ltr\">5<sup>3</sup>×5<sup>2</sup> = 5<sup>3×2</sup></span>",
+        "<span dir=\"ltr\">= 5<sup>6</sup></span>",
+        "<span dir=\"ltr\">= 15625</span>"
       ],
       "options": [
         "L1",
@@ -15,14 +15,14 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "نجمع الأدلة! 5<sup>3+2</sup>=5<sup>5</sup>=3125"
+      "explanation": "نجمع الأدلة! <span dir=\"ltr\">5<sup>3+2</sup>=5<sup>5</sup>=3125</span>"
     },
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "2<sup>3</sup>×2<sup>5</sup> = 2<sup>8</sup>",
-        "= 256",
-        "تحقق: 8×32 = 256 ✓"
+        "<span dir=\"ltr\">2<sup>3</sup>×2<sup>5</sup> = 2<sup>8</sup></span>",
+        "<span dir=\"ltr\">= 256</span>",
+        "تحقق: <span dir=\"ltr\">8×32 = 256</span> ✓"
       ],
       "options": [
         "L1",
@@ -35,9 +35,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "3<sup>2</sup>×3<sup>4</sup> = 3<sup>6</sup>",
-        "= 729",
-        "تحقق: 9×81 = 729 ✓"
+        "<span dir=\"ltr\">3<sup>2</sup>×3<sup>4</sup> = 3<sup>6</sup></span>",
+        "<span dir=\"ltr\">= 729</span>",
+        "تحقق: <span dir=\"ltr\">9×81 = 729</span> ✓"
       ],
       "options": [
         "L1",
@@ -50,9 +50,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "4<sup>2</sup>×4<sup>3</sup> = 4<sup>5</sup>",
-        "4<sup>5</sup> = 1024",
-        "تحقق: 16×64 = 1024 ✓"
+        "<span dir=\"ltr\">4<sup>2</sup>×4<sup>3</sup> = 4<sup>5</sup></span>",
+        "<span dir=\"ltr\">4<sup>5</sup> = 1024</span>",
+        "تحقق: <span dir=\"ltr\">16×64 = 1024</span> ✓"
       ],
       "options": [
         "L1",
@@ -65,9 +65,9 @@ const quizData = {
     {
       "prompt": "حدد السطر الخاطئ:",
       "steps": [
-        "7<sup>1</sup>×7<sup>1</sup> = 7<sup>1×1</sup>",
-        "= 7<sup>1</sup>",
-        "= 7"
+        "<span dir=\"ltr\">7<sup>1</sup>×7<sup>1</sup> = 7<sup>1×1</sup></span>",
+        "<span dir=\"ltr\">= 7<sup>1</sup></span>",
+        "<span dir=\"ltr\">= 7</span>"
       ],
       "options": [
         "L1",
@@ -75,7 +75,7 @@ const quizData = {
         "L3"
       ],
       "correct": 0,
-      "explanation": "نجمع! 7<sup>1+1</sup>=7<sup>2</sup>=49"
+      "explanation": "نجمع! <span dir=\"ltr\">7<sup>1+1</sup>=7<sup>2</sup>=49</span>"
     }
   ]
 };
