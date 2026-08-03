@@ -47,45 +47,85 @@
   // PGCD des numérateurs sur le PPCM des dénominateurs.
   // =========================================================================
   function typeNumerique() {
-    const modele = choix(['deux', 'trois', 'litteral']);
-    const lettres = modele === 'litteral'
-      ? [choix(['xy', 'xyz', 'xyt']), choix(['xy', 'xyz', 'xyt'])]
-      : ['a', 'b'];
-    const n = modele === 'deux' ? 2 : 3;
-    let coefs, g, m, parts;
-    for (;;) {
-      coefs = [];
-      for (let i = 0; i < n; i++) {
-        coefs.push(rat(nonNul(-9, 9) * ent(2, 6), ent(2, 12)));
+    const modele = choix(['deux', 'constante', 'troisAvecConstante', 'litteral']);
+    // On part de la RÉPONSE : un facteur commun simple et de petites parts.
+    // C'est ainsi que la fiche est faite — « 16/15 a + 8/5 b » vient de
+    // « 8/15 (2a + 3b) », et non l'inverse. Tirer les coefficients au hasard
+    // donnerait des nombres qu'aucun professeur n'écrirait.
+    const petitsPremiersEntreEux = n => {
+      for (;;) {
+        const k = Array.from({ length: n }, () => nonNul(-9, 9));
+        if (k.map(Math.abs).reduce(pgcd) === 1) return k;
       }
-      g = coefs.map(c => Math.abs(c.n)).reduce(pgcd);
-      m = coefs.map(c => c.d).reduce(ppcm);
-      const commun = rat(g, m);
-      parts = coefs.map(c => div(c, commun));
-      if (g > 1 && parts.every(p => p.d === 1) && !egaux(abs(commun), rat(1))) break;
-    }
-    const commun = rat(g, m);
-    const noms = modele === 'litteral'
-      ? [choix(['xy']), choix(['xyz']), choix(['xyt'])].slice(0, n)
-      : ['a', 'b', 'c'].slice(0, n);
-    const brut = joindre(coefs.map((c, i) => mono(c, noms[i])));
-    const dedans = joindre(parts.map((p, i) => mono(p, noms[i])));
-    const fact = par(commun) + '(' + dedans + ')';
-    return {
-      enonce: ['فكّك إلى جداء عوامل:', 'A = ' + brut],
-      indice: 'العامل المشترك هو ق.م.أ للبسوط على م.م.أ للمقامات',
-      etapes: [
-        ['ق.م.أ للبسوط', 'ق.م.أ(' + coefs.map(c => Math.abs(c.n)).join(' ؛ ') + ') = ' + g],
-        ['م.م.أ للمقامات', 'م.م.أ(' + coefs.map(c => c.d).join(' ؛ ') + ') = ' + m],
-        ['العامل المشترك', 'العامل المشترك هو ' + txt(commun)],
-        ['نقسم كل حدّ عليه', coefs.map((c, i) => par(c) + ' : ' + par(commun) + ' = '
-          + txt(parts[i])).join(' و ')],
-        ['نكتب الجداء', 'A = ' + fact],
-        ['نتحقّق بالنشر', fact + ' = ' + brut]
-      ],
-      controle: { type: 'identite', nom: 'A', gauche: brut, droite: fact,
-                  vars: noms.slice(), modele }
     };
+    for (let essai = 0; essai < 500; essai++) {
+      const c = rat(ent(2, 12), ent(2, 15));
+      if (c.d === 1 || egaux(abs(c), rat(1))) continue;
+      const n = modele === 'deux' || modele === 'constante' ? 2 : 3;
+      const parts = petitsPremiersEntreEux(n);
+      const coefs = parts.map(k => mul(c, rat(k)));
+
+      // Le facteur commun ANNONCÉ doit être celui que la méthode donne :
+      // PGCD des numérateurs sur PPCM des dénominateurs. On le recalcule
+      // depuis les coefficients affichés, et on rejette le tirage s'il ne
+      // retombe pas sur celui qu'on avait en tête.
+      const g = coefs.map(x => Math.abs(x.n)).reduce(pgcd);
+      const m = coefs.map(x => x.d).reduce(ppcm);
+      const commun = rat(g, m);
+      if (!egaux(commun, abs(c))) continue;
+      // Si tous les dénominateurs sont égaux, le PPCM est une étape vide.
+      // La fiche n'écrit jamais cela : 15 et 5, 7 et 35, 49, 35 et 70…
+      if (new Set(coefs.map(x => x.d)).size < 2) continue;
+
+      // Les parties littérales : rien, une lettre, ou un monôme partagé.
+      let lit, litCommun = '', restes;
+      if (modele === 'deux') {
+        lit = ['a', 'b']; restes = lit.slice();
+      } else if (modele === 'constante') {
+        lit = ['', choix(['xy', 'ab'])]; restes = lit.slice();
+      } else if (modele === 'troisAvecConstante') {
+        lit = ['x', 'y', '']; restes = lit.slice();
+      } else {
+        // I = 12/49 xy - 24/35 xyz + 36/70 xyt : le facteur commun porte
+        // AUSSI une partie littérale, et c'est elle qu'on oublie.
+        litCommun = 'xy';
+        const sup = ['', 'z', 't'];
+        lit = sup.map(e => litCommun + e);
+        restes = sup.map(e => e || '1');
+      }
+      const signes = parts.map((k, i) => mul(rat(Math.sign(k)), abs(coefs[i])));
+      const brut = joindre(coefs.map((x, i) => mono(x, lit[i] || null)));
+      const dedans = joindre(parts.map((k, i) => {
+        const r = restes[i];
+        return mono(rat(k), r === '1' ? null : r);
+      }));
+      const fact = par(commun) + (litCommun ? ' ' + litCommun : '')
+        + '(' + dedans + ')';
+      const etapes = [
+        ['ق.م.أ للبسوط', 'ق.م.أ(' + coefs.map(x => Math.abs(x.n)).join(' ؛ ') + ') = ' + g],
+        ['م.م.أ للمقامات', 'م.م.أ(' + coefs.map(x => x.d).join(' ؛ ') + ') = ' + m],
+        ['العامل المشترك العددي', 'العامل العددي هو ' + txt(commun)]
+      ];
+      if (litCommun) {
+        etapes.push(['العامل المشترك الحرفي',
+          'كل الحدود تحتوي ' + litCommun + '، فهو أيضا عامل مشترك']);
+      }
+      etapes.push(['نقسم كل حدّ على العامل',
+        coefs.map((x, i) => par(x) + ' : ' + par(commun) + ' = ' + parts[i]).join(' و ')]);
+      etapes.push(['نكتب الجداء', 'A = ' + fact]);
+      etapes.push(['نتحقّق بالنشر', fact + ' = ' + brut]);
+
+      return {
+        enonce: ['فكّك إلى جداء عوامل:', 'A = ' + brut],
+        indice: litCommun
+          ? 'العامل المشترك عددي و حرفي معا: لا تنسَ الجزء الحرفي'
+          : 'العامل المشترك هو ق.م.أ للبسوط على م.م.أ للمقامات',
+        etapes,
+        controle: { type: 'identite', nom: 'A', gauche: brut, droite: fact,
+                    vars: ['x', 'y', 'z', 't', 'a', 'b'], composites: true, modele }
+      };
+    }
+    return typeNumerique();
   }
 
   // =========================================================================

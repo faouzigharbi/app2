@@ -15,16 +15,24 @@ let relations = 0, controles = 0, questions = 0;
 const echecs = [];
 const rnd = () => F.rat(F.ent(-15, 15), F.ent(1, 7));
 
-const envAleatoire = vars => {
+// « xy » est un seul jeton pour l'analyseur, mais c'est le produit de x par y.
+// Si on lui donnait une valeur indépendante, l'identité « xy(1 + z) = xy + xyz »
+// serait fausse — et le contrôle passerait à côté de tout le sens du monôme.
+const envAleatoire = (vars, composites) => {
   const e = {};
   vars.forEach(v => { e[v] = rnd(); });
+  if (composites) {
+    ['xy', 'xyz', 'xyt', 'xty', 'ab'].forEach(nom => {
+      e[nom] = nom.split('').reduce((r, l) => F.mul(r, e[l] || F.rat(1)), F.rat(1));
+    });
+  }
   return e;
 };
 
 function environnements(c) {
   if (c.type === 'identite') {
     return Array.from({ length: ECHANTILLONS }, () => {
-      const e = envAleatoire(c.vars);
+      const e = envAleatoire(c.vars, c.composites);
       if (c.nom) e[c.nom] = F.analyser(c.gauche, e);
       return e;
     });
@@ -44,7 +52,7 @@ function controlerClaim(c) {
   const p = [];
   if (c.type === 'identite') {
     for (let i = 0; i < ECHANTILLONS * 2; i++) {
-      const e = envAleatoire(c.vars);
+      const e = envAleatoire(c.vars, c.composites);
       const g = F.analyser(c.gauche, e), d = F.analyser(c.droite, e);
       if (!F.egaux(g, d)) {
         p.push(`« ${c.gauche} » ≠ « ${c.droite} » (${F.txt(g)} و ${F.txt(d)})`);
@@ -129,6 +137,14 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse('facteur caché mal révélé', F.tirer(3)[0], c => {
     c.controle.droite = c.controle.droite.replace(/\)$/, ' + 1)');
   });
+  pousse('facteur littéral amputé', (() => {
+    for (let i = 0; i < 400; i++) {
+      for (const q of F.tirer(1)) {
+        if (q.controle.composites && / xy\(/.test(q.controle.droite)) return q;
+      }
+    }
+    throw new Error('modèle littéral introuvable');
+  })(), c => { c.controle.droite = c.controle.droite.replace(' xy(', ' x('); });
   pousse('racine décalée', F.tirer(4)[0], c => {
     c.controle.x1 = F.add(c.controle.x1, F.rat(1));
   });
