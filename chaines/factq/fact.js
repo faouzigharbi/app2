@@ -101,9 +101,13 @@
       }));
       const fact = par(commun) + (litCommun ? ' ' + litCommun : '')
         + '(' + dedans + ')';
+      // Pas de parenthèse qui enjambe du texte arabe : elle se retournerait.
+      // « م.م.أ(15 ؛ 5) = 15 » s'affiche « م.م.أ(15 ؛ 5) = 15) ».
       const etapes = [
-        ['ق.م.أ للبسوط', 'ق.م.أ(' + coefs.map(x => Math.abs(x.n)).join(' ؛ ') + ') = ' + g],
-        ['م.م.أ للمقامات', 'م.م.أ(' + coefs.map(x => x.d).join(' ؛ ') + ') = ' + m],
+        ['ق.م.أ للبسوط', 'البسوط هي ' + coefs.map(x => Math.abs(x.n)).join(' ؛ ')
+         + ' و ق.م.أ لها يساوي ' + g],
+        ['م.م.أ للمقامات', 'المقامات هي ' + coefs.map(x => x.d).join(' ؛ ')
+         + ' و م.م.أ لها يساوي ' + m],
         ['العامل المشترك العددي', 'العامل العددي هو ' + txt(commun)]
       ];
       if (litCommun) {

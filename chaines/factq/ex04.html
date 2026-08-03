@@ -23,6 +23,24 @@
     .solution ol { margin:6px 0 0; padding-inline-start:22px }
     #barre { position:sticky; top:0; z-index:5; background:#f4f6fb;
          padding:10px 0; margin-bottom:10px }
+    /* ---- Feuille imprimable : partie élève, puis partie parent -------- */
+    #feuille { display:none }
+    .feuille-titre { text-align:center; margin:0 0 4mm; font-size:1.15em }
+    .feuille-sous { text-align:center; color:#666; font-size:.85em; margin:0 0 6mm }
+    .fq { margin:0 0 7mm; page-break-inside:avoid }
+    .fq h4 { margin:0 0 2mm; font-size:1em }
+    .fq .enonce { border:1px solid #999; border-radius:4px; padding:2mm 3mm; margin-bottom:2mm }
+    .fq ol, .fq ul { margin:0; padding-inline-start:8mm }
+    .fq li { margin:1.2mm 0; line-height:1.9 }
+    .fq .case { display:inline-block; width:9mm; height:6mm; border:1px solid #999;
+                border-radius:3px; margin-inline-end:3mm; vertical-align:middle }
+    .coupure { page-break-before:always }
+    @media print {
+      header, #barre, #questions, .btn, .badge { display:none !important }
+      #feuille { display:block }
+      body { background:#fff; margin:0; padding:0 }
+      @page { margin:12mm }
+    }
   </style>
 </head>
 <body>
@@ -39,11 +57,13 @@
       <a class="badge" href="index.html">↩ الفهرس</a>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn secondary" id="btnPrint">🖨 ورقة للطباعة</button>
       <button class="btn secondary" id="btnPlier">🗂 اطوِ الكلّ</button>
       <button class="btn" id="btnNew">🎲 أرقام جديدة</button>
     </div>
   </div>
   <div id="questions"></div>
+  <div id="feuille"></div>
 </main>
 
 <script src="noyau.js"></script>
@@ -56,6 +76,9 @@
 (function(){
   let data = window.exerciceData;
   const zone = document.getElementById('questions');
+  // L'ordre mélangé de chaque question, retenu pour que la feuille imprimée
+  // montre exactement ce que l'écran montre.
+  const melanges = [];
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -128,7 +151,9 @@
       corps.querySelectorAll('.solution').forEach(function(x){ x.remove(); });
       d.dataset.etat = '';
       marque.textContent = '';
-      shuffle(q.steps).forEach(function(step) {
+      const ordre = shuffle(q.steps);
+      melanges[i] = ordre;
+      ordre.forEach(function(step) {
         const item = document.createElement('div');
         item.className = 'item';
         item.draggable = true;
@@ -198,10 +223,41 @@
     return d;
   }
 
+
+  // ---------------------------------------------------------------------
+  // La feuille imprimable. Deux parties, et la coupure entre elles n'est pas
+  // décorative : l'élève reçoit les étapes DANS LE DÉSORDRE avec des cases à
+  // numéroter, le parent reçoit les mêmes étapes DANS L'ORDRE. Le parent peut
+  // donc corriger sans savoir refaire l'exercice — c'est tout l'objet.
+  function feuille() {
+    const f = document.getElementById('feuille');
+    const total = data.questions.length;
+    const bloc = (q, i, corrige) => {
+      const etapes = corrige ? q.steps : melanges[i];
+      return '<div class="fq"><h4>السؤال ' + (i + 1) + '</h4>'
+        + '<div class="enonce">' + (q.operation || '') + '</div>'
+        + (corrige
+            ? '<ol>' + etapes.map(s => '<li>' + s + '</li>').join('') + '</ol>'
+            : '<ul style="list-style:none;padding-inline-start:0">'
+              + etapes.map(s => '<li><span class="case"></span>' + s + '</li>').join('')
+              + '</ul>')
+        + '</div>';
+    };
+    f.innerHTML =
+      '<h3 class="feuille-titre">' + data.title + '</h3>'
+      + '<p class="feuille-sous">ورقة التلميذ — رتّب المراحل بكتابة رقمها في المربّع</p>'
+      + data.questions.map((q, i) => bloc(q, i, false)).join('')
+      + '<div class="coupure"></div>'
+      + '<h3 class="feuille-titre">' + data.title + '</h3>'
+      + '<p class="feuille-sous">ورقة الوليّ — الترتيب الصحيح، للمراجعة مع التلميذ</p>'
+      + data.questions.map((q, i) => bloc(q, i, true)).join('');
+  }
+
   function construire() {
     document.getElementById('title').innerHTML = data.title;
     zone.innerHTML = '';
     data.questions.forEach(function(q, i) { zone.appendChild(carte(q, i)); });
+    feuille();
     majMeta();
   }
 
@@ -209,6 +265,11 @@
     data = window.Fact.construire(window.exerciceNumero);
     construire();
     window.scrollTo(0, 0);
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function() {
+    feuille();
+    window.print();
   });
 
   document.getElementById('btnPlier').addEventListener('click', function() {
