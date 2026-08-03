@@ -1,22 +1,44 @@
 // Émet une page par exercice de la fiche, plus l'index.
 //   node _build.js [dossier]
 //
-// Une page = un exercice entier. Ses sous-questions s'enchaînent dans l'ordre
-// de l'énoncé, sur un tirage commun ; « أرقام جديدة » retire tout l'exercice.
+// Une page = un exercice entier. Toutes ses sous-questions sont posées EN MÊME
+// TEMPS, chacune dans un volet d'accordéon : rater la première n'empêche plus
+// de traiter les suivantes. Chaque volet a son propre « تحقق » et son propre
+// « التصحيح ».
 const fs = require('fs');
 const path = require('path');
 const A = require('./noyau.js');
-require('./gen18.js');
+const EXOS = [4, 5, 6, 7, 8, 10, 14, 15, 16, 18];
+EXOS.forEach(n => require('./gen' + String(n).padStart(2, '0') + '.js'));
 
 const OUT = process.argv[2] || '.';
 
-const page = (id, n, titre, nb) => `<!doctype html>
+const page = (id, n, titre) => `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <title>${titre}</title>
+  <style>
+    .q { background:#fff; border:1.5px solid #e8ecf2; border-radius:12px;
+         margin-bottom:12px; overflow:hidden }
+    .q > summary { cursor:pointer; padding:12px 14px; font-weight:700; color:#2c3e50;
+         background:#f7f8fc; list-style:none; display:flex; align-items:center; gap:10px }
+    .q > summary::-webkit-details-marker { display:none }
+    .q > summary::before { content:'▾'; color:#8a90a8; transition:transform .15s }
+    .q:not([open]) > summary::before { transform:rotate(90deg) }
+    .q[data-etat="bon"] > summary { background:#e8f8ef }
+    .q[data-etat="mauvais"] > summary { background:#fdecec }
+    .q[data-etat="corrige"] > summary { background:#fff5e0 }
+    .q .corps { padding:14px }
+    .q .marque { margin-inline-start:auto; font-size:.9em; color:#8a90a8; font-weight:400 }
+    .solution { margin-top:10px; padding:10px 12px; background:#fffaf0;
+         border:1px dashed #f0c987; border-radius:10px; line-height:2 }
+    .solution ol { margin:6px 0 0; padding-inline-start:22px }
+    #barre { position:sticky; top:0; z-index:5; background:#f4f6fb;
+         padding:10px 0; margin-bottom:10px }
+  </style>
 </head>
 <body>
 
@@ -26,47 +48,29 @@ const page = (id, n, titre, nb) => `<!doctype html>
 </header>
 
 <main>
-  <div class="card">
-    <div class="row">
+  <div id="barre" class="row">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
       <span class="badge">🧮 الجمع و الطرح في ℚ</span>
       <a class="badge" href="index.html">↩ الفهرس</a>
     </div>
-    <hr style="border:none;border-top:1px solid #e8ecf2;margin:10px 0"/>
-    <div class="op" id="operation"></div>
-    <div class="columns" style="margin-top:14px">
-      <div>
-        <div class="col-title"><b>المراحل (غير مرتبة)</b> <small>انقر أو اسحب</small></div>
-        <div class="list" id="pool"></div>
-      </div>
-      <div>
-        <div class="col-title"><b>ترتيبك</b> <small>رتّب المراحل</small></div>
-        <div class="list" id="target"></div>
-      </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn secondary" id="btnPlier">🗂 اطوِ الكلّ</button>
+      <button class="btn" id="btnNew">🎲 أرقام جديدة</button>
     </div>
-    <div class="row" style="margin-top:12px">
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn secondary" id="btnReset">🔁 إعادة</button>
-        <button class="btn secondary" id="btnNew">🎲 أرقام جديدة</button>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn secondary" id="btnHint">💡 مساعدة</button>
-        <button class="btn" id="btnCheck">✅ تحقق</button>
-      </div>
-    </div>
-    <div class="hint" id="hint"></div>
-    <div class="feedback" id="feedback"></div>
   </div>
+  <div id="questions"></div>
 </main>
 
 <script src="noyau.js"></script>
-<script src="gen${n}.js"></script>
+<script src="formes.js"></script>
+<script src="questions.js"></script>
+<script src="gen${String(n).padStart(2, '0')}.js"></script>
 <script src="${id}.js"></script>
 
 <script>
 (function(){
   let data = window.exerciceData;
-  let currentQ = 0;
-  let score = 0;
+  const zone = document.getElementById('questions');
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -77,110 +81,159 @@ const page = (id, n, titre, nb) => `<!doctype html>
     return a;
   }
 
-  function loadQuestion() {
+  function majMeta() {
     const total = data.questions.length;
-    const q = data.questions[currentQ];
-    document.getElementById('title').innerHTML = data.title;
-    document.getElementById('meta').textContent = 'السؤال ' + (currentQ+1) + '/' + total + ' — النتيجة: ' + score + '/' + total;
-    document.getElementById('operation').innerHTML = q.operation || '';
-    document.getElementById('hint').textContent = '';
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('feedback').className = 'feedback';
-
-    const pool = document.getElementById('pool');
-    const target = document.getElementById('target');
-    pool.innerHTML = '';
-    target.innerHTML = '';
-
-    shuffle(q.steps).forEach(function(step, i) {
-      const item = document.createElement('div');
-      item.className = 'item';
-      item.draggable = true;
-      item.innerHTML = step;
-      item.dataset.text = step;
-
-      item.addEventListener('dragstart', function(e) {
-        e.dataTransfer.setData('text/plain', i);
-        item.classList.add('dragging');
-      });
-      item.addEventListener('dragend', function() {
-        item.classList.remove('dragging');
-      });
-      item.addEventListener('click', function() {
-        if (item.parentElement === pool) target.appendChild(item);
-        else pool.appendChild(item);
-      });
-      pool.appendChild(item);
+    let bons = 0, faits = 0;
+    zone.querySelectorAll('.q').forEach(function(d) {
+      if (d.dataset.etat === 'bon') { bons++; faits++; }
+      else if (d.dataset.etat === 'mauvais' || d.dataset.etat === 'corrige') faits++;
     });
-
-    [pool, target].forEach(function(zone) {
-      zone.addEventListener('dragover', function(e) { e.preventDefault(); });
-      zone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        const dragging = document.querySelector('.dragging');
-        if (dragging) zone.appendChild(dragging);
-      });
-    });
+    document.getElementById('meta').textContent =
+      'أجبت عن ' + faits + '/' + total + ' — الصحيحة: ' + bons;
   }
 
-  document.getElementById('btnCheck').addEventListener('click', function() {
-    const total = data.questions.length;
-    const q = data.questions[currentQ];
-    const userOrder = Array.from(document.getElementById('target').querySelectorAll('.item'))
-      .map(function(el) { return el.dataset.text; });
-    const fb = document.getElementById('feedback');
+  // Un volet = une sous-question, avec ses propres boutons.
+  function carte(q, i) {
+    const d = document.createElement('details');
+    d.className = 'q';
+    d.open = true;
+    d.dataset.etat = '';
 
-    if (userOrder.length !== q.steps.length) {
-      fb.className = 'feedback bad';
-      fb.textContent = '⚠️ ضع جميع المراحل في منطقة الترتيب أولاً!';
-      return;
+    const s = document.createElement('summary');
+    s.innerHTML = '<span>السؤال ' + (i + 1) + '</span><span class="marque"></span>';
+    d.appendChild(s);
+    // On garde la référence : le volet n'est pas encore dans le document,
+    // getElementById ne le trouverait pas.
+    const marque = s.querySelector('.marque');
+
+    const corps = document.createElement('div');
+    corps.className = 'corps';
+    corps.innerHTML =
+      '<div class="op"></div>'
+      + '<div class="columns" style="margin-top:12px">'
+      +   '<div><div class="col-title"><b>المراحل (غير مرتبة)</b> <small>انقر أو اسحب</small></div>'
+      +     '<div class="list pool"></div></div>'
+      +   '<div><div class="col-title"><b>ترتيبك</b> <small>رتّب المراحل</small></div>'
+      +     '<div class="list target"></div></div>'
+      + '</div>'
+      + '<div class="row" style="margin-top:12px">'
+      +   '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +     '<button class="btn secondary reset">🔁 إعادة</button>'
+      +     '<button class="btn secondary hintb">💡 مساعدة</button>'
+      +   '</div>'
+      +   '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +     '<button class="btn secondary corr">👁 التصحيح</button>'
+      +     '<button class="btn check">✅ تحقق</button>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="hint"></div><div class="feedback"></div>';
+    d.appendChild(corps);
+
+    const op = corps.querySelector('.op');
+    const pool = corps.querySelector('.pool');
+    const target = corps.querySelector('.target');
+    const fb = corps.querySelector('.feedback');
+    const hint = corps.querySelector('.hint');
+    op.innerHTML = q.operation || '';
+
+    function remplir() {
+      pool.innerHTML = ''; target.innerHTML = '';
+      fb.textContent = ''; fb.className = 'feedback';
+      hint.textContent = '';
+      corps.querySelectorAll('.solution').forEach(function(x){ x.remove(); });
+      d.dataset.etat = '';
+      marque.textContent = '';
+      shuffle(q.steps).forEach(function(step) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.draggable = true;
+        item.innerHTML = step;
+        item.dataset.text = step;
+        item.addEventListener('dragstart', function() { item.classList.add('dragging'); });
+        item.addEventListener('dragend', function() { item.classList.remove('dragging'); });
+        item.addEventListener('click', function() {
+          if (item.parentElement === pool) target.appendChild(item);
+          else pool.appendChild(item);
+        });
+        pool.appendChild(item);
+      });
+      majMeta();
     }
 
-    let correct = true;
-    for (let i = 0; i < q.steps.length; i++) {
-      if (userOrder[i] !== q.steps[i]) { correct = false; break; }
-    }
+    [pool, target].forEach(function(zone2) {
+      zone2.addEventListener('dragover', function(e) { e.preventDefault(); });
+      zone2.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const dragging = corps.querySelector('.dragging');
+        if (dragging) zone2.appendChild(dragging);
+      });
+    });
 
-    if (correct) {
-      score++;
-      fb.className = 'feedback good';
-      fb.innerHTML = '✅ ممتاز! الترتيب صحيح!';
-    } else {
-      fb.className = 'feedback bad';
-      fb.innerHTML = '❌ ليس تماماً — الترتيب الصحيح:<br>' + q.steps.map(function(s, i) { return '<b>' + (i+1) + '.</b> ' + s; }).join('<br>');
-    }
+    corps.querySelector('.reset').addEventListener('click', remplir);
 
-    document.getElementById('meta').textContent = 'السؤال ' + (currentQ+1) + '/' + total + ' — النتيجة: ' + score + '/' + total;
+    corps.querySelector('.hintb').addEventListener('click', function() {
+      hint.innerHTML = '💡 ' + (q.hint || q.steps[0]);
+    });
 
-    if (currentQ < total - 1) {
-      setTimeout(function() { currentQ++; loadQuestion(); }, 2500);
-    } else {
-      setTimeout(function() {
-        const pct = Math.round(score/total*100);
-        const msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 60 ? '👍 جيد!' : '📚 حاول مرة أخرى';
-        fb.className = 'feedback good';
-        fb.innerHTML = msg + ' — النتيجة النهائية: <b>' + score + '/' + total + '</b> (' + pct + '%)'
-          + '<br><small>اضغط « أرقام جديدة » لتمرين جديد</small>';
-      }, 2500);
-    }
-  });
+    corps.querySelector('.check').addEventListener('click', function() {
+      const ordre = Array.from(target.querySelectorAll('.item'))
+        .map(function(el) { return el.dataset.text; });
+      if (ordre.length !== q.steps.length) {
+        fb.className = 'feedback bad';
+        fb.textContent = '⚠️ ضع جميع المراحل في منطقة الترتيب أولاً!';
+        return;
+      }
+      let bon = true;
+      for (let k = 0; k < q.steps.length; k++) {
+        if (ordre[k] !== q.steps[k]) { bon = false; break; }
+      }
+      if (d.dataset.etat !== 'corrige') d.dataset.etat = bon ? 'bon' : 'mauvais';
+      marque.textContent = bon ? '✅ صحيح' : '❌ أعد المحاولة';
+      fb.className = 'feedback ' + (bon ? 'good' : 'bad');
+      fb.innerHTML = bon ? '✅ ممتاز! الترتيب صحيح.'
+        : '❌ ليس تماماً — أعد الترتيب، أو اضغط « التصحيح ».';
+      majMeta();
+    });
 
-  document.getElementById('btnReset').addEventListener('click', loadQuestion);
+    // Le corrigé : l'ordre attendu, en toutes lettres.
+    corps.querySelector('.corr').addEventListener('click', function() {
+      if (corps.querySelector('.solution')) return;
+      const box = document.createElement('div');
+      box.className = 'solution';
+      box.innerHTML = '<b>التصحيح</b><ol>'
+        + q.steps.map(function(s) { return '<li>' + s + '</li>'; }).join('')
+        + '</ol>';
+      corps.appendChild(box);
+      if (d.dataset.etat !== 'bon') d.dataset.etat = 'corrige';
+      marque.textContent = '👁 اطّلعت على التصحيح';
+      majMeta();
+    });
 
-  // Nouveau tirage : les nombres changent, la correction est recalculée.
+    remplir();
+    return d;
+  }
+
+  function construire() {
+    document.getElementById('title').innerHTML = data.title;
+    zone.innerHTML = '';
+    data.questions.forEach(function(q, i) { zone.appendChild(carte(q, i)); });
+    majMeta();
+  }
+
   document.getElementById('btnNew').addEventListener('click', function() {
     data = window.Somme.construire(window.exerciceNumero);
-    currentQ = 0;
-    score = 0;
-    loadQuestion();
+    construire();
+    window.scrollTo(0, 0);
   });
 
-  document.getElementById('btnHint').addEventListener('click', function() {
-    const q = data.questions[currentQ];
-    document.getElementById('hint').innerHTML = '💡 ' + (q.hint || q.steps[0]);
+  document.getElementById('btnPlier').addEventListener('click', function() {
+    const volets = zone.querySelectorAll('.q');
+    const ouvrir = !Array.from(volets).every(function(v) { return v.open; });
+    volets.forEach(function(v) { v.open = ouvrir; });
+    document.getElementById('btnPlier').textContent = ouvrir ? '🗂 اطوِ الكلّ' : '🗂 افتح الكلّ';
   });
 
-  window.onload = loadQuestion;
+  construire();
 })();
 </script>
 
@@ -188,20 +241,21 @@ const page = (id, n, titre, nb) => `<!doctype html>
 </html>
 `;
 
-fs.copyFileSync(path.join(__dirname, 'noyau.js'), path.join(OUT, 'noyau.js'));
+['noyau.js', 'formes.js', 'questions.js'].forEach(f =>
+  fs.copyFileSync(path.join(__dirname, f), path.join(OUT, f)));
 
 const liens = [];
-for (const n of Object.keys(A.PROBLEMES)) {
-  const id = 'ex' + n;
+for (const n of EXOS) {
+  const id = 'ex' + String(n).padStart(2, '0');
   const nb = A.PROBLEMES[n].questions;
   const titre = 'التمرين ' + n + ' — ' + A.PROBLEMES[n].titre;
   fs.writeFileSync(path.join(OUT, id + '.js'),
     `// Tirage initial ; le bouton « أرقام جديدة » en refait un.\n`
     + `window.exerciceNumero = ${n};\n`
     + `window.exerciceData = Somme.construire(${n});\n`);
-  fs.writeFileSync(path.join(OUT, id + '.html'), page(id, n, titre, nb));
+  fs.writeFileSync(path.join(OUT, id + '.html'), page(id, n, titre));
   liens.push({ id, titre, n: nb });
-  console.log('✓ ' + id + ' — ' + titre + ' (' + nb + ' سؤالا)');
+  console.log('✓ ' + id + ' — ' + titre + ' (' + nb + ' أسئلة)');
 }
 
 const total = liens.reduce((s, l) => s + l.n, 0);
@@ -216,13 +270,13 @@ fs.writeFileSync(path.join(OUT, 'index.html'), `<!doctype html>
 <body>
 <h3>🧮 الجمع و الطرح في ℚ — تمارين شاملة</h3>
 <p style="text-align:center;color:#95a5a6;font-size:.9em;margin-bottom:16px">
-  8 أساسي — ${liens.length} تمرينا، ${total} سؤالا في كل تحميل<br>
-  كل صفحة تعرض تمرينا كاملا بأسئلته الفرعية، و الأعداد تتغيّر في كل مرة
+  8 أساسي — ${liens.length} تمارين، ${total} سؤالا في كل تحميل<br>
+  كل صفحة تعرض تمرينا كاملا بكل أسئلته في آن واحد، و الأعداد تتغيّر في كل مرة
 </p>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
 ${liens.map(l => `  <a href="${l.id}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔗 ${l.titre} <small style="color:#95a5a6">(${l.n} أسئلة)</small></a>`).join('\n')}
 </div>
 </body>
 </html>
 `);
-console.log(`\n${liens.length} exercice(s), ${total} questions par tirage.`);
+console.log(`\n${liens.length} exercices, ${total} questions par tirage.`);

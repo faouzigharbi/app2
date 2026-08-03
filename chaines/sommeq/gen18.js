@@ -86,8 +86,9 @@
         ['نعوّض بالمعطى', 'E = ' + par(T.s) + plus(T.kE)],
         ['النتيجة', 'E = ' + txt(T.Ev)]
       ],
-      controle: { type: 'somme', s: T.s, defs: { E: T.defE, F: T.defF },
-                  nom: 'E', valeur: T.Ev }
+      controle: { type: 'forme', defs: { E: T.defE, F: T.defF }, libres: ['a'],
+                  lie: { nom: 'b', via: 'somme', autre: 'a', valeur: T.s },
+                  claims: [{ nom: 'E', vaut: T.Ev }] }
     };
   }
 
@@ -111,8 +112,9 @@
         ['نعوّض بالمعطى', 'F = -' + par(T.s) + plus(T.kF)],
         ['النتيجة', 'F = ' + txt(T.Fv)]
       ],
-      controle: { type: 'somme', s: T.s, defs: { E: T.defE, F: T.defF },
-                  nom: 'F', valeur: T.Fv }
+      controle: { type: 'forme', defs: { E: T.defE, F: T.defF }, libres: ['a'],
+                  lie: { nom: 'b', via: 'somme', autre: 'a', valeur: T.s },
+                  claims: [{ nom: 'F', vaut: T.Fv }] }
     };
   }
 
@@ -130,8 +132,9 @@
         ['نعوّض', 'E = 0 + ' + par(T.kE)],
         ['النتيجة', 'E = ' + txt(T.kE)]
       ],
-      controle: { type: 'opposes', defs: { E: T.defE, F: T.defF },
-                  nom: 'E', valeur: T.kE }
+      controle: { type: 'forme', defs: { E: T.defE, F: T.defF }, libres: ['a'],
+                  lie: { nom: 'b', via: 'oppose', autre: 'a' },
+                  claims: [{ nom: 'E', vaut: T.kE }] }
     };
   }
 
@@ -150,7 +153,9 @@
         ['نعوّض', 'F = -(2a) + ' + par(T.kF)],
         ['النتيجة بدلالة a', 'F = ' + txt(T.kF) + ' - 2a']
       ],
-      controle: { type: 'egaux', defs: { E: T.defE, F: T.defF }, nom: 'F' }
+      controle: { type: 'forme', defs: { E: T.defE, F: T.defF }, libres: ['a'],
+                  lie: { nom: 'b', via: 'egal', autre: 'a' },
+                  verifierForme: { nom: 'F', cible: { ca: -2, cb: 0, k: T.kF }, u: 'a', v: null } }
     };
   }
 
@@ -175,7 +180,7 @@
         ['المجهول هو الفرق', 'x = ' + par(K) + ' - ' + par(C)],
         ['النتيجة', 'x = ' + txt(sol)]
       ],
-      controle: { type: 'equation', eq, sol, verif: [['A', A], ['B', B], ['C', C]] }
+      controle: { type: 'equation', eq, sol }
     };
   }
 
@@ -231,7 +236,7 @@
         ['النتيجة', possible ? 'x = ' + txt(m) + '  أو  x = ' + txt(neg(m))
                              : 'لا يوجد عدد كسري نسبي x يحقّق المعادلة']
       ],
-      controle: { type: 'abs', eq, p, q, C, m, possible }
+      controle: { type: 'abs', eq, m, possible }
     };
   }
 

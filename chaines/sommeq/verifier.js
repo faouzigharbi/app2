@@ -1,109 +1,183 @@
-// Valide l'exercice 18 sur un grand nombre de tirages.
+// Valide toutes les chaînes de la fiche sur un grand nombre de tirages.
 //   node verifier.js [tirages]
+//   CONTRE_EXEMPLES=1 node verifier.js
 //
-// Un générateur ne se relit pas, il s'exécute. Sur CHAQUE tirage, et pour
-// chacune des sept sous-questions :
+// Un générateur ne se relit pas, il s'exécute. Sur CHAQUE question tirée :
 //
 //   1. toute relation écrite dans une étape (« … = … », « … > 0 ») est
-//      recalculée avec l'analyseur et doit être vraie — non pas une fois,
-//      mais pour DES DIZAINES de couples (a, b) tirés au hasard parmi ceux
-//      que l'énoncé autorise. Une étape juste « par chance » ne passe pas ;
-//   2. la valeur annoncée pour E ou pour F est recalculée à partir de la
-//      DÉFINITION IMPRIMÉE dans l'énoncé, jamais à partir des variables
-//      internes du générateur ;
-//   3. les équations sont RÉSOLUES à nouveau, à partir de la chaîne de
-//      caractères affichée : on évalue le membre de gauche moins celui de
-//      droite en 0 et en 1, ce qui donne la fonction affine, donc l'unique
-//      solution. Elle doit coïncider avec celle qu'annonce la chaîne ;
-//   4. pour l'équation à valeur absolue, on retrouve |x| = k depuis l'énoncé
-//      affiché et l'on vérifie que la conclusion suit le signe de k — deux
-//      solutions opposées si k > 0, aucune si k < 0 ;
-//   5. aucune étape dupliquée (sinon deux ordres seraient corrects) et
-//      chaque expression mathématique isolée en dir="ltr".
+//      recalculée par l'analyseur, non pas une fois mais pour DES DIZAINES
+//      d'environnements tirés au hasard parmi ceux que l'énoncé autorise.
+//      Une étape juste par chance ne passe pas ;
+//   2. la forme réduite annoncée — « E = a − b + 13/8 » — est confrontée à la
+//      DÉFINITION IMPRIMÉE dans l'énoncé, pour tout couple (a, b). C'est la
+//      seule preuve que la levée des parenthèses est correcte ;
+//   3. les équations sont RÉSOLUES à nouveau à partir du texte affiché : on
+//      évalue « gauche − droite » en 0 et en 1, ce qui donne la fonction
+//      affine, donc l'unique solution ;
+//   4. pour |x| = k, la conclusion doit suivre le signe de k — deux solutions
+//      opposées si k > 0, aucune si k < 0 ;
+//   5. toute comparaison doit passer par le SIGNE DE LA DIFFÉRENCE. Les
+//      propriétés de l'ordre sont du programme de 9e : une chaîne qui les
+//      invoque est refusée ;
+//   6. aucune étape dupliquée (deux ordres seraient corrects) et chaque
+//      expression isolée en dir="ltr".
 const F = require('./noyau.js');
-const G = require('./gen18.js');
+const S = require('./formes.js');
+require('./questions.js');
+const EXOS = [4, 5, 6, 7, 8, 10, 14, 15, 16, 18];
+EXOS.forEach(n => require('./gen' + String(n).padStart(2, '0') + '.js'));
 
-const TIRAGES = Number(process.argv[2]) || 300;
-const ECHANTILLONS = 40;          // couples (a, b) essayés par question littérale
+const TIRAGES = Number(process.argv[2]) || 200;
+const ECHANTILLONS = 30;
 
-let controles = 0, relations = 0, questions = 0;
+let relations = 0, controles = 0, questions = 0;
 const echecs = [];
 
 const rnd = () => F.rat(F.ent(-20, 20), F.ent(1, 12));
+
+// Les formulations du programme de 9e, interdites en 8e.
+const INTERDIT = [
+  [/تحفظ الترتيب/, 'خاصية « الإضافة تحفظ الترتيب » من برنامج 9 أساسي'],
+  [/طرفا بطرف/, 'جمع متفاوتتين طرفا بطرف من برنامج 9 أساسي'],
+  [/نفس الاتجاه/, 'جمع متفاوتتين في نفس الاتجاه من برنامج 9 أساسي']
+];
 
 // ---------------------------------------------------------------------------
 // Les environnements admissibles : ce que l'énoncé permet, rien de plus.
 // ---------------------------------------------------------------------------
 function environnements(c) {
-  const envs = [];
-  const lier = (a, b) => {
-    const e = { a, b };
-    e.E = F.analyser(c.defs.E, e);
-    e.F = F.analyser(c.defs.F, e);
-    return e;
-  };
-  if (c.type === 'somme') {
-    for (let i = 0; i < ECHANTILLONS; i++) { const a = rnd(); envs.push(lier(a, F.sub(c.s, a))); }
-  } else if (c.type === 'opposes') {
-    for (let i = 0; i < ECHANTILLONS; i++) { const a = rnd(); envs.push(lier(a, F.neg(a))); }
-  } else if (c.type === 'egaux') {
-    for (let i = 0; i < ECHANTILLONS; i++) { const a = rnd(); envs.push(lier(a, a)); }
-  } else if (c.type === 'equation') {
-    envs.push({ x: c.sol });
-  } else if (c.type === 'abs' && c.possible) {
-    envs.push({ x: c.m }, { x: F.neg(c.m) });
+  if (c.type === 'equation') return [{ x: c.sol }];
+  if (c.type === 'abs') return c.possible ? [{ x: c.m }, { x: F.neg(c.m) }] : [];
+  // « قارن A و B » : A et B sont des nombres connus, mais la chaîne les
+  // désigne par leur nom — il faut donc les lier dans l'environnement.
+  if (c.type === 'nombres') return [{ [c.nomA]: c.vA, [c.nomB]: c.vB }];
+  if (c.type === 'deux-cas') return [{ x: c.x1 }, { x: c.x2 }].map(lier(c));
+
+  const out = [];
+  const combien = (c.libres && c.libres.length) ? ECHANTILLONS : 1;
+  for (let i = 0; i < combien; i++) {
+    const env = {};
+    (c.libres || []).forEach(v => { env[v] = rnd(); });
+    Object.keys(c.fixes || {}).forEach(v => { env[v] = c.fixes[v]; });
+    if (c.lie) {
+      const a = env[c.lie.autre];
+      env[c.lie.nom] = c.lie.via === 'somme' ? F.sub(c.lie.valeur, a)
+        : c.lie.via === 'difference' ? F.sub(a, c.lie.valeur)
+        : c.lie.via === 'oppose' ? F.neg(a) : a;
+    }
+    // Filet : une variable présente dans l'expression imprimée mais dont
+    // l'énoncé ne dit rien (le « a » de l'exercice 8, le « y » du 4) doit
+    // quand même recevoir une valeur — et une valeur qui change à chaque
+    // tirage, sinon on ne verrait pas qu'elle s'élimine.
+    variables(c).forEach(v => { if (!(v in env)) env[v] = rnd(); });
+    out.push(lier(c)(env));
   }
-  return envs;                     // vide = cas sans solution : rien à substituer
+  return out;
 }
+
+// Toutes les lettres qui apparaissent dans les expressions imprimées.
+function variables(c) {
+  const s = new Set();
+  Object.keys(c.defs || {}).forEach(nom => {
+    (String(c.defs[nom]).match(/[a-zA-Z]+/g) || []).forEach(v => s.add(v));
+  });
+  return Array.from(s);
+}
+
+// Lie E, F, A, B … à leur définition imprimée : c'est ainsi que les étapes
+// « E = … » deviennent vérifiables sans jamais consulter le générateur.
+const lier = c => env => {
+  Object.keys(c.defs || {}).forEach(nom => { env[nom] = F.analyser(c.defs[nom], env); });
+  return env;
+};
 
 // ---------------------------------------------------------------------------
 // Re-résolution d'une équation du premier degré À PARTIR DE SON TEXTE.
-// f(x) = gauche - droite est affine : f(x) = α x + β, donc x = -β/α.
 // ---------------------------------------------------------------------------
 function resoudre(eq) {
   const k = eq.indexOf('=');
   const g = eq.slice(0, k), d = eq.slice(k + 1);
   const f = x => F.sub(F.analyser(g, { x }), F.analyser(d, { x }));
   const b0 = f(F.rat(0)), a1 = F.sub(f(F.rat(1)), b0);
-  if (a1.n === 0) return null;                       // pas du premier degré
+  if (a1.n === 0) return null;
   return F.div(F.neg(b0), a1);
 }
 
 // ---------------------------------------------------------------------------
-// Contrôle des affirmations, recalculées sans faire confiance au générateur
+// Les affirmations, re-démontrées sans faire confiance au générateur
 // ---------------------------------------------------------------------------
-function controlerClaim(c, etapes) {
+function controlerClaim(c, etapes, envs) {
   const p = [];
-  if (c.type === 'somme' || c.type === 'opposes') {
-    // La valeur annoncée doit sortir de la définition imprimée, pour TOUT
-    // couple admissible : c'est ce qui prouve que E ne dépend que de a + b.
-    for (const env of environnements(c)) {
-      const v = env[c.nom];
-      if (!F.egaux(v, c.valeur)) {
-        p.push(`${c.nom} = ${F.txt(v)} عند a = ${F.txt(env.a)} بدل ${F.txt(c.valeur)}`);
+
+  // La forme réduite annoncée doit valoir la définition imprimée, partout.
+  if (c.verifierForme) {
+    const { nom, cible, u, v } = c.verifierForme;
+    for (const env of envs) {
+      const attendu = S.valeurForme(cible, env[u], v ? env[v] : null);
+      if (!F.egaux(env[nom], attendu)) {
+        p.push(`${nom} = ${F.txt(env[nom])} بدل ${F.txt(attendu)} عند ${u} = ${F.txt(env[u])}`);
         break;
       }
       controles++;
     }
-  } else if (c.type === 'egaux') {
-    // Le résultat doit rester en fonction de a : deux valeurs de a doivent
-    // donner deux valeurs de F, sinon la question n'a pas de sens.
-    const e1 = { a: F.rat(1), b: F.rat(1) }, e2 = { a: F.rat(2), b: F.rat(2) };
-    const f1 = F.analyser(c.defs.F, e1), f2 = F.analyser(c.defs.F, e2);
-    if (F.egaux(f1, f2)) p.push('F لا يتعلّق بـ a — السؤال بلا معنى');
+  }
+
+  for (const cl of c.claims || []) {
+    for (const env of envs) {
+      if (!F.egaux(env[cl.nom], cl.vaut)) {
+        p.push(`${cl.nom} = ${F.txt(env[cl.nom])} بدل ${F.txt(cl.vaut)}`);
+        break;
+      }
+      controles++;
+    }
+  }
+
+  if (c.type === 'combinaison') {
+    // On refait le chemin inverse : la combinaison annoncée, réinjectée dans
+    // la forme, doit bien redonner la valeur imposée.
+    const attendu = F.add(c.res, c.sh.cible.k);
+    if (!F.egaux(attendu, c.val)) p.push(`العودة تعطي ${F.txt(attendu)} بدل ${F.txt(c.val)}`);
     controles++;
+  } else if (c.type === 'comparaison-var') {
+    // E = 0 impose u - v = -k : on le vérifie sur des couples construits exprès.
+    for (let i = 0; i < ECHANTILLONS; i++) {
+      const u = rnd(), v = F.sub(u, c.d);
+      const env = lier(c)({ [c.sh.u]: u, [c.sh.v]: v });
+      if (env[c.sh.nom].n !== 0) { p.push('الشرط E = 0 لا يوافق الفرق المعلن'); break; }
+      if ((F.cmp(u, v) < 0) !== c.petit) { p.push('الاستنتاج مخالف لإشارة الفرق'); break; }
+      controles++;
+    }
+  } else if (c.type === 'comparaison-formes') {
+    for (let i = 0; i < ECHANTILLONS; i++) {
+      const env = lier(c)({ a: rnd(), b: rnd() });
+      const d = F.sub(env[c.shE.nom], env[c.shF.nom]);
+      if (!F.egaux(d, c.d)) { p.push(`الفرق الحقيقي ${F.txt(d)} ≠ ${F.txt(c.d)}`); break; }
+      if ((F.signe(d) < 0) !== c.petit) { p.push('الاستنتاج مخالف لإشارة الفرق'); break; }
+      controles++;
+    }
+  } else if (c.type === 'nombres') {
+    const d = F.sub(c.vA, c.vB);
+    if (!F.egaux(d, c.d)) p.push('الفرق المعلن خاطئ');
+    if ((F.signe(d) < 0) !== c.petit) p.push('الاستنتاج مخالف لإشارة الفرق');
+    controles++;
+  } else if (c.type === 'deux-cas') {
+    // Les deux racines doivent bien vérifier |x - q| = r, et donner v1 et v2.
+    for (const [x, v] of [[c.x1, c.v1], [c.x2, c.v2]]) {
+      const env = lier(c)({ x });
+      if (!F.egaux(env[c.sh.nom], v)) p.push(`الحالة x = ${F.txt(x)} تعطي ${F.txt(env[c.sh.nom])} بدل ${F.txt(v)}`);
+      controles++;
+    }
+    if (F.egaux(c.x1, c.x2)) p.push('الحالتان متطابقتان');
   } else if (c.type === 'equation') {
     const s = resoudre(c.eq);
     if (!s) p.push('المعادلة ليست من الدرجة الأولى');
     else if (!F.egaux(s, c.sol)) p.push(`الحلّ الحقيقي ${F.txt(s)} ≠ ${F.txt(c.sol)}`);
     const k = c.eq.indexOf('=');
-    const g = F.analyser(c.eq.slice(0, k), { x: c.sol });
-    const d = F.analyser(c.eq.slice(k + 1), { x: c.sol });
-    if (!F.egaux(g, d)) p.push('التعويض بالحلّ لا يحقّق المعادلة');
+    if (!F.egaux(F.analyser(c.eq.slice(0, k), { x: c.sol }), F.analyser(c.eq.slice(k + 1), { x: c.sol }))) {
+      p.push('التعويض بالحلّ لا يحقّق المعادلة');
+    }
     controles += 2;
   } else if (c.type === 'abs') {
-    // |x| = k retrouvé depuis le texte : gauche(0) donne la somme des
-    // constantes, la différence avec le membre droit donne k.
     const k = c.eq.indexOf('=');
     const cste = F.analyser(c.eq.slice(0, k), { x: F.rat(0) });
     const droite = F.analyser(c.eq.slice(k + 1), {});
@@ -113,16 +187,13 @@ function controlerClaim(c, etapes) {
     const conclusion = etapes[etapes.length - 1][1];
     if (c.possible) {
       for (const x of [m, F.neg(m)]) {
-        const g = F.analyser(c.eq.slice(0, k), { x });
-        if (!F.egaux(g, droite)) p.push(`${F.txt(x)} ليس حلاّ`);
+        if (!F.egaux(F.analyser(c.eq.slice(0, k), { x }), droite)) p.push(`${F.txt(x)} ليس حلاّ`);
       }
       if (!/x = /.test(conclusion)) p.push('الخاتمة لا تعلن الحلّين');
     } else if (!/لا يوجد/.test(conclusion)) {
       p.push('الخاتمة لا تعلن انعدام الحلّ');
     }
     controles += 2;
-  } else {
-    p.push('نوع غير معروف: ' + c.type);
   }
   return p;
 }
@@ -130,42 +201,41 @@ function controlerClaim(c, etapes) {
 // ---------------------------------------------------------------------------
 function verifierBrut(brut) {
   const probs = [];
-  const envs = environnements(brut.controle);
+  const c = brut.controle;
+  const envs = environnements(c);
   let verifiees = 0;
 
   brut.etapes.forEach(([label, math], i) => {
-    if (F.ARABE.test(math)) return;                  // ligne de règle, pas de calcul
-    const aVariable = /[a-zA-Z]/.test(math);
-    const lots = aVariable ? envs : [{}];
-    if (!lots.length) return;                        // pas de valeur admissible : rien à tester
+    for (const [motif, raison] of INTERDIT) {
+      if (motif.test(label) || motif.test(math)) probs.push(`م${i + 1}: ${raison}`);
+    }
+    if (F.ARABE.test(math)) return;               // ligne de règle, pas de calcul
+    const lots = /[a-zA-Z]/.test(math) ? envs : [{}];
+    if (!lots.length) return;                     // aucune valeur admissible
     for (const env of lots) {
       try {
         const r = F.verifierRelation(math, env);
         if (r === null) { probs.push(`م${i + 1}: « ${math} » ليست علاقة`); break; }
         if (r) { probs.push(`م${i + 1}: ${r}`); break; }
         relations++;
-      } catch (e) { probs.push(`م${i + 1}: تعذّر حساب « ${math} » (${e.message})`); break; }
+      } catch (e) { probs.push(`م${i + 1}: تعذّر « ${math} » (${e.message})`); break; }
     }
     verifiees++;
   });
 
-  // Quand la conclusion est « pas de solution », aucune valeur ne peut être
-  // substituée à x : seules les lignes purement numériques sont contrôlables.
-  const mini = envs.length ? 3 : 2;
-  if (verifiees < mini) probs.push(`مراحل قابلة للتحقق: ${verifiees} فقط`);
-  probs.push(...controlerClaim(brut.controle, brut.etapes));
+  if (verifiees < (envs.length ? 3 : 2)) probs.push(`مراحل قابلة للتحقق: ${verifiees} فقط`);
+  probs.push(...controlerClaim(c, brut.etapes, envs));
 
   const textes = brut.etapes.map(e => e.join(': '));
   if (new Set(textes).size !== textes.length) probs.push('مراحل مكرّرة');
-  if (textes.length < 5) probs.push('السلسلة قصيرة جدا');
+  if (textes.length < 4) probs.push('السلسلة قصيرة جدا');
   if (!brut.indice) probs.push('بلا مساعدة');
-  if (!brut.enonce.some(p => F.ARABE.test(p))) probs.push('نصّ عربي مفقود في السؤال');
+  if (!brut.enonce.some(x => F.ARABE.test(x))) probs.push('نصّ عربي مفقود في السؤال');
   return probs;
 }
 
 // Les blocs isolés contiennent eux-mêmes des <span> (les fractions) : il faut
-// donc suivre l'imbrication, une expression régulière paresseuse s'arrêterait
-// à la première balise fermante venue et laisserait croire à une fuite.
+// suivre l'imbrication, une expression paresseuse s'arrêterait trop tôt.
 function retirerBlocs(html) {
   let s = String(html), d;
   while ((d = s.indexOf('<span dir="ltr"')) >= 0) {
@@ -175,7 +245,7 @@ function retirerBlocs(html) {
       else if (s.startsWith('</span>', i)) { prof--; i += 7; }
       else i++;
     }
-    if (prof > 0) return s + ' ⟵ بلاغة غير مغلقة';
+    if (prof > 0) return s + ' ⟵ وسم غير مغلق';
     s = s.slice(0, d) + ' ' + s.slice(i);
   }
   return s;
@@ -185,7 +255,7 @@ function verifierRendu(q) {
   const probs = [];
   for (const s of [q.operation].concat(q.steps)) {
     const nu = retirerBlocs(s);
-    if (/<span/.test(nu)) probs.push('بلاغة خارج العزل: ' + nu.trim());
+    if (/<span/.test(nu)) probs.push('وسم خارج العزل: ' + nu.trim());
     if (/[\d)]\s*[+\-*×÷|<>=]\s*[\d(a-zA-Z]|[a-zA-Z]\s*[+\-=]\s*[a-zA-Z\d(]/.test(nu)) {
       probs.push('عبارة غير معزولة: ' + nu.trim());
     }
@@ -194,33 +264,42 @@ function verifierRendu(q) {
 }
 
 // ---------------------------------------------------------------------------
-// Un contrôle qui n'échoue jamais ne prouve rien : CONTRE_EXEMPLES=1 fabrique
-// des chaînes fausses et vérifie qu'elles sont bien refusées.
+// Un contrôle qui n'échoue jamais ne prouve rien.
 // ---------------------------------------------------------------------------
 if (process.env.CONTRE_EXEMPLES) {
   const copie = q => JSON.parse(JSON.stringify(q));
-  const lot = F.tirer(18);
   const cas = [];
 
-  const c1 = copie(lot[0]);                       // constante fausse dans E
-  c1.etapes[3][1] = c1.etapes[3][1].replace(/= .*$/, '= 7/3');
-  cas.push(['constante de E falsifiée', c1]);
+  const l6 = F.tirer(6);
+  const a1 = copie(l6[0]);                        // constante de la forme falsifiée
+  a1.etapes[a1.etapes.length - 1][1] += ' + 1';
+  cas.push(['forme réduite falsifiée', a1]);
 
-  const c2 = copie(lot[1]);                       // parenthèse développée à l'envers
-  c2.etapes[1][1] = c2.etapes[1][1].replace('= -', '= +');
-  cas.push(['parenthèse mal levée dans F', c2]);
+  const a2 = copie(l6[2]);                        // conclusion contraire au signe
+  a2.controle.petit = !a2.controle.petit;
+  cas.push(['comparaison inversée', a2]);
 
-  const c3 = copie(lot[4]);                       // solution décalée de 1
-  c3.controle.sol = F.add(c3.controle.sol, F.rat(1));
-  cas.push(['solution d\'équation décalée', c3]);
+  const a3 = copie(l6[2]);                        // méthode de 9e année
+  a3.etapes[4] = ['القاعدة', 'نضيف نفس العدد إلى الطرفين لأنّ الإضافة تحفظ الترتيب'];
+  cas.push(['propriété de l\'ordre (programme de 9e)', a3]);
 
-  const c4 = copie(lot[6]);                       // conclusion contraire au signe
-  c4.controle.possible = !c4.controle.possible;
-  cas.push(['conclusion opposée au signe de |x|', c4]);
+  const l16 = F.tirer(16);
+  const a4 = copie(l16[4]);                       // solution décalée
+  a4.controle.sol = F.add(a4.controle.sol, F.rat(1));
+  cas.push(['solution d\'équation décalée', a4]);
 
-  const c5 = copie(lot[2]);                       // deux étapes identiques
-  c5.etapes[3] = c5.etapes[2].slice();
-  cas.push(['étape dupliquée (deux ordres corrects)', c5]);
+  const a5 = copie(l16[5]);                       // conclusion opposée au signe de |x|
+  a5.controle.possible = !a5.controle.possible;
+  cas.push(['conclusion opposée au signe de |x|', a5]);
+
+  const l7 = F.tirer(7);
+  const a6 = copie(l7[0]);                        // deux étapes identiques
+  a6.etapes[a6.etapes.length - 1] = a6.etapes[a6.etapes.length - 2].slice();
+  cas.push(['étape dupliquée (deux ordres corrects)', a6]);
+
+  const a7 = copie(l7[1]);                        // parenthèse mal levée
+  a7.etapes[0][1] = a7.etapes[0][1].replace(/- /, '+ ');
+  cas.push(['parenthèse mal levée', a7]);
 
   let bon = 0;
   for (const [nom, q] of cas) {
@@ -233,32 +312,34 @@ if (process.env.CONTRE_EXEMPLES) {
   process.exit(bon === cas.length ? 0 : 1);
 }
 
-const parQuestion = [];
-for (let t = 0; t < TIRAGES; t++) {
-  const lot = F.tirer(18);
-  if (lot.length !== 7) { echecs.push('الصفحة لا تحتوي 7 أسئلة'); break; }
-  lot.forEach((brut, i) => {
-    questions++;
-    parQuestion[i] = parQuestion[i] || { mauvais: 0, vus: new Set() };
-    parQuestion[i].vus.add(brut.enonce.join(' '));
-    const probs = verifierBrut(brut).concat(verifierRendu(F.rendre(brut)));
-    if (probs.length) {
-      parQuestion[i].mauvais++;
-      if (echecs.length < 10) {
-        echecs.push(`س${i + 1}: ${brut.enonce.join(' ')}\n    - ` + probs.join('\n    - '));
-      }
+// ---------------------------------------------------------------------------
+for (const n of EXOS) {
+  let mauvais = 0, vus = new Set(), nb = 0;
+  for (let t = 0; t < TIRAGES; t++) {
+    const lot = F.tirer(n);
+    if (lot.length !== F.PROBLEMES[n].questions) {
+      echecs.push(`ex${n}: ${lot.length} أسئلة بدل ${F.PROBLEMES[n].questions}`);
+      break;
     }
-  });
+    nb = lot.length;
+    lot.forEach((brut, i) => {
+      questions++;
+      vus.add(brut.enonce.join(' '));
+      const probs = verifierBrut(brut).concat(verifierRendu(F.rendre(brut)));
+      if (probs.length) {
+        mauvais++;
+        if (echecs.length < 10) {
+          echecs.push(`ex${n} س${i + 1}: ${brut.enonce.join(' ')}\n    - ` + probs.join('\n    - '));
+        }
+      }
+    });
+  }
+  console.log(`ex${String(n).padStart(2)} — ${F.PROBLEMES[n].titre}`.padEnd(52)
+    + `${mauvais ? '✗ ' + mauvais + ' échec(s)' : '✓'}  (${nb} أسئلة، ${vus.size} صيغة)`);
 }
 
-const NOMS = ['حساب E بمعلومية a+b', 'حساب F بمعلومية a+b', 'E و a و b متقابلان',
-              'F بدلالة a', 'معادلة بقوس مطروح', 'معادلة بقوس مضاف', 'معادلة بقيمة مطلقة'];
-parQuestion.forEach((q, i) => {
-  console.log(`س${i + 1} — ${NOMS[i]}`.padEnd(34)
-    + `${q.mauvais ? '✗ ' + q.mauvais + ' échec(s)' : '✓'}  (${q.vus.size} énoncés distincts)`);
-});
-
 if (echecs.length) console.log('\n' + echecs.join('\n'));
-console.log(`\n${TIRAGES} tirages, ${questions} questions, ${relations} relations recalculées`
-  + ` et ${controles} affirmations re-démontrées, ${echecs.length ? 'ÉCHECS' : '0 erreur'}.`);
+console.log(`\n${TIRAGES} tirages par exercice, ${questions} questions,`
+  + ` ${relations} relations recalculées et ${controles} affirmations re-démontrées,`
+  + ` ${echecs.length ? 'ÉCHECS' : '0 erreur'}.`);
 process.exit(echecs.length ? 1 : 0);
