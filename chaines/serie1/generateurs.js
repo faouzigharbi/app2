@@ -81,7 +81,10 @@
   // Exercice 2 — أحسب العبارات التالية (priorité des opérations)
   // ==========================================================================
   function ex2() {
-    const A = ent(100, 299) + ' + ' + ent(100, 299) + ' - ' + ent(50, 149);
+    // b - c doit tomber rond : c'est l'occasion d'enseigner le regroupement
+    // 299 + 277 - 77 = 299 + (277 - 77) = 299 + 200, et non 576 - 77.
+    const ac = ent(50, 199), ak = choix([100, 200, 300]);
+    const A = ent(100, 499) + ' + ' + (ac + ak) + ' - ' + ac;
 
     const b1 = ent(1000, 1499);
     const B = b1 + ' - (' + ent(400, 699) + ' + ' + ent(100, 299) + ')';
@@ -90,7 +93,10 @@
     const c3 = ent(300, 499), c2 = ent(c3 + 1, 699);
     const C = ent(2000, 2999) + ' - (' + c2 + ' - ' + c3 + ')';
 
-    const D = ent(3000, 3999) + ' - ' + ent(800, 1299) + ' - ' + ent(100, 299);
+    // d2 + d3 rond : a - b - c = a - (b + c), sans jamais développer.
+    const ds = choix([1000, 1500, 2000]);
+    const d2 = ent(400, ds - 200), d3 = ds - d2;
+    const D = ent(ds + 800, ds + 2500) + ' - ' + d2 + ' - ' + d3;
 
     const e4 = ent(20, 69), e3 = ent(e4 + 1, 299);
     const E = ent(100, 199) + ' + ' + ent(400, 599) + ' - (' + e3 + ' - ' + e4 + ')';

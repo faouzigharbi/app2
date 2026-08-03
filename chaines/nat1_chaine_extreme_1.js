@@ -7,7 +7,8 @@ const exerciceData = {
       "steps": [
         "نحدّد الأولوية: الضرب والقسمة قبل الجمع والطرح",
         "ننجز الضرب والقسمة: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">120 - 20 - 56 + 6</span>",
-        "من اليسار إلى اليمين: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">100 - 56 + 6</span>",
+        "نجمّع ما يعطي عددا مستديرا: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">(120 - 20) - 56 + 6</span>",
+        "ننجز القوس: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">100 - 56 + 6</span>",
         "من اليسار إلى اليمين: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">44 + 6</span>",
         "النتيجة: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">= 50</span>"
       ],

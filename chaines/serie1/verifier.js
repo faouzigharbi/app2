@@ -11,6 +11,7 @@
 //   5. chaque expression est isolée en dir="ltr".
 const M = require('./moteur.js');
 const { EXERCICES, construire } = require('./generateurs.js');
+const PEDAGOGIE = require('./pedagogie.js');
 
 const TIRAGES = Number(process.argv[2]) || 400;
 const PUR = /^[\d\s+\-*×÷/:=().[\]]+$/;
@@ -70,6 +71,9 @@ function verifier(numero, q) {
     } catch (e) { probs.push(`م${i + 1}: تعذّر حساب « ${t} »`); }
     controles++;
   });
+
+  // 3bis) la MÉTHODE : pas de développement, regroupement rond montré
+  probs.push(...PEDAGOGIE.controler(q));
 
   // 4) unicité de l'ordre
   if (new Set(q.steps).size !== q.steps.length) probs.push('مراحل مكرّرة');

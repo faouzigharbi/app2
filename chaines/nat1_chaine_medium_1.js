@@ -118,7 +118,8 @@ const exerciceData = {
       "operation": "احسب: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">A = 285 + 315 - 150</span>",
       "steps": [
         "نحدّد الأولوية: من اليسار إلى اليمين",
-        "من اليسار إلى اليمين: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">600 - 150</span>",
+        "نجمّع ما يعطي عددا مستديرا: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">(285 + 315) - 150</span>",
+        "ننجز القوس: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">600 - 150</span>",
         "النتيجة: <span dir=\"ltr\" style=\"display:inline-block;white-space:nowrap\">= 450</span>"
       ],
       "hint": "الأقواس أولا، ثم الضرب والقسمة، ثم الجمع والطرح"

@@ -43,6 +43,36 @@ Un point de fond : les QCM de l'exercice 1 sont devenus des chaînes, puisque
 c'est le format demandé. Les distracteurs (`ans + 20`, `ans - 10`) n'ont donc
 plus d'emploi.
 
+## La méthode prime sur le résultat
+
+Deux règles du programme, contrôlées automatiquement par `pedagogie.js` — pas
+seulement respectées, mais **vérifiées à chaque tirage**, pour qu'elles ne se
+reperdent pas à la prochaine modification :
+
+**1. On ne développe jamais une parenthèse pour retomber sur des signes.**
+
+```
+(57 + 34) - (47 + 34)
+✗  57 + 34 - 47 - 34
+✓  on remarque le terme commun 34, on l'élimine :  57 - 47 = 10
+```
+
+**2. Un regroupement qui fait apparaître un nombre rond doit être montré.**
+
+```
+299 + 277 - 77
+✗  576 - 77 = 499          (juste, mais ce n'est pas la méthode)
+✓  299 + (277 - 77)
+   299 + 200
+   499
+```
+
+Le moteur cherche donc un regroupement avantageux **avant** de calculer de
+gauche à droite, et les générateurs sont réglés pour en offrir : l'exercice 2
+tire `a + b - c` avec `b - c` rond, et `a - b - c` avec `b + c` rond. Quand
+aucun regroupement rond n'existe, la chaîne revient au calcul de gauche à
+droite — sans inventer une astuce qui n'existe pas.
+
 ## Vérification
 
 ```bash
@@ -57,7 +87,9 @@ exercice des centaines de fois et contrôle sur **chaque** instance :
    qui est une égalité est exacte ;
 3. aucun résultat négatif, aucune division inexacte, aucune décimale ;
 4. aucune étape dupliquée — l'ordre attendu reste unique ;
-5. chaque expression est isolée en `dir="ltr"`.
+5. chaque expression est isolée en `dir="ltr"` ;
+6. **la méthode** : aucune parenthèse développée, aucun regroupement rond
+   disponible et ignoré.
 
 Il affiche aussi la **variété** : le pourcentage d'énoncés distincts sur
 l'ensemble des tirages, pour repérer un générateur trop pauvre.
@@ -71,6 +103,7 @@ Dernier passage : **19 200 questions tirées, 66 600 contrôles arithmétiques,
 index.html          sommaire
 moteur.js           chaînes + isolation bidi (navigateur et Node)
 generateurs.js      les 11 générateurs
+pedagogie.js        contrôles de méthode (développement, regroupement)
 ex01.js … ex11.js   tirage initial de chaque exercice
 ex01.html … ex11.html
 style.css

@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const M = require('./moteur');
 const { chapitres } = require('./donnees');
+const PEDAGOGIE = require('../serie1/pedagogie.js');
 
 const DIR = process.argv[2] || '.';
 const PUR = /^[\d\s+\-*×÷/:=().[\]]+$/;
@@ -105,8 +106,11 @@ for (const ch of chapitres) {
     if (n !== ch.data[niv].length) {
       console.log(`✗ ${ch.id}_${niv} : ${n} questions au lieu de ${ch.data[niv].length}`); erreurs++;
     }
-    // chaque expression doit être isolée en dir="ltr"
+    // chaque expression doit être isolée en dir="ltr", et la méthode tenir
     for (const q of w.exerciceData.questions) {
+      for (const m of PEDAGOGIE.controler(q)) {
+        console.log(`✗ ${ch.id}_${niv} : ${m}`); erreurs++;
+      }
       for (const s of [q.operation, ...q.steps]) {
         const nu = s.replace(/<span dir="ltr"[^>]*>[\s\S]*?<\/span>/g, '');
         if (/\d\s*[+\-*×÷]\s*\d|\d\s*=/.test(nu)) {

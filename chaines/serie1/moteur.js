@@ -99,9 +99,51 @@
     return out.join(' ').replace(/\s+/g, ' ');
   }
 
+  // Un nombre « mestedir » : celui qu'on veut voir apparaître.
+  const estRond = v => v > 0 && (v % 100 === 0 || (v % 10 === 0 && v >= 20));
+  const rondeur = v => (v % 1000 === 0 ? 3 : v % 100 === 0 ? 2 : 1);
+
+  // Cherche un regroupement avantageux dans une chaîne de + et de −.
+  // 299 + 277 - 77  →  299 + (277 - 77)  : on fait apparaître 200.
+  // a - b - c       →  a - (b + c)       : quand b + c est rond.
+  // Seuls les termes VOISINS sont regroupés, et jamais au prix d'un
+  // changement de signe : on ne développe pas, on met en facteur.
+  function regroupement(e) {
+    const t = e.match(/\d+|[+\-]/g);
+    if (!t || t.length < 5) return null;            // moins de 3 termes
+    const termes = [{ signe: '+', v: Number(t[0]) }];
+    for (let i = 1; i < t.length; i += 2) termes.push({ signe: t[i], v: Number(t[i + 1]) });
+
+    let best = null;
+    for (let i = 0; i < termes.length - 1; i++) {
+      const a = termes[i], b = termes[i + 1];
+      let val = null, bloc = null, signe = null;
+      if (a.signe === '+') {                        // (a ± b)
+        val = b.signe === '+' ? a.v + b.v : a.v - b.v;
+        bloc = '(' + a.v + ' ' + b.signe + ' ' + b.v + ')';
+        signe = '+';
+      } else if (a.signe === '-' && b.signe === '-') {   // -(a + b)
+        val = a.v + b.v;
+        bloc = '(' + a.v + ' + ' + b.v + ')';
+        signe = '-';
+      }
+      if (val === null || !estRond(val)) continue;
+      if (!best || rondeur(val) > rondeur(best.val)) best = { i, val, bloc, signe };
+    }
+    if (!best) return null;
+
+    const rendu = (remplacement) => termes.map((x, k) => {
+      if (k === best.i) return (k === 0 ? '' : best.signe + ' ') + remplacement;
+      if (k === best.i + 1) return '';
+      return (k === 0 ? '' : x.signe + ' ') + x.v;
+    }).filter(Boolean).join(' ').trim();
+
+    return { avec: rendu(best.bloc), apres: rendu(String(best.val)) };
+  }
+
   function chainePriorite(expr) {
     const etapes = [];
-    let e = String(expr).trim(), garde = 0;
+    let e = String(expr).trim(), garde = 0, regroupe = false;
 
     for (;;) {
       if (++garde > 40) throw new Error('boucle: ' + expr);
@@ -136,6 +178,19 @@
         etapes.push([/:/.test(e) ? 'ننجز الضرب والقسمة' : 'ننجز الضرب', suivant]);
         e = suivant;
         continue;
+      }
+
+      // Avant de calculer bêtement de gauche à droite, on regarde s'il y a
+      // mieux à faire : c'est la méthode qui compte, pas seulement le résultat.
+      if (!regroupe) {
+        regroupe = true;
+        const r = regroupement(e);
+        if (r) {
+          etapes.push(['نجمّع ما يعطي عددا مستديرا', r.avec]);
+          etapes.push(['ننجز القوس', r.apres]);
+          e = r.apres;
+          continue;
+        }
       }
 
       const t = e.match(/\d+|[+\-]/g);
@@ -264,7 +319,7 @@
   const ent = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
   const choix = t => t[Math.floor(Math.random() * t.length)];
 
-  const API = { evalNat, chainePriorite, chaineCommun, chaineRegroupe,
+  const API = { evalNat, regroupement, chainePriorite, chaineCommun, chaineRegroupe,
                 chaineFacteur, chaineSerie, chaineBlanc, iso, md, question, ent, choix };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
