@@ -93,9 +93,32 @@
     return '<div class="fq">' + titre + enonce + lignes + choix + '</div>';
   }
 
+  // Cinquième forme : une page qui ne porte pas de tableau de questions mais
+  // dépose sa question et sa solution dans le DOM (#question-area,
+  // #solution-area). La feuille se lit alors directement sur la page.
+  function construireDOM() {
+    const q = document.getElementById('question-area');
+    const sol = document.getElementById('solution-area');
+    if (!q) return false;
+    const f = document.getElementById('feuille');
+    const titre = (document.querySelector('h1, h2, #ex-type') || {}).textContent
+      || document.title || '';
+    f.innerHTML =
+      '<h3 class="feuille-titre">' + echapper(titre.trim()) + '</h3>'
+      + '<p class="feuille-sous">ورقة التلميذ</p>'
+      + '<div class="fq"><div class="enonce">' + q.innerHTML + '</div>'
+      + '<div style="height:60mm;border:1px dashed #bbb;border-radius:4px"></div></div>'
+      + '<div class="coupure"></div>'
+      + '<h3 class="feuille-titre">' + echapper(titre.trim()) + '</h3>'
+      + '<p class="feuille-sous">ورقة الوليّ — الحلّ</p>'
+      + '<div class="fq"><div class="enonce">' + q.innerHTML + '</div>'
+      + (sol ? sol.innerHTML : '<p>الحلّ غير متوفّر على هذه الصفحة</p>') + '</div>';
+    return true;
+  }
+
   function construire() {
     const d = donnees();
-    if (!d) return false;
+    if (!d) return construireDOM();
     const f = document.getElementById('feuille');
     f.innerHTML =
       '<h3 class="feuille-titre">' + echapper(d.title) + '</h3>'
@@ -110,7 +133,8 @@
 
   function poser() {
     if (document.getElementById('feuille')) return;
-    if (!donnees()) return;                       // page d'index : rien à imprimer
+    // Page d'index : ni données ni zone de question, il n'y a rien à imprimer.
+    if (!donnees() && !document.getElementById('question-area')) return;
     const st = document.createElement('style');
     st.textContent = CSS;
     document.head.appendChild(st);
