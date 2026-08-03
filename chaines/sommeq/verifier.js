@@ -24,7 +24,7 @@
 const F = require('./noyau.js');
 const S = require('./formes.js');
 require('./questions.js');
-const EXOS = [4, 5, 6, 7, 8, 10, 14, 15, 16, 18];
+const EXOS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 EXOS.forEach(n => require('./gen' + String(n).padStart(2, '0') + '.js'));
 
 const TIRAGES = Number(process.argv[2]) || 200;
@@ -51,28 +51,52 @@ function environnements(c) {
   // « قارن A و B » : A et B sont des nombres connus, mais la chaîne les
   // désigne par leur nom — il faut donc les lier dans l'environnement.
   if (c.type === 'nombres') return [{ [c.nomA]: c.vA, [c.nomB]: c.vB }];
-  if (c.type === 'deux-cas') return [{ x: c.x1 }, { x: c.x2 }].map(lier(c));
+  // Deux cas : x prend l'une puis l'autre valeur, le reste est tiré normalement.
+  if (c.type === 'deux-cas') {
+    return [c.x1, c.x2].map(x => construire(Object.assign({}, c,
+      { fixes: Object.assign({}, c.fixes, { x }) })));
+  }
 
   const out = [];
   const combien = (c.libres && c.libres.length) ? ECHANTILLONS : 1;
   for (let i = 0; i < combien; i++) {
+    let env = null;
+    // Certaines questions n'ont de sens que sous une contrainte (« a < b »).
+    // On tire jusqu'à ce qu'elle soit satisfaite : l'environnement doit être
+    // un cas que l'énoncé permet, sinon on vérifierait autre chose.
+    for (let essai = 0; essai < 400 && !env; essai++) {
+      const e = construire(c);
+      if (!c.contrainte) { env = e; break; }
+      const v = F.signe(F.analyser(c.contrainte.expr, e));
+      if (v === c.contrainte.sens || (c.contrainte.large && v === 0)) env = e;
+    }
+    if (!env) throw new Error('contrainte impossible: ' + JSON.stringify(c.contrainte));
+    out.push(env);
+  }
+  return out;
+}
+
+function construire(c) {
+  {
     const env = {};
     (c.libres || []).forEach(v => { env[v] = rnd(); });
     Object.keys(c.fixes || {}).forEach(v => { env[v] = c.fixes[v]; });
-    if (c.lie) {
-      const a = env[c.lie.autre];
-      env[c.lie.nom] = c.lie.via === 'somme' ? F.sub(c.lie.valeur, a)
-        : c.lie.via === 'difference' ? F.sub(a, c.lie.valeur)
-        : c.lie.via === 'oppose' ? F.neg(a) : a;
-    }
+    // Un énoncé peut lier plusieurs variables à la fois (« a - b = … et
+    // c - a = … ») : on accepte une liste de liens, appliqués dans l'ordre.
+    [].concat(c.lie || []).forEach(l => {
+      const a = env[l.autre];
+      env[l.nom] = l.via === 'somme' ? F.sub(l.valeur, a)
+        : l.via === 'difference' ? F.sub(a, l.valeur)
+        : l.via === 'plus' ? F.add(a, l.valeur)
+        : l.via === 'oppose' ? F.neg(a) : a;
+    });
     // Filet : une variable présente dans l'expression imprimée mais dont
     // l'énoncé ne dit rien (le « a » de l'exercice 8, le « y » du 4) doit
     // quand même recevoir une valeur — et une valeur qui change à chaque
     // tirage, sinon on ne verrait pas qu'elle s'élimine.
     variables(c).forEach(v => { if (!(v in env)) env[v] = rnd(); });
-    out.push(lier(c)(env));
+    return lier(c)(env);
   }
-  return out;
 }
 
 // Toutes les lettres qui apparaissent dans les expressions imprimées.
@@ -90,6 +114,15 @@ const lier = c => env => {
   Object.keys(c.defs || {}).forEach(nom => { env[nom] = F.analyser(c.defs[nom], env); });
   return env;
 };
+
+// Un environnement construit à la main (une racine imposée, un couple choisi)
+// n'a que les variables qu'on lui a données : les autres, présentes dans les
+// expressions imprimées, doivent être complétées avant toute évaluation.
+function completer(c, base) {
+  const env = Object.assign({}, base);
+  variables(c).forEach(v => { if (!(v in env)) env[v] = rnd(); });
+  return lier(c)(env);
+}
 
 // ---------------------------------------------------------------------------
 // Re-résolution d'une équation du premier degré À PARTIR DE SON TEXTE.
@@ -122,6 +155,18 @@ function controlerClaim(c, etapes, envs) {
     }
   }
 
+  if (c.relation) {
+    for (const env of envs) {
+      const g = F.analyser(c.relation.g, env), d = F.analyser(c.relation.d, env);
+      if (F.cmp(g, d) !== c.relation.sens) {
+        p.push(`« ${c.relation.g} ${c.relation.sens < 0 ? '<' : '>'} ${c.relation.d} »`
+               + ` فاسدة: ${F.txt(g)} و ${F.txt(d)}`);
+        break;
+      }
+      controles++;
+    }
+  }
+
   for (const cl of c.claims || []) {
     for (const env of envs) {
       if (!F.egaux(env[cl.nom], cl.vaut)) {
@@ -142,14 +187,14 @@ function controlerClaim(c, etapes, envs) {
     // E = 0 impose u - v = -k : on le vérifie sur des couples construits exprès.
     for (let i = 0; i < ECHANTILLONS; i++) {
       const u = rnd(), v = F.sub(u, c.d);
-      const env = lier(c)({ [c.sh.u]: u, [c.sh.v]: v });
+      const env = completer(c, { [c.sh.u]: u, [c.sh.v]: v });
       if (env[c.sh.nom].n !== 0) { p.push('الشرط E = 0 لا يوافق الفرق المعلن'); break; }
       if ((F.cmp(u, v) < 0) !== c.petit) { p.push('الاستنتاج مخالف لإشارة الفرق'); break; }
       controles++;
     }
   } else if (c.type === 'comparaison-formes') {
     for (let i = 0; i < ECHANTILLONS; i++) {
-      const env = lier(c)({ a: rnd(), b: rnd() });
+      const env = completer(c, { a: rnd(), b: rnd() });
       const d = F.sub(env[c.shE.nom], env[c.shF.nom]);
       if (!F.egaux(d, c.d)) { p.push(`الفرق الحقيقي ${F.txt(d)} ≠ ${F.txt(c.d)}`); break; }
       if ((F.signe(d) < 0) !== c.petit) { p.push('الاستنتاج مخالف لإشارة الفرق'); break; }
@@ -163,7 +208,7 @@ function controlerClaim(c, etapes, envs) {
   } else if (c.type === 'deux-cas') {
     // Les deux racines doivent bien vérifier |x - q| = r, et donner v1 et v2.
     for (const [x, v] of [[c.x1, c.v1], [c.x2, c.v2]]) {
-      const env = lier(c)({ x });
+      const env = completer(c, { x });
       if (!F.egaux(env[c.sh.nom], v)) p.push(`الحالة x = ${F.txt(x)} تعطي ${F.txt(env[c.sh.nom])} بدل ${F.txt(v)}`);
       controles++;
     }

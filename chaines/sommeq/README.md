@@ -1,8 +1,8 @@
 # الجمع و الطرح في ℚ — تمارين شاملة (8 أساسي)
 
 Chaînes de démonstration bâties sur la fiche *الجمع و الطرح في مجموعة الأعداد
-الكسرية — تمارين شاملة* (riadhyet, 2018-2019). **Dix exercices portés** :
-4, 5, 6, 7, 8, 10, 14, 15, 16 et 18 — **43 questions par tirage**.
+الكسرية — تمارين شاملة* (riadhyet, 2018-2019). **La fiche entière : les 19
+exercices, 82 questions par tirage.**
 
 ## Une page = un exercice entier, toutes les questions à la fois
 
@@ -30,16 +30,25 @@ la fiche, où 1-a, 1-b et 1-c parlent des mêmes E et F.
 
 | Ex. | Forme réduite | Sous-questions |
 |-----|----------------|----------------|
+| 1  | — | calculer A ; trouver x tel que x + A = 0 (l'opposé) |
+| 2  | trois expressions | les simplifier, trois motifs de parenthèses |
+| 3  | — | **calcul astucieux** (repérer les opposés) ; valeurs absolues ; quatre équations |
 | 4  | `A = x + k` | montrer ; calculer pour x donné ; trouver x |
 | 5  | `E = a + k`, `F = b + k'` | simplifier les deux ; calculer E ; trouver b |
 | 6  | `E = a − b + k` | montrer ; calculer sachant a − b ; **comparer a et b si E = 0** |
 | 7  | `F = a − b + k` | montrer ; calculer ; trouver a − b ; **comparer a et b** |
 | 8  | `A = y − x + k`, `B = x − y + k'` | montrer les deux ; calculer chacune sous x − y donné ; **les comparer** |
+| 9  | `A = 2c − 2b + k` | coefficients doublés ; trois comparaisons, dont une déduite |
 | 10 | `E = a − b + k` | montrer ; calculer pour a, b donnés ; calculer sachant a − b |
+| 11 | `E = y − x + k` | montrer ; calculer ; comparer x et y ; **déterminer \|E\| sans calculer E** |
+| 12 | `A = −x + k`, `B = −y + k'` | deux expressions longues ; \|x\| donné ; \|A\| = 0 ; A et B opposés |
+| 13 | — | calcul astucieux ; valeurs absolues ; comparaison ; deux expressions sous hypothèse |
 | 14 | `A = x + k` | montrer ; calculer si \|x − q\| = r (**deux cas**) ; trouver x |
 | 15 | `E = a + b + k`, `F = a + b + k'` | montrer les deux ; **les comparer** ; calculer E ; trouver a + b |
 | 16 | `A = y − x + k` | montrer ; trouver y − x ; calculer (deux cas) ; deux équations en x |
+| 17 | — | expression bourrée de valeurs absolues, puis **quatre comparaisons** |
 | 18 | `E = a + b + k`, `F = −(a + b) + k'` | calculer E et F ; a et b opposés ; a = b ; trois équations |
+| 19 | `G = −b + k` | un groupe écrit deux fois (16/12 et 4/3) **s'élimine** ; valeurs absolues |
 
 ## Deux règles de méthode, tenues partout
 
@@ -89,10 +98,15 @@ Le validateur n'inspecte pas le code des générateurs, il les exécute et
 Dernière exécution :
 
 ```
-250 tirages par exercice, 10750 questions,
-1008438 relations recalculées et 193500 affirmations re-démontrées, 0 erreur.
+200 tirages par exercice, 16400 questions,
+1399950 relations recalculées et 297400 affirmations re-démontrées, 0 erreur.
 7/7 falsifications détectées.
 ```
+
+C'est ce tirage massif qui a débusqué le seul vrai défaut de la série : dans
+l'exercice 17, la différence Z − T pouvait tomber sur zéro, et une chaîne qui
+conclut « Z > T » sur deux nombres égaux est fausse. Le générateur écarte
+désormais ce cas.
 
 Les sept falsifications éprouvées : forme réduite falsifiée, comparaison
 inversée, propriété de l'ordre (9e), solution d'équation décalée, conclusion
@@ -123,5 +137,4 @@ Pour ajouter un exercice : décrire son motif dans `formes.js`, écrire
 `genNN.js` en piochant dans `questions.js`, ajouter son numéro à la liste
 `EXOS` de `_build.js` et de `verifier.js`, puis `node _build.js .`
 
-Restent à porter : les exercices 11, 12, 13 et 17, qui mêlent valeurs absolues
-et comparaisons sous hypothèse.
+La fiche est portée en entier.

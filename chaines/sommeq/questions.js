@@ -270,9 +270,137 @@
     };
   }
 
+
+  // -------------------------------------------------------------------------
+  // « قارن x + c₁ و x + c₂ » — le même inconnu des deux côtés : il s'élimine
+  // dans la différence. C'est le cas le plus pur du signe de la différence.
+  // -------------------------------------------------------------------------
+  function comparerMemeInconnue(u, c1, c2) {
+    const g = u + plus(c1), d = u + plus(c2);
+    const dif = sub(c1, c2);
+    const petit = signe(dif) < 0;
+    return {
+      enonce: ['ليكن', u, 'عددا كسريا نسبيا؛ قارن بين', g + '  و  ' + d],
+      indice: 'احسب الفرق: المجهول يختفي من تلقاء نفسه',
+      etapes: [
+        ['نحسب الفرق', '(' + g + ') - (' + d + ') = ' + par(c1) + ' - ' + par(c2)],
+        ['يختفي المجهول', par(c1) + ' - ' + par(c2) + ' = ' + txt(dif)],
+        ['نحدّد إشارة الفرق', txt(dif) + (petit ? ' < 0' : ' > 0')],
+        ['القاعدة', petit ? 'الفرق سالب، إذن العبارة الأولى أصغر'
+                          : 'الفرق موجب، إذن العبارة الأولى أكبر'],
+        ['النتيجة', g + (petit ? ' < ' : ' > ') + d]
+      ],
+      controle: { type: 'signe', libres: [u], defs: {},
+                  relation: { g, d, sens: petit ? -1 : 1 } }
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // « a < b ; comparer … et … » — la différence vaut (combinaison) + constante,
+  // les deux de MÊME SIGNE. La somme de deux nombres de même signe a ce signe :
+  // c'est tout ce qu'on s'autorise, et c'est suffisant.
+  // -------------------------------------------------------------------------
+  function comparerParSigne(o) {
+    const petit = o.sens < 0;
+    const diff = '(' + o.combi + ')' + plus(o.cste);
+    return {
+      enonce: ['ليكن', o.vars, 'أعدادا كسرية نسبية حيث', o.hypothese,
+               '؛ قارن بين', o.g + '  و  ' + o.d],
+      indice: 'احسب الفرق، ثمّ استعمل الفرضية لتحديد إشارته',
+      etapes: [
+        ['نحسب الفرق', '(' + o.g + ') - (' + o.d + ') = ' + diff],
+        ['نترجم الفرضية', o.combi + (petit ? ' < 0' : ' > 0')],
+        ['إشارة الثابت', txt(o.cste) + (petit ? ' < 0' : ' > 0')],
+        ['القاعدة', petit ? 'مجموع عددين سالبين هو عدد سالب'
+                          : 'مجموع عددين موجبين هو عدد موجب'],
+        ['إشارة الفرق', diff + (petit ? ' < 0' : ' > 0')],
+        ['النتيجة', o.g + (petit ? ' < ' : ' > ') + o.d]
+      ],
+      controle: { type: 'signe', libres: o.libres, defs: {},
+                  contrainte: { expr: o.combi, sens: o.sens },
+                  relation: { g: o.g, d: o.d, sens: o.sens } }
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // Même chose, mais la combinaison est CONNUE : la différence se calcule
+  // vraiment, et son signe se lit sur le nombre obtenu.
+  // -------------------------------------------------------------------------
+  function comparerParDifferenceCalculee(o) {
+    const D = add(o.valeur, o.cste);
+    const petit = signe(D) < 0;
+    const diff = '(' + o.combi + ')' + plus(o.cste);
+    return {
+      enonce: ['ليكن', o.vars, 'أعدادا كسرية نسبية حيث', o.combi + ' = ' + txt(o.valeur),
+               '؛ قارن بين', o.g + '  و  ' + o.d],
+      indice: 'الفرق يُحسب تماما هنا: عوّض بالمعطى',
+      etapes: [
+        ['نحسب الفرق', '(' + o.g + ') - (' + o.d + ') = ' + diff],
+        ['نعوّض بالمعطى', diff + ' = ' + par(o.valeur) + plus(o.cste)],
+        ['نحسب', par(o.valeur) + plus(o.cste) + ' = ' + txt(D)],
+        ['نحدّد إشارة الفرق', txt(D) + (petit ? ' < 0' : ' > 0')],
+        ['القاعدة', petit ? 'الفرق سالب، إذن العبارة الأولى أصغر'
+                          : 'الفرق موجب، إذن العبارة الأولى أكبر'],
+        ['النتيجة', o.g + (petit ? ' < ' : ' > ') + o.d]
+      ],
+      controle: { type: 'signe', libres: o.libres, defs: {}, lie: o.lie,
+                  relation: { g: o.g, d: o.d, sens: petit ? -1 : 1 } }
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // « حدّد |E| إذا كان x ≥ y » — on ne calcule pas E, on établit son SIGNE,
+  // et la valeur absolue en découle.
+  // -------------------------------------------------------------------------
+  function valeurAbsolue(sh, autres) {
+    // sh.cible : ca = 1 sur u, cb = -1 sur v, k < 0. L'hypothèse v ≥ u rend
+    // u - v négatif ou nul, donc E strictement négatif.
+    const oppose = S.ecrireForme({ ca: -sh.cible.ca, cb: -sh.cible.cb, k: neg(sh.cible.k) },
+                                 sh.u, sh.v);
+    return {
+      enonce: ['حدّد', '|' + sh.nom + '|', 'إذا كان', sh.v + ' ≥ ' + sh.u, 'حيث',
+               sh.nom + ' = ' + forme(sh)],
+      indice: 'لا تحسب ' + sh.nom + ' : يكفي أن تعرف إشارته',
+      etapes: [
+        ['نترجم الفرضية', sh.u + ' - ' + sh.v + ' ≤ 0'],
+        ['إشارة الثابت', txt(sh.cible.k) + ' < 0'],
+        ['القاعدة', 'مجموع عدد سالب أو منعدم و عدد سالب هو عدد سالب'],
+        ['إشارة العبارة', sh.nom + ' < 0'],
+        ['قاعدة القيمة المطلقة', 'إذا كان ' + sh.nom + ' < 0 فإنّ |' + sh.nom + '| = -' + sh.nom],
+        ['النتيجة', '|' + sh.nom + '| = ' + oppose]
+      ],
+      controle: { type: 'signe', defs: defs.apply(null, [sh].concat(autres || [])),
+                  libres: [sh.u, sh.v],
+                  contrainte: { expr: sh.u + ' - ' + sh.v, sens: -1, large: true },
+                  relation: { g: sh.nom, d: '0', sens: -1 } }
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // « احسب بأيسر طريقة » — on ne calcule pas de gauche à droite : on repère
+  // les deux termes opposés, on les supprime, et il ne reste presque rien.
+  // -------------------------------------------------------------------------
+  function calculAstucieux(nom, expr, plat, opposes, reste, val) {
+    return {
+      enonce: ['احسب بأيسر طريقة:', nom + ' = ' + expr],
+      indice: 'ابحث عن حدّين متقابلين قبل أن تحسب أيّ شيء',
+      etapes: [
+        ['نرفع الأقواس', nom + ' = ' + plat],
+        ['نلاحظ حدّين متقابلين', opposes[0] + ' و ' + opposes[1] + ' متقابلان'],
+        ['نحذفهما', nom + ' = ' + reste],
+        ['نحسب ما تبقّى', reste + ' = ' + txt(val)],
+        ['النتيجة', nom + ' = ' + txt(val)]
+      ],
+      controle: { type: 'signe', defs: { [nom]: expr }, libres: [],
+                  claims: [{ nom, vaut: val }] }
+    };
+  }
+
   const API = { forme, montrer, parRelation, parValeurs, trouverCombinaison,
                 comparerVariables, comparerFormes, comparerNombres,
-                parValeurAbsolue, equation, equationAbsolue };
+                parValeurAbsolue, equation, equationAbsolue,
+                comparerMemeInconnue, comparerParSigne,
+                comparerParDifferenceCalculee, valeurAbsolue, calculAstucieux };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.Questions = API;
 })(typeof window !== 'undefined' ? window : globalThis);

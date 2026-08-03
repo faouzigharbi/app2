@@ -38,7 +38,11 @@
     }).join('');
   }
 
-  const signeVar = (c, nom) => (c === 0 ? null : (c > 0 ? nom : '-' + nom));
+  const signeVar = (c, nom) => {
+    if (c === 0) return null;
+    const t = (Math.abs(c) === 1 ? '' : String(Math.abs(c))) + nom;
+    return c > 0 ? t : '-' + t;
+  };
 
   // La forme réduite, telle qu'elle s'écrit : variables d'abord, constante ensuite.
   function ecrireForme(cible, u, v) {
@@ -294,9 +298,179 @@
     };
   }
 
+
+  // =========================================================================
+  // Exercice 2 :  trois expressions à simplifier, rien d'autre
+  //   A = p - (x - p)                     →  -x + 2p
+  //   B = (x - p) - (x - y + q)           →   y - p - q
+  //   C = p - (x - p) - [y - (x + q)]     →  -y + (2p + q)
+  // =========================================================================
+  function forme02A() {
+    const p = fracPos([3, 5, 2, 4]);
+    return {
+      nom: 'A', u: 'x', v: null,
+      txt: txt(p) + ' - (x - ' + txt(p) + ')',
+      levees: [['نرفع القوس', '- (x - ' + txt(p) + ') = -x + ' + txt(p)]],
+      plat: txt(p) + ' - x + ' + txt(p),
+      regroupe: '-x + (' + txt(p) + ' + ' + txt(p) + ')',
+      constantes: txt(p) + ' + ' + txt(p),
+      cible: { ca: -1, cb: 0, k: add(p, p) }
+    };
+  }
+
+  function forme02B() {
+    const p = fracPos([2, 4]), q = fracPos([4, 3]);
+    return {
+      nom: 'B', u: 'y', v: null,
+      txt: '(x - ' + txt(p) + ') - (x - y + ' + txt(q) + ')',
+      levees: [['نرفع القوس المسبوق بعلامة الطرح',
+                '- (x - y + ' + txt(q) + ') = -x + y - ' + txt(q)]],
+      plat: 'x - ' + txt(p) + ' - x + y - ' + txt(q),
+      regroupe: '(x - x) + y + (-' + txt(p) + ' - ' + txt(q) + ')',
+      constantes: '-' + txt(p) + ' - ' + txt(q),
+      cible: { ca: 1, cb: 0, k: sub(neg(p), q) }
+    };
+  }
+
+  function forme02C() {
+    const d = choix([7, 9, 11]);
+    const p = rat(ent(1, d - 1), d), q = rat(ent(1, d - 1), d);
+    return {
+      nom: 'C', u: 'y', v: null,
+      txt: txt(p) + ' - (x - ' + txt(p) + ') - [y - (x + ' + txt(q) + ')]',
+      levees: [
+        ['نرفع القوس الأول', '- (x - ' + txt(p) + ') = -x + ' + txt(p)],
+        ['نرفع القوس المربّع', '- [y - (x + ' + txt(q) + ')] = -y + x + ' + txt(q)]
+      ],
+      plat: txt(p) + ' - x + ' + txt(p) + ' - y + x + ' + txt(q),
+      regroupe: '(-x + x) - y + (' + txt(p) + ' + ' + txt(p) + ' + ' + txt(q) + ')',
+      constantes: txt(p) + ' + ' + txt(p) + ' + ' + txt(q),
+      cible: { ca: -1, cb: 0, k: add(add(p, p), q) }
+    };
+  }
+
+  // =========================================================================
+  // Exercice 9 :  A = (-a - b + c + p) - (-c + b - a + q)   →  2c - 2b + (p - q)
+  // Les coefficients valent 2 : c'est le piège, « - b - b » ne fait pas « - b ».
+  // =========================================================================
+  function forme09() {
+    const p = fracPos([4, 8]), q = fracPos([3, 6]);
+    return {
+      nom: 'A', u: 'c', v: 'b',
+      txt: '(-a - b + c + ' + txt(p) + ') - (-c + b - a + ' + txt(q) + ')',
+      levees: [['نرفع القوس المسبوق بعلامة الطرح',
+                '- (-c + b - a + ' + txt(q) + ') = c - b + a - ' + txt(q)]],
+      plat: '-a - b + c + ' + txt(p) + ' + c - b + a - ' + txt(q),
+      regroupe: '(-a + a) + (c + c) + (-b - b) + (' + txt(p) + ' - ' + txt(q) + ')',
+      constantes: txt(p) + ' - ' + txt(q),
+      cible: { ca: 2, cb: -2, k: sub(p, q) }
+    };
+  }
+
+  // =========================================================================
+  // Exercice 11 :  E = p - (x + q) - (p - y)     →  y - x - q
+  // =========================================================================
+  function forme11() {
+    const p = fracPos([2, 3]), q = fracPos([4, 8]);
+    return {
+      nom: 'E', u: 'y', v: 'x',
+      txt: txt(p) + ' - (x + ' + txt(q) + ') - (' + txt(p) + ' - y)',
+      levees: [
+        ['نرفع القوس الأول', '- (x + ' + txt(q) + ') = -x - ' + txt(q)],
+        ['نرفع القوس الثاني', '- (' + txt(p) + ' - y) = -' + txt(p) + ' + y']
+      ],
+      plat: txt(p) + ' - x - ' + txt(q) + ' - ' + txt(p) + ' + y',
+      regroupe: 'y - x + (' + txt(p) + ' - ' + txt(q) + ' - ' + txt(p) + ')',
+      constantes: txt(p) + ' - ' + txt(q) + ' - ' + txt(p),
+      cible: { ca: 1, cb: -1, k: neg(q) }
+    };
+  }
+
+  // =========================================================================
+  // Exercice 12 :  A = -y + p - (y - q) - (x - r) - (-y) - s + y  →  -x + (p+q+r-s)
+  //               B = -(y - x) + [c - (p + x - d) + q] - x - [e + (-x - r) - s]
+  //                                                              →  -y + (c-p+d+q-e+r+s)
+  // =========================================================================
+  function forme12A() {
+    const p = fracPos([2, 4]), q = fracPos([4, 8]), r = ent(1, 4), s = fracPos([8, 4]);
+    return {
+      nom: 'A', u: 'x', v: null,
+      txt: '-y + ' + txt(p) + ' - (y - ' + txt(q) + ') - (x - ' + r + ') - (-y) - '
+           + txt(s) + ' + y',
+      levees: [
+        ['نرفع الأقواس الثلاثة',
+         '- (y - ' + txt(q) + ') - (x - ' + r + ') - (-y) = -y + ' + txt(q) + ' - x + ' + r + ' + y']
+      ],
+      plat: '-y + ' + txt(p) + ' - y + ' + txt(q) + ' - x + ' + r + ' + y - ' + txt(s) + ' + y',
+      regroupe: '(-y - y + y + y) - x + (' + txt(p) + ' + ' + txt(q) + ' + ' + r
+                + ' - ' + txt(s) + ')',
+      constantes: txt(p) + ' + ' + txt(q) + ' + ' + r + ' - ' + txt(s),
+      cible: { ca: -1, cb: 0, k: sub(add(add(p, q), rat(r)), s) }
+    };
+  }
+
+  function forme12B() {
+    const c = ent(1, 4), p = fracPos([5, 10]), d = ent(2, 5), q = fracPos([2, 4]);
+    const e = ent(6, 12), r = fracPos([2, 4]), s = fracPos([5, 10]);
+    const k = add(add(add(sub(add(sub(rat(c), p), rat(d)), rat(e)), q), r), s);
+    return {
+      nom: 'B', u: 'y', v: null,
+      txt: '-(y - x) + [' + c + ' - (' + txt(p) + ' + x - ' + d + ') + ' + txt(q)
+           + '] - x - [' + e + ' + (-x - ' + txt(r) + ') - ' + txt(s) + ']',
+      levees: [
+        ['نرفع القوس الأول', '-(y - x) = -y + x'],
+        ['نرفع القوس المربّع الأول',
+         '[' + c + ' - (' + txt(p) + ' + x - ' + d + ') + ' + txt(q) + '] = '
+         + c + ' - ' + txt(p) + ' - x + ' + d + ' + ' + txt(q)],
+        ['نرفع القوس المربّع الثاني',
+         '- [' + e + ' + (-x - ' + txt(r) + ') - ' + txt(s) + '] = -' + e + ' + x + '
+         + txt(r) + ' + ' + txt(s)]
+      ],
+      plat: '-y + x + ' + c + ' - ' + txt(p) + ' - x + ' + d + ' + ' + txt(q) + ' - x - '
+            + e + ' + x + ' + txt(r) + ' + ' + txt(s),
+      regroupe: '(x - x - x + x) - y + (' + c + ' - ' + txt(p) + ' + ' + d + ' + ' + txt(q)
+                + ' - ' + e + ' + ' + txt(r) + ' + ' + txt(s) + ')',
+      constantes: c + ' - ' + txt(p) + ' + ' + d + ' + ' + txt(q) + ' - ' + e + ' + '
+                  + txt(r) + ' + ' + txt(s),
+      cible: { ca: -1, cb: 0, k }
+    };
+  }
+
+  // =========================================================================
+  // Exercice 19 :  G = -[-p - (q - a)] - [(b - r) + (q' - a)]   →  -b + (p + r)
+  // où q et q' sont le MÊME nombre écrit différemment (16/12 et 4/3) : le
+  // groupe (q - a) apparaît deux fois avec des signes contraires et disparaît.
+  // =========================================================================
+  function forme19() {
+    const p = fracPos([2, 4]), r = fracPos([5, 10]);
+    const num = choix([3, 4, 5, 6]), mult = choix([2, 3, 4]);
+    const q = rat(num * mult * 4, mult * 3);        // ex. 16/12, qui vaut 4/3
+    const qBrut = (num * mult * 4) + '/' + (mult * 3);
+    return {
+      nom: 'G', u: 'b', v: null,
+      txt: '-[-' + txt(p) + ' - (' + qBrut + ' - a)] - [(b - ' + txt(r) + ') + ('
+           + txt(q) + ' - a)]',
+      levees: [
+        ['نبسّط الكسر', qBrut + ' = ' + txt(q)],
+        ['نرفع القوس المربّع الأول',
+         '-[-' + txt(p) + ' - (' + txt(q) + ' - a)] = ' + txt(p) + ' + ' + txt(q) + ' - a'],
+        ['نرفع القوس المربّع الثاني',
+         '- [(b - ' + txt(r) + ') + (' + txt(q) + ' - a)] = -b + ' + txt(r) + ' - '
+         + txt(q) + ' + a']
+      ],
+      plat: txt(p) + ' + ' + txt(q) + ' - a - b + ' + txt(r) + ' - ' + txt(q) + ' + a',
+      regroupe: '(-a + a) + (' + txt(q) + ' - ' + txt(q) + ') - b + (' + txt(p) + ' + '
+                + txt(r) + ')',
+      constantes: txt(p) + ' + ' + txt(q) + ' + ' + txt(r) + ' - ' + txt(q),
+      cible: { ca: -1, cb: 0, k: add(p, r) }
+    };
+  }
+
   const API = { joindre, ecrireForme, valeurForme, fracPos, entNonNul, decNonRonde,
                 forme04, forme05E, forme05F, forme06, forme07, forme08A, forme08B,
-                forme10, forme14, forme15E, forme15F, forme16 };
+                forme10, forme14, forme15E, forme15F, forme16,
+                forme02A, forme02B, forme02C, forme09, forme11,
+                forme12A, forme12B, forme19 };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.Formes = API;
 })(typeof window !== 'undefined' ? window : globalThis);

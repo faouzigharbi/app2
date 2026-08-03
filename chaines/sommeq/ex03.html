@@ -1,25 +1,10 @@
-// Émet une page par exercice de la fiche, plus l'index.
-//   node _build.js [dossier]
-//
-// Une page = un exercice entier. Toutes ses sous-questions sont posées EN MÊME
-// TEMPS, chacune dans un volet d'accordéon : rater la première n'empêche plus
-// de traiter les suivantes. Chaque volet a son propre « تحقق » et son propre
-// « التصحيح ».
-const fs = require('fs');
-const path = require('path');
-const A = require('./noyau.js');
-const EXOS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-EXOS.forEach(n => require('./gen' + String(n).padStart(2, '0') + '.js'));
-
-const OUT = process.argv[2] || '.';
-
-const page = (id, n, titre) => `<!doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <title>${titre}</title>
+  <title>التمرين 3 — حساب بأيسر طريقة، ثمّ معادلات</title>
   <style>
     .q { background:#fff; border:1.5px solid #e8ecf2; border-radius:12px;
          margin-bottom:12px; overflow:hidden }
@@ -43,7 +28,7 @@ const page = (id, n, titre) => `<!doctype html>
 <body>
 
 <header>
-  <h1 id="title">${titre}</h1>
+  <h1 id="title">التمرين 3 — حساب بأيسر طريقة، ثمّ معادلات</h1>
   <p id="meta"></p>
 </header>
 
@@ -64,8 +49,8 @@ const page = (id, n, titre) => `<!doctype html>
 <script src="noyau.js"></script>
 <script src="formes.js"></script>
 <script src="questions.js"></script>
-<script src="gen${String(n).padStart(2, '0')}.js"></script>
-<script src="${id}.js"></script>
+<script src="gen03.js"></script>
+<script src="ex03.js"></script>
 
 <script>
 (function(){
@@ -239,44 +224,3 @@ const page = (id, n, titre) => `<!doctype html>
 
 </body>
 </html>
-`;
-
-['noyau.js', 'formes.js', 'questions.js'].forEach(f =>
-  fs.copyFileSync(path.join(__dirname, f), path.join(OUT, f)));
-
-const liens = [];
-for (const n of EXOS) {
-  const id = 'ex' + String(n).padStart(2, '0');
-  const nb = A.PROBLEMES[n].questions;
-  const titre = 'التمرين ' + n + ' — ' + A.PROBLEMES[n].titre;
-  fs.writeFileSync(path.join(OUT, id + '.js'),
-    `// Tirage initial ; le bouton « أرقام جديدة » en refait un.\n`
-    + `window.exerciceNumero = ${n};\n`
-    + `window.exerciceData = Somme.construire(${n});\n`);
-  fs.writeFileSync(path.join(OUT, id + '.html'), page(id, n, titre));
-  liens.push({ id, titre, n: nb });
-  console.log('✓ ' + id + ' — ' + titre + ' (' + nb + ' أسئلة)');
-}
-
-const total = liens.reduce((s, l) => s + l.n, 0);
-fs.writeFileSync(path.join(OUT, 'index.html'), `<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-  <title>الجمع و الطرح في ℚ — تمارين شاملة</title>
-</head>
-<body>
-<h3>🧮 الجمع و الطرح في ℚ — تمارين شاملة</h3>
-<p style="text-align:center;color:#95a5a6;font-size:.9em;margin-bottom:16px">
-  8 أساسي — ${liens.length} تمارين، ${total} سؤالا في كل تحميل<br>
-  كل صفحة تعرض تمرينا كاملا بكل أسئلته في آن واحد، و الأعداد تتغيّر في كل مرة
-</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
-${liens.map(l => `  <a href="${l.id}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔗 ${l.titre} <small style="color:#95a5a6">(${l.n} أسئلة)</small></a>`).join('\n')}
-</div>
-</body>
-</html>
-`);
-console.log(`\n${liens.length} exercices, ${total} questions par tirage.`);
