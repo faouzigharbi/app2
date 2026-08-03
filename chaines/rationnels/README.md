@@ -25,9 +25,9 @@ Ouvrir `index.html`. Chaque page tire 3 énoncés ; « أرقام جديدة » 
 
 **Expressions littérales — 4**
 
-| `ex09` | ajouter le même nombre aux deux membres | 8-1, 11-1, 16-2, 17-3 |
+| `ex09` | deux expressions au même inconnu — **par la différence** | 8-1, 11-1, 16-2, 17-3 |
 | `ex10` | réduire l'expression puis comparer | 4, 8-2, 12, 15-2, 17-4 |
-| `ex11` | déduire d'une hypothèse `x > y` | 9-1, 10, 11, 14 |
+| `ex11` | sous l'hypothèse `x > y` — **par la différence** | 9-1, 10, 11, 14 |
 | `ex12` | calculer une expression à partir d'une relation | 15-1 |
 
 **Ensembles — 1**
@@ -46,6 +46,46 @@ Le piège que la fiche travaille est exactement celui-là —
 
 `ex06` le met en scène : même numérateur, et l'ordre s'inverse dès qu'il est
 négatif. La règle « aucun signe » ne s'applique donc plus, et c'est voulu.
+
+## Avec un inconnu : le signe de la différence, et rien d'autre
+
+Dès qu'une expression contient un inconnu, la comparaison passe **toujours**
+par le signe de la différence. Les propriétés de l'ordre — « ajouter le même
+nombre conserve l'ordre », « on additionne deux inégalités membre à membre » —
+relèvent du **programme de 9ᵉ année** et n'ont pas leur place ici.
+
+```
+✗  1/2 < 2/3  et l'addition conserve l'ordre  →  a + 1/2 < a + 2/3     (9e)
+
+✓  (a + 1/2) − (a + 2/3) = 1/2 − 2/3          ← l'inconnu s'élimine
+   1/2 − 2/3 = −1/6
+   −1/6 < 0
+   donc  a + 1/2 < a + 2/3                                             (8e)
+```
+
+Sous une hypothèse, même chose : la différence devient une **somme de deux
+nombres positifs**, l'un venant de l'hypothèse traduite en `x − y > 0`,
+l'autre numérique.
+
+```
+(x + 13/4) − (y − 2/7) = (x − y) + 107/28
+x − y > 0   ;   107/28 > 0
+une somme de deux positifs est positive
+donc  x + 13/4 > y − 2/7
+```
+
+**Cette règle est un test, pas une intention.** `verifier.js` rejette toute
+chaîne littérale qui invoque une propriété de l'ordre, et exige qu'elle
+contienne une étape calculant la différence et une étape en déterminant le
+signe. Les deux formulations interdites sont testées comme contre-exemples
+avant chaque passage :
+
+```bash
+CONTRE_EXEMPLES=1 node verifier.js
+✗ rejeté  propriété de l'ordre (9e)
+✗ rejeté  addition membre à membre (9e)
+✓ accepté signe de la différence (8e, correct)
+```
 
 ## Deux régimes de vérification
 
@@ -69,8 +109,8 @@ C'est la seule méthode honnête pour du littéral, et elle est solide : sur
   sens (`ex01`) ;
 - un produit en croix sur des nombres qui ne sont pas tous les deux positifs —
   la méthode serait fausse (`ex05`) ;
-- une hypothèse `u < v` dans `ex11` : on ne peut alors **rien** conclure, et le
-  générateur n'écrit jamais une conclusion non justifiée ;
+- une hypothèse d'où l'on ne peut **rien** conclure dans `ex11` : le constant
+  restant doit être positif pour que la somme le soit ;
 - un élément posé exactement sur une borne dans `ex13`, où `>` et `≤` seraient
   ambigus à lire ;
 - une relation `= 0` dans `ex12`, qui viderait l'exercice.
@@ -88,7 +128,7 @@ l'expression retrouvée en tirant `x` et `y` qui satisfont la relation), et une
 règle de forme — **une part mathématique ne mêle jamais arabe et symboles**,
 ce sur quoi repose tout le rendu.
 
-Dernier passage : **11 700 instances, 373 000 contrôles dont 432 000
+Dernier passage : **7 800 instances, 258 979 contrôles dont 288 000
 évaluations littérales échantillonnées, 0 erreur**, et les 13 pages ouvertes
 dans Chromium sans erreur JS ni expression débordant de son cadre.
 

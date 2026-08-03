@@ -102,12 +102,43 @@ function verifierBrut(n, brut) {
   }
 
   probs.push(...controlerFamille(c));
-  controles++;
+  probs.push(...controlerMethode(brut, c));
+  controles += 2;
 
   const textes = brut.etapes.map(e => e.join(': '));
   if (new Set(textes).size !== textes.length) probs.push('مراحل مكرّرة');
   if (textes.length < 4) probs.push('السلسلة قصيرة جدا');
   return probs;
+}
+
+// ---------------------------------------------------------------------------
+// Contrôle de MÉTHODE, pas seulement de vérité.
+//
+// Dès qu'une expression contient un inconnu, la comparaison se fait par le
+// SIGNE DE LA DIFFÉRENCE, et par rien d'autre. Les propriétés de l'ordre —
+// « ajouter le même nombre conserve l'ordre », « on additionne deux
+// inégalités membre à membre » — relèvent du programme de 9e année et n'ont
+// pas leur place ici. Cette règle est donc vérifiée, pas seulement respectée.
+// ---------------------------------------------------------------------------
+const INTERDIT = [
+  [/تحفظ الترتيب/, 'خاصية « الإضافة تحفظ الترتيب » من برنامج 9 أساسي'],
+  [/طرفا بطرف/, 'جمع متفاوتتين طرفا بطرف من برنامج 9 أساسي'],
+  [/نفس الاتجاه/, 'جمع متفاوتتين في نفس الاتجاه من برنامج 9 أساسي']
+];
+
+function controlerMethode(brut, c) {
+  const p = [];
+  const textes = brut.etapes.map(e => e.join(': '));
+  for (const t of textes) {
+    for (const [re, msg] of INTERDIT) if (re.test(t)) p.push(msg + ': « ' + t + ' »');
+  }
+  if (c.type === 'litteral') {
+    if (!textes.some(t => /الفرق/.test(t))) p.push('لا توجد مرحلة تحسب الفرق');
+    if (!brut.etapes.some(([, m]) => /[<>]\s*0$/.test(String(m).trim()))) {
+      p.push('لا توجد مرحلة تحدّد إشارة الفرق');
+    }
+  }
+  return p;
 }
 
 // Chaque famille revérifie son affirmation, sans passer par le générateur.
@@ -148,6 +179,29 @@ function controlerFamille(c) {
     if (vrais.join(',') !== c.gardes.join(',')) p.push('قائمة العناصر المقبولة خاطئة');
   }
   return p;
+}
+
+if (process.env.CONTRE_EXEMPLES) {
+  // On prouve que le garde-fou attrape bien ce qu'il doit attraper.
+  const cas = [
+    { nom: 'propriété de l\'ordre (9e)', brut: { etapes: [
+      ['نقارن العددين المضافين', '1/2 < 2/3'],
+      ['القاعدة', 'إضافة نفس العدد إلى طرفَي متفاوتة تحفظ الترتيب'],
+      ['النتيجة', 'a + 1/2 < a + 2/3']] }, c: { type: 'litteral' } },
+    { nom: 'addition membre à membre (9e)', brut: { etapes: [
+      ['المعطى', 'x > y'],
+      ['القاعدة', 'جمع متفاوتتين في نفس الاتجاه طرفا بطرف يحفظ الاتجاه'],
+      ['النتيجة', 'x + 1 > y']] }, c: { type: 'litteral' } },
+    { nom: 'signe de la différence (8e, correct)', brut: { etapes: [
+      ['نحسب الفرق', '(a + 1/2) - (a + 2/3) = -1/6'],
+      ['نحدّد إشارة الفرق', '-1/6 < 0'],
+      ['النتيجة', 'a + 1/2 < a + 2/3']] }, c: { type: 'litteral' } }
+  ];
+  for (const k of cas) {
+    const r = controlerMethode(k.brut, k.c);
+    console.log((r.length ? '✗ rejeté  ' : '✓ accepté ') + k.nom + (r.length ? ' — ' + r[0] : ''));
+  }
+  process.exit(0);
 }
 
 for (let n = 1; n <= 13; n++) {
