@@ -79,7 +79,7 @@
 
   function rendre(brut) {
     return {
-      operation: brut.enonce,
+      operation: rendreMath(brut.enonce),
       steps: brut.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
       hint: brut.indice
     };
