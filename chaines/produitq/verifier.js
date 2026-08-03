@@ -166,47 +166,52 @@ function verifierRendu(q) {
 if (process.env.CONTRE_EXEMPLES) {
   const copie = q => JSON.parse(JSON.stringify(q));
   const cas = [];
-  const l1 = F.tirer(1);
-  const a1 = copie(l1[0]); a1.controle.val = F.add(a1.controle.val, F.rat(1));
-  cas.push(['produit faussé', a1]);
-  const a2 = copie(l1[1]); a2.controle.val = F.neg(a2.controle.val);
-  cas.push(['signe du produit inversé', a2]);
-  const l5 = F.tirer(5);
-  const a3 = copie(l5[0]);
-  a3.controle.droite = a3.controle.droite.replace(/x\^2/, 'x');
-  cas.push(['carré oublié dans le développement', a3]);
-  const a4 = copie(l5[1]);
-  // La falsification doit MORDRE quelle que soit la forme tirée : si aucun
-  // « + » n'est là à retourner, on retourne un « - », et à défaut on décale.
-  a4.controle.droite = / \+ /.test(a4.controle.droite)
-    ? a4.controle.droite.replace(/ \+ /, ' - ')
-    : (/ - /.test(a4.controle.droite) ? a4.controle.droite.replace(/ - /, ' + ')
-                                      : a4.controle.droite + ' + 1');
-  cas.push(['signe faussé dans le développement', a4]);
-  const l6 = F.tirer(6);
-  const a5 = copie(l6[0]);
-  a5.controle.droite = a5.controle.droite.replace(/\)$/, ' + 1)');
-  cas.push(['factorisation fausse', a5]);
-  const l3 = F.tirer(3);
-  const a6 = copie(l3[0]); a6.controle.val = F.add(a6.controle.val, F.rat(1));
-  cas.push(['quotient faussé', a6]);
-  const a7 = copie(l1[2]); a7.etapes[3] = a7.etapes[2].slice();
-  cas.push(['étape dupliquée', a7]);
-  const l8 = F.tirer(8);
-  const a8 = copie(l8[0]); a8.controle.attendu = -a8.controle.attendu;
-  cas.push(['signe déduit à l\'envers', a8]);
-  const l9 = F.tirer(9);
-  const a9 = copie(l9[0]); a9.controle.attendu = -a9.controle.attendu;
-  cas.push(['classe ℚ+/ℚ- inversée', a9]);
-  const l10 = F.tirer(10);
-  const a10 = copie(l10[0]); a10.controle.val = F.neg(a10.controle.val);
-  cas.push(['valeur absolue négative', a10]);
+  // On cherche une question PAR SON TYPE DE CONTRÔLE, pas par son rang :
+  // les pages ont été renumérotées une fois, elles peuvent l'être encore.
+  const trouver = (type, filtre) => {
+    for (let essai = 0; essai < 400; essai++) {
+      for (const n of Object.keys(F.PROBLEMES)) {
+        for (const q of F.tirer(Number(n))) {
+          if (q.controle.type === type && (!filtre || filtre(q))) return q;
+        }
+      }
+    }
+    throw new Error('aucune question de type ' + type);
+  };
+  const pousse = (nom, q, f) => { const c = copie(q); f(c); cas.push([nom, c]); };
+  // Une falsification doit MORDRE quelle que soit la forme tirée.
+  const casserSigne = d => (/ \+ /.test(d) ? d.replace(/ \+ /, ' - ')
+    : (/ - /.test(d) ? d.replace(/ - /, ' + ') : d + ' + 1'));
+
+  pousse('produit faussé', trouver('produit', q => q.controle.val.n !== 0),
+    c => { c.controle.val = F.add(c.controle.val, F.rat(1)); });
+  pousse('signe du produit inversé', trouver('produit', q => q.controle.val.n !== 0),
+    c => { c.controle.val = F.neg(c.controle.val); });
+  pousse('carré oublié dans le développement',
+    trouver('identite', q => /\^2/.test(q.controle.droite)),
+    c => { c.controle.droite = c.controle.droite.replace(/x\^2/, 'x'); });
+  pousse('signe faussé dans le développement', trouver('identite'),
+    c => { c.controle.droite = casserSigne(c.controle.droite); });
+  pousse('factorisation fausse', trouver('identite', q => /\)$/.test(q.controle.droite)),
+    c => { c.controle.droite = c.controle.droite.replace(/\)$/, ' + 1)'); });
+  pousse('quotient faussé', trouver('quotient'),
+    c => { c.controle.val = F.add(c.controle.val, F.rat(1)); });
+  pousse('fraction étagée faussée', trouver('etagee'),
+    c => { c.controle.val = F.add(c.controle.val, F.rat(1)); });
+  pousse('signe déduit à l\'envers', trouver('signe-produit'),
+    c => { c.controle.attendu = -c.controle.attendu; });
+  pousse('classe ℚ+/ℚ- inversée', trouver('classe'),
+    c => { c.controle.attendu = -c.controle.attendu; });
+  pousse('valeur absolue négative', trouver('absolu'),
+    c => { c.controle.val = F.neg(c.controle.val); });
+  pousse('étape dupliquée', trouver('produit'),
+    c => { c.etapes[3] = c.etapes[2].slice(); });
 
   let bon = 0;
   for (const [nom, q] of cas) {
     const probs = verifierBrut(q);
     console.log((probs.length ? '✗ rejeté  ' : '⚠ ACCEPTÉ ') + nom
-      + (probs.length ? ' — ' + probs[0].slice(0, 90) : ''));
+      + (probs.length ? ' — ' + probs[0].slice(0, 80) : ''));
     if (probs.length) bon++;
   }
   console.log(`\n${bon}/${cas.length} falsifications détectées.`);
@@ -214,11 +219,12 @@ if (process.env.CONTRE_EXEMPLES) {
 }
 
 for (const n of Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b)) {
-  let mauvais = 0; const vus = new Set();
+  let mauvais = 0; const vus = new Set(), modeles = new Set();
   for (let t = 0; t < TIRAGES; t++) {
     for (const [i, brut] of F.tirer(n).entries()) {
       questions++;
       vus.add(brut.enonce.join(' '));
+      if (brut.controle.modele) modeles.add(brut.controle.modele);
       const probs = verifierBrut(brut).concat(verifierRendu(F.rendre(brut)));
       if (probs.length) {
         mauvais++;
@@ -227,10 +233,10 @@ for (const n of Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b)) {
     }
   }
   console.log(`ex${n} — ${F.PROBLEMES[n].titre}`.padEnd(48)
-    + `${mauvais ? '✗ ' + mauvais + ' échec(s)' : '✓'}  (${F.PROBLEMES[n].questions} أسئلة، ${vus.size} صيغة)`);
+    + `${mauvais ? '✗ ' + mauvais + ' échec(s)' : '✓'}  (${modeles.size} نماذج، ${vus.size} صيغة)`);
 }
 if (echecs.length) console.log('\n' + echecs.join('\n'));
-console.log(`\n${TIRAGES} tirages par exercice, ${questions} questions,`
+console.log(`\n${TIRAGES} tirages par type, ${questions} questions,`
   + ` ${relations} relations recalculées et ${controles} affirmations re-démontrées,`
   + ` ${echecs.length ? 'ÉCHECS' : '0 erreur'}.`);
 process.exit(echecs.length ? 1 : 0);

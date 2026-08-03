@@ -250,7 +250,7 @@ const liens = [];
 for (const n of EXOS) {
   const id = 'ex' + String(n).padStart(2, '0');
   const nb = A.PROBLEMES[n].questions;
-  const titre = 'التمرين ' + n + ' — ' + A.PROBLEMES[n].titre;
+  const titre = 'النوع ' + n + ' — ' + A.PROBLEMES[n].titre;
   fs.writeFileSync(path.join(OUT, id + '.js'),
     `// Tirage initial ; le bouton « أرقام جديدة » en refait un.\n`
     + `window.exerciceNumero = ${n};\n`

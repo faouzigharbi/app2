@@ -1,7 +1,7 @@
 # الجداء و القسمة في ℚ (8 أساسي)
 
 Bâti sur la leçon *الضرب و القسمة في ℚ* (riadhyet) et sur les devoirs de la
-*المدرسة الإعدادية النموذجية ضفاف البحيرة*. **10 exercices, 36 questions par
+*المدرسة الإعدادية النموذجية ضفاف البحيرة*. **6 types, 21 modèles, 24 questions par
 tirage.**
 
 Ces cinq devoirs partagent un même noyau algébrique — produit et quotient de
@@ -9,20 +9,26 @@ rationnels, développement, factorisation, fractions étagées — et une partie
 géométrique (triangles, milieux, bissectrices) qui demande un tout autre type
 de chaîne. C'est le noyau algébrique qui est porté ici ; voir « La suite ».
 
-## Ce que ce chapitre couvre
+## Une page par type, plusieurs modèles par page
 
-| Ex. | Ce que l'élève doit faire |
-|-----|---------------------------|
-| 1 | quatre produits de deux fractions — **en simplifiant avant de multiplier** |
-| 2 | trois produits de trois fractions |
-| 3 | division et **fractions étagées** |
-| 4 | développer `k(ax + b)`, puis réduire |
-| 5 | **produit de deux parenthèses** — quatre produits, pas trois |
-| 6 | factoriser : reconnaître le facteur commun |
-| 7 | les **éléments remarquables** : ×0, ×1, ×(−1), et deux inverses |
-| 8 | **déterminer un signe sans calculer** — les nombres sont hors de portée |
-| 9 | **ℚ₊ ou ℚ₋ ?** — composer des signes sur des lettres |
-| 10 | la valeur absolue traverse le produit : \|ab\| = \|a\|·\|b\| |
+La fiche papier aligne dix lignes du même type, toutes figées. Ici **une page
+= un type**, et à l'intérieur le générateur **tire au hasard parmi les modèles
+de ce type**. L'élève retombe sur la même méthode sous ses différents
+habillages, autant de fois qu'il recharge — c'est le seul avantage réel d'une
+page génératrice sur une feuille, et il ne vaut que si tous les modèles
+sortent vraiment. Le validateur les compte et affiche leur nombre.
+
+| Page | Type | Modèles tirés |
+|---|---|---|
+| 1 | **le produit** | deux fractions ; trois fractions ; entier × fraction ; \|a×b\| |
+| 2 | **éléments remarquables** | ×0 ; ×1 ; ×(−1) ; deux inverses |
+| 3 | **le signe sans calculer** | produit = −n ; produit = valeur ; a/b ; \|a\|/b ; produit de deux quotients |
+| 4 | **division et fractions étagées** | division ; étagée simple ; étagée à sommes |
+| 5 | **développer et réduire** | k(ax+b) ; produit de deux parenthèses ; avec un terme de plus |
+| 6 | **mise en évidence** | facteur fractionnaire ; facteur entier |
+
+Le type 6 n'est qu'une mise en bouche : la factorisation a son propre
+chapitre, `factq`, avec ses cinq types.
 
 ## La méthode, encore
 
@@ -74,10 +80,16 @@ Deux régimes, selon la nature de l'affirmation :
   oublié ou un signe faussé ne survit pas au premier essai.
 
 ```
-250 tirages par exercice, 9000 questions,
-236310 relations recalculées et 267250 affirmations re-démontrées, 0 erreur.
-10/10 falsifications détectées.
+200 tirages par type, 4800 questions,
+153264 relations recalculées et 164239 affirmations re-démontrées, 0 erreur.
+11/11 falsifications détectées (sur dix exécutions).
+6 pages — 0 en défaut (Chromium).
 ```
+
+Les falsifications ne sont plus désignées par le rang de leur page mais
+**cherchées par leur type de contrôle** : les pages ont été renumérotées une
+fois, elles peuvent l'être encore, et un banc d'essai qui casse au premier
+remaniement ne protège rien.
 
 C'est ce contrôle par échantillonnage qui a débusqué **un bug de l'analyseur
 lui-même** : `-x^2` était lu `(-x)^2`, c'est-à-dire `+x^2`. Le moins unaire se
@@ -104,6 +116,6 @@ Ces devoirs contiennent aussi :
 |---|---|
 | `noyau.js` | rationnels exacts, analyseur (puissances, valeurs absolues, juxtaposition), rendu |
 | `produits.js` | les gestes : produit, quotient, fraction étagée, développement, factorisation, éléments remarquables, raisonnement sur les signes, valeur absolue |
-| `gens.js` | les dix exercices |
+| `gens.js` | une page par type, et les modèles de chaque type |
 | `_build.js` | émet les pages en accordéon et l'index |
 | `verifier.js` | validation par exécution + contre-exemples |
