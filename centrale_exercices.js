@@ -401,5 +401,170 @@ window.CENTRALE_EXERCICES = [
     ],
 
     tags: ["هندسة فضائية", "هرم منتظم", "تعامد", "توازي", "فيتاغور", "طالس", "مناظرة", "9 أساسي"]
+  },
+  {
+    id: "9-GEO-0002",
+
+    niveau: 9,
+    chapitre: "الهندسة المستوية",
+    lecon: "مبرهنة فيتاغور و المثلثات المتشابهة و المساحات",
+
+    source: "المدرسة الإعدادية النموذجية ضفاف البحيرة 2021 ـ مسابقة في الرياضيات ـ نموذجية البحيرة ـ الجولة 1 ـ الأستاذ : فوزي الغربي",
+    page: 1,
+    ordre: 1,
+
+    type: "تمرين",
+    difficulte: null,
+    points: null,
+
+    enonce_ar: "التمرن رقم1\nABC مثلث بحيث AB=3 و BC=6 و ABC=60° و O منتصف [BC]\n1- بين أن ABC قائم في A\n2- المستقيم المار من B و العمودي على (BC) يقطع (AC) في E . أحسب BE\n3- ليكن H المسقط العمودي لـ A على (BE)\nأ- . أحسب EH\nب- بين أن \\( \\dfrac{S_{AEH}}{S_{BCE}} = \\dfrac{EH \\times EA}{EB \\times EC} \\)",
+
+    latex: "AB = 3 \\quad ; \\quad BC = 6 \\quad ; \\quad \\widehat{ABC} = 60^{\\circ} \\quad ; \\quad \\dfrac{S_{AEH}}{S_{BCE}} = \\dfrac{EH \\times EA}{EB \\times EC}",
+
+    reponse: [],
+
+    indice: "",
+
+    correction: "",
+
+    figure: "",
+
+    competences: [
+      "إثبات أن مثلثا قائم الزاوية",
+      "حساب أطوال بتوظيف مبرهنة فيتاغور و المثلثات المتشابهة",
+      "حساب نسبة مساحتي مثلثين"
+    ],
+
+    tags: ["مثلث قائم", "فيتاغور", "مسقط عمودي", "مساحة", "تشابه", "مسابقة", "الجولة 1", "9 أساسي"]
+  },
+  {
+    id: "9-MIX-0001",
+
+    niveau: 9,
+    chapitre: "الحساب على العبارات الجبرية و الهندسة المستوية",
+    lecon: "الصيغة النموذجية و المساحات و المستطيل و الدائرة و طالس",
+
+    source: "المدرسة الإعدادية النموذجية ضفاف البحيرة 2021 ـ مسابقة في الرياضيات ـ نموذجية البحيرة ـ الجولة 1 ـ الأستاذ : فوزي الغربي",
+    page: 1,
+    ordre: 2,
+
+    type: "تمرين",
+    difficulte: null,
+    points: null,
+
+    enonce_ar: "التمرين رقم2\nI)\nنعتبر العبارة \\( S = x^{2} - 9x + 18 \\) حيث x عدد حقيقي\n1- أحسب S إذا علمت ان \\( x = \\dfrac{\\sqrt{2}}{2} - 1 \\)\n2- بين أن \\( S = \\left(x - \\dfrac{9}{2}\\right)^{2} - \\dfrac{9}{4} \\)\n3- استنتج الأعداد الحقيقية \\( x \\) التي تحقق S=0\nII) [AM] قطعة مستقيم طولها 9cm و B النقطة من [AM] بحيث AB=\\( x \\)\n\\( \\left(x \\in IR , 0 < x < 5\\right) \\)\nو D النقطة بحيث \\( (AD) \\perp (AB) \\) و AD=MB و P النقطة بحيث ADPB مستطيل\nأ- أحسب مساحة المستطيل ADPB بدلالة \\( x \\)\nب- استنتج الأعداد الحقيقية x بحيث يكون للمستطيل ADPB نفس مساحة مربع طول ضلعه \\( 3\\sqrt{2} \\)\nIII) ABCD مستطيل بحيث AD=6 و AB=3\n1) أحسب BD\n2) لتكن E النقطة [DC) بحيث DE=6 . أحسب BE\n3) ابن M من [BE] بحيث \\( \\dfrac{EM}{2} = \\dfrac{BM}{4} \\) ثم احسب BM\n4) المستقيم المار من M و الموازي لـ (AB) يقطع (BC) في H . (EH) يقطع (BD) في I . أحسب IC\n5) الدائرة التي قطرها [ID] تقطع [AD] في F . بين ان BEF مثلث متقايس الضلعين\n6) عين النقطة R منتصف [FB) . المستقيم (CH) يقطع (ER) في J. (BF) يقطع (CD) في T .\nأ- أحسب TD\nت- بين أن \\( (TJ) \\perp (BE) \\) . سم S نقطة تقاطعهما\n7) المستقيم المار من A و العمودي على (AE) يقطع (CD) في O . أحسب OD\n8) بين أن R , E, T , S نقاط من نفس الدائرة (C')\n9) المماس للدائرة (C') في T يقطع (AE) في Q . أحسب AQ",
+
+    latex: "S = x^{2} - 9x + 18 \\quad ; \\quad x = \\dfrac{\\sqrt{2}}{2} - 1 \\quad ; \\quad S = \\left(x - \\dfrac{9}{2}\\right)^{2} - \\dfrac{9}{4} \\quad ; \\quad S = 0 \\quad ; \\quad AB = x \\quad ; \\quad \\left(x \\in IR , 0 < x < 5\\right) \\quad ; \\quad (AD) \\perp (AB) \\quad ; \\quad AD = MB \\quad ; \\quad 3\\sqrt{2} \\quad ; \\quad AD = 6 \\quad ; \\quad AB = 3 \\quad ; \\quad DE = 6 \\quad ; \\quad \\dfrac{EM}{2} = \\dfrac{BM}{4} \\quad ; \\quad (TJ) \\perp (BE)",
+
+    reponse: [],
+
+    indice: "",
+
+    correction: "",
+
+    figure: "",
+
+    competences: [
+      "كتابة عبارة في الصيغة النموذجية و حل معادلة",
+      "حساب القيمة العددية لعبارة تحتوي على جذر مربع",
+      "التعبير عن مساحة بدلالة مجهول و حل المعادلة الناتجة",
+      "توظيف مبرهنة فيتاغور و مبرهنة طالس في المستطيل",
+      "توظيف خاصيات الدائرة و المماس و الرباعي الرسوم",
+      "إثبات التعامد و تعيين نقاط من نفس الدائرة"
+    ],
+
+    tags: ["صيغة نموذجية", "معادلة", "مساحة", "مستطيل", "طالس", "فيتاغور", "دائرة", "مماس", "مسابقة", "الجولة 1", "9 أساسي"]
+  },
+  {
+    id: "9-CAL-0003",
+
+    niveau: 9,
+    chapitre: "الحساب على العبارات الجبرية",
+    lecon: "المتطابقات الشهيرة و المعادلات و توظيفها في الهندسة",
+
+    source: "المدرسة الإعدادية النموذجية ضفاف البحيرة 2021 ـ مسابقة في الرياضيات ـ نموذجية البحيرة ـ الجولة 1 ـ الأستاذ : فوزي الغربي",
+    page: 2,
+    ordre: 3,
+
+    type: "تمرين",
+    difficulte: null,
+    points: null,
+
+    enonce_ar: "تـمـريـن رقم3\nنعتبر العبارة \\( E = (2x - 1)(2x + 1) \\) بحيث \\( x \\in \\mathbb{R} \\)\n1) أ / أنشر و اختصر العبارة \\( E \\)\nب / أحسب \\( E \\) اذا علمت أن \\( x = \\dfrac{3+\\sqrt{3}}{2} \\)\n2) أوجد العدد الحقيقي \\( x \\) في كل حالة من الحالات التالية\nأ / \\( E = 15 \\)\nب / \\( E = 2x + 1 \\)\n3) في الشكل المقابل لدينا \\( O \\) منتصف \\( [AB] \\) و \\( AB = 4x^{2} - 1 \\) و \\( OC = x + \\dfrac{1}{2} \\) بحيث \\( x > \\dfrac{1}{2} \\)\nأوجد العدد الحقيقي \\( x \\) ليكون المثلث \\( ABC \\) قائم الزاوية في \\( C \\)",
+
+    latex: "E = (2x - 1)(2x + 1) \\quad ; \\quad x \\in \\mathbb{R} \\quad ; \\quad x = \\dfrac{3+\\sqrt{3}}{2} \\quad ; \\quad E = 15 \\quad ; \\quad E = 2x + 1 \\quad ; \\quad AB = 4x^{2} - 1 \\quad ; \\quad OC = x + \\dfrac{1}{2} \\quad ; \\quad x > \\dfrac{1}{2}",
+
+    reponse: [],
+
+    indice: "",
+
+    correction: "",
+
+    figure: `(function (THREE, container) {
+  var W = container.clientWidth || 520, H = container.clientHeight || 340;
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+  var pad = 0.9;
+  var camera = new THREE.OrthographicCamera(-pad, 6 + pad, 4.2, -1.1, -100, 100);
+  camera.position.set(0, 0, 10);
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(W, H);
+  container.appendChild(renderer.domElement);
+  var A = new THREE.Vector3(0, 0, 0), B = new THREE.Vector3(6, 0, 0),
+      O = new THREE.Vector3(3, 0, 0), C = new THREE.Vector3(3.4, 3.1, 0);
+  function seg(a, b, wide) {
+    var g = new THREE.BufferGeometry().setFromPoints([a, b]);
+    var l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: wide ? 0x333333 : 0x555555 }));
+    scene.add(l);
+    if (wide) {
+      var o = new THREE.Vector3(0.035, 0, 0);
+      var g2 = new THREE.BufferGeometry().setFromPoints([a.clone().add(o), b.clone().add(o)]);
+      scene.add(new THREE.Line(g2, new THREE.LineBasicMaterial({ color: 0x333333 })));
+    }
+  }
+  function dot(p, col) {
+    var m = new THREE.Mesh(new THREE.CircleGeometry(0.09, 24), new THREE.MeshBasicMaterial({ color: col }));
+    m.position.set(p.x, p.y, 0.3);
+    scene.add(m);
+  }
+  function tick(p) {
+    var h = 0.16, d = 0.05;
+    seg(new THREE.Vector3(p.x - d, p.y - h, 0.2), new THREE.Vector3(p.x - d, p.y + h, 0.2));
+    seg(new THREE.Vector3(p.x + d, p.y - h, 0.2), new THREE.Vector3(p.x + d, p.y + h, 0.2));
+  }
+  function label(t, x, y, sz) {
+    var c = document.createElement('canvas');
+    c.width = 256; c.height = 128;
+    var g = c.getContext('2d');
+    g.font = 'bold 52px serif'; g.fillStyle = '#000';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(t, 128, 64);
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true }));
+    sp.position.set(x, y, 0.5);
+    sp.scale.set(sz || 1.2, (sz || 1.2) / 2, 1);
+    scene.add(sp);
+  }
+  seg(A, B); seg(A, C); seg(C, B); seg(O, C, true);
+  tick(new THREE.Vector3(1.5, 0, 0));
+  tick(new THREE.Vector3(4.5, 0, 0));
+  dot(A, 0x0000cc); dot(B, 0x0000cc); dot(C, 0x0000cc); dot(O, 0x333333);
+  label('A', A.x - 0.35, A.y + 0.05, 0.7);
+  label('B', B.x + 0.35, B.y + 0.05, 0.7);
+  label('C', C.x - 0.05, C.y + 0.35, 0.7);
+  label('O', O.x - 0.05, O.y - 0.28, 0.7);
+  label('x + 1/2', O.x - 0.95, C.y / 2, 1.5);
+  label('4x² - 1', O.x + 0.1, -0.62, 1.5);
+  renderer.render(scene, camera);
+  return { scene: scene, camera: camera, renderer: renderer };
+})`,
+
+    competences: [
+      "توظيف المتطابقة الشهيرة (a-b)(a+b)",
+      "حساب القيمة العددية لعبارة تحتوي على جذر مربع",
+      "حل معادلات في مجموعة الأعداد الحقيقية",
+      "توظيف خاصية الموسط المتعلق بالوتر في مثلث قائم الزاوية"
+    ],
+
+    tags: ["متطابقات شهيرة", "نشر", "معادلة", "جذر مربع", "مثلث قائم", "منتصف", "مسابقة", "الجولة 1", "9 أساسي"]
   }
 ];
