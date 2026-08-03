@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <title>أولوية العمليات في ℕ — سلسلة — صعب</title>
+  <title>أيسر طريقة: الأقواس — سلسلة — متقدّم</title>
 </head>
 <body>
 
 <header>
-  <h1 id="title">أولوية العمليات في ℕ — سلسلة — صعب</h1>
+  <h1 id="title">أيسر طريقة: الأقواس — سلسلة — متقدّم</h1>
   <p id="meta"></p>
 </header>
 
@@ -17,6 +17,7 @@
   <div class="card">
     <div class="row">
       <span class="badge">🔗 سلسلة برهان</span>
+      <a class="badge" href="nat_index.html">↩ الفهرس</a>
     </div>
     <hr style="border:none;border-top:1px solid #e8ecf2;margin:10px 0"/>
     <div class="op" id="operation"></div>
@@ -42,9 +43,7 @@
   </div>
 </main>
 
-
-
-<script src="nat_chaine_hard_1.js"></script>
+<script src="nat2_chaine_extreme_1.js"></script>
 
 <script>
 (function(){
@@ -76,8 +75,7 @@
     pool.innerHTML = '';
     target.innerHTML = '';
 
-    const shuffled = shuffle(q.steps);
-    shuffled.forEach(function(step, i) {
+    shuffle(q.steps).forEach(function(step, i) {
       const item = document.createElement('div');
       item.className = 'item';
       item.draggable = true;
@@ -92,11 +90,8 @@
         item.classList.remove('dragging');
       });
       item.addEventListener('click', function() {
-        if (item.parentElement === pool) {
-          target.appendChild(item);
-        } else {
-          pool.appendChild(item);
-        }
+        if (item.parentElement === pool) target.appendChild(item);
+        else pool.appendChild(item);
       });
       pool.appendChild(item);
     });
@@ -113,8 +108,8 @@
 
   document.getElementById('btnCheck').addEventListener('click', function() {
     const q = data.questions[currentQ];
-    const targetItems = document.getElementById('target').querySelectorAll('.item');
-    const userOrder = Array.from(targetItems).map(function(el) { return el.dataset.text; });
+    const userOrder = Array.from(document.getElementById('target').querySelectorAll('.item'))
+      .map(function(el) { return el.dataset.text; });
     const fb = document.getElementById('feedback');
 
     if (userOrder.length !== q.steps.length) {
@@ -144,31 +139,23 @@
     } else {
       setTimeout(function() {
         const pct = Math.round(score/total*100);
-        let msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 60 ? '👍 جيد!' : '📚 حاول مرة أخرى';
+        const msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 60 ? '👍 جيد!' : '📚 حاول مرة أخرى';
         fb.className = 'feedback good';
         fb.innerHTML = msg + ' — النتيجة النهائية: <b>' + score + '/' + total + '</b> (' + pct + '%)';
       }, 2500);
     }
   });
 
-  document.getElementById('btnReset').addEventListener('click', function() {
-    loadQuestion();
-  });
+  document.getElementById('btnReset').addEventListener('click', loadQuestion);
 
   document.getElementById('btnHint').addEventListener('click', function() {
     const q = data.questions[currentQ];
-    const hint = document.getElementById('hint');
-    if (q.hint) {
-      hint.innerHTML = '💡 ' + q.hint;
-    } else {
-      hint.innerHTML = '💡 المرحلة الأولى هي: ' + q.steps[0];
-    }
+    document.getElementById('hint').innerHTML = '💡 ' + (q.hint || q.steps[0]);
   });
 
   window.onload = loadQuestion;
 })();
 </script>
-
 
 </body>
 </html>

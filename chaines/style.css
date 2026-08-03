@@ -132,7 +132,10 @@ header #meta {
   font-weight: 600;
 }
 
+/* Une expression trop longue défile dans son cadre au lieu de se couper :
+   coupée, elle serait réordonnée par l'algorithme bidi. */
 .op {
+  overflow-x: auto;
   background: #f9f9ff;
   padding: 12px;
   border-radius: 10px;
@@ -166,6 +169,7 @@ header #meta {
 }
 
 .item {
+  overflow-x: auto;
   padding: 10px 14px;
   margin: 6px 0;
   background: var(--card);
