@@ -26,13 +26,18 @@ const EST_PUISSANCE = /^\s*(?:\d+|\(-?\d+(?:\/\d+)?\))\s*\^\s*-?\d+\s*$/;
 function verifierBrut(brut) {
   const probs = [];
   const c = brut.controle;
+  // « A » désigne l'expression de l'énoncé. Sans ce lien, toute étape écrite
+  // « A = 3^8 × 3^3 » était SAUTÉE — prise pour l'énoncé d'une règle à cause de
+  // sa lettre —, et les réécritures intermédiaires n'étaient jamais vérifiées.
   const env = {};
+  try { env.A = F.analyser(c.expr); } catch (e) { /* les étapes le diront */ }
 
   brut.etapes.forEach(([label, math], i) => {
     if (typeof math !== 'string' || F.ARABE.test(math)) return;
     // « a^n × a^p = a^(n+p) » est l'énoncé de la RÈGLE, avec des lettres
-    // libres : il n'y a rien à y recalculer.
-    if (/[a-zA-Z]/.test(math)) return;
+    // libres : il n'y a rien à y recalculer. On le reconnaît à ses MINUSCULES ;
+    // « A », lui, est un nom défini, et son étape se vérifie.
+    if (/[a-z]/.test(math)) return;
     try {
       const r = F.verifierRelation(math, env);
       if (r === null) { probs.push('م' + (i + 1) + ': « ' + math + ' » ليست علاقة'); return; }
@@ -47,6 +52,15 @@ function verifierBrut(brut) {
     try { w = F.analyser(c.res); } catch (e) { probs.push('تعذّر تحليل النتيجة: ' + e.message); }
     if (v && w && !F.memes(v, w)) {
       probs.push('القيمة الحقيقية ' + F.ecrire(v) + ' ≠ ' + c.res);
+    }
+    // La 9ème écrit des puissances de RÉELS : « (√3)^-4 », « π^8 », « (2/√5)^3 ».
+    // Leur forme se reconnaît à la parenthèse et à l'exposant, pas au chiffre.
+    const EST_PUISSANCE_REELLE = /^\s*(?:[a-zA-Zπ]|√\d+|\d+|\([^()]+\))\s*\^\s*-?\d+\s*$/;
+    if (c.forme === 'reelle' && !EST_PUISSANCE_REELLE.test(c.res)) {
+      probs.push('النتيجة ليست في صيغة قوّة لعدد حقيقي: ' + c.res);
+    }
+    if (c.forme === 'reelle' && /\^\s*1\s*$/.test(c.res)) {
+      probs.push('أسّ يساوي 1: ' + c.res);
     }
     if (c.forme === 'puissance' && !EST_PUISSANCE.test(c.res)) {
       probs.push('النتيجة ليست في صيغة قوّة: ' + c.res);
@@ -90,8 +104,13 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse('une étape rendue fausse', NUMS[1] || NUMS[0], c => {
     for (let i = 0; i < c.etapes.length; i++) {
       const m = String(c.etapes[i][1]);
-      if (!F.ARABE.test(m) && /=/.test(m) && !/[a-zA-Z]/.test(m)) {
-        c.etapes[i][1] = m.replace(/=\s*(\d+)/, (s, d) => '= ' + (Number(d) + 1));
+      if (!F.ARABE.test(m) && /=/.test(m) && !/[a-z]/.test(m)) {
+        // Ajouter 1 au premier nombre après « = ». Quand il n'y a pas de
+        // nombre nu — « A = (√3)^-2 » —, on ajoute 1 au membre entier : la
+        // falsification doit mordre sur TOUTE forme d'étape, sinon elle
+        // mesure la chance et non le validateur.
+        const mute = m.replace(/=\s*(\d+)/, (x, d) => '= ' + (Number(d) + 1));
+        c.etapes[i][1] = (mute !== m) ? mute : m.replace(/=\s*(.+)$/, '= 1 + ($1)');
         break;
       }
     }

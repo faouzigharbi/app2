@@ -34,7 +34,11 @@
       const c = s[i];
       if (c === '(') prof++;
       else if (c === ')') prof--;
-      else if (prof === 0 && seps.indexOf(c) >= 0 && i > debut) {
+      else if (prof === 0 && seps.indexOf(c) >= 0 && i > debut
+               && !/[\^×*/:+(-]\s*$/.test(s.slice(debut, i))) {
+        // Un « - » qui suit « ^ » est le SIGNE d'un exposant, pas une
+        // soustraction : « (√2)^-6 + (√3)^4 » n'a que deux termes, et les
+        // découper sur ce moins-là donnait de la bouillie.
         out.push({ t: s.slice(debut, i).trim(), op: c });
         debut = i + 1;
       }
@@ -825,6 +829,170 @@
                  'مرّ بالعوامل الأوّلية: الأسّة تنكشف هناك', true);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // LES RÉELS — 9ème. La base n'est plus un rationnel : c'est √3, π, 2/√5.
+  //
+  // On ne cherche plus à la calculer, on la LIT. « (√3)² × (√3)⁻⁴ » a pour
+  // base le texte « √3 », et la règle joue sur les exposants exactement comme
+  // en 7ème. Ce qui change est seulement ce qu'on sait écrire.
+  // ═══════════════════════════════════════════════════════════════════════
+  function valDe(t) {
+    try { const v = F.analyser(String(t)); return v; } catch (e) { return null; }
+  }
+
+  // Lecture d'une puissance dont la base peut être n'importe quel réel écrit.
+  function ecriteR(t) {
+    let s = String(t).trim();
+    const m = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(s);
+    let baseTxt = (m ? m[1] : s).trim();
+    const exp = m ? Number(m[2]) : 1;
+    let garde = 0;
+    while (garde++ < 6 && /^[([][\s\S]*[)\]]$/.test(baseTxt)) {
+      let prof = 0, tout = true;
+      for (let i = 0; i < baseTxt.length; i++) {
+        const c = baseTxt[i];
+        if (c === '(' || c === '[') prof++;
+        else if (c === ')' || c === ']') { prof--; if (!prof && i < baseTxt.length - 1) tout = false; }
+      }
+      if (!tout) break;
+      baseTxt = baseTxt.slice(1, -1).trim();
+    }
+    if (/\^/.test(baseTxt)) {
+      const dessous = ecriteR(baseTxt);
+      if (!dessous) return null;
+      return { baseTxt: dessous.baseTxt, val: dessous.val,
+               exp: dessous.exp * exp, etages: (dessous.etages || 0) + 1 };
+    }
+    if (/[()[\]×*+]/.test(baseTxt)) return null;
+    const v = valDe(baseTxt);
+    if (!v || Object.keys(v).length === 0) return null;
+    return { baseTxt, val: v, exp };
+  }
+
+  // L'écriture d'une puissance d'un réel : « (√3)^-4 », « π^8 ».
+  const puisR = (txt, e) => {
+    const nu = /^[a-zA-Zπ]$|^\d+$/.test(txt);
+    const t = nu ? txt : '(' + txt + ')';
+    return e === 1 ? t : t + '^' + e;
+  };
+
+  function produitReel(item) {
+    const fs = facteursDe(item.e);
+    if (fs.length < 2) {
+      // « ((√3)^-1)^-4 » : un seul facteur, mais à étages.
+      const x = ecriteR(item.e);
+      if (!x || x.exp === 0) return null;
+      if (!x.etages) {
+        // « (√6/√2)⁻⁶ » : rien à étager, mais la base se simplifie, et c'est
+        // ce geste-là que l'exercice demande.
+        const simple = F.ecrire(x.val);
+        if (simple === x.baseTxt) return null;
+        const et = [];
+        et.push(['نبسّط الأساس', x.baseTxt + ' = ' + simple]);
+        et.push(['نعيد الكتابة', 'A = ' + puisR(simple, x.exp)]);
+        if (x.exp < 0) et.push(['أسّ سالب', REGLE_NEGATIF]);
+        else et.push(['القاعدة', 'الأساس تغيّر شكله لا قيمته']);
+        et.push(['النتيجة', 'A = ' + puisR(simple, x.exp)]);
+        return finir(item, et, puisR(simple, x.exp), 'ابدأ بتبسيط الأساس', 'reelle');
+      }
+      const m = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(item.e.trim());
+      const dedans = m && ecriteR(m[1]);
+      if (!dedans) return null;
+      const etapes = [];
+      etapes.push(['القاعدة', REGLE_PUIS]);
+      etapes.push(['الأساس', 'الأساس هو ' + x.baseTxt]);
+      etapes.push(['نضرب الأسّين',
+                   '(' + dedans.exp + ') × (' + m[2] + ') = ' + x.exp]);
+      etapes.push(['النتيجة', 'A = ' + puisR(x.baseTxt, x.exp)]);
+      return finir(item, etapes, puisR(x.baseTxt, x.exp),
+                   'قوّة القوّة: نضرب الأسّين', 'reelle');
+    }
+    const es = fs.map(ecriteR);
+    if (es.some(x => !x)) return null;
+    const ref = es[0];
+    if (!es.every(x => F.memes(x.val, ref.val))) {
+      // « (√2)⁶ × (√5)⁶ » : même exposant, bases différentes.
+      const n = ref.exp;
+      if (!es.every(x => x.exp === n) || n === 0 || n === 1) return null;
+      let prod = es[0].val;
+      for (let i = 1; i < es.length; i++) prod = F.fois(prod, es[i].val);
+      const txt = F.ecrire(prod);
+      const et = [];
+      et.push(['نفس الأسّ', 'الأسّ هو ' + n + ' في كلّ العوامل']);
+      et.push(['القاعدة', REGLE_MEME_EXP]);
+      et.push(['نضرب الأساسات',
+               es.map(x => x.baseTxt).join(' × ') + ' = ' + txt]);
+      et.push(['النتيجة', 'A = ' + puisR(txt, n)]);
+      return finir(item, et, puisR(txt, n), 'نفس الأسّ: نضرب الأساسات', 'reelle');
+    }
+    const somme = es.reduce((a, x) => a + x.exp, 0);
+    if (somme === 0 || somme === 1) return null;
+    const etapes = [];
+    etapes.push(['القاعدة', REGLE_PRODUIT]);
+    etapes.push(['نفس الأساس', 'الأساس هو ' + ref.baseTxt + ' في كلّ العوامل']);
+    etapes.push(['نجمع الأسّة',
+                 es.map(x => (x.exp < 0 ? '(' + x.exp + ')' : x.exp)).join(' + ')
+                 + ' = ' + somme]);
+    if (somme < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+    etapes.push(['النتيجة', 'A = ' + puisR(ref.baseTxt, somme)]);
+    return finir(item, etapes, puisR(ref.baseTxt, somme),
+                 'نفس الأساس: نجمع الأسّة', 'reelle');
+  }
+
+  function quotientReel(item) {
+    const parts = couper(item.e, '/:').map(x => x.t);
+    if (parts.length !== 2) return null;
+    const h = ecriteR(parts[0]), b = ecriteR(parts[1]);
+    if (!h || !b) return null;
+    if (F.memes(h.val, b.val)) {
+      const diff = h.exp - b.exp;
+      if (diff === 0 || diff === 1) return null;
+      const etapes = [];
+      etapes.push(['القاعدة', REGLE_QUOTIENT]);
+      etapes.push(['نفس الأساس', 'الأساس هو ' + h.baseTxt + ' في البسط و المقام']);
+      etapes.push(['نطرح الأسّين', h.exp + ' - (' + b.exp + ') = ' + diff]);
+      if (diff < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+      etapes.push(['النتيجة', 'A = ' + puisR(h.baseTxt, diff)]);
+      return finir(item, etapes, puisR(h.baseTxt, diff),
+                   'نفس الأساس: نطرح الأسّين', 'reelle');
+    }
+    // Mêmes exposants, bases différentes : « (√6)⁷ / (√2)⁷ = (√3)⁷ ».
+    if (h.exp !== b.exp || h.exp === 0) return null;
+    const q = F.divise(h.val, b.val);
+    const txt = F.ecrire(q);
+    const etapes = [];
+    etapes.push(['نفس الأسّ', 'الأسّ هو ' + h.exp + ' في البسط و المقام']);
+    etapes.push(['القاعدة', 'a^n : b^n = (a : b)^n']);
+    etapes.push(['نقسم الأساسين', h.baseTxt + ' : ' + b.baseTxt + ' = ' + txt]);
+    etapes.push(['النتيجة', 'A = ' + puisR(txt, h.exp)]);
+    return finir(item, etapes, puisR(txt, h.exp), 'نفس الأسّ: نقسم الأساسين', 'reelle');
+  }
+
+  // Le grand calcul de 9ème : on évalue chaque morceau, puis on combine. Le
+  // noyau sait tout faire — radicaux, π, conjugués — et rien n'est approché.
+  function calculReel(item) {
+    const v = valDe(item.e);
+    if (!v) return null;
+    const ts = termesDe(item.e);
+    if (ts.length < 2) return null;
+    const etapes = [];
+    etapes.push(['نحدّد الأولوية',
+                 'كلّ حدّ على حدة، ثمّ نجمع — و القوى قبل الضرب']);
+    const vals = [];
+    for (const t of ts) {
+      const x = valDe(t.t);
+      if (!x) return null;
+      vals.push(x);
+      etapes.push(['نحسب الحدّ « ' + t.t + ' »', t.t + ' = ' + F.ecrire(x)]);
+    }
+    const ligne = ts.map((t, i) => (i ? t.signe + ' ' : '') + F.ecrire(vals[i])).join(' ');
+    etapes.push(['نعيد كتابة العبارة', 'A = ' + ligne]);
+    etapes.push(['النتيجة', 'A = ' + F.ecrire(v)]);
+    if (etapes.length < 5) return null;
+    return finir(item, etapes, F.ecrire(v),
+                 'احسب كلّ حدّ وحده، ثمّ اجمع', false);
+  }
+
   // ── Commun ──────────────────────────────────────────────────────────────
   // L'écriture d'une puissance : « 3^7 », « (3/7)^-9 », « (-2/3)^3 ». Les
   // parenthèses ne sont pas décoratives — « -2/3^3 » ne veut pas dire la même
@@ -846,7 +1014,8 @@
       res,
       source: item.src,
       controle: { type: 'valeur', expr: item.e, res,
-                  forme: forme ? 'puissance' : undefined }
+                  forme: forme === 'reelle' ? 'reelle'
+                       : forme ? 'puissance' : undefined }
     };
   }
 
@@ -861,6 +1030,8 @@
     'meme-exposant': [memeExposant, produit, parLesPremiersQ, parLesPremiers],
     'facteur-commun': [facteurCommun, parLesPremiers],
     'decomposer': [decomposer],
+    'puissance-reelle': [produitReel, quotientReel],
+    'calcul-reel': [calculReel],
     'quotient': [quotient, parLesPremiersQ, parLesPremiers],
     'calcul': [calcul]
   };
@@ -879,6 +1050,7 @@
   }
 
   const API = { chaine, produit, memeExposant, facteurCommun, calcul, quotient,
+                produitReel, quotientReel, calculReel,
                 parLesPremiersQ,
                 decomposer, parLesPremiers, baseCommune };
   if (M) module.exports = API; else racine.Chaines = API;
