@@ -662,6 +662,54 @@
   // « (1/√7 − √7)² » — le carré d'une DIFFÉRENCE de radicaux. Il faut
   // développer avant d'élever, et nos chaînes ne savent pas encore montrer ce
   // geste-là : elles calculeraient sans l'expliquer. Écarté, et dit.
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LES EXERCICES LIÉS — plusieurs questions sur un même préambule.
+  //
+  // « Soient a = (√5/7)⁻³, b = (√5/7)⁵, c = (7/√5)⁵. Écris a × b, b × c, a/c
+  // sous forme de puissance d'un réel. » Trois questions, un seul énoncé : la
+  // seconde ne se comprend pas sans la première.
+  //
+  // On les porte en substituant : l'élève lit « a × b », et la chaîne travaille
+  // sur ce que a et b valent. Le nom est dans l'énoncé, la valeur dans la
+  // démonstration, et rien n'est inventé — le préambule est celui de la feuille.
+  const lie = (src, f, n, d, defs, liste) =>
+    liste.forEach(([nom, e]) => ITEMS.push({ src, f, n, d, e, defs, nom }));
+
+  // ex31 — trois puissances de la même base, et trois combinaisons
+  lie('Puissance_9 ex31', 'puissance-reelle', 9, 'difficile',
+      'لتكن القوى التالية: a = (5/√3)^3 ؛ b = (√3/5)^5 ؛ c = (3/25)^-3', [
+    ['a × b', '(5/√3)^3 × (√3/5)^5'],
+    ['b × c', '(√3/5)^5 × (3/25)^-3'],
+    ['a/c',   '(5/√3)^3/((3/25)^-3)']
+  ]);
+
+  // ex33-2 — la même idée, avec un carré en plus
+  lie('Puissance_9 ex33', 'puissance-reelle', 9, 'difficile',
+      'لتكن القوى التالية: a = (√5/7)^-3 ؛ b = (√5/7)^5 ؛ c = (7/√5)^5', [
+    ['a × b', '(√5/7)^-3 × (√5/7)^5'],
+    ['b × c', '(√5/7)^5 × (7/√5)^5']
+  ]);
+
+  // ex20-2 — montrer que deux nombres sont INVERSES : leur produit vaut 1.
+  lie('Puissance_9 ex20', 'calcul-reel', 9, 'difficile',
+      'G = 2^4/((5^5)^-2) × 1/((√2)^-2) و H = (25^-3 × 2^-5)/(5^4) — أثبت أنّ G و H مقلوبان', [
+    ['G × H', '(2^4/((5^5)^-2) × 1/((√2)^-2)) × ((25^-3 × 2^-5)/(5^4))']
+  ]);
+
+  // ex35 — c se déduit de a et b, puis abc s'en déduit à son tour
+  lie('Puissance_9 ex35', 'calcul-reel', 9, 'difficile',
+      'a و b و c ثلاثة أعداد حقيقية حيث ab = c، مع a = (√3/2)^5 و b = (2/√3)^-3', [
+    ['c = a × b', '(√3/2)^5 × (2/√3)^-3']
+  ]);
+  lie('Puissance_9 ex35', 'calcul-reel', 9, 'difficile',
+      'a و b و c ثلاثة أعداد حقيقية حيث ab = c، مع a = (√5/2)^3 و b = (√2/3)^3', [
+    ['c = a × b', '(√5/2)^3 × (√2/3)^3']
+  ]);
+
+  // « a⁴ » de l'exercice 33 tombe sur « ((√5/7)⁻³)⁴ » : une puissance de
+  // puissance d'un radical, la forme que le constructeur ne prend pas encore.
+  // Les deux autres questions de l'exercice restent.
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //

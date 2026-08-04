@@ -1044,12 +1044,21 @@
   }
 
   function finir(item, etapes, res, indice, forme) {
+    // UN EXERCICE LIÉ porte son préambule : les nombres y sont NOMMÉS, et la
+    // question se pose sur les noms — « a × b » — alors que la chaîne travaille
+    // sur ce qu'ils valent. L'élève voit donc l'énoncé du maître, et la
+    // démonstration porte sur l'expression réelle.
+    const tete = item.defs
+      ? [item.defs, (forme ? 'أكتب في صيغة قوّة لعدد حقيقي: ' : 'أحسب: ')
+                    + item.nom + ' = ' + item.e]
+      : [forme ? 'أكتب في صيغة قوّة لعدد صحيح طبيعي:' : 'أحسب:', 'A = ' + item.e];
     return {
-      enonce: [forme ? 'أكتب في صيغة قوّة لعدد صحيح طبيعي:' : 'أحسب:', 'A = ' + item.e],
+      enonce: tete,
       indice,
       etapes,
       res,
       source: item.src,
+      lie: item.defs || null,
       controle: { type: 'valeur', expr: item.e, res,
                   forme: forme === 'reelle' ? 'reelle'
                        : forme ? 'puissance' : undefined }
