@@ -1017,7 +1017,11 @@
       etapes.push([(somme ? 'نحسب الحدّ « ' : 'نحسب العامل « ') + t.t + ' »',
                    t.t + ' = ' + F.ecrire(x)]);
     }
-    const ligne = ts.map((t, i) => (i ? t.signe + ' ' : '') + F.ecrire(vals[i])).join(' ');
+    // « − (5 + 2√6) » ne s'écrit pas « − 5 + 2√6 » : un terme composé doit
+    // garder ses parenthèses quand un signe le précède.
+    const env3 = x => (/[+\-]\s/.test(x) ? '(' + x + ')' : x);
+    const ligne = ts.map((t, i) => (i ? t.signe + ' ' + env3(F.ecrire(vals[i]))
+                                      : F.ecrire(vals[i]))).join(' ');
     if (ligne === F.ecrire(v)) return null;
     etapes.push(['نعيد كتابة العبارة', 'A = ' + ligne]);
     etapes.push(['النتيجة', 'A = ' + F.ecrire(v)]);

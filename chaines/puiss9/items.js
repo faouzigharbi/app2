@@ -543,6 +543,125 @@
   // chiffre seul. La réduction s'y perdait entre l'enlever et élever, et une
   // chaîne qui hésite n'enseigne rien. Écarté ; l'exercice a dix-sept autres
   // items, et « (3²)² » y est déjà présent sous une forme propre.
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 9ème — exercices 20 à 35 de la même feuille. C'est là que le chapitre
+  // donne sa mesure : bases fractionnaires ET radicales, π, exposants
+  // négatifs à tous les étages.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  lot('Puissance_9 ex20', 'puissance-reelle', 9, 'difficile', [
+    '(√7/2)^-3 × (-2/√7)^-6'
+  ]);
+  lot('Puissance_9 ex20', 'calcul-reel', 9, 'difficile', [
+    '2^4/((5^5)^-2) × 1/((√2)^-2)', '(2/√5)^-4 × (-5√5/8)',
+    '((0,01)^-2 × 100^-3)/((1/10)^-3 × (0,001)^-7)',
+    '(25^-3 × 2^-5)/(5^4)'
+  ]);
+  lot('Puissance_9 ex21', 'produit', 9, 'moyen', [
+    '(1/3)^2 × (1/3)^-6', '(2/3)^5 × 8/27'
+  ]);
+  lot('Puissance_9 ex21', 'puissance-de-puissance', 9, 'difficile', [
+    '(10/9)^20 × ((10/9)^-3)^5'
+  ]);
+  lot('Puissance_9 ex22', 'puissance-reelle', 9, 'difficile', [
+    '(-√2)^-10/((-√2)^-6)', '(1/√3)^12 × (√3)^15', '(-√3)^-3 × (1/√6)^-3'
+  ]);
+  lot('Puissance_9 ex22', 'calcul-reel', 9, 'difficile', [
+    '((√8/9)^4)/((√2/3)^4)'
+  ]);
+  lot('Puissance_9 ex23', 'calcul-reel', 9, 'difficile', [
+    '((0,001)^2 × (1/10)^-2 × 5^3)/(2^-3 × 10^-3)',
+    '(3/4)^-2 + (√3)^-4',
+    '(π/3)^6 × ((√3/π)^-2)^-3'
+  ]);
+  lot('Puissance_9 ex23', 'puissance-reelle', 9, 'difficile', [
+    '3^4 × (√3)^-4 × 16', '(√3/2)^-6 × (2/√3)^-12', 'π^5 × (1/√π)^5'
+  ]);
+  lot('Puissance_9 ex24', 'puissance-reelle', 9, 'moyen', [
+    '(√2/√3)^-6', '(√7)^17 × (√7)^-9'
+  ]);
+  // « ((√2)⁻³)⁻² » — la puissance d'une puissance d'un RADICAL, sans produit
+  // autour. Notre constructeur ne la prend pas encore ; c'est la forme qui
+  // reste, et elle est notée depuis la mise en place de la 9ème.
+  lot('Puissance_9 ex24', 'puissance-reelle', 9, 'difficile', [
+    '5^11 × (√5)^-6 × (√5)^-8', '(1/√5)^-6 × (√3/√5)^6'
+  ]);
+  lot('Puissance_9 ex25', 'calcul-reel', 9, 'difficile', [
+    '(3√2)^-2 × (3 × (√2)^-1)^-2', '(2/5)^-2 - (1/√2)^4',
+    '10^-2 × (0,0001 × (10^-1)^-5)/((1/100)^3)'
+  ]);
+  lot('Puissance_9 ex25', 'puissance-reelle', 9, 'difficile', [
+    '(√5)^-7 × (-5)^13'
+  ]);
+  lot('Puissance_9 ex26', 'calcul-reel', 9, 'moyen', [
+    '2^-3 × 2^2', '2^-3 + 2^2'
+  ]);
+  lot('Puissance_9 ex26', 'calcul-reel', 9, 'difficile', [
+    '(9√11)^-3 × (3√11)^5', '25√5/(49√7)', '27/(2√2)', '(-√3)^9/(7^9)'
+  ]);
+  lot('Puissance_9 ex27', 'calcul-reel', 9, 'moyen', [
+    '((-√3)^2)^-3 × (1/3)^-1', '5^-1 × (√3)^2'
+  ]);
+  lot('Puissance_9 ex27', 'produit', 9, 'difficile', [
+    '(3/2)^5 × 27/8'
+  ]);
+  lot('Puissance_9 ex27', 'puissance-de-puissance', 9, 'difficile', [
+    '(10/9)^20 × ((10/9)^-2)^3'
+  ]);
+  lot('Puissance_9 ex27', 'quotient', 9, 'difficile', [
+    '(10^-5 × (0,001)^-1)/((1/100)^-2 × 10^7)'
+  ]);
+  // « (√2)⁻⁴ » vaut 1/4 : une puissance nue d'un radical, sans produit ni
+  // somme autour. Même forme que « ((√2)⁻³)⁻² », même limite. Écarté.
+  lot('Puissance_9 ex28', 'puissance-reelle', 9, 'moyen', [
+    '(√3/5)^-9 × (√3/5)^7'
+  ]);
+  lot('Puissance_9 ex28', 'calcul-reel', 9, 'difficile', [
+    '(√7/3)^-2/((2/√7)^-2)', '625/16 × (2/5)^7', '4√2/(3^5)',
+    '(√7)^-3 × 7^5'
+  ]);
+  lot('Puissance_9 ex29', 'calcul-reel', 9, 'difficile', [
+    '√(2^3) - √(3^-2)', '((√5)^-2)^-2 × (1/√3)^-2',
+    '(1/√7)^-2 × ((√7)^3)^-2', '(√5/2)^-5 × 5/2',
+    '((2/√3)^-3)/((√3/3)^-3)', '(√3/7)^-10 × (7/√3)^-4',
+    '((10^-2)^3 × 10^5)/((0,001)^2 × 1000)'
+  ]);
+  lot('Puissance_9 ex30', 'calcul-reel', 9, 'moyen', [
+    '4√7 + 3√7', '√8 × (√5)^3'
+  ]);
+  lot('Puissance_9 ex30', 'calcul-reel', 9, 'difficile', [
+    '(-3/√2)^4 × (√2/3)^-5'
+  ]);
+  lot('Puissance_9 ex30', 'puissance-reelle', 9, 'moyen', [
+    '(√7/4)^-3 × (√7/4)^5'
+  ]);
+  lot('Puissance_9 ex32', 'calcul-reel', 9, 'moyen', [
+    '(5/3)^5 × (3/5)^7'
+  ]);
+  lot('Puissance_9 ex32', 'calcul', 9, 'moyen', [
+    '(-7/4)^-3'
+  ]);
+  lot('Puissance_9 ex32', 'quotient', 9, 'facile', [
+    '3^-10/3^-12'
+  ]);
+  lot('Puissance_9 ex32', 'calcul-reel', 9, 'difficile', [
+    '√8 × (√2)^-7', '(√10/3)^-3 × (-3/√5)^-3',
+    '((10^-2)^3 × 10^5)/((100)^2 × (0,01)^2)',
+    '((√2)^-3 × (√8)^-7)/((√2)^2 × (√8)^-2)',
+    '(0,00016 × 10^-8)/(0,12 × 10^4)'
+  ]);
+  lot('Puissance_9 ex32', 'puissance-de-puissance', 9, 'difficile', [
+    '((7/3)^-3)^4 × (7/3)^8'
+  ]);
+  lot('Puissance_9 ex34', 'calcul-reel', 9, 'difficile', [
+    '(√2 - √3)^2 - (√2 + √3)^2',
+    '(0,9 × 10^-6)/(3 × 10^-8) + (-√3/3)^2 × (1/10)^-1'
+  ]);
+
+  // « (1/√7 − √7)² » — le carré d'une DIFFÉRENCE de radicaux. Il faut
+  // développer avant d'élever, et nos chaînes ne savent pas encore montrer ce
+  // geste-là : elles calculeraient sans l'expliquer. Écarté, et dit.
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //
