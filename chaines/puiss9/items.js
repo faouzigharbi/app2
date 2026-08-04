@@ -1030,6 +1030,119 @@
   //   facteurs, trois bases à reconnaître, c'est le sommet de la feuille.
   // ═══════════════════════════════════════════════════════════════════════
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // 9ème — feuille « القوى في مجموعة الأعداد الحقيقية » — تمارين شاملة
+  // (Puissance_9_part2, RIADHYET 2018-19, جوهر سويسي)
+  //
+  // C'est LE sommet du chapitre. Chaque exercice suit le même dessin : on
+  // établit d'abord la valeur exacte de deux nombres, on montre qu'ils sont
+  // inverses l'un de l'autre, puis on en déduit une puissance que personne ne
+  // saurait développer — (2 − √3)¹⁰¹ compte cent-quinze chiffres.
+  //
+  // On transcrit les trois temps, dans l'ordre : établir, constater, conclure.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Temps 1 — ÉTABLIR la valeur exacte. Ce sont les questions « بيّن أنّ ».
+  lot('Puissance_9_part2 ex1', 'calcul-reel', 9, 'difficile', [
+    '√2(1 - 3√2) + 2√3(√3 + 1/2) - √2'
+  ]);
+  lot('Puissance_9_part2 ex2', 'calcul-reel', 9, 'difficile', [
+    '(√2 - 1)(√2 + 3) + 2(3/2 √2 + 4)', '3√18 - √32 - √49'
+  ]);
+  lot('Puissance_9_part2 ex3', 'calcul-reel', 9, 'difficile', [
+    '(-√2)^5 + (√3)^7/(3√3) + √2(2 - 3√2)',
+    '-√12 × √6 + 2√50 + (0,0006 × 10^-3)/10^-7'
+  ]);
+  lot('Puissance_9_part2 ex4', 'calcul-reel', 9, 'difficile', [
+    '(√3 + √2)(√2 - 3√3) + 3√16', '√25 - 2√24 + √150 + √6'
+  ]);
+  // « احسب a = (3/√2)⁻² » : la feuille demande la valeur, et c'est 2/9. Mais
+  // une valeur seule ne fait pas une chaîne — il n'y a rien entre l'énoncé et
+  // la réponse. On garde donc le geste qui, lui, s'enseigne : rendre la base
+  // rationnelle et laisser la puissance en place.
+  lot('Puissance_9_part2 ex5', 'puissance-reelle', 9, 'moyen', [
+    '(3/√2)^-2'
+  ]);
+  lot('Puissance_9_part2 ex5', 'meme-exposant', 9, 'moyen', [
+    '(5/4)^-4 × (4/15)^-4'
+  ]);
+
+  // Temps 2 — CONSTATER que les deux nombres sont inverses. Une seule
+  // identité fait tout le travail, et c'est elle qu'il faut voir.
+  lie('Puissance_9_part2 ex1', 'conjugues', 9, 'moyen',
+      'نعتبر A = √3 و B = -√2', [
+    ['(A - B)(A + B)', '(√3 + √2) × (√3 - √2)']
+  ]);
+  lie('Puissance_9_part2 ex2', 'conjugues', 9, 'moyen',
+      'نعتبر E = 5√2 + 7 و F = 5√2 - 7 — بيّن أنّ 1/E = F', [
+    ['E × F', '(5√2 + 7) × (5√2 - 7)']
+  ]);
+  lie('Puissance_9_part2 ex3', 'conjugues', 9, 'moyen',
+      'نعتبر a = 3 - 2√2 و b = 6 + 4√2 — بيّن أنّ b/2 مقلوب a', [
+    ['a × b/2', '(3 - 2√2) × (3 + 2√2)']
+  ]);
+  lie('Puissance_9_part2 ex4', 'conjugues', 9, 'moyen',
+      'نعتبر a = 5 - 2√6 و b = 5 + 2√6 — بيّن أنّ b مقلوب a', [
+    ['a × b', '(5 - 2√6) × (5 + 2√6)']
+  ]);
+  lie('Puissance_9_part2 ex6', 'conjugues', 9, 'moyen',
+      'نعتبر العددين 2 - √3 و 2 + √3', [
+    ['(2 - √3)(2 + √3)', '(2 - √3) × (2 + √3)']
+  ]);
+
+  // Temps 3 — CONCLURE. Développer serait une faute de méthode autant qu'une
+  // faute de patience : les exposants s'annulent deux à deux, il ne reste rien.
+  lie('Puissance_9_part2 ex1', 'conjugues', 9, 'difficile',
+      'نعتبر A = √3 و B = -√2، و قد رأينا أنّ (A - B)(A + B) = 1', [
+    ['(A - B)^14 (A + B)^15', '(√3 + √2)^14 × (√3 - √2)^15']
+  ]);
+  lie('Puissance_9_part2 ex2', 'conjugues', 9, 'difficile',
+      'نعتبر E = 5√2 + 7 و F = 5√2 - 7، و قد رأينا أنّ E × F = 1', [
+    ['E^2016 F^2015 - E^2015 F^2016',
+     '(5√2 + 7)^2016 × (5√2 - 7)^2015 - (5√2 + 7)^2015 × (5√2 - 7)^2016']
+  ]);
+  lie('Puissance_9_part2 ex3', 'conjugues', 9, 'difficile',
+      'نعتبر a = 3 - 2√2 و b = 6 + 4√2، و قد رأينا أنّ a × b = 2', [
+    ['G = a^3 b^4', '(3 - 2√2)^3 × (6 + 4√2)^4']
+  ]);
+  lie('Puissance_9_part2 ex4', 'conjugues', 9, 'difficile',
+      'نعتبر a = 5 - 2√6 و b = 5 + 2√6، و قد رأينا أنّ a × b = 1', [
+    ['b^7 (a^2 b)^3/(a^-3 b)',
+     '(5 + 2√6)^7 × ((5 - 2√6)^2 × (5 + 2√6))^3/((5 - 2√6)^-3 × (5 + 2√6))']
+  ]);
+  lie('Puissance_9_part2 ex5', 'conjugues', 9, 'difficile',
+      'نعتبر A = 3 - 2√2 و B = 3 + 2√2، و قد رأينا أنّ A مقلوب B', [
+    ['A^2013 × B^2014', '(3 - 2√2)^2013 × (3 + 2√2)^2014']
+  ]);
+  lie('Puissance_9_part2 ex6', 'conjugues', 9, 'difficile',
+      'نعتبر العددين 2 - √3 و 2 + √3، و قد رأينا أنّ جداءهما يساوي 1', [
+    ['(2 - √3)^103/(2 - √3)^2 × ((2 + √3)^25)^4',
+     '(2 - √3)^103/(2 - √3)^2 × ((2 + √3)^25)^4']
+  ]);
+
+  // Les déductions de l'exercice 3 : le même a et le même b, mais l'inverse
+  // s'y invite, et la feuille demande de ne pas développer non plus.
+  lie('Puissance_9_part2 ex3', 'calcul-reel', 9, 'difficile',
+      'نعتبر a = 3 - 2√2 و b = 6 + 4√2', [
+    ['E = 1/a - 1/b', '1/(3 - 2√2) - 1/(6 + 4√2)'],
+    ['F = 1/(-6 - 2/a) - 1/(4/b - 6)',
+     '1/(-6 - 2/(3 - 2√2)) - 1/(4/(6 + 4√2) - 6)'],
+    ['a^3(8b^-3 + a^-3) - a^6',
+     '(3 - 2√2)^3 × (8(6 + 4√2)^-3 + (3 - 2√2)^-3) - (3 - 2√2)^6']
+  ]);
+
+  // ÉCARTÉ DE CETTE FEUILLE, ET POURQUOI
+  //
+  //   ex1 B) « √((√3−1)²) + √((√2−5)²) − (4+√3) » repose sur √(x²) = |x|, et
+  //   le signe de √2 − 5 y décide de tout. C'est la leçon de la valeur
+  //   absolue, pas celle des puissances ; le noyau refuse d'ailleurs la
+  //   racine d'une somme, et il a raison de la refuser ici.
+  //
+  //   ex5-2 « (10⁻⁵ × 3000) : (0,00003 × 10⁶) » demande une ÉCRITURE
+  //   SCIENTIFIQUE, ex5-4 et ex6-1 sont LITTÉRAUX — « (x⁵+x⁷):(x⁸+x¹⁰) = x⁻³ »,
+  //   « Y = ((a⁻³)²(ab⁻¹)²) : (a⁻²b⁻¹)² ». Ni l'une ni les autres ne se
+  //   vérifient sur des nombres, et l'on ne publie que ce qui se vérifie.
+
   const par = (f, n, d) => ITEMS.filter(x => x.f === f && x.d === d && x.n <= n);
   const familles = () => [...new Set(ITEMS.map(x => x.f))];
 

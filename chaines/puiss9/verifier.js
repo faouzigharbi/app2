@@ -89,7 +89,21 @@ if (process.env.CONTRE_EXEMPLES) {
   const copie = q => ({ ...q, etapes: q.etapes.map(e => e.slice()),
                         controle: JSON.parse(JSON.stringify(q.controle)) });
   const cas = [];
-  const pousse = (nom, n, f) => { const c = copie(F.tirer(n)[0]); f(c); cas.push([nom, c]); };
+  // UNE FALSIFICATION QUI NE FALSIFIE RIEN N'EST PAS UN TEST. Certaines
+  // mutations ne mordent que sur une forme d'énoncé — chercher un exposant
+  // dans « A = √3 − √2 », il n'y en a pas —, et la copie ressort alors
+  // identique à l'original : le validateur l'accepte, et il a raison. On
+  // retire donc jusqu'à ce que la mutation change vraiment quelque chose, et
+  // l'on refuse de compter un cas qui n'aurait rien changé.
+  const pousse = (nom, n, f) => {
+    for (let essai = 0; essai < 60; essai++) {
+      const avant = copie(F.tirer(n)[0]);
+      const c = copie(avant);
+      f(c);
+      if (JSON.stringify(c) !== JSON.stringify(avant)) return cas.push([nom, c]);
+    }
+    cas.push([nom + ' — AUCUNE MUTATION POSSIBLE', null]);
+  };
   const NUMS = Object.keys(F.PROBLEMES).map(Number);
 
   pousse('exposants additionnés de travers', NUMS[0], c => {

@@ -255,13 +255,28 @@
   function ecrireTerme(t) {
     const bs = Object.keys(t.e);
     if (!bs.length) return rTxt(t.c);
+    // DEUX RACINES CARRÉES N'EN FONT QU'UNE. Le noyau décompose sur des bases
+    // PREMIÈRES — c'est ce qui rend le calcul exact —, si bien que √6 y vit
+    // sous la forme √2 × √3. Juste, mais illisible : la feuille écrit √6, et
+    // c'est la feuille que l'élève a sous les yeux. On recompose donc à
+    // l'écriture, et là seulement. π n'entre jamais sous une racine : son
+    // exposant est entier par construction, il ne peut pas être de la partie.
+    const carrees = bs.filter(b => b !== 'π' && t.e[b][0] === 1 && t.e[b][1] === 2);
+    let radicande = 1n;
+    for (const b of carrees) radicande *= BigInt(b);
+    let posee = false;
     const parts = bs.map(b => {
       const e = t.e[b];
       const nom = b === 'π' ? 'π' : b;
-      if (e[1] === 2 && e[0] === 1) return '√' + nom;
+      if (e[1] === 2 && e[0] === 1) {
+        if (b === 'π') return '√π';                  // √π ne se mêle à rien
+        if (posee) return null;                      // déjà entrée sous la racine
+        posee = true;
+        return '√' + radicande;
+      }
       if (e[1] === 1) return nom + '^' + e[0];
       return nom + '^(' + e[0] + '/' + e[1] + ')';
-    });
+    }).filter(x => x !== null);
     const c = t.c;
     const tete = rEgaux(c, rUn) ? '' : (rEgaux(c, rat(-1)) ? '-' : rTxt(c) + ' ');
     return tete + parts.join(' × ');
@@ -270,6 +285,13 @@
   function ecrire(v) {
     const ks = Object.keys(v).sort();
     if (!ks.length) return '0';
+    // ON N'OUVRE PAS SUR UN MOINS quand un terme positif attend derrière. La
+    // valeur est la même, mais « √3 - √2 » est ce que la feuille écrit, et
+    // « -√2 + √3 » ce qu'un élève relit trois fois avant d'y croire.
+    if (v[ks[0]].c.n < 0n) {
+      const i = ks.findIndex(k => v[k].c.n > 0n);
+      if (i > 0) ks.unshift(ks.splice(i, 1)[0]);
+    }
     let out = '';
     ks.forEach((k, i) => {
       const s = ecrireTerme(v[k]);

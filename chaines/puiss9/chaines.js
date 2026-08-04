@@ -1049,6 +1049,245 @@
     return finir(item, etapes, puisR(txt, h.exp), 'نفس الأسّ: نقسم الأساسين', 'reelle');
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // CONJUGUÉS — le sommet du chapitre de 9ème, et le seul endroit où l'on
+  // calcule (√3 + √2)¹⁴ × (√3 − √2)¹⁵ sans écrire un seul grand nombre.
+  //
+  // Développer serait une faute de méthode autant qu'une faute de patience :
+  // (2 − √3)¹⁰¹ compte cent-quinze chiffres, et la feuille demande une ligne.
+  // Ce qui la donne, c'est que (a − b)(a + b) = a² − b² vaut 1 : les deux
+  // puissances s'annulent DEUX À DEUX, et il ne reste que le surplus.
+  //
+  // On ne fait donc pas confiance à la forme — on VÉRIFIE que le produit des
+  // deux bases est rationnel, et l'on ne parle de conjugués qu'après.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Ôte les parenthèses qui ENVELOPPENT tout — et elles seules :
+  // « ((2+√3)^25) » se dépouille, « (a)(b) » ne se dépouille pas.
+  function peler(t) {
+    let s = String(t).trim(), garde = 0;
+    while (garde++ < 8 && /^[([][\s\S]*[)\]]$/.test(s)) {
+      let prof = 0, tout = true;
+      for (let i = 0; i < s.length; i++) {
+        const c = s[i];
+        if (c === '(' || c === '[') prof++;
+        else if (c === ')' || c === ']') { prof--; if (!prof && i < s.length - 1) tout = false; }
+      }
+      if (!tout) break;
+      s = s.slice(1, -1).trim();
+    }
+    return s;
+  }
+
+  // APLATIT un produit-quotient de puissances en couples (base écrite, exposant).
+  // Trois choses s'y font, qui manquaient à ecriteR :
+  //   — la base a le droit d'être une SOMME : « √3 + √2 » est le sujet même ;
+  //   — le dénominateur compte à l'envers : « X¹⁰³ : X² » donne 103 et −2 ;
+  //   — la puissance d'un PRODUIT se distribue : « (a² × b)³ » donne a⁶ et b³.
+  // On ne distribue que si le produit est écrit avec des parenthèses : sans
+  // elles, « 3/2 √2 + 4 » se ferait couper en deux, et ce serait un massacre.
+  function aplatirC(e, mult, out, prof) {
+    if ((prof || 0) > 8) return false;
+    for (const f of couper(e, '×*')) {
+      const morceaux = couper(f.t, '/:');
+      if (!morceaux.length) return false;
+      for (let i = 0; i < morceaux.length; i++) {
+        const sens = mult * (i ? -1 : 1);
+        const t = morceaux[i].t.trim();
+        const m = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(t);
+        const base = peler((m ? m[1] : t).trim());
+        const exp = m ? Number(m[2]) : 1;
+        const compose = /[()]/.test(base)
+                     && (couper(base, '×*').length > 1 || couper(base, '/:').length > 1);
+        if (compose || /\^/.test(base)) {
+          if (!aplatirC(base, sens * exp, out, (prof || 0) + 1)) return false;
+          continue;
+        }
+        if (/[()[\]]/.test(base)) return false;     // une base reste une base
+        const v = valDe(base);
+        if (!v || !Object.keys(v).length) return false;
+        out.push({ baseTxt: base, val: v, exp: sens * exp });
+      }
+    }
+    return true;
+  }
+
+  // Rassemble les couples par base écrite : un même conjugué peut paraître
+  // deux fois — au numérateur et au dénominateur —, et l'on dira qu'on l'a
+  // rassemblé plutôt que de le faire en douce.
+  function grouper(lus) {
+    const bases = [];
+    for (const x of lus) {
+      const d = bases.find(b => b.baseTxt === x.baseTxt);
+      if (d) { d.exp += x.exp; d.parts.push(x.exp); }
+      else bases.push({ baseTxt: x.baseTxt, val: x.val, exp: x.exp, parts: [x.exp] });
+    }
+    return bases;
+  }
+
+  function conjugues(item) {
+    if (termesDe(item.e).length > 1) return null;    // une somme : autre chaîne
+    const lus = [];
+    if (!aplatirC(item.e, 1, lus, 0) || lus.length < 2) return null;
+    const bases = grouper(lus);
+    if (bases.length !== 2) return null;
+    const [u, w] = bases;
+    if (u.exp < 1 || w.exp < 1) return null;
+    if (F.memes(u.val, w.val)) return null;              // même base : autre chaîne
+
+    // LE CONTRÔLE. Le produit des deux bases doit être un RATIONNEL — c'est
+    // cela, être conjugués, et rien d'autre. Deux radicaux qui se ressemblent
+    // ne le sont pas forcément.
+    const prod = F.fois(u.val, w.val);
+    const cle = Object.keys(prod);
+    if (cle.length !== 1 || Object.keys(prod[cle[0]].e).length) return null;
+    const q = F.ecrire(prod);
+    if (q === '0') return null;
+
+    // LE PRODUIT NU — « احسب (A−B)(A+B) ، ماذا تستنتج ؟ ». C'est la question
+    // dont tout le reste découle, et elle ne se démontre pas en séparant des
+    // exposants : elle se démontre par l'identité, appliquée aux deux morceaux
+    // de la base. On repère celui qui est écrit avec un moins — a − b —, et
+    // l'on VÉRIFIE que l'autre vaut bien a + b avant de dire quoi que ce soit.
+    if (u.exp === 1 && w.exp === 1) {
+      const cand = [[w, u], [u, w]];
+      for (const [moins, plus] of cand) {
+        const ms = termesDe(moins.baseTxt);
+        if (ms.length !== 2 || ms[1].signe !== '-') continue;
+        const a = ms[0].t, b = ms[1].t;
+        const va = valDe(a), vb = valDe(b);
+        if (!va || !vb) continue;
+        if (!F.memes(plus.val, F.plus(va, vb))) continue;
+        const ca = F.analyser('(' + a + ')^2'), cb = F.analyser('(' + b + ')^2');
+        const et = [];
+        et.push(['المتطابقة', '(a - b)(a + b) = a^2 - b^2']);
+        et.push(['نحدّد a و b', 'a = ' + a + '، و b = ' + b]);
+        et.push(['نطبّق المتطابقة',
+                 '(' + moins.baseTxt + ') × (' + plus.baseTxt + ') = ('
+                 + a + ')^2 - (' + b + ')^2']);
+        et.push(['نحسب المربّعين',
+                 '(' + a + ')^2 = ' + F.ecrire(ca) + '، و (' + b + ')^2 = '
+                 + F.ecrire(cb)]);
+        et.push(['النتيجة', 'A = ' + q]);
+        return finir(item, et, q, 'لا تنشر: استعمل (a−b)(a+b) = a²−b²', false);
+      }
+      return null;
+    }
+
+    const m = Math.min(u.exp, w.exp);
+    const reste = u.exp > w.exp ? u : w;
+    const diff = Math.abs(u.exp - w.exp);
+    if (m < 1) return null;
+
+    const etapes = [];
+    bases.forEach(b => {
+      if (b.parts.length > 1) {
+        etapes.push(['نجمع أسّ ' + b.baseTxt,
+                     b.parts.map(e => (e < 0 ? '(' + e + ')' : e)).join(' + ')
+                     + ' = ' + b.exp]);
+      }
+    });
+    etapes.push(['العددان مترافقان', '(a - b)(a + b) = a^2 - b^2']);
+    etapes.push(['نحسب جداء الأساسين',
+                 '(' + u.baseTxt + ') × (' + w.baseTxt + ') = ' + q]);
+    etapes.push(['نفصل ما يتقابل',
+                 puisR(u.baseTxt, u.exp) + ' × ' + puisR(w.baseTxt, w.exp)
+                 + ' = ((' + u.baseTxt + ') × (' + w.baseTxt + '))^' + m
+                 + (diff ? ' × ' + puisR(reste.baseTxt, diff) : '')]);
+    etapes.push(['نعوّض بالجداء',
+                 '((' + u.baseTxt + ') × (' + w.baseTxt + '))^' + m
+                 + ' = ' + puisR(q, m)]);
+    // Quand le produit vaut 1, la puissance entière disparaît : c'est le tour
+    // de force de l'exercice, et il mérite sa ligne.
+    const valQ = F.analyser(q);
+    const un = F.ecrire(valQ) === '1';
+    if (un) etapes.push(['قوّة العدد 1', puisR(q, m) + ' = 1']);
+
+    const v = valDe(item.e);
+    if (!v) return null;
+    const res = F.ecrire(v);
+    const avant = (un ? '' : puisR(q, m) + (diff ? ' × ' : ''))
+                + (diff ? puisR(reste.baseTxt, diff) : (un ? '1' : ''));
+    // « A = (√3 − √2) » puis « A = √3 − √2 » : deux étapes pour une seule
+    // relation. Les parenthèses ne comptent pas comme un geste.
+    const nu = avant.replace(/^\(([\s\S]*)\)$/, '$1').trim();
+    if (avant && nu !== res) etapes.push(['ما بقي', 'A = ' + avant]);
+    etapes.push(['النتيجة', 'A = ' + res]);
+    if (etapes.length < 5) return null;
+    return finir(item, etapes, res,
+                 'لا تنشر: احسب جداء الأساسين أوّلا', false);
+  }
+
+  // « E²⁰¹⁶F²⁰¹⁵ − E²⁰¹⁵F²⁰¹⁶ » : les mêmes conjugués, mais dans une DIFFÉRENCE.
+  // On ne peut plus apparier facteur à facteur ; on sort (EF)²⁰¹⁵ des deux
+  // termes, et il ne reste que E − F. C'est la mise en facteur de la 8ème,
+  // rejouée avec des nombres qu'on ne saurait pas écrire.
+  function conjuguesSomme(item) {
+    const ts = termesDe(item.e);
+    if (ts.length < 2) return null;
+    let U = null, W = null;
+    const lignes = [];
+    for (const t of ts) {
+      const lus = [];
+      if (!aplatirC(t.t, 1, lus, 0)) return null;
+      const map = grouper(lus);
+      if (map.length !== 2) return null;
+      if (!U) { U = map[0]; W = map[1]; }
+      const eu = map.find(b => b.baseTxt === U.baseTxt);
+      const ew = map.find(b => b.baseTxt === W.baseTxt);
+      if (!eu || !ew || eu.exp < 0 || ew.exp < 0) return null;
+      lignes.push({ signe: t.signe, nu: eu.exp, nw: ew.exp });
+    }
+    if (F.memes(U.val, W.val)) return null;
+
+    const prod = F.fois(U.val, W.val);
+    const cle = Object.keys(prod);
+    if (cle.length !== 1 || Object.keys(prod[cle[0]].e).length) return null;
+    const q = F.ecrire(prod);
+    if (q === '0') return null;
+
+    let m = Infinity;
+    for (const l of lignes) m = Math.min(m, l.nu, l.nw);
+    if (m < 1) return null;
+
+    // Ce qui reste dans la parenthèse, terme à terme.
+    const morceau = l => {
+      const a = l.nu - m, b = l.nw - m;
+      const p = [];
+      if (a) p.push(puisR(U.baseTxt, a));
+      if (b) p.push(puisR(W.baseTxt, b));
+      return p.length ? p.join(' × ') : '1';
+    };
+    const dedans = lignes.map((l, i) => (i ? l.signe + ' ' : '') + morceau(l)).join(' ');
+    const vDedans = valDe(dedans);
+    if (!vDedans) return null;
+    const txtDedans = F.ecrire(vDedans);
+
+    const commun = '((' + U.baseTxt + ') × (' + W.baseTxt + '))^' + m;
+    const etapes = [];
+    etapes.push(['العددان مترافقان', '(a - b)(a + b) = a^2 - b^2']);
+    etapes.push(['نحسب جداء الأساسين',
+                 '(' + U.baseTxt + ') × (' + W.baseTxt + ') = ' + q]);
+    etapes.push(['العامل المشترك',
+                 'كلّ حدّ يحتوي ' + commun + '، لأنّ أصغر أسّ هو ' + m]);
+    etapes.push(['نُخرج العامل المشترك', 'A = ' + commun + ' × (' + dedans + ')']);
+    etapes.push(['نعوّض بالجداء', commun + ' = ' + puisR(q, m)]);
+    const valQ = F.analyser(q);
+    const un = F.ecrire(valQ) === '1';
+    if (un) etapes.push(['قوّة العدد 1', puisR(q, m) + ' = 1']);
+    etapes.push(['ننجز القوس', dedans + ' = ' + txtDedans]);
+
+    const v = valDe(item.e);
+    if (!v) return null;
+    const res = F.ecrire(v);
+    if (!un) {
+      etapes.push(['ما بقي', 'A = ' + puisR(q, m) + ' × (' + txtDedans + ')']);
+    }
+    etapes.push(['النتيجة', 'A = ' + res]);
+    return finir(item, etapes, res,
+                 'أخرج جداء المترافقين، و لا تنشر شيئا', false);
+  }
+
   // Le grand calcul de 9ème : on évalue chaque morceau, puis on combine. Le
   // noyau sait tout faire — radicaux, π, conjugués — et rien n'est approché.
   function calculReel(item) {
@@ -1094,14 +1333,23 @@
       etapes.push([(somme ? 'نحسب الحدّ « ' : 'نحسب العامل « ') + t.t + ' »', ligneT]);
     }
     // « − (5 + 2√6) » ne s'écrit pas « − 5 + 2√6 » : un terme composé doit
-    // garder ses parenthèses quand un signe le précède.
+    // garder ses parenthèses quand un signe le précède. Et dans un PRODUIT,
+    // c'est vrai de TOUS les facteurs, le premier compris : « (3 − 2√2)(6 + 4√2) »
+    // ne devient pas « 3 − 2√2 × (6 + 4√2) », qui ne vaut plus la même chose.
     const env3 = x => (/[+\-]\s/.test(x) ? '(' + x + ')' : x);
-    const ligne = ts.map((t, i) => (i ? t.signe + ' ' + env3(F.ecrire(vals[i]))
-                                      : F.ecrire(vals[i]))).join(' ');
-    if (ligne === F.ecrire(v)) return null;
-    etapes.push(['نعيد كتابة العبارة', 'A = ' + ligne]);
+    const ligne = ts.map((t, i) => {
+      const x = F.ecrire(vals[i]);
+      if (!i) return somme ? x : env3(x);
+      return t.signe + ' ' + env3(x);
+    }).join(' ');
+    // Quand la ligne réécrite dit DÉJÀ le résultat — « 2√2 − 1/3 » une fois
+    // chaque terme calculé —, on ne la porte pas deux fois. La chaîne s'arrête
+    // sur la conclusion, et elle reste une chaîne : chaque terme y a été
+    // calculé pour lui-même, ce qui est le geste demandé.
+    const doublon = (ligne === F.ecrire(v));
+    if (!doublon) etapes.push(['نعيد كتابة العبارة', 'A = ' + ligne]);
     etapes.push(['النتيجة', 'A = ' + F.ecrire(v)]);
-    if (etapes.length < 5) return null;
+    if (etapes.length < (doublon && ts.length > 1 ? 4 : 5)) return null;
     return finir(item, etapes, F.ecrire(v),
                  'احسب كلّ حدّ وحده، ثمّ اجمع', false);
   }
@@ -1153,6 +1401,7 @@
     'facteur-commun': [facteurCommun, parLesPremiers],
     'decomposer': [decomposer],
     'puissance-reelle': [produitReel, quotientReel, calculReel],
+    'conjugues': [conjugues, conjuguesSomme, calculReel],
     'calcul-reel': [calculReel],
     'quotient': [quotient, parLesPremiersQ, parLesPremiers, quotientReel, calculReel],
     'calcul': [calcul]
@@ -1172,7 +1421,7 @@
   }
 
   const API = { chaine, produit, memeExposant, facteurCommun, calcul, quotient,
-                produitReel, quotientReel, calculReel,
+                produitReel, quotientReel, calculReel, conjugues, conjuguesSomme,
                 parLesPremiersQ,
                 decomposer, parLesPremiers, baseCommune };
   if (M) module.exports = API; else racine.Chaines = API;
