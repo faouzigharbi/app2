@@ -75,6 +75,7 @@
   // donc les écritures qu'aucune copie ne porte — un coefficient « 1x », une
   // fraction non réduite « 4/2 », un membre identique à son voisin.
   function credible(s) {
+    if (/(^|[^\w])([a-zA-Z])\s+\2([^\w]|$)/.test(s)) return false;   // « x x »
     if (/(^|[^\w])1\s*[a-zA-Z(√]/.test(s)) return false;
     let m; const re = /(\d+)\/(\d+)/g;
     while ((m = re.exec(s))) {
@@ -162,9 +163,18 @@
     },
     {
       nom: 'إشارة مقلوبة في حدّ',
-      quoi: 'حدّ نُقل من طرف إلى طرف دون تغيير إشارته',
+      quoi: 'حدّ نُقل أو نُشر دون تغيير إشارته؛ و -(a - b) تساوي -a + b',
+      // Elle aussi tient à son geste. Une étape qui ne fait que RECOPIER un
+      // encadrement ou poser une définition ne peut pas porter cette faute :
+      // ce serait une coquille, et l'élève apprendrait à chasser les coquilles.
+      geste: /ننقل|نطرح|نضيف|نرفع|ننشر|نفكّك|نعوّض|نجمع|نوحّد|نختصر|نبسّط/,
       faire(math) {
         if (estMajal(math)) return null;
+        // Un signe ne se retourne par ERREUR que s'il y avait une soustraction
+        // à mal manier, et sur une expression littérale. Sur « 1/3 + 3/4 »,
+        // écrire « - » n'est pas une faute de raisonnement : c'est une faute
+        // de copie, et l'élève apprendrait à relire au lieu de raisonner.
+        if (!/-/.test(math) || !/[a-zA-Z]/.test(math)) return null;
         const r = relation(math);
         if (!r) return null;
         for (let essai = 0; essai < 8; essai++) {
@@ -187,6 +197,7 @@
     },
     {
       nom: 'عدد مغيّر في الحساب',
+      generique: true,
       quoi: 'خطأ عدديّ بسيط: رقم بدل رقم، و كل ما يليه ينهار',
       faire(math) {
         const pos = [];
@@ -247,26 +258,41 @@
           if (!faux || faux === vrai || !credible(faux)) continue;
           if (juge(faux) !== 'fausse') continue;
           out.push({ rang: i, faux, vrai, famille: fam.nom, quoi: fam.quoi,
-                     priorite: rang + (dejaVues.has(fam.nom) ? 100 : 0) });
+                     generique: !!fam.generique,
+                     priorite: rang + (dejaVues.has(fam.nom) ? 20 : 0)
+                             + (fam.generique ? 200 : 0) });
           break;
         }
       });
       return out;
     }
 
+    // ON CHOISIT LA FAUTE, PAS L'ÉTAPE.
+    //
+    // Le premier jet tirait une étape au hasard, puis prenait la meilleure
+    // famille applicable SUR CETTE ÉTAPE. Une étape où seule la famille
+    // générique mordait l'emportait donc sur une étape où une faute
+    // conceptuelle était possible — et la page se remplissait de coquilles.
+    // On énumère maintenant tous les couples (étape, famille) de la chaîne
+    // entière, et l'on prend le meilleur, où qu'il soit.
+    let tous = [];
+    rangs.forEach(i => { tous = tous.concat(candidats(i)); });
+    if (!tous.length) return null;
+
     const choisies = [];
-    const libres = rangs.slice();
     for (let n = 0; n < fautes; n++) {
-      let pris = null;
-      while (libres.length && !pris) {
-        const k = F.ent(0, libres.length - 1);
-        const cand = candidats(libres[k]);
-        libres.splice(k, 1);
-        if (!cand.length) continue;
-        const min = Math.min.apply(null, cand.map(x => x.priorite));
-        pris = F.choix(cand.filter(x => x.priorite === min));
-      }
-      if (!pris) return null;
+      const pris1 = tous.filter(x => choisies.every(c => c.rang !== x.rang));
+      if (!pris1.length) return null;
+      // Une faute d'inattention ne se prend qu'à défaut d'une faute de
+      // raisonnement, et jamais deux fois dans la même question.
+      const dejaGenerique = choisies.some(c => c.generique);
+      const utiles = pris1.filter(x => !x.generique
+                                    && choisies.every(c => c.famille !== x.famille));
+      const pool = utiles.length ? utiles
+                 : (dejaGenerique ? pris1.filter(x => !x.generique) : pris1);
+      if (!pool.length) return null;
+      const min = Math.min.apply(null, pool.map(x => x.priorite));
+      const pris = F.choix(pool.filter(x => x.priorite === min));
       dejaVues.add(pris.famille);
       choisies.push(pris);
     }

@@ -227,6 +227,16 @@ construire.
 L'élève clique l'étape qu'il condamne, puis choisit la bonne réécriture parmi
 deux ou trois. **Rien à taper**, comme dans la chaîne.
 
+### On choisit la FAUTE, pas l'étape
+
+Le premier jet tirait une étape au hasard, puis prenait la meilleure famille
+applicable *sur cette étape*. Une étape où seule la famille générique mordait
+l'emportait donc sur une étape où une faute conceptuelle était possible — et la
+page se remplissait de coquilles. On énumère maintenant **tous les couples
+(étape, famille) de la chaîne entière**, et l'on prend le meilleur, où qu'il
+soit. La faute d'inattention ne sert plus que de dernier recours, et jamais deux
+fois dans la même question.
+
 ### Des familles, pas du bruit
 
 Une faute n'a de valeur que si c'est celle qu'un élève commet. D'où un
@@ -241,8 +251,18 @@ Ailleurs, ce ne serait qu'une coquille — et l'élève apprendrait à chercher 
 coquilles.
 
 Une faute doit aussi rester **crédible** : pas de coefficient « 1x », pas de
-fraction non réduite « 4/2 », pas de membre identique à son voisin. Aucune
-copie ne porte ces écritures-là.
+fraction non réduite « 4/2 », pas de « x x », pas de membre identique à son
+voisin. Aucune copie ne porte ces écritures-là — et une faute qui se repère à
+sa laideur plutôt qu'à son erreur n'apprend rien.
+
+Le même souci gouverne le détail de chaque famille. Un signe ne se retourne par
+erreur que s'il y avait une **soustraction à mal manier**, et sur une expression
+littérale : sur « 1/3 + 3/4 », écrire « − » est une faute de copie, pas de
+raisonnement. La distributivité partielle ne s'écrit que si le premier terme du
+crochet est **nu** : « 5/2(x + 3/2) » donne « 5/2 x + 3/2 », qu'un élève écrit
+vraiment ; « 2/3(3/5 a + …) » donnerait « 2/3 3/5 a », que personne n'écrit. Et
+sur une somme de fractions, l'élève n'efface pas la somme : il en écrit le
+mauvais **résultat**, « 3/7 + 10/3 = 13/10 ».
 
 ### Ce que le validateur contrôle
 
