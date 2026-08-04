@@ -233,11 +233,15 @@
   // soit un réel. On le lie donc comme une lettre libre, et une étape qui
   // dépendrait de sa valeur serait aussitôt rejetée par le validateur.
   // -------------------------------------------------------------------------
-  const NOM = /^([a-zA-Z]+|π)$/;
+  // Un nom peut porter un INDICE : « S1 », « S2 » — la fiche parle de deux
+  // aires, et les appeler autrement trahirait son énoncé. Le chiffre doit
+  // suivre une lettre, si bien que « 2x » reste un produit et « x^2 » une
+  // puissance.
+  const NOM = /^([a-zA-Z]+\d*|π)$/;
 
   function jetons(s) {
     const t = String(s).replace(/[[\]]/g, m => (m === '[' ? '(' : ')'))
-      .match(/\d+|[a-zA-Z]+|π|[+\-×*/():|^√]/g);
+      .match(/\d+|[a-zA-Z]+\d*|π|[+\-×*/():|^√]/g);
     if (!t) throw new Error('expression vide: ' + s);
     return t;
   }

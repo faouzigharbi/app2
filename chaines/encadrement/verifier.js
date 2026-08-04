@@ -468,6 +468,51 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("entiers du 17 mal comptés", parQuestion(17, 8),
     c => { c.controle.entiers[0].liste = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]; });
 
+  pousse("division par -2 sans renversement", parQuestion(18, 0),
+    c => { c.etapes[1][1] = "-1/2 ≤ x ≤ -3/2"; });
+  pousse("somme des encadrements décalée", parQuestion(18, 1),
+    c => { c.controle.vrai[0] = "7/2 ≤ y - x ≤ 11/2"; });
+  pousse("quotient x/y mal renversé", parQuestion(18, 2),
+    c => { c.controle.vrai[0] = "-1/10 ≤ x/y ≤ -1/2"; });
+  pousse("signe de 2y - 11 inversé", parQuestion(18, 3),
+    c => { c.controle.vrai[0] = "2y - 11 ≥ -1"; });
+  pousse("carré du 18 mal encadré", parQuestion(18, 4),
+    c => { c.controle.vrai[0] = "1 ≤ 4y^2 - 44y + 121 ≤ 16"; });
+  pousse("valeur absolue de E mal levée", parQuestion(18, 5),
+    c => { c.etapes[4][1] = "|2y - 11|/(2y - 11) = 1"; });
+
+  pousse("division par -3 sans renversement", parQuestion(19, 0),
+    c => { c.etapes[1][1] = "-2 ≥ x ≥ 2"; });
+  pousse("encadrement de 4 - x décalé", parQuestion(19, 1),
+    c => { c.controle.vrai[0] = "2 ≤ 4 - x ≤ 5"; });
+  pousse("encadrement de 2x - 5 décalé", parQuestion(19, 2),
+    c => { c.controle.vrai[0] = "-9 ≤ 2x - 5 ≤ -2"; });
+  pousse("facteur commun de E du 19 faux", parQuestion(19, 3),
+    c => { c.controle.claims[0][1] = "(4 - x)(2x - 4)"; });
+  pousse("produit des encadrements du 19 faussé", parQuestion(19, 4),
+    c => { c.controle.vrai[0] = "-54 ≤ E ≤ -3"; });
+
+  pousse("valeur de A en 2 décalée", parQuestion(20, 0),
+    c => { c.controle.claims[0][1] = "1"; });
+  pousse("début de carré faux", parQuestion(20, 1),
+    c => { c.controle.claims[0][1] = "(x - 4)^2 - 8"; });
+  pousse("factorisation de A du 20 fausse", parQuestion(20, 2),
+    c => { c.controle.claims[0][1] = "(x - 2)(x - 4)"; });
+  pousse("racine de A = 0 oubliée", parQuestion(20, 3),
+    c => { c.controle.resolutions[0].valeurs = ["2"]; });
+  pousse("borne du domaine géométrique décalée", parQuestion(20, 4),
+    c => { c.controle.vrai[0] = "0 < x < 2"; });
+  pousse("longueur AM fausse", parQuestion(20, 5),
+    c => { c.controle.claims[0][1] = "6 - x"; });
+  pousse("différence des aires faussée", parQuestion(20, 6),
+    c => { c.controle.claims[0][1] = "3(x^2 - 8x + 6)"; });
+  pousse("aire du triangle doublée", parQuestion(20, 6),
+    c => { c.controle.derives.S1 = "2x × x"; });
+  pousse("solution géométrique hors domaine gardée", parQuestion(20, 7),
+    c => { c.controle.resolutions[0].valeurs = ["2"]; });
+  pousse("intersection avec le domaine oubliée", parQuestion(20, 8),
+    c => { c.controle.egaux[0][1] = "[3/2 ; +∞["; });
+
   pousse("étape dupliquée", parQuestion(1, 4),
     c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse("relation répétée sous un autre libellé", parQuestion(1, 4),
