@@ -179,9 +179,9 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("x du 3 hors de la condition", parQuestion(3, 6),
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
 
-  pousse("d du 4 decale", parQuestion(4, 0),
+  pousse("d du 4 decale", parQuestion(4, 3),
     c => { c.controle.claims[0][1] += " + 1"; });
-  pousse("b du 4 non simplifie", parQuestion(4, 2),
+  pousse("b du 4 non simplifie", parQuestion(4, 1),
     c => { c.controle.env.b = c.controle.env.b.replace("2√5", "3√5"); });
   pousse("valeur absolue du 4 mal levee", parQuestion(4, 4),
     c => { c.controle.claims[0][1] = "-(" + c.controle.claims[0][1] + ")"; });
@@ -189,9 +189,9 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] = "4"; });
   pousse("signe mal lu dans p", parQuestion(4, 6),
     c => { c.etapes[1][1] = c.etapes[1][1].replace("= 5 - √3", "= √3 - 5"); });
-  pousse("z du 4 decale", parQuestion(4, 8),
+  pousse("z du 4 decale", parQuestion(4, 9),
     c => { c.controle.claims[0][1] += " + 1"; });
-  pousse("conjugue du 4 mal applique", parQuestion(4, 9),
+  pousse("conjugue du 4 mal applique", parQuestion(4, 8),
     c => { c.controle.env.y = c.controle.env.y.replace("4 - √15", "4 + √15"); });
   pousse("signe de b oublie dans X", parQuestion(4, 11),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace("- 10b", "+ 10b"); });
