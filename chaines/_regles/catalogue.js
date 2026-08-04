@@ -945,6 +945,142 @@
       }
     },
 
+    {
+      // Tout négatif est plus petit que zéro, tout positif plus grand : c'est
+      // la première comparaison du chapitre, celle sur laquelle reposent les
+      // autres. La retourner, c'est retourner la droite graduée.
+      id: 'signe-et-zero',
+      nom: 'مقارنة عدد بالصفر',
+      quoi: 'كلّ عدد سالب أصغر من الصفر و كلّ عدد موجب أكبر منه: '
+          + '-24/5 < 0 و 0 < 12/5',
+      geste: /نتحقّق|نقارن|نستنتج|نحدّد|إشارة/,
+      faire(math) {
+        const parts = String(math).split(';');
+        for (let i = 0; i < parts.length; i++) {
+          const r = relation(parts[i]);
+          if (!r || r.membres.length !== 2) continue;
+          const op = r.ops[0];
+          const inverse = { '<': '>', '>': '<', '≤': '≥', '≥': '≤' }[op];
+          if (!inverse) continue;
+          const zero = t => /^\s*0\s*$/.test(t);
+          if (!zero(r.membres[0]) && !zero(r.membres[1])) continue;
+          const p2 = parts.slice();
+          p2[i] = ' ' + r.membres[0].trim() + ' ' + inverse + ' '
+                + r.membres[1].trim() + ' ';
+          return p2.join(';').trim();
+        }
+        return null;
+      }
+    },
+    {
+      // Mettre au même dénominateur, c'est multiplier le numérateur PAR LE MÊME
+      // nombre. Le dénominateur change tout seul dans la copie de l'élève, et
+      // le numérateur reste où il était : 17/8 = 17/24.
+      id: 'denominateur-unifie-numerateur-inchange',
+      nom: 'المقام وُحّد و البسط بقي كما هو',
+      quoi: 'عند توحيد المقامات يُضرب البسط في نفس ما ضُرب فيه المقام: '
+          + '17/8 = 51/24، لا 17/24',
+      geste: /نوحّد|المقام المشترك|نفس المقام|نكتب/,
+      faire(math) {
+        const parts = String(math).split(';');
+        for (let i = 0; i < parts.length; i++) {
+          const m = /^\s*(-?\d+)\s*\/\s*(\d+)\s*=\s*(-?\d+)\s*\/\s*(\d+)\s*$/
+                      .exec(parts[i]);
+          if (!m || m[2] === m[4] || m[1] === m[3]) continue;
+          const p2 = parts.slice();
+          p2[i] = ' ' + m[1] + '/' + m[2] + ' = ' + m[1] + '/' + m[4] + ' ';
+          return p2.join(';').trim();
+        }
+        return null;
+      }
+    },
+    {
+      // Soustraire un parenthèse change le signe de TOUS ses termes. L'élève
+      // qui n'en change qu'un écrit « (b + 5/4) - (b + 3/4) = 5/4 + 3/4 » : il
+      // a bien vu que b disparaissait, il n'a pas vu pourquoi.
+      id: 'soustraction-partielle-du-parenthese',
+      nom: 'الطرح لم يشمل كلّ حدود القوس',
+      quoi: 'طرح قوس يغيّر إشارة كلّ حدوده: (b + 5/4) - (b + 3/4) = 5/4 - 3/4، '
+          + 'لا 5/4 + 3/4',
+      geste: /نحسب الفرق|الفرق|نرفع القوس|نزيل الأقواس/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        if (!/-\s*\(/.test(r.membres[0])) return null;
+        const t = termes(r.membres[1]);
+        if (t.length !== 2) return null;
+        const m = /^([+-])\s*(.+)$/.exec(t[1].trim());
+        if (!m) return null;
+        return r.membres[0].trim() + ' = ' + t[0].trim()
+             + (m[1] === '-' ? ' + ' : ' - ') + m[2].trim();
+      }
+    },
+    {
+      // C'est LA règle de la comparaison des rationnels en 8ème, et la seule
+      // qui résiste vraiment : entre deux nombres négatifs, celui qui a la plus
+      // grande valeur absolue est le PLUS PETIT. L'élève qui compare -9 et -2
+      // comme il comparerait 9 et 2 se trompe de sens, pas de calcul.
+      id: 'ordre-des-negatifs',
+      nom: 'ترتيب عددين سالبين مقلوب',
+      quoi: 'بين عددين سالبين، الأكبر قيمة مطلقة هو الأصغر: -9 < -2، '
+          + 'و -132 < -70',
+      geste: /نقارن|نرتّب|المرفوضة|المقبولة|إشارة|نستنتج|نحدّد/,
+      faire(math) {
+        // Une étape peut porter plusieurs comparaisons séparées par « ; » —
+        // « 12/7 > 1/2 ; -9 ≤ -2 ; 1 > 1/2 ». On retourne la première qui s'y
+        // prête et l'on recolle : les autres restent justes, comme il se doit.
+        const parts = String(math).split(';');
+        const neg = t => /^\s*-\s*\d+(\s*\/\s*\d+)?\s*$/.test(t);
+        for (let i = 0; i < parts.length; i++) {
+          const r = relation(parts[i]);
+          if (!r || r.membres.length !== 2) continue;
+          const op = r.ops[0];
+          if (op === '=') continue;
+          if (!neg(r.membres[0]) || !neg(r.membres[1])) continue;
+          const inverse = { '<': '>', '>': '<', '≤': '≥', '≥': '≤' }[op];
+          if (!inverse) continue;
+          const p2 = parts.slice();
+          p2[i] = ' ' + r.membres[0].trim() + ' ' + inverse + ' '
+                + r.membres[1].trim() + ' ';
+          return p2.join(';').trim();
+        }
+        return null;
+      }
+    },
+    {
+      // Comparer deux fractions par leurs seuls numérateurs n'a de sens que si
+      // les dénominateurs sont égaux. C'est tout l'objet du chapitre, et c'est
+      // le raccourci que l'élève prend dès qu'on le laisse.
+      id: 'numerateurs-compares-sans-meme-denominateur',
+      nom: 'قارنّا البسطين و المقامان مختلفان',
+      quoi: 'لا يُقارن البسطان إلاّ إذا كان المقام واحدا: 1/12 و 11/65 '
+          + 'يُقارنان بالضرب التقاطعي أو بتوحيد المقام',
+      geste: /نقارن|نستنتج|نحدّد/,
+      faire(math) {
+        const parts = String(math).split(';');
+        const lire = t => /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/.exec(t);
+        for (let i = 0; i < parts.length; i++) {
+          const r = relation(parts[i]);
+          if (!r || r.membres.length !== 2) continue;
+          const op = r.ops[0];
+          if (op === '=') continue;
+          const a = lire(r.membres[0]), b = lire(r.membres[1]);
+          if (!a || !b || a[2] === b[2]) continue;
+          // Le verdict que donnerait la comparaison des seuls numérateurs.
+          const na = Number(a[1]), nb = Number(b[1]);
+          if (na === nb) continue;
+          const naif = na < nb ? '<' : '>';
+          if (naif === op || (op === '≤' && naif === '<')
+              || (op === '≥' && naif === '>')) continue;
+          const p2 = parts.slice();
+          p2[i] = ' ' + r.membres[0].trim() + ' ' + naif + ' '
+                + r.membres[1].trim() + ' ';
+          return p2.join(';').trim();
+        }
+        return null;
+      }
+    },
+
     // ═════ ARITHMÉTIQUE — PUISSANCES ET PRIORITÉS ═════
     //
     // Leur `geste` est écrit À L'ENVERS des autres : au lieu d'énumérer les

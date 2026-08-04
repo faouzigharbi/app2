@@ -402,3 +402,35 @@ rendues en HTML. On ne réécrit pas la fiche pour lui faire parler la langue de
 l'outil : on ajoute un `pont.js`, qui traduit. Il n'invente rien qui n'existe
 déjà — il renomme, il redécoupe, et il complète ce qui manquait vraiment : un
 `controle` qui porte le résultat, un indice.
+
+### Ce qui reste debout après la faute
+
+Une chaîne dont **tout** serait faux ne demanderait plus de juger — mais ce
+qui compte est le nombre d'étapes qui restent debout, pas le nombre d'étapes
+*calculables*. Une chaîne peut n'avoir qu'une ligne de calcul et trois lignes
+de raisonnement en arabe, et l'élève y juge très bien. On exigeait deux étapes
+calculables : un exercice entier de `rationnels8` — l'anti­sélection des
+éléments d'un ensemble — sortait sain à chaque tirage sans qu'on le voie.
+
+### rationnels8 — et les deux exercices qu'on n'a pas pu servir
+
+Le chapitre compare des rationnels ; ses règles sont l'ordre des négatifs
+(« entre deux négatifs, le plus grand en valeur absolue est le plus petit »),
+la comparaison au zéro, la mise au même dénominateur, et le signe de la
+différence. Une étape peut y porter plusieurs comparaisons séparées par « ; » :
+les règles les parcourent une à une et n'en faussent qu'une, les autres restant
+justes — c'est ainsi qu'un élève se trompe.
+
+Deux exercices restent **sans faute plantée**, et il faut le dire :
+
+* **« الضرب التقاطعي »** — la faute de règle y est de mal apparier les facteurs
+  (`1 × 12` au lieu de `1 × 65`). L'égalité écrite reste alors **vraie en
+  elle-même** ; elle n'est fausse que relativement à la question, ce que le juge
+  ne peut pas certifier ;
+* **« نفس البسط »** — la règle du chapitre (« numérateur négatif : l'ordre
+  s'inverse quand le dénominateur grandit ») ne s'applique que dans l'étape
+  « النتيجة », et l'on ne plante jamais sur le résultat.
+
+Leurs volets sortent donc avec un corrigé juste, que l'élève doit reconnaître
+comme tel. C'est le quatrième point du contrat, et non un contournement — mais
+c'est un cas où il s'impose au lieu d'être choisi.

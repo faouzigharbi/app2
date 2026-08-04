@@ -357,7 +357,12 @@
     question.etapes.forEach(function (e, i) {
       if (juge(e[1]) === 'vraie') rangs.push(i);
     });
-    if (rangs.length < fautes + 1) return null;
+    // Ce qui compte est le nombre d'étapes qui restent debout, pas le nombre
+    // d'étapes calculables : une chaîne peut n'avoir qu'une ligne de calcul et
+    // trois de raisonnement, et l'élève y juge très bien. Et le niveau est une
+    // intention : à défaut de deux fautes, on en place une.
+    fautes = Math.min(fautes, rangs.length, question.etapes.length - 2);
+    if (fautes < 1) return null;
 
     function candidats(i) {
       const vrai = question.etapes[i][1];

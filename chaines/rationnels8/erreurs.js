@@ -1,4 +1,4 @@
-// Les pages « أين الخطأ؟ » — gradue8.
+// Les pages « أين الخطأ؟ » — rationnels8.
 //
 // ENGENDRÉ PAR _regles/porter.js — ne pas éditer à la main. Les règles vivent
 // dans _regles/catalogue.js ; une correction s'y fait, puis se rejoue ici.
@@ -19,7 +19,7 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Gradue;
+  const F = M ? require('./frac.js') : racine.Frac;
   const J = M ? require('./juge.js') : racine.Juge;
 
   const interdit = () => false;
@@ -111,6 +111,176 @@
   // ── Les règles de CE chapitre ───────────────────────────────────────────
   const FAMILLES = [
     {
+      nom: "ترتيب عددين سالبين مقلوب",
+      quoi: "بين عددين سالبين، الأكبر قيمة مطلقة هو الأصغر: -9 < -2، و -132 < -70",
+      geste: /نقارن|نرتّب|المرفوضة|المقبولة|إشارة|نستنتج|نحدّد/,
+      faire: function(math) {
+          // Une étape peut porter plusieurs comparaisons séparées par « ; » —
+          // « 12/7 > 1/2 ; -9 ≤ -2 ; 1 > 1/2 ». On retourne la première qui s'y
+          // prête et l'on recolle : les autres restent justes, comme il se doit.
+          const parts = String(math).split(';');
+          const neg = t => /^\s*-\s*\d+(\s*\/\s*\d+)?\s*$/.test(t);
+          for (let i = 0; i < parts.length; i++) {
+            const r = relation(parts[i]);
+            if (!r || r.membres.length !== 2) continue;
+            const op = r.ops[0];
+            if (op === '=') continue;
+            if (!neg(r.membres[0]) || !neg(r.membres[1])) continue;
+            const inverse = { '<': '>', '>': '<', '≤': '≥', '≥': '≤' }[op];
+            if (!inverse) continue;
+            const p2 = parts.slice();
+            p2[i] = ' ' + r.membres[0].trim() + ' ' + inverse + ' '
+                  + r.membres[1].trim() + ' ';
+            return p2.join(';').trim();
+          }
+          return null;
+        }
+    },
+    {
+      nom: "مقارنة عدد بالصفر",
+      quoi: "كلّ عدد سالب أصغر من الصفر و كلّ عدد موجب أكبر منه: -24/5 < 0 و 0 < 12/5",
+      geste: /نتحقّق|نقارن|نستنتج|نحدّد|إشارة/,
+      faire: function(math) {
+          const parts = String(math).split(';');
+          for (let i = 0; i < parts.length; i++) {
+            const r = relation(parts[i]);
+            if (!r || r.membres.length !== 2) continue;
+            const op = r.ops[0];
+            const inverse = { '<': '>', '>': '<', '≤': '≥', '≥': '≤' }[op];
+            if (!inverse) continue;
+            const zero = t => /^\s*0\s*$/.test(t);
+            if (!zero(r.membres[0]) && !zero(r.membres[1])) continue;
+            const p2 = parts.slice();
+            p2[i] = ' ' + r.membres[0].trim() + ' ' + inverse + ' '
+                  + r.membres[1].trim() + ' ';
+            return p2.join(';').trim();
+          }
+          return null;
+        }
+    },
+    {
+      nom: "قارنّا البسطين و المقامان مختلفان",
+      quoi: "لا يُقارن البسطان إلاّ إذا كان المقام واحدا: 1/12 و 11/65 يُقارنان بالضرب التقاطعي أو بتوحيد المقام",
+      geste: /نقارن|نستنتج|نحدّد/,
+      faire: function(math) {
+          const parts = String(math).split(';');
+          const lire = t => /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/.exec(t);
+          for (let i = 0; i < parts.length; i++) {
+            const r = relation(parts[i]);
+            if (!r || r.membres.length !== 2) continue;
+            const op = r.ops[0];
+            if (op === '=') continue;
+            const a = lire(r.membres[0]), b = lire(r.membres[1]);
+            if (!a || !b || a[2] === b[2]) continue;
+            // Le verdict que donnerait la comparaison des seuls numérateurs.
+            const na = Number(a[1]), nb = Number(b[1]);
+            if (na === nb) continue;
+            const naif = na < nb ? '<' : '>';
+            if (naif === op || (op === '≤' && naif === '<')
+                || (op === '≥' && naif === '>')) continue;
+            const p2 = parts.slice();
+            p2[i] = ' ' + r.membres[0].trim() + ' ' + naif + ' '
+                  + r.membres[1].trim() + ' ';
+            return p2.join(';').trim();
+          }
+          return null;
+        }
+    },
+    {
+      nom: "المقام وُحّد و البسط بقي كما هو",
+      quoi: "عند توحيد المقامات يُضرب البسط في نفس ما ضُرب فيه المقام: 17/8 = 51/24، لا 17/24",
+      geste: /نوحّد|المقام المشترك|نفس المقام|نكتب/,
+      faire: function(math) {
+          const parts = String(math).split(';');
+          for (let i = 0; i < parts.length; i++) {
+            const m = /^\s*(-?\d+)\s*\/\s*(\d+)\s*=\s*(-?\d+)\s*\/\s*(\d+)\s*$/
+                        .exec(parts[i]);
+            if (!m || m[2] === m[4] || m[1] === m[3]) continue;
+            const p2 = parts.slice();
+            p2[i] = ' ' + m[1] + '/' + m[2] + ' = ' + m[1] + '/' + m[4] + ' ';
+            return p2.join(';').trim();
+          }
+          return null;
+        }
+    },
+    {
+      nom: "الطرح لم يشمل كلّ حدود القوس",
+      quoi: "طرح قوس يغيّر إشارة كلّ حدوده: (b + 5/4) - (b + 3/4) = 5/4 - 3/4، لا 5/4 + 3/4",
+      geste: /نحسب الفرق|الفرق|نرفع القوس|نزيل الأقواس/,
+      faire: function(math) {
+          const r = relation(math);
+          if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+          if (!/-\s*\(/.test(r.membres[0])) return null;
+          const t = termes(r.membres[1]);
+          if (t.length !== 2) return null;
+          const m = /^([+-])\s*(.+)$/.exec(t[1].trim());
+          if (!m) return null;
+          return r.membres[0].trim() + ' = ' + t[0].trim()
+               + (m[1] === '-' ? ' + ' : ' - ') + m[2].trim();
+        }
+    },
+    {
+      nom: "المقام تغيّر و البسط بقي كما هو",
+      quoi: "عند التحويل إلى المقام المشترك يُضرب البسط في نفس ما ضُرب فيه المقام: 3/8 تصير 15/40، لا 3/40",
+      geste: /نوحّد|المقام المشترك|نكتب على نفس المقام|نجمع البسوط|نطرح البسوط/,
+      faire: function(math, A) {
+          const r = relation(math);
+          if (!r) return null;
+          const k = r.membres.length - 1;
+          const t = termes(r.membres[k]);
+          const frac = [];
+          t.forEach((x, i) => {
+            const m = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(x.trim());
+            if (m) frac.push([m, i]);
+          });
+          if (frac.length < 2) return null;
+          const d0 = frac[0][0][3];
+          if (!frac.every(f => f[0][3] === d0)) return null;   // même mocam partout
+          // Le terme s'écrit avec le NOUVEAU dénominateur et l'ANCIEN numérateur.
+          // « 15/40 » vient de « 3/8 » : l'élève qui oublie de multiplier le
+          // numérateur écrit « 3/40 ». Réduire la fraction, au contraire, n'en
+          // changerait pas la valeur — la faute serait vraie, et le juge la
+          // rejetterait à bon droit. C'est arrivé.
+          const reduc = frac.filter(f => A.pgcd(Number(f[0][2]), Number(f[0][3])) > 1);
+          if (!reduc.length) return null;
+          const f = reduc[A.ent(0, reduc.length - 1)];
+          const g = A.pgcd(Number(f[0][2]), Number(f[0][3]));
+          const t2 = t.slice();
+          t2[f[1]] = (f[0][1] || '') + (Number(f[0][2]) / g) + '/' + f[0][3];
+          const copie = r.membres.slice();
+          copie[k] = t2.join(' ');
+          return recoller({ membres: copie, ops: r.ops });
+        }
+    },
+    {
+      nom: "جمع البسطين و المقامين",
+      quoi: "لجمع كسرين نوحّد المقام؛ جمع البسطين و المقامين ليس جمعا",
+      faire: function(math) {
+          // Toutes les paires, pas seulement la première : « 3/3 - 1/3 » donne un
+          // dénominateur nul et ne peut rien produire, mais « 1/3 + 3/3 » le peut.
+          const re = /(\d+)\/(\d+)\s*([+\-])\s*(\d+)\/(\d+)/g;
+          let m = null, cand = null;
+          while ((cand = re.exec(math))) {
+            const nn = cand[3] === '+' ? Number(cand[1]) + Number(cand[4])
+                                       : Number(cand[1]) - Number(cand[4]);
+            const dd = cand[3] === '+' ? Number(cand[2]) + Number(cand[5])
+                                       : Number(cand[2]) - Number(cand[5]);
+            if (nn !== 0 && dd !== 0) { m = cand; break; }
+            re.lastIndex = cand.index + 1;
+          }
+          if (!m) return null;
+          const n = m[3] === '+' ? Number(m[1]) + Number(m[4]) : Number(m[1]) - Number(m[4]);
+          const d = m[3] === '+' ? Number(m[2]) + Number(m[5]) : Number(m[2]) - Number(m[5]);
+          // L'élève n'efface pas la somme : il en écrit le mauvais RÉSULTAT.
+          const r = relation(math);
+          if (r && r.membres.length === 2 && r.ops[0] === '='
+              && m.index < r.membres[0].length) {
+            return r.membres[0] + ' = ' + n + '/' + d;
+          }
+          return math.slice(0, m.index) + n + '/' + d + math.slice(m.index + m[0].length);
+        }
+    },
+    {
       nom: "ناقص أمام عدد سالب",
       quoi: "طرح عدد سالب هو إضافة مقابله: a - (-b) = a + b، لا a - b",
       geste: /نحسب|نرفع|نزيل|الفرق|نطرح/,
@@ -121,36 +291,23 @@
         }
     },
     {
-      nom: "البعد كُتب بدون قيمة مطلقة",
-      quoi: "البعد بين نقطتين هو القيمة المطلقة للفرق: بدونها يصير سالبا أحيانا، و البعد لا يكون سالبا",
-      geste: /نكتب الفرق|البعد|المسافة/,
-      faire: function(math) {
+      nom: "حدود غير متشابهة جُمعت",
+      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
+      faire: function(math, A) {
           const r = relation(math);
-          if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
-          const m = /^\s*\|(.+)\|\s*$/.exec(r.membres[1]);
-          if (!m) return null;
-          // On échange les deux points : le calcul devient l'opposé, et sans les
-          // barres il change de signe. C'est la faute, pas une réécriture.
-          const t = termes(m[1]);
-          if (t.length !== 2) return null;
-          const b = sansSigne(t[1]);
-          return r.membres[0] + ' = ' + b + ' - ' + t[0];
-        }
-    },
-    {
-      nom: "القيمة المطلقة رُفعت دون تغيير الإشارة",
-      quoi: "القيمة المطلقة لعدد سالب هي مقابله، لا هو نفسه — و √(t^2) = |t| لا t",
-      faire: function(math) {
-          const r = relation(math);
-          if (!r || r.ops.some(o => o !== '=')) return null;
-          for (let k = 0; k < r.membres.length; k++) {
-            const m = /^\s*\|(.+)\|\s*$/.exec(r.membres[k]);
-            if (!m) continue;
-            const copie = r.membres.slice();
-            copie[k] = m[1];
-            return copie.join(' = ');
-          }
-          return null;
+          if (!r) return null;
+          const k = r.membres.length - 1;
+          const t = termes(r.membres[k]);
+          if (t.length < 2) return null;
+          const m1 = monome(t[0]), m2 = monome(t[1]);
+          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
+          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
+          if (!a || !b) return null;
+          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
+          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
+          const copie = r.membres.slice();
+          copie[k] = [fusion].concat(t.slice(2)).join(' ');
+          return recoller({ membres: copie, ops: r.ops });
         }
     },
     {
@@ -178,23 +335,20 @@
         }
     },
     {
-      nom: "حدود غير متشابهة جُمعت",
-      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
-      faire: function(math, A) {
+      nom: "اختصرنا في البسط دون المقام",
+      quoi: "الاختصار يقسم البسط و المقام معا؛ قسمة البسط وحده تغيّر الكسر",
+      geste: /نبسّط|نختصر|قبل الضرب/,
+      faire: function(math) {
           const r = relation(math);
-          if (!r) return null;
-          const k = r.membres.length - 1;
-          const t = termes(r.membres[k]);
-          if (t.length < 2) return null;
-          const m1 = monome(t[0]), m2 = monome(t[1]);
-          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
-          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
-          if (!a || !b) return null;
-          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
-          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
-          const copie = r.membres.slice();
-          copie[k] = [fusion].concat(t.slice(2)).join(' ');
-          return recoller({ membres: copie, ops: r.ops });
+          if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+          const F1 = /^\s*\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*$/;
+          const g = F1.exec(r.membres[0]), d = F1.exec(r.membres[1]);
+          if (!g || !d) return null;
+          // Le numérateur a bien été simplifié, le dénominateur est resté celui
+          // d'avant : c'est exactement ce que l'élève écrit quand il barre d'un
+          // seul côté de la barre de fraction.
+          if (g[2].trim() === d[2].trim()) return null;
+          return r.membres[0] + ' = (' + d[1].trim() + ') / (' + g[2].trim() + ')';
         }
     }
   ];

@@ -55,6 +55,10 @@ porte revision2 Reel   'مراجعة'            'revision.js'                  
 porte radic9    Radic  'العمليات في ℝ'     'racines.js exercices.js' \
   "carre-parfait-mal-sorti,carre-parfait-non-extrait,facteur-non-carre-sorti,racine-confondue-avec-la-moitie,produit-de-racines-devenu-somme,radicandes-additionnes-au-produit,racine-du-produit-non-simplifiee,carre-de-la-racine-non-simplifie,carre-confondu-avec-le-double,radicande-additionne,terme-rationnel-joint-au-radical,facteur-radical-non-divise,facteur-radical-sans-racine,racine-au-numerateur-seul,double-produit-oublie,conjugue-mal-developpe,conjugue-signe-du-carre,valeur-absolue-non-levee,racine-distribuee"
 
+porte rationnels8 Frac '8 أساسي — ترتيب الأعداد الناطقة' '' \
+  "ordre-des-negatifs,signe-et-zero,numerateurs-compares-sans-meme-denominateur,denominateur-unifie-numerateur-inchange,soustraction-partielle-du-parenthese,numerateur-oublie,somme-des-numerateurs,moins-devant-negatif,termes-non-semblables,transposition-sans-signe,simplification-unilaterale" \
+  '--noyau=frac.js'
+
 # ── Les six fiches d'arithmétique ───────────────────────────────────────────
 #
 # Elles n'appellent pas leur noyau « noyau.js », et leur validateur ne l'appelle

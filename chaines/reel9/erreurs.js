@@ -93,6 +93,7 @@
     if (interdit(s)) return false;
     if (/(^|[^\w])1\s*[a-zA-Z(√]/.test(s)) return false;              // « 1x »
     if (/(^|[^\w])([a-zA-Z])\s+\2([^\w]|$)/.test(s)) return false;   // « x x »
+    if (/[+\-]\s*[+\-]/.test(s)) return false;                           // « --13/5 »
     const dejaLa = new Set(String(vrai || '').match(/\d+\/\d+/g) || []);
     let m; const re = /(\d+)\/(\d+)/g;
     while ((m = re.exec(s))) {
@@ -249,14 +250,18 @@
     question.etapes.forEach(function (e, i) {
       if (juge(e[1]) === 'vraie') rangs.push(i);
     });
-    // Il doit rester du vrai après la faute : une chaîne dont tout serait faux
-    // ne demanderait plus de juger. Faute de quoi, on laisse le corrigé
-    // intact — jamais on ne perd la question, l'élève doit les avoir toutes.
-    // Le NIVEAU est une intention, pas une exigence : quand la chaîne n'offre
-    // pas de quoi placer deux fautes en laissant du vrai après elles, on en
-    // place une plutôt que de rendre le volet sain. Un volet sain doit être un
-    // choix — « aucune règle n'est en jeu ici » — jamais un aveu d'impuissance.
-    if (rangs.length < fautes + 1) fautes = rangs.length - 1;
+    // Il doit rester du vrai après la faute : une chaîne dont TOUT serait faux
+    // ne demanderait plus de juger. Ce qui compte est le nombre d'étapes qui
+    // restent debout, pas le nombre d'étapes calculables : une chaîne peut
+    // n'avoir qu'une seule ligne de calcul et trois lignes de raisonnement en
+    // arabe, et l'élève y juge très bien. C'est le cas d'un exercice entier de
+    // rationnels8, qu'on rendait sain à chaque tirage faute de le voir.
+    //
+    // Et le NIVEAU est une intention, pas une exigence : quand la chaîne
+    // n'offre pas de quoi placer deux fautes, on en place une plutôt que de
+    // rendre le volet sain. Un volet sain doit être un choix — « aucune règle
+    // n'est en jeu ici » — jamais un aveu d'impuissance.
+    fautes = Math.min(fautes, rangs.length, question.etapes.length - 2);
     if (fautes < 1) return sain();
 
     function candidats(i) {

@@ -11,7 +11,7 @@ TOURS="${1:-20}"
 ROUGE=0
 
 for d in expr7 encadrement sommeq8 addz8 produitq8 factq8 reel9 arith9 \
-         gradue8 reels serie1 serie2 serie3 revision2 radic9 \
+         gradue8 reels serie1 serie2 serie3 revision2 radic9 rationnels8 \
          diviseurs7 pgcd7 premiers7 naturels7 divisibilite8; do
   [ -f "$d/erreurs.js" ] || continue
   c=$( cd "$d" && node verifier.js "$TOURS" 2>&1 | grep -c 'échec\|ÉCHECS\|✗' )
