@@ -19,6 +19,7 @@
 const F = require('./noyau.js');
 require('./reels.js');
 require('./serie2.js');
+require('./serie3.js');
 require('./gens.js');
 
 const TIRAGES = Number(process.argv[2]) || 120;
@@ -194,6 +195,29 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.env.c = c.controle.env.c.replace(/^2/, '3'); });
   pousse('l’entier naturel n’en est plus un', parQuestion(19, 4),
     c => { c.controle.env.d = c.controle.env.d + ' + 1'; });
+  pousse('changement de signe du 26 oublié', parQuestion(26, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/^\(/, '(-'); });
+  pousse('facteur commun du 26 mal sorti', parQuestion(26, 2),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('x du 26 décalé', parQuestion(26, 3),
+    c => { c.controle.env.x = c.controle.env.x + ' + 1'; });
+  pousse('factorisation du 27 fausse', parQuestion(27, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, ' + 1)'); });
+  pousse('valeur numérique du 27 décalée', parQuestion(27, 1),
+    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
+  pousse('parenthèse du 28 levée sans changer de signe', parQuestion(28, 0),
+    c => { c.controle.env.A = c.controle.env.A.replace('] - [', '] + ['); });
+  pousse('développement du 28 amputé', parQuestion(28, 1),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('facteur commun du 28 mal sorti', parQuestion(28, 2),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, ' + 1)'); });
+  pousse('solution du 29 hors de l’équation', parQuestion(29, 0),
+    c => { c.controle.env.x = c.controle.env.x + ' + 1'; });
+  pousse('valeur absolue emboîtée du 29 mal ouverte', parQuestion(29, 2),
+    c => { c.controle.claims[2][1] = String(Number(c.controle.claims[2][1]) + 1); });
+  pousse('identité remarquable du 29 faussée', parQuestion(29, 5),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(' - ', ' + '); });
+
   pousse('développement de A du 20 amputé', parQuestion(20, 0),
     c => { c.controle.env.A = c.controle.env.A.replace(/ - √\d+$/, ''); });
   pousse('rationalisation du 20 fausse', parQuestion(20, 1),

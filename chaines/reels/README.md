@@ -1,6 +1,6 @@
 # العمليات في مجموعة الأعداد الحقيقية — سلاسل البرهان
 
-Portage en pages « chaîne de démonstration » de deux fiches du même chapitre.
+Portage en pages « chaîne de démonstration » des fiches du même chapitre.
 La méthode est décrite dans [`../METHODE.md`](../METHODE.md).
 
 ## Structure
@@ -13,13 +13,18 @@ Une page par **exercice**, et dans la page **un volet par question de l'énoncé
 | `ex12.html` | عددان مقلوبان — إنطاق المقام | 5 | 1, puis A, B, C, D |
 | `ex13.html` | القيمة المطلقة | 8 | 1) A, B, C, D + 2) quatre équations |
 | `ex14.html` | عبارة حرفية | 3 | 1)أ, 1)ب, 2 |
+| `ex26.html` | العامل المشترك المخفيّ وراء إشارة | 4 | 1 (a, b), 2, 3 |
+| `ex27.html` | عامل مشترك بين ثلاثة حدود | 3 | 1, 2, 3 |
+| `ex28.html` | ارفع، انشر، فكّك | 4 | 1, 2, 3)أ, 3)ب |
+| `ex29.html` | معادلات و عبارة من الدرجة الأولى | 7 | 1 (trois équations), 2)أ→د |
 | `ex17.html` | جداء عددين يساوي 1 | 4 | 1, 2)أ, 2)ب, 3 |
 | `ex18.html` | A و B مقلوبان | 5 | 1, 2)أ, 2)ب, 3)أ, 3)ب |
 | `ex19.html` | عبارتان مقلوبتان | 5 | 1, 2, 3, 4)أ, 4)ب |
 | `ex20.html` | أربعة عشر سؤالا على عددين مقلوبين | 14 | 1 (A, B), 2)أ→د, 3)أ→د |
 | `ex41.html` | a مربّع كامل | 7 | 1, 2)أ (en deux), 2)ب, 3)أ, 3)ب, 3)ج |
 
-`serie2.js` porte les exercices 11 à 14, `reels.js` les exercices 17 à 20 et 41.
+`serie2.js` porte les exercices 11 à 14, `serie3.js` les exercices 26 à 29,
+`reels.js` les exercices 17 à 20 et 41.
 
 L'énoncé du 41 ne compte que six sous-questions ; le septième volet vient de
 2)أ, coupée en « احسب الجداء a × b » puis « استنتج أنّ العددين مقلوبان » —
@@ -31,8 +36,9 @@ sont deux gestes distincts.
 Les nombres changent à chaque chargement (« أرقام جديدة »), mais la structure de
 l'énoncé ne bouge jamais — et on ne tire que ce que l'exercice supporte.
 
-**Libres — 11, 14, et 17.** Chaque expression y est un schéma dont on tire les
-paramètres. Le `26/5` du 17 n'est que `5 + 1/5` ; le `(x-2)(x+2)` du 14 ne
+**Libres — 11, 14, 17 et 26 à 29.** Chaque expression y est un schéma dont on
+tire les paramètres. Au 26, le schéma est `√r - k = -(k - √r)` : le facteur
+commun n'est visible qu'après ce changement de signe, et c'est tout l'exercice. Le `26/5` du 17 n'est que `5 + 1/5` ; le `(x-2)(x+2)` du 14 ne
 demande que `p - r = 1` et `q - s = k`.
 
 **Contraints — 12, 18 et 20.** Tous trois reposent sur `(u + v√r)(u - v√r) = 1`, donc
@@ -65,6 +71,16 @@ entier, et l'exercice n'a pas d'autre objet que ce moment-là.
 `a = 1 + √2`, `b = √2 - 1` ; la question 4)ب force `√8`. Seul l'**habillage**
 varie : les quatre écritures en radicaux à réduire pour retomber dessus.
 
+## Réserve sur la question 4 de l'exercice 26
+
+La fiche imprime « أوجد x في حالة C و D متقابلان » — mais `C` et `D` ne sont
+définis **nulle part** dans l'exercice. C'est la question 3 recopiée avec
+d'autres lettres. Elle n'est pas portée : il n'y a rien à démontrer sur deux
+objets qui n'existent pas. La lire « a et b مقلوبان » ne la sauverait pas non
+plus — `a×b = (2√7 - 7)(4x-3)²` est toujours négatif ou nul, donc jamais égal
+à 1. La page a donc 4 volets : `a` en produit, `b` en produit, `a + b`, et
+l'équation de la question 3.
+
 ## Réserve sur l'expression « e » de l'exercice 11
 
 La fiche imprime `e = 3(√3-2) + √2(√3-2) + 3(√3+2)`. Ce troisième terme, avec
@@ -86,6 +102,12 @@ par une somme de deux termes passe par le **conjugué** — le geste même de la
 leçon (`إنطاق المقام`). `A × B = 1` s'y démontre au lieu de se constater à 10⁻⁹
 près.
 
+`π` n'appartient pas à cet ensemble et n'y appartiendra jamais. Mais
+`|x - π| = 3` ne demande rien de sa valeur : il demande seulement que ce soit un
+réel. Il est donc traité comme une **lettre libre**, et le validateur teste
+chaque étape sur des dizaines de valeurs — une étape qui dépendrait de `π`
+serait aussitôt rejetée.
+
 ## Impression
 
 Bouton « ورقة للطباعة » : la feuille sort en deux parties séparées par un saut
@@ -95,15 +117,15 @@ l'exercice.
 
 ## Vérification
 
-    node verifier.js 300            # 300 tirages par exercice
+    node verifier.js 400            # 400 tirages par exercice
     CONTRE_EXEMPLES=1 node verifier.js
 
 État actuel :
 
-    التمرين 11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓  41 ✓
-    300 tirages par exercice, 16800 questions,
-    173700 relations recalculées et 62700 contrôles, 0 erreur.
-    38/38 falsifications détectées.
+    11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓  26 ✓  27 ✓  28 ✓  29 ✓  41 ✓
+    400 tirages par exercice, 29600 questions,
+    720400 relations recalculées et 198000 contrôles, 0 erreur.
+    49/49 falsifications détectées.
 
 ## Régénérer les pages
 

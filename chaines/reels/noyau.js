@@ -186,10 +186,18 @@
 
   // -------------------------------------------------------------------------
   // Analyseur : + − × / ( ) [ ] | | √ ^ , variables, juxtaposition.
+  //
+  // π est un NOM comme un autre pour l'analyseur — il n'appartient pas à
+  // ℚ[√d] et n'y appartiendra jamais. Les énoncés qui l'emploient (« |x - π| = 3 »)
+  // ne demandent d'ailleurs rien de sa valeur : ils demandent seulement que ce
+  // soit un réel. On le lie donc comme une lettre libre, et une étape qui
+  // dépendrait de sa valeur serait aussitôt rejetée par le validateur.
   // -------------------------------------------------------------------------
+  const NOM = /^([a-zA-Z]+|π)$/;
+
   function jetons(s) {
     const t = String(s).replace(/[[\]]/g, m => (m === '[' ? '(' : ')'))
-      .match(/\d+|[a-zA-Z]+|[+\-×*/():|^√]/g);
+      .match(/\d+|[a-zA-Z]+|π|[+\-×*/():|^√]/g);
     if (!t) throw new Error('expression vide: ' + s);
     return t;
   }
@@ -230,7 +238,7 @@
         if (j === '×' || j === '*' || j === '/') {
           const op = t[i++];
           v = (op === '/') ? sDiv(v, puissance()) : sMul(v, puissance());
-        } else if (/^\d/.test(j) || /^[a-zA-Z]+$/.test(j) || j === '(' || j === '√') {
+        } else if (/^\d/.test(j) || NOM.test(j) || j === '(' || j === '√') {
           v = sMul(v, puissance());        // juxtaposition : « 2√2 » vaut 2 × √2
         } else break;
       }
@@ -252,7 +260,7 @@
         i++;
         return v;
       }
-      if (voir() === '|') {                              // valeur absolue, non imbriquée
+      if (voir() === '|') {                              // valeur absolue, imbrication comprise
         i++;
         const v = expression();
         if (voir() !== '|') throw new Error('barre non fermée: ' + src);
@@ -261,7 +269,7 @@
       }
       const j = t[i++];
       if (/^\d+$/.test(j)) return num(Number(j));
-      if (/^[a-zA-Z]+$/.test(j)) {
+      if (NOM.test(j)) {
         if (!env || !(j in env)) throw new Error('variable inconnue: ' + j);
         return env[j];
       }
@@ -387,7 +395,7 @@
   // le texte arabe couler de droite à gauche. Une lettre seule (« … العدد A »)
   // n'est pas une expression et reste telle quelle.
   const ARABE = /[؀-ۿ]/;
-  const RUN = /[0-9A-Za-z+\-*×÷/:=^().,|√]+(?:\s+[0-9A-Za-z+\-*×÷/:=^().,|√]+)*/g;
+  const RUN = /[0-9A-Za-zπ+\-*×÷/:=^().,|√]+(?:\s+[0-9A-Za-zπ+\-*×÷/:=^().,|√]+)*/g;
 
   function isoMixte(texte) {
     return String(texte).replace(RUN, m => {
