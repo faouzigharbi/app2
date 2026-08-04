@@ -434,3 +434,22 @@ Deux exercices restent **sans faute plantée**, et il faut le dire :
 Leurs volets sortent donc avec un corrigé juste, que l'élève doit reconnaître
 comme tel. C'est le quatrième point du contrat, et non un contournement — mais
 c'est un cas où il s'impose au lieu d'être choisi.
+
+### Où vivent les pages
+
+Les pages « أين الخطأ؟ » sont dans un dossier `erreurs/` **à l'intérieur de la
+fiche**, à côté des pages de chaîne et non parmi elles :
+
+    radic9/
+      index.html  ex01.html … ex08.html      les chaînes
+      noyau.js  racines.js  juge.js  erreurs.js
+      erreurs/
+        index.html  err01.html … err08.html   les pages d'erreurs
+
+La fiche reste un bloc qu'on dépose tel quel : les pages d'erreurs remontent
+d'un cran — `../noyau.js`, `../style.css` — et **rien n'est dupliqué**. Chaque
+page porte un lien vers sa chaîne jumelle, chaque index un lien vers l'autre.
+
+Le nom de la page de chaîne n'est pas deviné : une fiche écrit `preuve1.html`,
+une autre `ex1.html` sans zéro. Le générateur regarde ce qui existe, et
+n'écrit pas de lien mort quand il ne trouve rien.

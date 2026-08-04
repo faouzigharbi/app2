@@ -34,6 +34,22 @@ require('./gen18.js');
 require('./gen19.js');
 const EXOS = Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b);
 const OUT = path.resolve(process.argv[2] || '.');
+// Les pages « أين الخطأ؟ » vivent dans leur propre dossier, à côté des pages de
+// chaîne et non parmi elles. La fiche reste un bloc qu'on dépose tel quel : les
+// pages remontent d'un cran pour ses scripts et sa feuille de style, et rien
+// n'est dupliqué.
+const DOS = path.join(OUT, 'erreurs');
+fs.mkdirSync(DOS, { recursive: true });
+
+// Toutes les fiches ne nomment pas leurs pages de chaîne « exNN.html » : l'une
+// écrit « preuve1.html », l'autre « ex1.html » sans zéro. On ne devine pas, on
+// regarde ce qui existe — et faute de trouver, on n'écrit pas de lien mort.
+const lienChaine = n => {
+  const noms = ['ex' + String(n).padStart(2, '0'), 'ex' + n,
+                'preuve' + String(n).padStart(2, '0'), 'preuve' + n];
+  const trouve = noms.find(x => fs.existsSync(path.join(OUT, x + '.html')));
+  return trouve ? '<a class="badge" href="../' + trouve + '.html">⛓ سلسلة البرهان</a>' : '';
+};
 
 const page = (n, titre) => `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -41,7 +57,7 @@ const page = (n, titre) => `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${titre} — أين الخطأ؟</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 <style>
   .etape { display:flex; gap:10px; align-items:flex-start; padding:10px 12px;
            border:1.5px solid #e8ecf2; border-radius:10px; margin:6px 0;
@@ -83,8 +99,8 @@ const page = (n, titre) => `<!doctype html>
   <div id="barre" class="row">
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <span class="badge">8 أساسي</span>
-      <a class="badge" href="err-index.html">↩ الفهرس</a>
-      <a class="badge" href="ex${String(n).padStart(2, '0')}.html">⛓ سلسلة البرهان</a>
+      <a class="badge" href="index.html">↩ الفهرس</a>
+      ${lienChaine(n)}
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <span class="niveaux">
@@ -99,30 +115,30 @@ const page = (n, titre) => `<!doctype html>
   <div id="feuille"></div>
 </main>
 
-<script src="noyau.js"></script>
-<script src="formes.js"></script>
-<script src="questions.js"></script>
-<script src="gen01.js"></script>
-<script src="gen02.js"></script>
-<script src="gen03.js"></script>
-<script src="gen04.js"></script>
-<script src="gen05.js"></script>
-<script src="gen06.js"></script>
-<script src="gen07.js"></script>
-<script src="gen08.js"></script>
-<script src="gen09.js"></script>
-<script src="gen10.js"></script>
-<script src="gen11.js"></script>
-<script src="gen12.js"></script>
-<script src="gen13.js"></script>
-<script src="gen14.js"></script>
-<script src="gen15.js"></script>
-<script src="gen16.js"></script>
-<script src="gen17.js"></script>
-<script src="gen18.js"></script>
-<script src="gen19.js"></script>
-<script src="juge.js"></script>
-<script src="erreurs.js"></script>
+<script src="../noyau.js"></script>
+<script src="../formes.js"></script>
+<script src="../questions.js"></script>
+<script src="../gen01.js"></script>
+<script src="../gen02.js"></script>
+<script src="../gen03.js"></script>
+<script src="../gen04.js"></script>
+<script src="../gen05.js"></script>
+<script src="../gen06.js"></script>
+<script src="../gen07.js"></script>
+<script src="../gen08.js"></script>
+<script src="../gen09.js"></script>
+<script src="../gen10.js"></script>
+<script src="../gen11.js"></script>
+<script src="../gen12.js"></script>
+<script src="../gen13.js"></script>
+<script src="../gen14.js"></script>
+<script src="../gen15.js"></script>
+<script src="../gen16.js"></script>
+<script src="../gen17.js"></script>
+<script src="../gen18.js"></script>
+<script src="../gen19.js"></script>
+<script src="../juge.js"></script>
+<script src="../erreurs.js"></script>
 
 <script>
 (function(){
@@ -314,14 +330,14 @@ const index = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>أين الخطأ؟ — 8 أساسي</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <header><h1>أين الخطأ؟ — 8 أساسي</h1>
 <p>في كل صفحة، حلّ تلميذ فيه خطأ (أو خطآن في المستوى المتقدّم). ابحث عنه، ثمّ صحّحه.</p></header>
 <main>
 <div class="row" style="margin-bottom:12px">
-  <a class="badge" href="index.html">⛓ سلاسل البرهان</a>
+  <a class="badge" href="../index.html">⛓ سلاسل البرهان</a>
 </div>
 <div style="display:grid;gap:10px">
 ${EXOS.map(n => `  <a href="err${String(n).padStart(2, '0')}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔎 التمرين ${n} — ${F.PROBLEMES[n].titre} <small style="color:#95a5a6">(${F.PROBLEMES[n].questions || F.PAR_PAGE || ''} أسئلة)</small></a>`).join('\n')}
@@ -333,8 +349,8 @@ ${EXOS.map(n => `  <a href="err${String(n).padStart(2, '0')}.html" style="displa
 
 for (const n of EXOS) {
   const titre = 'التمرين ' + n + ' — ' + F.PROBLEMES[n].titre;
-  fs.writeFileSync(path.join(OUT, `err${String(n).padStart(2, "0")}.html`), page(n, titre));
-  console.log(`err${String(n).padStart(2, "0")}.html — ${titre}`);
+  fs.writeFileSync(path.join(DOS, `err${String(n).padStart(2, "0")}.html`), page(n, titre));
+  console.log(`erreurs/err${String(n).padStart(2, "0")}.html — ${titre}`);
 }
-fs.writeFileSync(path.join(OUT, 'err-index.html'), index);
-console.log(`err-index.html — ${EXOS.length} صفحات`);
+fs.writeFileSync(path.join(DOS, 'index.html'), index);
+console.log(`erreurs/index.html — ${EXOS.length} صفحات`);

@@ -16,7 +16,7 @@ for d in expr7 encadrement sommeq8 addz8 produitq8 factq8 reel9 arith9 \
   [ -f "$d/erreurs.js" ] || continue
   c=$( cd "$d" && node verifier.js "$TOURS" 2>&1 | grep -c 'échec\|ÉCHECS\|✗' )
   e=$( cd "$d" && ERREURS=1 node verifier.js "$TOURS" 2>&1 | grep -c 'خلل\|فشل' )
-  p=$( ls "$d"/err[0-9]*.html 2>/dev/null | wc -l | tr -d ' ' )
+  p=$( ls "$d"/erreurs/err*.html 2>/dev/null | wc -l | tr -d ' ' )
   printf '%-13s chaînes:%s erreur(s)  erreurs:%s erreur(s)  pages:%s\n' "$d" "$c" "$e" "$p"
   [ "$c" != 0 ] && ROUGE=1
   [ "$e" != 0 ] && ROUGE=1

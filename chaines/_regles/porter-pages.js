@@ -37,9 +37,10 @@ const aGens = fs.existsSync(path.join(OUT, 'gens.js'));
 const gens = aGens ? ['gens.js']
                    : fs.readdirSync(OUT).filter(f => /^gen\d+\.js$/.test(f)).sort();
 page = page.replace('//GENS//', gens.map(m => "require('./" + m + "');").join('\n'));
-page = page.replace('//GENSHTML//', gens.map(m => '<script src="' + m + '"></script>').join('\n'));
+page = page.replace('//GENSHTML//', gens.map(m => '<script src="../' + m + '"></script>').join('\n'));
 page = page.replace('//MODULES//', modules.map(m => "require('./" + m + "');").join('\n'));
-page = page.replace('//SCRIPTS//', modules.map(m => '<script src="' + m + '"></script>').join('\n'));
+// Les pages vivent dans <fiche>/erreurs/ : leurs scripts sont un cran au-dessus.
+page = page.replace('//SCRIPTS//', modules.map(m => '<script src="../' + m + '"></script>').join('\n'));
 page = page.replace(/\/\/BADGE\/\//g, badge);
 page = page.replace('//GLOBAL//', global);
 page = page.replace(/%NOYAU%/g, noyau);
