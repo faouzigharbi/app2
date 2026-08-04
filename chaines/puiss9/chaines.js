@@ -785,7 +785,9 @@
       etapes.push(['نفس الأسّ', 'الأسّ هو ' + n + ' في البسط و المقام']);
       etapes.push(['القاعدة', 'a^n : b^n = (a : b)^n']);
       const q = Q(bh.n * bb.d, bh.d * bb.n);
-      etapes.push(['نقسم الأساسين', qTxt(bh) + ' : ' + qTxt(bb) + ' = ' + qTxt(q)]);
+      const env2 = t => (/[/:]/.test(t) ? '(' + t + ')' : t);
+      etapes.push(['نقسم الأساسين',
+                   env2(qTxt(bh)) + ' : ' + env2(qTxt(bb)) + ' = ' + env2(qTxt(q))]);
       etapes.push(['النتيجة', 'A = ' + puis(q, n)]);
       return finir(item, etapes, puis(q, n), 'نفس الأسّ: نقسم الأساسين', true);
     }
@@ -889,9 +891,12 @@
         if (simple === x.baseTxt) return null;
         const et = [];
         et.push(['نبسّط الأساس', x.baseTxt + ' = ' + simple]);
-        et.push(['نعيد الكتابة', 'A = ' + puisR(simple, x.exp)]);
+        et.push(['الأساس تغيّر شكله لا قيمته',
+                 'القوّة تبقى، و الأسّ هو ' + x.exp]);
         if (x.exp < 0) et.push(['أسّ سالب', REGLE_NEGATIF]);
-        else et.push(['القاعدة', 'الأساس تغيّر شكله لا قيمته']);
+        else et.push(['القاعدة', 'نكتب القوّة بالأساس المبسّط']);
+        // « نعيد الكتابة » disait déjà ce que dit « النتيجة » : une relation
+        // portée deux fois, donc deux étapes interchangeables.
         et.push(['النتيجة', 'A = ' + puisR(simple, x.exp)]);
         return finir(item, et, puisR(simple, x.exp), 'ابدأ بتبسيط الأساس', 'reelle');
       }
@@ -963,7 +968,10 @@
     const etapes = [];
     etapes.push(['نفس الأسّ', 'الأسّ هو ' + h.exp + ' في البسط و المقام']);
     etapes.push(['القاعدة', 'a^n : b^n = (a : b)^n']);
-    etapes.push(['نقسم الأساسين', h.baseTxt + ' : ' + b.baseTxt + ' = ' + txt]);
+    // « 343/125 : 25/49 » se lit ((343/125)/25)/49 : il faut envelopper.
+    const env2 = t => (/[/:]/.test(t) ? '(' + t + ')' : t);
+    etapes.push(['نقسم الأساسين',
+                 env2(h.baseTxt) + ' : ' + env2(b.baseTxt) + ' = ' + env2(txt)]);
     etapes.push(['النتيجة', 'A = ' + puisR(txt, h.exp)]);
     return finir(item, etapes, puisR(txt, h.exp), 'نفس الأسّ: نقسم الأساسين', 'reelle');
   }
@@ -973,19 +981,44 @@
   function calculReel(item) {
     const v = valDe(item.e);
     if (!v) return null;
-    const ts = termesDe(item.e);
-    if (ts.length < 2) return null;
+    // Une SOMME se traite terme à terme ; un PRODUIT, facteur par facteur.
+    // C'est le même geste — isoler ce qu'on sait calculer — et les feuilles de
+    // 9ème mêlent les deux sans prévenir.
+    let ts = termesDe(item.e);
+    const somme = ts.length > 1;
+    if (!somme) {
+      ts = facteursDe(item.e).map(t => ({ t, signe: '×' }));
+      if (ts.length < 2) {
+        // Un QUOTIENT dont les deux étages sont eux-mêmes des produits :
+        // « (−3 × 2³)³ / (8 × 9)² ». On calcule le haut, puis le bas.
+        const parts = couper(item.e, '/:').map(x => x.t);
+        if (parts.length !== 2) return null;
+        const vh = valDe(parts[0]), vb = valDe(parts[1]);
+        if (!vh || !vb || !Object.keys(vb).length) return null;
+        const et = [];
+        et.push(['نحدّد الأولوية', 'نحسب البسط، ثمّ المقام، ثمّ نقسم']);
+        et.push(['البسط', parts[0] + ' = ' + F.ecrire(vh)]);
+        et.push(['المقام', parts[1] + ' = ' + F.ecrire(vb)]);
+        et.push(['نقسم', '(' + F.ecrire(vh) + ') : (' + F.ecrire(vb) + ') = ('
+                         + F.ecrire(v) + ')']);
+        et.push(['النتيجة', 'A = ' + F.ecrire(v)]);
+        return finir(item, et, F.ecrire(v), 'احسب البسط و المقام، ثمّ اقسم', false);
+      }
+    }
     const etapes = [];
-    etapes.push(['نحدّد الأولوية',
-                 'كلّ حدّ على حدة، ثمّ نجمع — و القوى قبل الضرب']);
+    etapes.push(['نحدّد الأولوية', somme
+                 ? 'كلّ حدّ على حدة، ثمّ نجمع — و القوى قبل الضرب'
+                 : 'كلّ عامل على حدة، ثمّ نضرب — و القوى قبل الضرب']);
     const vals = [];
     for (const t of ts) {
       const x = valDe(t.t);
       if (!x) return null;
       vals.push(x);
-      etapes.push(['نحسب الحدّ « ' + t.t + ' »', t.t + ' = ' + F.ecrire(x)]);
+      etapes.push([(somme ? 'نحسب الحدّ « ' : 'نحسب العامل « ') + t.t + ' »',
+                   t.t + ' = ' + F.ecrire(x)]);
     }
     const ligne = ts.map((t, i) => (i ? t.signe + ' ' : '') + F.ecrire(vals[i])).join(' ');
+    if (ligne === F.ecrire(v)) return null;
     etapes.push(['نعيد كتابة العبارة', 'A = ' + ligne]);
     etapes.push(['النتيجة', 'A = ' + F.ecrire(v)]);
     if (etapes.length < 5) return null;
@@ -1030,9 +1063,9 @@
     'meme-exposant': [memeExposant, produit, parLesPremiersQ, parLesPremiers],
     'facteur-commun': [facteurCommun, parLesPremiers],
     'decomposer': [decomposer],
-    'puissance-reelle': [produitReel, quotientReel],
+    'puissance-reelle': [produitReel, quotientReel, calculReel],
     'calcul-reel': [calculReel],
-    'quotient': [quotient, parLesPremiersQ, parLesPremiers],
+    'quotient': [quotient, parLesPremiersQ, parLesPremiers, quotientReel, calculReel],
     'calcul': [calcul]
   };
 

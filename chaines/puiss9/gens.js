@@ -35,7 +35,11 @@
     ['puissance-de-puissance', 'قوّة القوّة'],
     ['meme-exposant', 'نفس الأسّ — أساسان'],
     ['facteur-commun', 'إخراج القوّة المشتركة'],
-    ['calcul', 'حساب عبارة — ترتيب العمليات']
+    ['calcul', 'حساب عبارة — ترتيب العمليات'],
+    ['quotient', 'خارج قوى لنفس الأساس'],
+    ['decomposer', 'كتابة عدد في صيغة قوّة'],
+    ['puissance-reelle', 'قوى الأعداد الحقيقية — √ و π'],
+    ['calcul-reel', 'حساب عبارة في ℝ']
   ];
 
   // Tire n items d'une case, sans répétition, en complétant par les autres

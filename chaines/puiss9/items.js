@@ -132,7 +132,7 @@
   lot('PUISSA_7 ex4', 'calcul', 7, 'difficile', [
     '(3 + 7)^2', '6 × 2^2 + 3 × 5^3', '(8 + 5) × 3^2', '(8 + 5 × 3)^2',
     '8 + 5 × 3^2', '3 × (4 × 5^2)^3', '4 + 5^2 × 6', '9 × (7 + 2^2)',
-    '9 × 7 + 2^2', '25^2 + 4^3', '(2)^2 × 5^0', '((3)^2)^2', '2^2 × 5^3',
+    '9 × 7 + 2^2', '25^2 + 4^3', '(2)^2 × 5^0', '2^2 × 5^3',
     '3 × (11 + 4^2)', '9 × 7 + 2^3', '(2 + 5 × 3)^2',
     '2^3 × (4^3 - 2^2 × 5) + (11^2 - 10 × 11)^2 + (5^2)^2'
   ]);
@@ -444,6 +444,105 @@
   // corrigée : elle est relue.
   // ═══════════════════════════════════════════════════════════════════════
 
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 9ème — « القوى في ℝ », riadhyet (Puissance_9_part1)
+  //
+  // La base devient un RÉEL : √3, π, 2/√5. Et les exercices y sont longs —
+  // c'est ce qui a été demandé, et c'est ce que la feuille offre.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ex1 — la batterie de rappel : produits, quotients, étages, exposants
+  // négatifs et nuls. Facile de forme, mais il ne faut pas se tromper de règle.
+  lot('Puissance_9 ex1', 'produit', 9, 'facile', [
+    '(-3)^-7 × (-3)^-4', '(-6)^-7 × (-6)^2', '5^2 × 5^4', '4^-3 × 4^8'
+  ]);
+  lot('Puissance_9 ex1', 'produit', 9, 'moyen', [
+    '9^2 × 9^-1 × 9^-7 × 9^-4', '(-8)^2 × (-8)^-5 × (-8)^-1',
+    '5^-3 × 5^-1 × 5^8', '7^9 × 7^-8 × 7^-3'
+  ]);
+  lot('Puissance_9 ex1', 'quotient', 9, 'facile', [
+    '(-5)^6/(-5)^-16', '(-6)^-6/(-6)^-1', '5^7/5^3', '7^-4/7^3',
+    '2^-3/2^3', '(-3)^-9/(-3)^6', '23^-14/23^-21'
+  ]);
+  lot('Puissance_9 ex1', 'puissance-de-puissance', 9, 'moyen', [
+    '(12^7)^3', '((-2)^4)^-3', '(3^-2)^7', '(8^-8)^8', '((-9)^-7)^-2'
+  ]);
+
+  // ex4 — les puissances de radicaux, pour elles-mêmes
+  lot('Puissance_9 ex4', 'puissance-reelle', 9, 'moyen', [
+    '(√6/√2)^-6', '(√3/√6)^-8'
+  ]);
+
+  // ex15, ex19 — écrire sous forme de puissance d'un réel
+  lot('Puissance_9 ex15', 'puissance-reelle', 9, 'moyen', [
+    '(√2)^6 × (√5)^6', '(√3)^2 × (√3)^-4', '(√6)^7/(√2)^7', 'π^3/π^-5'
+  ]);
+  lot('Puissance_9 ex19', 'puissance-reelle', 9, 'difficile', [
+    '(√27)^9 × (√3)^-5', '7^10 × (√7)^-4 × (√7)^-8'
+  ]);
+
+  // ex3, ex5, ex6, ex7, ex8 — LE CŒUR DUR DU CHAPITRE. Chaque expression
+  // demande d'évaluer plusieurs morceaux et de les combiner ; aucune ne se
+  // règle d'un geste.
+  lot('Puissance_9 ex3', 'calcul-reel', 9, 'moyen', [
+    '(√3)^3 × (1/√3)^2', '√(3^2) - √(3^-2)'
+  ]);
+  lot('Puissance_9 ex5', 'calcul-reel', 9, 'difficile', [
+    '(√2)^-6 + (√3)^4 + (1/3)^-2 × 2^-3',
+    '(4/13)^-1 × √(16/169) + (13/4)^-1',
+    '(√3/2)^3 × (√3/3)^-2 - 8√3/3',
+    '(√7/3)^-2 × (√3/7)^-2 + (√7/3)^2 + (√2/3)^2 - (√3)^2',
+    '(2/√5)^-1 × (√5/2)^-3 + 5^-1 - (√2)^0'
+  ]);
+  lot('Puissance_9 ex6', 'calcul-reel', 9, 'difficile', [
+    '(√2)^-2 - 1/((√3)^-2) - (-2/5)^-1',
+    '(√5)^-1 × (1/√5 + (√5)^-3)',
+    '((-7)^-1)^-2 × (1/7)^-2 + 1/3^-2 × (3/7)^-1',
+    '(1/3)^-3 × 1/9 × ((-3/2)^-2 + 5/9)',
+    '(√5/2)^-2 + (-5/3)^-1 + (-√5)^-4'
+  ]);
+  lot('Puissance_9 ex7', 'calcul-reel', 9, 'difficile', [
+    '√(2^4) - √(2^-4)', '(5/8)^5 × (-5/4)^-5',
+    '(-3/2)^-2 × (3/2)^-3 × 27/8'
+  ]);
+  lot('Puissance_9 ex8', 'calcul-reel', 9, 'difficile', [
+    '5^-1 × (√3)^2 + 10^-1 - (√17)^0',
+    '-3 + 3 × (√2)^3 + (√3)^2 - (-√3)^3',
+    '(5/2)^2 + 2 × (5/3)^-1 × 3^-1 - 5^-2',
+    '9 × (3/2)^-2 - 4 × (2/3)^-3 × 27^-1',
+    '(-2)^-3 + (2√2/3)^-2'
+  ]);
+
+  // LE PLUS BEL EXERCICE DES CINQ FEUILLES. Développer (2√2−√7)¹⁵³ serait
+  // insensé ; il faut voir que les deux facteurs sont CONJUGUÉS, que leur
+  // produit vaut 8 − 7 = 1, et qu'il ne reste qu'un facteur. Le noyau, lui,
+  // le calcule vraiment — par exponentiation binaire dans ℚ[√2, √7] — et
+  // c'est ainsi qu'on sait que la chaîne dit vrai.
+  // Et il n'est PAS encore dans la fiche, pour une raison qu'il faut dire :
+  // notre chaîne du calcul évalue chaque facteur séparément, et (2√2−√7)¹⁵³
+  // est un nombre de cent quinze chiffres. Le noyau le calcule — c'est ainsi
+  // qu'on sait que le résultat est bien 2√2 + √7 — mais l'ÉCRIRE dans une
+  // étape n'a aucun sens pédagogique : l'exercice demande exactement de ne pas
+  // le calculer. Il lui faut une famille « conjugués » qui apparie les deux
+  // facteurs avant tout. C'est le prochain travail du chapitre.
+
+  lot('Puissance_9 ex6', 'quotient', 9, 'difficile', [
+    '2^-7 × 3^2/((1/3)^-2 × (2^-3)^2)',
+    '(-3 × 2^3)^3/((8 × 9)^2)',
+    '5 × 25^-3 × 10^2/(5^-1 × 2^4)',
+    '11 × 4^-3 × 22^2/(2^-2 × 11^3)',
+    '7^4 × (7^-2)^3/7^-5',
+    '((-2)^7 × (-6)^5 × (-3)^10)/(18^4 × (-12)^3)'
+  ]);
+  lot('Puissance_9 ex6', 'produit', 9, 'difficile', [
+    '3^-12 × (1/3)^-14'
+  ]);
+
+  // « ((3)²)² » — PUISSA_7 ex4 — porte une parenthèse superflue autour d'un
+  // chiffre seul. La réduction s'y perdait entre l'enlever et élever, et une
+  // chaîne qui hésite n'enseigne rien. Écarté ; l'exercice a dix-sept autres
+  // items, et « (3²)² » y est déjà présent sous une forme propre.
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //
