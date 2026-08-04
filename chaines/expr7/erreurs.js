@@ -83,12 +83,17 @@
   const txt = v => F.txt(v);
 
   // Une faute doit rester CRÉDIBLE : ce qu'un élève écrit vraiment.
-  function credible(s) {
+  function credible(s, vrai) {
     if (NEGATIF.test(s)) return false;
     if (/(^|[^\w])1\s*[a-zA-Z(]/.test(s)) return false;              // « 1x »
     if (/(^|[^\w])([a-zA-Z])\s+\2([^\w]|$)/.test(s)) return false;   // « x x »
+    // On ne juge que ce que la faute INTRODUIT : une étape qui met déjà des
+    // fractions au même dénominateur en porte de non réduites, et les refuser
+    // interdirait toute faute sur elle.
+    const dejaLa = new Set(String(vrai || '').match(/\d+\/\d+/g) || []);
     let m; const re = /(\d+)\/(\d+)/g;
     while ((m = re.exec(s))) {
+      if (dejaLa.has(m[0])) continue;
       if (Number(m[2]) === 1) return false;                          // « 3/1 »
       if (F.pgcd(Number(m[1]), Number(m[2])) !== 1) return false;    // « 4/2 »
     }
@@ -363,7 +368,7 @@
         for (let essai = 0; essai < 8; essai++) {
           let faux;
           try { faux = fam.faire(vrai); } catch (e) { faux = null; }
-          if (!faux || faux === vrai || !credible(faux)) continue;
+          if (!faux || faux === vrai || !credible(faux, vrai)) continue;
           if (juge(faux) !== 'fausse') continue;
           out.push({ rang: i, faux: faux, vrai: vrai, famille: fam.nom,
                      quoi: fam.quoi, interdite: interdites.has(fam.nom),
@@ -424,7 +429,7 @@
         let leurre;
         try { leurre = fam.faire(f.vrai); } catch (e) { leurre = null; }
         if (!leurre || leurre === f.vrai || leurre === f.faux) continue;
-        if (!credible(leurre) || opts.indexOf(leurre) >= 0) continue;
+        if (!credible(leurre, f.vrai) || opts.indexOf(leurre) >= 0) continue;
         if (juge(leurre) !== 'fausse') continue;
         opts.push(leurre);
       }

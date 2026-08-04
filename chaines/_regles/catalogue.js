@@ -227,11 +227,21 @@
       nom: 'جمع البسطين و المقامين',
       quoi: 'لجمع كسرين نوحّد المقام؛ جمع البسطين و المقامين ليس جمعا',
       faire(math) {
-        const m = /(\d+)\/(\d+)\s*([+\-])\s*(\d+)\/(\d+)/.exec(math);
+        // Toutes les paires, pas seulement la première : « 3/3 - 1/3 » donne un
+        // dénominateur nul et ne peut rien produire, mais « 1/3 + 3/3 » le peut.
+        const re = /(\d+)\/(\d+)\s*([+\-])\s*(\d+)\/(\d+)/g;
+        let m = null, cand = null;
+        while ((cand = re.exec(math))) {
+          const nn = cand[3] === '+' ? Number(cand[1]) + Number(cand[4])
+                                     : Number(cand[1]) - Number(cand[4]);
+          const dd = cand[3] === '+' ? Number(cand[2]) + Number(cand[5])
+                                     : Number(cand[2]) - Number(cand[5]);
+          if (nn !== 0 && dd !== 0) { m = cand; break; }
+          re.lastIndex = cand.index + 1;
+        }
         if (!m) return null;
         const n = m[3] === '+' ? Number(m[1]) + Number(m[4]) : Number(m[1]) - Number(m[4]);
         const d = m[3] === '+' ? Number(m[2]) + Number(m[5]) : Number(m[2]) - Number(m[5]);
-        if (n === 0 || d === 0) return null;
         // L'élève n'efface pas la somme : il en écrit le mauvais RÉSULTAT.
         const r = relation(math);
         if (r && r.membres.length === 2 && r.ops[0] === '='
@@ -276,6 +286,41 @@
           return r.membres[0] + ' = ' + d2.join(' ');
         }
         return null;
+      }
+    },
+    {
+      id: 'numerateur-oublie',
+      nom: 'المقام تغيّر و البسط بقي كما هو',
+      quoi: 'عند التحويل إلى المقام المشترك يُضرب البسط في نفس ما ضُرب فيه المقام: '
+          + '3/8 تصير 15/40، لا 3/40',
+      geste: /نوحّد|المقام المشترك|نكتب على نفس المقام|نجمع البسوط|نطرح البسوط/,
+      faire(math, A) {
+        const r = relation(math);
+        if (!r) return null;
+        const k = r.membres.length - 1;
+        const t = termes(r.membres[k]);
+        const frac = [];
+        t.forEach((x, i) => {
+          const m = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(x.trim());
+          if (m) frac.push([m, i]);
+        });
+        if (frac.length < 2) return null;
+        const d0 = frac[0][0][3];
+        if (!frac.every(f => f[0][3] === d0)) return null;   // même mocam partout
+        // Le terme s'écrit avec le NOUVEAU dénominateur et l'ANCIEN numérateur.
+        // « 15/40 » vient de « 3/8 » : l'élève qui oublie de multiplier le
+        // numérateur écrit « 3/40 ». Réduire la fraction, au contraire, n'en
+        // changerait pas la valeur — la faute serait vraie, et le juge la
+        // rejetterait à bon droit. C'est arrivé.
+        const reduc = frac.filter(f => A.pgcd(Number(f[0][2]), Number(f[0][3])) > 1);
+        if (!reduc.length) return null;
+        const f = reduc[A.ent(0, reduc.length - 1)];
+        const g = A.pgcd(Number(f[0][2]), Number(f[0][3]));
+        const t2 = t.slice();
+        t2[f[1]] = (f[0][1] || '') + (Number(f[0][2]) / g) + '/' + f[0][3];
+        const copie = r.membres.slice();
+        copie[k] = t2.join(' ');
+        return recoller({ membres: copie, ops: r.ops });
       }
     },
     // ═════ ORDRE ET ENCADREMENT ═════
