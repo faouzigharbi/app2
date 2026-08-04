@@ -402,8 +402,13 @@
   // -1, et E(D-1) - 1 vaut -E, quel que soit le couple de Pell choisi.
   // =========================================================================
   // Les couples pour lesquels l'écriture « A = (1 + √r)(k√r - j) - √(m²r) »
-  // admet des entiers j ≥ 1 et m ≥ 1 : il faut j = kr - u et m = k - j + v.
-  const PELL20 = [[3, 2, 2], [2, 1, 3], [7, 4, 3], [5, 2, 6]];
+  // admet des entiers j ≥ 1 et m ≥ 2 : il faut j = kr - u et m = k - j + v.
+  //
+  // m ≥ 2 et non m ≥ 1, parce que la question demande d'extraire un carré
+  // parfait de sous le radical — et que m = 1 n'en laisse aucun à extraire :
+  // « √3 = √(1 × 3) = √3 » n'est pas un geste, et l'étape qui précède dirait
+  // déjà la réponse. Le couple (2, 1, 3) ne donne que m = 1 : il sort.
+  const PELL20 = [[3, 2, 2], [7, 4, 3], [5, 2, 6]];
 
   function type20() {
     const [u, v, r] = choix(PELL20);
@@ -415,7 +420,7 @@
     for (let essai = 0; essai < 500; essai++) {
       // --- A = (1 + √r)(k√r - j) - √(m²r) --------------------------------
       const k = ent(1, 5), j = k * r - u, mA = k - j + v;
-      if (j < 1 || mA < 1) continue;
+      if (j < 1 || mA < 2) continue;
 
       // --- B = p/(√r - jb) - (√r + q)/(√r + jb) ---------------------------
       //   p·jb + q·jb - r = u·d   et   p - q + jb = v·d,  avec d = r - jb².
@@ -470,9 +475,12 @@
           etapes: [
             ['ننشر الجداء',
              '(1 + √' + r + ')(' + R(k, r) + ' - ' + j + ') = ' + sTxt(dev1)],
+            // On substitue AVANT de réduire le radical : sans quoi cette étape
+            // dirait déjà « A = <ta> » et ferait double emploi avec la dernière
+            // chaque fois que le développement tombe sur un rationnel.
+            ['نعوّض في A', 'A = ' + sTxt(dev1) + ' - √' + carre(mA) * r],
             ['نبسّط الجذر',
              '√' + carre(mA) * r + ' = √(' + carre(mA) + ' × ' + r + ') = ' + R(mA, r)],
-            ['نطرح', 'A = ' + sTxt(dev1) + ' - ' + R(mA, r)],
             ['النتيجة', 'A = ' + ta]
           ],
           controle: { env, claims: [['A', ta]] }

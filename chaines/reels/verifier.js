@@ -123,6 +123,15 @@ function verifierBrut(brut) {
   probs.push(...controlerClaims(c, envs));
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  // Deux étapes peuvent porter des libellés différents et LA MÊME relation :
+  // « نحلّ : x = 3 » puis « النتيجة : x = 3 ». La comparaison ci-dessus, qui
+  // porte sur « libellé: math », ne les voit pas ; l'élève, lui, ne peut pas
+  // les départager, et l'ordre attendu devient arbitraire. On compare donc
+  // aussi les mathématiques seules.
+  const rel = brut.etapes.map(e => e[1])
+    .filter(s => typeof s === 'string' && !F.ARABE.test(s))
+    .map(s => s.replace(/\s+/g, ''));
+  if (new Set(rel).size !== rel.length) probs.push('علاقة مكرّرة في مرحلتين');
   if (t.length < 4) probs.push('السلسلة قصيرة جدا');
   if (!brut.indice) probs.push('بلا مساعدة');
   return probs;

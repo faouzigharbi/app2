@@ -121,6 +121,15 @@ function verifierBrut(brut) {
   probs.push(...controlerClaims(c, envs));
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  // Deux étapes peuvent porter des libellés différents et LA MÊME relation :
+  // « نحلّ : x = 3 » puis « النتيجة : x = 3 ». La comparaison ci-dessus, qui
+  // porte sur « libellé: math », ne les voit pas ; l'élève, lui, ne peut pas
+  // les départager, et l'ordre attendu devient arbitraire. On compare donc
+  // aussi les mathématiques seules.
+  const rel = brut.etapes.map(e => e[1])
+    .filter(s => typeof s === 'string' && !F.ARABE.test(s))
+    .map(s => s.replace(/\s+/g, ''));
+  if (new Set(rel).size !== rel.length) probs.push('علاقة مكرّرة في مرحلتين');
   if (t.length < 4) probs.push('السلسلة قصيرة جدا');
   if (!brut.indice) probs.push('بلا مساعدة');
   return probs;
@@ -138,11 +147,11 @@ if (process.env.CONTRE_EXEMPLES) {
   // pas toujours obligerait à retirer jusqu'à tomber dessus.
   const parQuestion = (n, i) => F.tirer(n)[i];
 
-  pousse("E du 1 decale", parQuestion(1, 0),
+  pousse("E du 1 decale", parQuestion(1, 2),
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("facteur commun de D oublie", parQuestion(1, 1),
     c => { c.controle.env.D = c.controle.env.D.replace(")/(", " + 1)/("); });
-  pousse("C du 1 decale", parQuestion(1, 2),
+  pousse("C du 1 decale", parQuestion(1, 0),
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("E et D ne sont plus inverses", parQuestion(1, 3),
     c => { c.controle.env.E = c.controle.env.E + " + 1"; });
@@ -152,7 +161,7 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
   pousse("L du 1 decale", parQuestion(1, 7),
     c => { c.controle.claims[0][1] += " + 1"; });
-  pousse("reduction de K faussee", parQuestion(1, 8),
+  pousse("reduction de K faussee", parQuestion(1, 6),
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("factorisation de T fausse", parQuestion(1, 9),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
@@ -227,6 +236,9 @@ if (process.env.CONTRE_EXEMPLES) {
 
   pousse("étape dupliquée", parQuestion(4, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
+  // Même relation sous deux libellés : indépartageable pour l'élève.
+  pousse("relation répétée sous un autre libellé", parQuestion(4, 0),
+    c => { c.etapes[2] = ['نعيد', c.etapes[1][1]]; });
 
   let bon = 0;
   for (const [nom, q] of cas) {

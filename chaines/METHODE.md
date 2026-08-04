@@ -38,6 +38,13 @@ démonstration donc sa propre chaîne.
 Le **tirage est commun à toute la page**, parce que l'exercice l'est : le `B` de
 la question 3 doit être le `B` de la question 2.
 
+Et **l'ordre des volets est celui de l'énoncé**. Attention au piège de la fiche
+arabe : quand elle pose plusieurs expressions côte à côte sur une même ligne,
+cette ligne se lit de droite à gauche. Recopiée de gauche à droite, elle sort à
+l'envers — `a, b, c, d` devient `d, c, b, a`, et l'élève ne retrouve plus ses
+questions. Le signe qui trahit la faute est une suite de noms qui *descend*
+(`E, D, C`, `M, L, K`) : aucune fiche ne nomme ses expressions à rebours.
+
 ## 3. Génératif, mais jamais au hasard
 
 Les nombres changent à chaque chargement (bouton « أرقام جديدة »). La fiche
@@ -86,7 +93,11 @@ Règles de composition des étapes :
 * une étape porte une **relation vérifiable** (`√32 = √(16 × 2) = 4√2`), sauf
   les étapes de cadrage rédigées en arabe (« شرط الوجود : … ») ;
 * jamais deux étapes identiques — l'élève ne pourrait pas les départager, et le
-  contrôle d'ordre deviendrait ambigu ;
+  contrôle d'ordre deviendrait ambigu. **Et pas davantage deux étapes portant la
+  même relation sous des libellés différents** : « نحلّ : x = 3 » puis
+  « النتيجة : x = 3 » sont deux cartes que rien ne distingue mathématiquement.
+  La faute est facile à commettre quand l'avant-dernière étape tombe déjà sur le
+  résultat ; le validateur la refuse désormais ;
 * au moins quatre étapes, dont deux vérifiables.
 
 ## 5. Le rendu : l'arabe coule à droite, les mathématiques à gauche
