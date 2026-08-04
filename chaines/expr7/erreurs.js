@@ -1,63 +1,54 @@
-// Les pages « erreurs » — le miroir des chaînes de démonstration.
+// Les pages « أين الخطأ؟ » de la fiche « العبارات الحرفية » — 7 أساسي.
 //
 // Dans la chaîne, les étapes sont JUSTES et EN DÉSORDRE : l'élève reconstruit
 // le raisonnement. Ici elles sont DANS L'ORDRE et l'une d'elles est FAUSSE :
-// l'élève juge le raisonnement. C'est le geste du correcteur, et c'est celui
-// qui manque le plus — on sait appliquer une règle bien avant de savoir
-// repérer qu'elle a été mal appliquée.
+// l'élève juge le raisonnement.
 //
-// DEUX NIVEAUX :
-//   * مستوى متوسّط  — une étape fausse ;
-//   * مستوى متقدّم — deux étapes fausses.
+// DEUX NIVEAUX : مستوى متوسّط (une faute) et مستوى متقدّم (deux).
 //
-// Chaque étape d'une chaîne est une relation vraie EN ELLE-MÊME, pas une ligne
-// de calcul qui hériterait de la précédente. Deux fautes ne peuvent donc pas se
-// masquer l'une l'autre, et le niveau avancé n'a pas besoin de précaution
-// particulière — c'est la structure des chaînes qui l'offre.
+// CE CATALOGUE NE CONTIENT AUCUNE FAUTE DE CALCUL.
 //
-// CE QU'ON NE PLANTE JAMAIS AU HASARD. Une faute n'a de valeur que si c'est
-// celle qu'un élève commet. D'où un catalogue de FAMILLES nommées : le retour
-// ne dit pas « faux », il dit « الترتيب لم ينقلب عند الضرب في عدد سالب ». La
-// page n'enseigne pas une correction, elle enseigne une famille de fautes.
+// C'est la règle, et elle est absolue. Un chiffre changé, un signe recopié de
+// travers, une addition ratée : l'élève qui les trouve n'a rien appris, et
+// celui qui les manque n'a rien à réviser. Il aurait appris à RELIRE, quand on
+// veut lui apprendre à RAISONNER.
 //
-// Une famille peut exiger le GESTE qui la produit : renverser un encadrement
-// n'est la faute de la leçon que là où l'on multiplie, divise ou inverse.
-// Ailleurs ce ne serait qu'une étourderie de copie, et l'élève apprendrait à
-// chercher des coquilles au lieu de chercher des fautes de raisonnement.
+// Chaque famille ci-dessous est donc une faute de COMPRÉHENSION, prise dans ce
+// que le chapitre enseigne réellement. La première est celle que le professeur
+// voit le plus souvent :
+//
+//        5a + 10b + 15 = 5(a + 2b + 15)
+//
+// l'élève croit que le terme constant échappe à la factorisation. Il a divisé
+// 5a et 10b par 5, et laissé 15 intact. Aucun contrôle numérique ne dirait
+// pourquoi c'est faux ; la page, elle, le nomme.
 //
 // ET CHAQUE FAUTE EST PROUVÉE. Toute étape plantée est repassée au juge du
 // noyau — le MÊME que celui du validateur — et rejetée si elle se trouve
-// vraie. Une page ne peut donc pas demander à l'élève de condamner une étape
-// juste. Les leurres de la phase « corrige » subissent le même contrôle.
+// vraie. Les leurres de la phase « corrige » subissent le même contrôle.
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.Expr;
 
-  // CONFIG — ce qui distingue cette fiche d'une autre.
-  //   interdit : ce qu'aucune copie de ce niveau ne peut porter. En 7ème, un
-  //   nombre négatif : le programme ne les a pas encore introduits, et une
-  //   faute qui en produirait serait hors sujet plutôt que fausse.
+  // Programme de 7ème : pas de nombres négatifs. Une faute qui en produirait
+  // serait hors sujet plutôt que fausse.
   const NEGATIF = /(^|[(:=×*+\-/])\s*-\s*\d/;
-  const interdit = s => NEGATIF.test(s);
 
   // -------------------------------------------------------------------------
-  // Découper une expression en ses termes de PREMIER niveau : « a + b(c - d) »
-  // donne « a » et « + b(c - d) ». Un balayage, pas une expression régulière —
-  // les parenthèses s'imbriquent et les barres de valeur absolue aussi.
+  // Découper une expression en ses termes de PREMIER niveau. Un balayage, pas
+  // une expression régulière — les parenthèses s'imbriquent.
   // -------------------------------------------------------------------------
   function termes(s) {
     const out = [];
-    let prof = 0, barres = 0, debut = 0;
+    let prof = 0, debut = 0;
     for (let i = 0; i < s.length; i++) {
       const c = s[i];
       if (c === '(') prof++;
       else if (c === ')') prof--;
-      else if (c === '|') barres ^= 1;
-      else if ((c === '+' || c === '-') && prof === 0 && !barres && i > debut) {
+      else if ((c === '+' || c === '-') && prof === 0 && i > debut) {
         const avant = s[i - 1];
-        if (avant === '(' || avant === '+' || avant === '-' || avant === '×'
-            || avant === '*' || avant === '/' || avant === '^') continue;
+        if ('(+-×*/^:'.indexOf(avant) >= 0) continue;
         out.push(s.slice(debut, i));
         debut = i;
       }
@@ -66,8 +57,6 @@
     return out.map(t => t.trim()).filter(t => t.length);
   }
 
-  // Les morceaux d'une relation : « a ≤ b ≤ c » donne les trois membres et les
-  // deux signes.
   function relation(s) {
     const m = String(s).split(/\s*([<>≤≥=])\s*/);
     if (m.length < 3) return null;
@@ -76,81 +65,153 @@
     return { membres, ops };
   }
 
-  const estMajal = s => /[[\]][^;]*;/.test(s) || /[∩∪]/.test(s);
+  // « 5/2 x » → { signe, coef: '5/2', lettre: 'x' } ; « 15 » → lettre nulle.
+  function monome(t) {
+    const m = /^\s*([+-]?)\s*([0-9]+(?:\/[0-9]+)?)?\s*([a-zA-Z]+(?:\^[0-9]+)?)?\s*$/.exec(t);
+    if (!m || (!m[2] && !m[3])) return null;
+    return { signe: m[1] || '+', coef: m[2] || null, lettre: m[3] || null };
+  }
 
-  // Une faute doit rester CRÉDIBLE : ce qu'un élève écrit vraiment. On refuse
-  // donc les écritures qu'aucune copie ne porte — un coefficient « 1x », une
-  // fraction non réduite « 4/2 », un membre identique à son voisin.
+  const nombre = t => { const m = monome(t); return !!m && !m.lettre; };
+
+  // Le calcul exact du noyau, pour fabriquer une faute qui A L'AIR d'un calcul
+  // juste : « 3 × 1/9 » doit rendre « 1/3 », pas « 3 × 1/9 ».
+  function val(t) {
+    try { return F.analyser(String(t).replace(/×/g, '*'), {}); }
+    catch (e) { return null; }
+  }
+  const txt = v => F.txt(v);
+
+  // Une faute doit rester CRÉDIBLE : ce qu'un élève écrit vraiment.
   function credible(s) {
+    if (NEGATIF.test(s)) return false;
+    if (/(^|[^\w])1\s*[a-zA-Z(]/.test(s)) return false;              // « 1x »
     if (/(^|[^\w])([a-zA-Z])\s+\2([^\w]|$)/.test(s)) return false;   // « x x »
-    if (interdit(s)) return false;
-    if (/(^|[^\w])1\s*[a-zA-Z(√]/.test(s)) return false;
     let m; const re = /(\d+)\/(\d+)/g;
     while ((m = re.exec(s))) {
-      if (Number(m[2]) === 1) return false;                  // « 3/1 »
-      if (F.pgcd(Number(m[1]), Number(m[2])) !== 1) return false;
+      if (Number(m[2]) === 1) return false;                          // « 3/1 »
+      if (F.pgcd(Number(m[1]), Number(m[2])) !== 1) return false;    // « 4/2 »
     }
     const r = relation(s);
-    if (r) {
-      for (let i = 1; i < r.membres.length; i++) {
-        if (r.membres[i].trim() === r.membres[i - 1].trim()) return false;
-      }
+    if (r) for (let i = 1; i < r.membres.length; i++) {
+      if (r.membres[i].trim() === r.membres[i - 1].trim()) return false;
     }
     return true;
   }
 
   // -------------------------------------------------------------------------
-  // LE CATALOGUE. Chaque famille porte son nom — celui que l'élève lira — et
-  // sait fabriquer sa faute à partir d'une étape juste, ou renoncer.
+  // LE CATALOGUE — huit fautes de compréhension, aucune faute de calcul.
+  // Chaque famille porte le nom que l'élève lira, et l'explication qui va avec.
+  // L'ordre est celui de la priorité : la première applicable l'emporte.
   // -------------------------------------------------------------------------
   const FAMILLES = [
     {
-      nom: 'حدّ ضائع في المتطابقة',
-      quoi: 'مربّع مجموع ثلاثة حدود لا حدّان: الحدّ الأوسط، ضعف الجداء، ينسى كثيرا',
+      nom: 'حدّ لم يُقسم على العامل المشترك',
+      quoi: 'عند التفكيك يُقسم كل حدّ على العامل المشترك، و الحدّ الثابت مثل غيره. '
+          + 'الخطأ الشائع: 5a + 10b + 15 = 5(a + 2b + 15) بدل 5(a + 2b + 3)',
+      // Le facteur commun peut porter des lettres — « 1/8 xy(7/3 x + 5/3 y) ».
+      // L'élève sort alors le facteur littéral mais oublie de diviser le
+      // COEFFICIENT du terme : c'est la même faute, sous un autre habit.
+      geste: /نكتب الجداء|نُخرج العامل|عاملا مشتركا|الشكل المفكّك|نفكّك/,
       faire(math) {
-        if (estMajal(math)) return null;
         const r = relation(math);
-        if (!r || r.ops.some(o => o !== '=')) return null;
-        const dernier = r.membres[r.membres.length - 1];
-        const t = termes(dernier);
-        if (t.length < 3) return null;
-        const k = F.ent(1, t.length - 2);
-        const reste = t.slice(0, k).concat(t.slice(k + 1));
-        return r.membres.slice(0, -1).join(' = ') + ' = ' + reste.join(' ');
+        if (!r) return null;
+        for (let k = 0; k < r.membres.length; k++) {
+          const m = /^(.*?)([0-9]+(?:\/[0-9]+)?)((?:\s*[a-zA-Z^0-9]+)*)\s*\(([^()]+)\)\s*$/
+                      .exec(r.membres[k]);
+          if (!m) continue;
+          const facteur = val(m[2]);
+          const t = termes(m[4]);
+          if (!facteur) continue;
+          const cands = [];
+          t.forEach(function (x, i) { if (monome(x)) cands.push([x, i]); });
+          if (!cands.length) continue;
+          const pick = cands[F.ent(0, cands.length - 1)];
+          const mono = monome(String(pick[0]).replace(/^\+\s*/, ''));
+
+          // Le terme NON DIVISÉ, c'est celui qu'on lit dans l'autre membre —
+          // « 7/5 xy(5/2 x + 4 y) = 7/2 x^2 y + 28/5 x y^2 » donne
+          // « 7/5 xy(7/2 x^2 y + 4 y) ». C'est la seule écriture qui raconte
+          // vraiment la faute. Faute d'autre membre, on ne peut la retrouver
+          // qu'en remultipliant le coefficient — et cela ne suffit que si le
+          // facteur commun est purement numérique.
+          let nonDivise = null;
+          const autre = r.membres[k === 0 ? r.membres.length - 1 : 0];
+          const ta = autre ? termes(autre) : [];
+          if (ta.length === t.length && ta[pick[1]]) {
+            nonDivise = String(ta[pick[1]]).replace(/^\+\s*/, '').trim();
+          } else if (!m[3].trim()) {
+            const brut = val(mono.coef || '1');
+            if (!brut) continue;
+            const c2 = F.mul(facteur, brut);
+            nonDivise = ((txt(c2) === '1' && mono.lettre) ? '' : txt(c2))
+                      + (mono.lettre ? ' ' + mono.lettre : '');
+          }
+          if (!nonDivise) continue;
+          if (nonDivise.trim() === String(pick[0]).replace(/^\+\s*/, '').trim()) continue;
+          const t2 = t.slice();
+          t2[pick[1]] = (pick[1] === 0 ? '' : '+ ') + nonDivise.trim();
+          const copie = r.membres.slice();
+          copie[k] = m[1] + m[2] + m[3] + '(' + t2.join(' ') + ')';
+          return copie.join(' ' + r.ops[0] + ' ');
+        }
+        return null;
       }
     },
     {
-      nom: 'إشارة مقلوبة في حدّ',
-      quoi: 'حدّ نُقل أو نُشر دون تغيير إشارته؛ و -(a - b) تساوي -a + b',
-      // Elle aussi tient à son geste. Une étape qui ne fait que RECOPIER un
-      // encadrement ou poser une définition ne peut pas porter cette faute :
-      // ce serait une coquille, et l'élève apprendrait à chasser les coquilles.
-      geste: /ننقل|نطرح|نضيف|نرفع|ننشر|نفكّك|نعوّض|نجمع|نوحّد|نختصر|نبسّط/,
+      nom: 'حدود غير متشابهة جُمعت',
+      quoi: 'حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا',
       faire(math) {
-        if (estMajal(math)) return null;
-        // Un signe ne se retourne par ERREUR que s'il y avait une soustraction
-        // à mal manier, et sur une expression littérale. Sur « 1/3 + 3/4 »,
-        // écrire « - » n'est pas une faute de raisonnement : c'est une faute
-        // de copie, et l'élève apprendrait à relire au lieu de raisonner.
-        if (!/-/.test(math) || !/[a-zA-Z]/.test(math)) return null;
         const r = relation(math);
         if (!r) return null;
-        for (let essai = 0; essai < 8; essai++) {
-          const k = F.ent(0, r.membres.length - 1);
-          const t = termes(r.membres[k]);
-          if (t.length < 2) continue;
-          const j = F.ent(1, t.length - 1);
-          const u = t[j];
-          t[j] = u[0] === '-' ? '+ ' + u.slice(1).trim()
-               : u[0] === '+' ? '- ' + u.slice(1).trim() : null;
-          if (!t[j]) continue;
-          const copie = r.membres.slice();
-          copie[k] = t.join(' ');
-          let out = copie[0];
-          for (let i = 0; i < r.ops.length; i++) out += ' ' + r.ops[i] + ' ' + copie[i + 1];
-          return out;
-        }
-        return null;
+        const k = r.membres.length - 1;
+        const t = termes(r.membres[k]);
+        if (t.length < 2) return null;
+        const m1 = monome(t[0]), m2 = monome(t[1]);
+        if (!m1 || !m2 || !m1.lettre || !m2.lettre) return null;
+        if (m1.lettre === m2.lettre) return null;
+        const a = val(m1.coef || '1'), b = val(m2.coef || '1');
+        if (!a || !b) return null;
+        const s = m2.signe === '-' ? F.sub(a, b) : F.add(a, b);
+        if (s.n <= 0) return null;
+        const fusion = (txt(s) === '1' ? '' : txt(s) + ' ') + m1.lettre;
+        const copie = r.membres.slice();
+        copie[k] = [fusion].concat(t.slice(2)).join(' ');
+        return copie.join(' ' + r.ops[0] + ' ');
+      }
+    },
+    {
+      nom: 'معامل الحرف الوحيد نُسي',
+      quoi: 'الحرف y وحده معناه 1 × y: معامله 1، و لا يُهمل عند جمع المعاملات',
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2) return null;
+        const m = /^\(([^()]+)\)\s*([a-zA-Z]+)\s*$/.exec(r.membres[1]);
+        if (!m) return null;
+        const t = termes(m[1]);
+        let i = -1;
+        for (let j = 0; j < t.length; j++) if (/^[+-]?\s*1$/.test(t[j])) i = j;
+        if (i < 0 || t.length < 3) return null;
+        const reste = t.slice(0, i).concat(t.slice(i + 1));
+        const copie = r.membres.slice();
+        copie[1] = '(' + reste.join(' ') + ')' + m[2];
+        return copie.join(' = ');
+      }
+    },
+    {
+      nom: 'النشر ناقص — حدّ لم يُضرب',
+      quoi: 'عند نشر جداء، كل حدّ من القوس الأوّل يُضرب في كل حدّ من الثاني: لا حدّ يُترك',
+      geste: /ننشر|نعيد كتابة|نرتّب|نزيل الأقواس|نعوّض/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        const k = r.membres.length - 1;
+        const t = termes(r.membres[k]);
+        if (t.length < 3) return null;
+        const j = F.ent(1, t.length - 2);
+        const copie = r.membres.slice();
+        copie[k] = t.slice(0, j).concat(t.slice(j + 1)).join(' ');
+        return copie.join(' = ');
       }
     },
     {
@@ -161,10 +222,8 @@
         if (!m) return null;
         const t = termes(m[2]);
         if (t.length < 2) return null;
-        // Le premier terme doit être NU : « 5/2(x + 3/2) » donne « 5/2 x + 3/2 »,
-        // qu'un élève écrit vraiment. « 2/3(3/5 a + …) » donnerait « 2/3 3/5 a »,
-        // deux fractions accolées que personne n'écrit — la faute doit rester
-        // lisible, sans quoi elle se repère à sa laideur et non à son erreur.
+        // Le premier terme doit être NU, sinon la faute s'écrit « 2/3 3/5 a »,
+        // que personne n'écrit : elle se repérerait à sa laideur.
         if (!/^[a-zA-Z]/.test(t[0])) return null;
         const distribue = m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ');
         return math.slice(0, m.index) + distribue + math.slice(m.index + m[0].length);
@@ -180,7 +239,6 @@
         const d = m[3] === '+' ? Number(m[2]) + Number(m[5]) : Number(m[2]) - Number(m[5]);
         if (n <= 0 || d <= 0) return null;
         // L'élève n'efface pas la somme : il en écrit le mauvais RÉSULTAT.
-        // « 32/15 + 5/3 = 37/18 », et non « 37/18 = 19/5 ».
         const r = relation(math);
         if (r && r.membres.length === 2 && r.ops[0] === '='
             && m.index < r.membres[0].length) {
@@ -190,100 +248,128 @@
       }
     },
     {
-      nom: 'عدد مغيّر في الحساب',
-      generique: true,
-      quoi: 'خطأ عدديّ بسيط: رقم بدل رقم، و كل ما يليه ينهار',
+      nom: 'قسمنا حيث يجب أن نضرب',
+      quoi: 'للتخلّص من معامل نقسم عليه؛ الضرب فيه يُبعد عن الحلّ بدل أن يقرّب',
+      geste: /نقسم|نضرب الطرفين|مقلوب/,
       faire(math) {
-        const pos = [];
-        const re = /\d+/g;
-        let m;
-        while ((m = re.exec(math))) {
-          const avant = m.index ? math[m.index - 1] : ' ';
-          const apres = math[m.index + m[0].length] || ' ';
-          if (/[A-Za-z^√]/.test(avant)) continue;      // indice de nom, exposant, radicande
-          pos.push([m.index, m[0], apres]);
+        if (math.indexOf(':') < 0) return null;
+        return math.replace(':', '×');
+      }
+    },
+    {
+      nom: 'حدّ نُقل دون تغيير إشارته',
+      quoi: 'حدّ يعبر علامة التساوي يغيّر إشارته: نطرح من الطرفين، لا من طرف واحد',
+      geste: /من الطرفين|نضيف|نعزل|ننقل|نجمع حدود/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        for (let essai = 0; essai < 6; essai++) {
+          const k = F.ent(0, r.membres.length - 1);
+          const t = termes(r.membres[k]);
+          if (t.length < 2) continue;
+          const j = F.ent(1, t.length - 1);
+          const u = t[j];
+          const bascule = u[0] === '-' ? '+ ' + u.slice(1).trim()
+                        : u[0] === '+' ? '- ' + u.slice(1).trim() : null;
+          if (!bascule) continue;
+          const t2 = t.slice(); t2[j] = bascule;
+          const copie = r.membres.slice();
+          copie[k] = t2.join(' ');
+          return copie.join(' = ');
         }
-        if (!pos.length) return null;
-        const [i, txt, apres] = pos[F.ent(0, pos.length - 1)];
-        const v = Number(txt);
-        const w = (v <= 1 || F.ent(0, 1)) ? v + 1 : v - 1;
-        if (w === 1 && /[a-zA-Z(√]/.test(apres)) return null;
-        if (w === 0) return null;
-        return math.slice(0, i) + w + math.slice(i + txt.length);
+        return null;
       }
     }
   ];
 
   // -------------------------------------------------------------------------
-  // Fabriquer une page d'erreurs à partir d'une question de chaîne.
+  // FAUTES DÉCLARÉES À LA MAIN — elles priment sur tout le catalogue.
   //
-  //   fautes  — 1 au niveau moyen, 2 au niveau avancé
+  // Le catalogue ci-dessus est une généralisation : chaque famille est écrite à
+  // partir du vocabulaire réel de la fiche, mais elle s'applique ensuite seule,
+  // à toute étape qui s'y prête. C'est ce qui permet de couvrir cent volets ;
+  // ce n'est pas ce qui permet de rendre UNE faute précise sur UNE question
+  // précise.
   //
-  // On n'abîme que les étapes que le juge sait ÉVALUER : une étape rédigée en
-  // arabe ne peut être ni prouvée fausse ni prouvée juste, et l'élève ne
-  // pourrait pas la départager.
+  // Pour cela, on la déclare ici, et elle l'emporte : clé « numéro d'exercice /
+  // rang du volet », puis le rang de l'étape à abîmer et le texte exact à
+  // mettre à sa place. Le validateur la contrôle comme les autres — une faute
+  // déclarée qui se trouverait vraie est rejetée comme n'importe quelle autre.
+  //
+  //   const MAIN = {
+  //     '3/2': [{ rang: 4, faux: 'A = 7/5 xy(7/2 x + 4 y)',
+  //               famille: 'حدّ لم يُقسم على العامل المشترك',
+  //               quoi: '…' }]
+  //   };
+  //
+  // C'est ici que viennent se poser les fautes vues dans les copies.
   // -------------------------------------------------------------------------
-  function fabriquer(question, fautes, dejaVues) {
+  const MAIN = {};
+
+  // -------------------------------------------------------------------------
+  // Fabriquer une page d'erreurs à partir d'une question de chaîne.
+  //   fautes — 1 au niveau moyen, 2 au niveau avancé
+  // -------------------------------------------------------------------------
+  function fabriquer(question, fautes, dejaVues, cle) {
     dejaVues = dejaVues || new Set();
     const c = question.controle;
     const envs = F.environnements(c);
     const juge = m => F.evaluerEtape(m, envs);
 
-    const rangs = [];
-    question.etapes.forEach(([, math], i) => {
-      if (juge(math) === 'vraie') rangs.push(i);
-    });
-    if (rangs.length < fautes + 1) return null;      // il doit rester du vrai
+    // Une faute déclarée à la main pour CETTE question l'emporte sur tout.
+    const mains = (MAIN[cle] || []).filter(f => juge(f.faux) === 'fausse'
+                                             && juge(question.etapes[f.rang][1]) === 'vraie');
 
-    // Pour un rang donné, les fautes que le catalogue sait fabriquer et que le
-    // juge confirme fausses. Une famille déjà vue dans la page passe après les
-    // autres : une page qui répète dix fois la même faute n'enseigne qu'une
-    // faute. Et la famille générique passe après toutes les familles nommées.
+    const rangs = [];
+    question.etapes.forEach(function (e, i) {
+      if (juge(e[1]) === 'vraie') rangs.push(i);
+    });
+    if (rangs.length < fautes + 1) return null;
+
     function candidats(i) {
       const vrai = question.etapes[i][1];
       const libelle = question.etapes[i][0];
       const out = [];
-      FAMILLES.forEach((fam, rang) => {
+      FAMILLES.forEach(function (fam, rang) {
         if (fam.geste && !fam.geste.test(libelle)) return;
         for (let essai = 0; essai < 8; essai++) {
           let faux;
           try { faux = fam.faire(vrai); } catch (e) { faux = null; }
           if (!faux || faux === vrai || !credible(faux)) continue;
           if (juge(faux) !== 'fausse') continue;
-          out.push({ rang: i, faux, vrai, famille: fam.nom, quoi: fam.quoi,
-                     generique: !!fam.generique,
-                     priorite: rang + (dejaVues.has(fam.nom) ? 20 : 0)
-                             + (fam.generique ? 200 : 0) });
+          out.push({ rang: i, faux: faux, vrai: vrai, famille: fam.nom,
+                     quoi: fam.quoi,
+                     priorite: rang + (dejaVues.has(fam.nom) ? 20 : 0) });
           break;
         }
       });
       return out;
     }
 
-    // ON CHOISIT LA FAUTE, PAS L'ÉTAPE.
-    //
-    // Le premier jet tirait une étape au hasard, puis prenait la meilleure
-    // famille applicable SUR CETTE ÉTAPE. Une étape où seule la famille
-    // générique mordait l'emportait donc sur une étape où une faute
-    // conceptuelle était possible — et la page se remplissait de coquilles.
-    // On énumère maintenant tous les couples (étape, famille) de la chaîne
-    // entière, et l'on prend le meilleur, où qu'il soit.
-    let tous = [];
-    rangs.forEach(i => { tous = tous.concat(candidats(i)); });
-    if (!tous.length) return null;
+    // ON CHOISIT LA FAUTE, PAS L'ÉTAPE : on énumère tous les couples
+    // (étape, famille) de la chaîne entière et l'on prend le meilleur, où
+    // qu'il soit. Tirer d'abord une étape ferait gagner les étapes pauvres.
+    let tous = mains.map(f => ({ rang: f.rang, faux: f.faux,
+                                 vrai: question.etapes[f.rang][1],
+                                 famille: f.famille, quoi: f.quoi, priorite: -1 }));
+    rangs.forEach(function (i) { tous = tous.concat(candidats(i)); });
+
+    // AUCUNE FAUTE DE COMPRÉHENSION POSSIBLE ? Alors on n'en invente pas.
+    // Le volet garde son corrigé JUSTE, et l'élève doit le dire. C'est même
+    // le meilleur usage qu'on puisse en faire : tant qu'une page promet une
+    // faute, l'élève cherche la faute ; il ne JUGE que s'il peut répondre
+    // « ce corrigé est bon ».
+    if (!tous.length) {
+      return { controle: c, enonce: question.enonce, indice: question.indice,
+               etapes: question.etapes.map(e => [e[0], e[1]]), fautes: [], sain: true };
+    }
 
     const choisies = [];
     for (let n = 0; n < fautes; n++) {
-      const pris1 = tous.filter(x => choisies.every(c => c.rang !== x.rang));
-      if (!pris1.length) return null;
-      // Une faute d'inattention ne se prend qu'à défaut d'une faute de
-      // raisonnement, et jamais deux fois dans la même question.
-      const dejaGenerique = choisies.some(c => c.generique);
-      const utiles = pris1.filter(x => !x.generique
-                                    && choisies.every(c => c.famille !== x.famille));
-      const pool = utiles.length ? utiles
-                 : (dejaGenerique ? pris1.filter(x => !x.generique) : pris1);
-      if (!pool.length) return null;
+      const libres = tous.filter(x => choisies.every(c2 => c2.rang !== x.rang));
+      if (!libres.length) return null;
+      const neuves = libres.filter(x => choisies.every(c2 => c2.famille !== x.famille));
+      const pool = neuves.length ? neuves : libres;
       const min = Math.min.apply(null, pool.map(x => x.priorite));
       const pris = F.choix(pool.filter(x => x.priorite === min));
       dejaVues.add(pris.famille);
@@ -292,7 +378,7 @@
     choisies.sort((a, b) => a.rang - b.rang);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
-    for (const f of choisies) {
+    choisies.forEach(function (f) {
       const opts = [f.vrai];
       for (let essai = 0; essai < 60 && opts.length < 3; essai++) {
         const fam = F.choix(FAMILLES);
@@ -305,7 +391,7 @@
       }
       f.choix = melanger(opts);
       f.bonne = f.choix.indexOf(f.vrai);
-    }
+    });
 
     return {
       // La page emporte SON contrôle. Sans lui, le validateur re-tirerait la
@@ -314,9 +400,9 @@
       controle: c,
       enonce: question.enonce,
       indice: question.indice,
-      etapes: question.etapes.map(([label, math], i) => {
+      etapes: question.etapes.map(function (e, i) {
         const f = choisies.find(x => x.rang === i);
-        return [label, f ? f.faux : math];
+        return [e[0], f ? f.faux : e[1]];
       }),
       fautes: choisies
     };
@@ -331,21 +417,20 @@
     return a;
   }
 
-  // Une page entière : toutes les questions d'un exercice, au niveau demandé.
-  // Une question qui ne se prête pas à deux fautes est rendue à une seule
-  // plutôt que sautée — l'élève doit retrouver TOUTES les questions de
-  // l'énoncé, c'est la règle de la méthode.
-  // Une correction qui n'offre qu'UNE réécriture n'est pas un choix. On retire
-  // donc tant qu'une faute n'a pas au moins un leurre à lui opposer, et l'on
-  // se contente du dernier tirage si l'exercice n'en offre décidément pas.
-  const complete = p => p && p.fautes.every(f => f.choix.length >= 2);
+  // Une page entière. Une question qui ne se prête pas à deux fautes est rendue
+  // à une seule plutôt que sautée — l'élève doit retrouver TOUTES les questions
+  // de l'énoncé, c'est la règle de la méthode.
+  const complete = p => !!p && p.fautes.every(f => f.choix.length >= 2);
 
   function pageErreurs(n, fautes) {
     const vues = new Set();
-    return F.tirer(n).map(q => {
+    const qs = F.tirer(n);
+    return qs.map(function (q, qi) {
       let dernier = null;
-      for (let essai = 0; essai < 8; essai++) {
-        const p = fabriquer(q, fautes, new Set(vues)) || fabriquer(q, 1, new Set(vues));
+      const cle = n + '/' + (qi + 1);
+      for (let essai = 0; essai < 10; essai++) {
+        const p = fabriquer(q, fautes, new Set(vues), cle)
+               || fabriquer(q, 1, new Set(vues), cle);
         if (!p) continue;
         dernier = p;
         if (complete(p)) break;

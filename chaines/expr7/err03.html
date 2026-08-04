@@ -86,8 +86,7 @@
       const d = document.createElement('details');
       d.open = qi === 0;
       const s = document.createElement('summary');
-      s.innerHTML = '<b>السؤال ' + (qi + 1) + '</b> — ' +
-        (q.fautes.length > 1 ? 'خطآن اثنان' : 'خطأ واحد');
+      s.innerHTML = '<b>السؤال ' + (qi + 1) + '</b>';
       d.appendChild(s);
 
       const en = document.createElement('div');
@@ -97,9 +96,11 @@
 
       const consigne = document.createElement('p');
       consigne.className = 'col-title';
-      consigne.textContent = q.fautes.length > 1
-        ? 'إليك حلّ تلميذ. أين الخطآن؟ انقر على المرحلتين.'
-        : 'إليك حلّ تلميذ. أين الخطأ؟ انقر على المرحلة.';
+      // On n'annonce JAMAIS combien de fautes il y a — et il peut n'y en avoir
+      // aucune. Tant que la page promet une faute, l'élève la cherche ; il ne
+      // JUGE que s'il peut répondre « ce corrigé est bon ».
+      consigne.textContent =
+        'إليك حلّ تلميذ. انقر على كل مرحلة تراها خاطئة، ثمّ تحقّق.';
       d.appendChild(consigne);
 
       const liste = document.createElement('div');
@@ -122,9 +123,12 @@
       boutons.className = 'row';
       boutons.style.marginTop = '10px';
       const bV = document.createElement('button'); bV.className = 'btn'; bV.textContent = 'تحقق';
+      const bS = document.createElement('button'); bS.className = 'btn secondary';
+      bS.textContent = 'لا خطأ في هذا الحلّ';
       const bH = document.createElement('button'); bH.className = 'btn secondary'; bH.textContent = 'مساعدة';
       const bR = document.createElement('button'); bR.className = 'btn secondary'; bR.textContent = 'إعادة';
-      boutons.appendChild(bV); boutons.appendChild(bH); boutons.appendChild(bR);
+      boutons.appendChild(bV); boutons.appendChild(bS);
+      boutons.appendChild(bH); boutons.appendChild(bR);
       d.appendChild(boutons);
 
       const fb = document.createElement('div'); fb.className = 'feedback';
@@ -134,6 +138,9 @@
 
       bH.onclick = () => { hint.style.display = hint.style.display === 'none' ? 'block' : 'none'; };
       bR.onclick = () => { rendre(); };
+      bS.onclick = () => { choisies.clear();
+        [...liste.children].forEach(el => el.classList.remove('choisie'));
+        bV.onclick(); };
 
       bV.onclick = () => {
         const vrais = q.fautes.map(f => f.rang);
@@ -145,8 +152,15 @@
           if (vrais.indexOf(i) >= 0) el.classList.add(choisies.has(i) ? 'juste' : 'ratee');
           else if (choisies.has(i)) el.classList.add('ratee');
         });
-        let txt = 'وجدت ' + trouves.length + ' من ' + vrais.length;
-        if (aTort.length) txt += '، و اتّهمت ' + aTort.length + ' مرحلة صحيحة';
+        let txt;
+        if (!vrais.length) {
+          txt = aTort.length
+            ? 'هذا الحلّ صحيح تماما، و قد اتّهمت ' + aTort.length + ' مرحلة سليمة'
+            : 'أحسنت: هذا الحلّ صحيح تماما، و لا خطأ فيه';
+        } else {
+          txt = 'وجدت ' + trouves.length + ' من ' + vrais.length;
+          if (aTort.length) txt += '، و اتّهمت ' + aTort.length + ' مرحلة صحيحة';
+        }
         fb.textContent = txt + '.';
 
         q.fautes.forEach(f => {

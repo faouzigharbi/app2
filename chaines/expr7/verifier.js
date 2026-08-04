@@ -143,7 +143,11 @@ if (process.env.ERREURS) {
           const c = q.controle;
           const envs = F.environnements(c);
           const rangs = q.fautes.map(f => f.rang);
-          if (!q.fautes.length || q.fautes.length > niveau) {
+          // Un volet peut n'avoir AUCUNE faute : le corrigé est alors juste, et
+          // l'élève doit le dire. On exige seulement qu'il soit annoncé comme
+          // tel, et que toutes ses étapes soient vraies — ce que la boucle
+          // ci-dessous vérifie, puisqu'aucun rang n'est déclaré planté.
+          if (q.fautes.length > niveau || (!q.fautes.length && !q.sain)) {
             griefs.push(`التمرين ${n} س${qi + 1}: ${q.fautes.length} أخطاء بدل ${niveau}`);
             mauvais++;
           }

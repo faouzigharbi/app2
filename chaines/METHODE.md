@@ -237,6 +237,31 @@ page se remplissait de coquilles. On énumère maintenant **tous les couples
 soit. La faute d'inattention ne sert plus que de dernier recours, et jamais deux
 fois dans la même question.
 
+### Aucune faute de calcul
+
+C'est la règle, et elle est absolue. Un chiffre changé, un signe recopié de
+travers, une addition ratée : l'élève qui les trouve n'a rien appris, et celui
+qui les manque n'a rien à réviser. Il aurait appris à **relire**, quand on veut
+lui apprendre à **raisonner**.
+
+Chaque famille est donc une faute de *compréhension*, prise dans ce que le
+chapitre enseigne. La première du catalogue de 7ème est celle que le professeur
+voit le plus souvent :
+
+    5a + 10b + 15 = 5(a + 2b + 15)
+
+l'élève croit que le terme constant échappe à la factorisation. Il a divisé
+`5a` et `10b` par 5, et laissé `15` intact.
+
+### Quand aucune faute n'est possible, on n'en invente pas
+
+Certains volets — une évaluation numérique, une chaîne de trois calculs — ne
+portent aucune faute de raisonnement. On y laisse alors **le corrigé juste**, et
+l'élève doit le dire (« لا خطأ في هذا الحلّ »). C'est même le meilleur usage
+qu'on puisse en faire : tant qu'une page promet une faute, l'élève cherche la
+faute ; il ne *juge* que s'il peut répondre « ce corrigé est bon ». La page
+n'annonce donc jamais combien de fautes elle contient.
+
 ### Des familles, pas du bruit
 
 Une faute n'a de valeur que si c'est celle qu'un élève commet. D'où un
@@ -263,6 +288,21 @@ crochet est **nu** : « 5/2(x + 3/2) » donne « 5/2 x + 3/2 », qu'un élève �
 vraiment ; « 2/3(3/5 a + …) » donnerait « 2/3 3/5 a », que personne n'écrit. Et
 sur une somme de fractions, l'élève n'efface pas la somme : il en écrit le
 mauvais **résultat**, « 3/7 + 10/3 = 13/10 ».
+
+### Le catalogue est écrit fiche par fiche
+
+Une famille n'est pas devinée : elle est écrite après avoir lu le **vocabulaire
+réel des étapes** de la fiche — les quelques centaines de libellés et de
+relations que ses générateurs produisent. Les familles d'intervalles n'ont rien
+à faire en 7ème, et « جمع البسطين و المقامين » rien à faire sur une fiche de
+radicaux.
+
+Cela reste une généralisation : la famille, une fois écrite, s'applique seule à
+toute étape qui s'y prête. C'est ce qui permet de couvrir cent volets ; ce n'est
+pas ce qui permet de rendre *une* faute précise sur *une* question précise. Pour
+cela, on la déclare à la main dans `MAIN`, et elle l'emporte sur le catalogue —
+le validateur la contrôle comme les autres. C'est là que viennent se poser les
+fautes vues dans les copies.
 
 ### Ce que le validateur contrôle
 
