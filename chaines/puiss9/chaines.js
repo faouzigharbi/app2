@@ -361,10 +361,38 @@
     return finir(item, etapes, puis(prod, n), 'نفس الأسّ: نضرب الأساسات', true);
   }
 
+  // b^e, en rationnel : le seul endroit où l'exposant a le droit d'être
+  // négatif sans qu'on retourne la fraction à la main.
+  const qPuis = (b, e) => {
+    const E = BigInt(Math.abs(e));
+    const neg = b.n < 0n, m = neg ? -b.n : b.n;
+    const s = (neg && Math.abs(e) % 2 === 1) ? -1n : 1n;
+    return e >= 0 ? Q(s * m ** E, b.d ** E) : Q(s * b.d ** E, m ** E);
+  };
+
+  // L'EXPOSANT D'UN NOMBRE DANS UNE BASE DONNÉE. 25 s'écrit (1/5)⁻², et c'est
+  // exactement ce dont la mise en facteur a besoin : le facteur commun et la
+  // parenthèse ne sont pas toujours du même côté de la barre de fraction, mais
+  // ils sont bel et bien des puissances de la même base. On cherche l'exposant
+  // et on VÉRIFIE — aucun raisonnement sur les signes ne vaut ce contrôle-là.
+  function expoDe(q, base) {
+    if (!q || q.n === 0n || !base || base.n === 0n) return null;
+    if (base.n === base.d || base.n === -base.d) return null;   // 1 et −1 : sans exposant
+    for (let e = -80; e <= 80; e++) if (qEgaux(qPuis(base, e), q)) return e;
+    return null;
+  }
+  // « 14 + (−2) = 12 » : le signe se lit, il ne se devine pas.
+  const signeLu = e => (e < 0 ? '(' + e + ')' : String(e));
+
   // ═══════════════════════════════════════════════════════════════════════
   // FACTEUR COMMUN — « 3⁵ × 15 − 6 × 3⁵ ». On sort la puissance commune, on
   // calcule la parenthèse, et l'on découvre qu'elle est elle aussi une
   // puissance de la même base : tout retombe sur une seule.
+  //
+  // Le facteur commun n'est PAS tenu d'être entier : « 5⁻¹⁴ × 15 + 5⁻¹⁴ × 10 »
+  // est le même geste, à ceci près que la puissance sortie est à exposant
+  // négatif. C'est précisément l'item de 8ème, celui où la règle cesse d'être
+  // une affaire de grands nombres pour devenir une affaire de règle.
   // ═══════════════════════════════════════════════════════════════════════
   function facteurCommun(item) {
     const ts = termesDe(item.e);
@@ -372,44 +400,46 @@
     // la mise en facteur ne connaît pas ce nombre-là.
     if (ts.length < 2) return null;
 
-    const vals = ts.map(x => entier(x.t));
-    if (vals.some(v => v === null || v <= 0n)) return null;
-    const parts = ts.map(x => facteursDe(x.t).map(u => ({ u, v: entier(u) })));
-    if (parts.some(p => p.some(x => x.v === null))) return null;
+    const vals = ts.map(x => ratDe(x.t));
+    if (vals.some(v => v === null || v.n === 0n)) return null;
+    const parts = ts.map(x => facteursDe(x.t).map(u => ({ u, v: ratDe(u) })));
+    if (parts.some(p => p.some(x => x.v === null || x.v.n === 0n))) return null;
 
     // Le facteur commun : présent dans TOUS les termes, et l'on préfère celui
     // qui est écrit comme une puissance — c'est lui que la leçon vise.
-    let commun = null;
+    let commun = null, prCommun = null;
     for (const a of parts[0]) {
-      if (a.v <= 1n) continue;
-      if (!parts.every(p => p.some(x => x.v === a.v))) continue;
-      if (!commun || (/\^/.test(a.u) && !/\^/.test(commun.u)) || a.v > commun.v) commun = a;
+      const pr = primitive(a.v);
+      if (!pr) continue;                                  // 1 et −1 ne factorisent rien
+      if (!parts.every(p => p.some(x => qEgaux(x.v, a.v)))) continue;
+      if (!commun || (/\^/.test(a.u) && !/\^/.test(commun.u)) || pr.exp > prCommun.exp) {
+        commun = a; prCommun = pr;
+      }
     }
     if (!commun) return null;
 
     const reste = parts.map(p => {
       const c = p.slice();
-      const i = c.findIndex(x => x.v === commun.v);
+      const i = c.findIndex(x => qEgaux(x.v, commun.v));
       if (i < 0) return null;
       c.splice(i, 1);
-      return c.length ? c : [{ u: '1', v: 1n }];
+      return c.length ? c : [{ u: '1', v: Q(1n, 1n) }];
     });
     if (reste.some(r => r === null)) return null;
 
-    const morceaux = reste.map(r => r.reduce((a, x) => a * x.v, 1n));
+    const morceaux = reste.map(r => r.reduce((a, x) => qFois(a, x.v), Q(1n, 1n)));
     let dedans = morceaux[0];
     for (let i = 1; i < ts.length; i++) {
-      dedans = ts[i].signe === '-' ? dedans - morceaux[i] : dedans + morceaux[i];
+      const m = morceaux[i], s = ts[i].signe === '-' ? -1n : 1n;
+      dedans = Q(dedans.n * m.d + s * m.n * dedans.d, dedans.d * m.d);
     }
-    if (dedans <= 0n) return null;
+    if (dedans.n === 0n) return null;
 
     // La base du résultat n'est PAS celle du facteur commun, et c'est là toute
     // la beauté de ces items : « 11 × 5³ − 3 × 5³ » donne 5³ × 8, qui vaut 1000,
     // c'est-à-dire 10³. « 3⁴ × 13 + 3 × 3⁴ » donne 81 × 16 = 1296 = 6⁴. On lit
     // donc la base sur le PRODUIT final, pas sur l'un de ses facteurs.
-    const prC = primitive(commun.v), prD = primitive(dedans);
-    if (!prC || !prD) return null;
-    const total = commun.v * dedans;
+    const total = qFois(commun.v, dedans);
     const prT = primitive(total);
     if (!prT || prT.exp < 2) return null;
     const b = prT.base;
@@ -420,24 +450,28 @@
     const dansLeQuoi = reste.map((r, i) =>
       (i ? ts[i].signe + ' ' : '') + r.map(x => x.u).join(' × ')).join(' ');
     etapes.push(['نُخرج العامل المشترك', 'A = ' + commun.u + ' × (' + dansLeQuoi + ')']);
-    etapes.push(['ننجز القوس', dansLeQuoi + ' = ' + dedans]);
-    etapes.push(['نعيد الكتابة', 'A = ' + commun.u + ' × ' + dedans]);
-    // Deux chemins selon que la base commune est celle du facteur ou non.
+    etapes.push(['ننجز القوس', dansLeQuoi + ' = ' + qTxt(dedans)]);
+    etapes.push(['نعيد الكتابة', 'A = ' + commun.u + ' × ' + qTxt(dedans)]);
+    // Deux chemins selon que le facteur commun et la parenthèse s'écrivent, ou
+    // non, comme des puissances de la base du résultat.
     const res = puis(b, prT.exp);
-    if (qEgaux(prC.base, prT.base) && qEgaux(prD.base, prT.base)) {
-      if (dedans.toString() !== puis(b, prD.exp)) {
-        etapes.push(['نلاحظ', 'العدد ' + dedans + ' هو ' + puis(b, prD.exp)]);
+    const eC = expoDe(commun.v, b), eD = expoDe(dedans, b);
+    if (eC !== null && eD !== null && eC + eD === prT.exp) {
+      if (qTxt(dedans) !== puis(b, eD)) {
+        etapes.push(['نلاحظ', 'العدد ' + qTxt(dedans) + ' هو ' + puis(b, eD)]);
       }
-      if (commun.u.replace(/\s/g, '') !== puis(b, prC.exp)) {
-        etapes.push(['و العامل المشترك', commun.u + ' = ' + puis(b, prC.exp)]);
+      if (commun.u.replace(/\s/g, '') !== puis(b, eC)) {
+        etapes.push(['و العامل المشترك', commun.u + ' = ' + puis(b, eC)]);
       }
       etapes.push(['القاعدة', REGLE_PRODUIT]);
-      etapes.push(['نجمع الأسّين', prC.exp + ' + ' + prD.exp + ' = ' + prT.exp]);
+      etapes.push(['نجمع الأسّين',
+                   signeLu(eC) + ' + ' + signeLu(eD) + ' = ' + prT.exp]);
     } else {
       // Le facteur commun et la parenthèse n'ont pas la même base : c'est leur
       // PRODUIT qui est une puissance, et d'une troisième base.
-      etapes.push(['نحسب الجداء', commun.u + ' × ' + dedans + ' = ' + total]);
-      etapes.push(['نفكّك النتيجة', total + ' = ' + puis(b, prT.exp)]);
+      etapes.push(['نحسب الجداء',
+                   commun.u + ' × ' + qTxt(dedans) + ' = ' + qTxt(total)]);
+      etapes.push(['نفكّك النتيجة', qTxt(total) + ' = ' + puis(b, prT.exp)]);
     }
     etapes.push(['النتيجة', 'A = ' + res]);
 
@@ -575,8 +609,12 @@
         return (s.slice(0, bloc.index) + (v.n < 0n ? '(' + t + ')' : t)
                 + s.slice(bloc.index + bloc[0].length)).trim();
       }
-      const par = /\(([^()]+)\)/.exec(s);
-      if (par) {
+      // On passe les parenthèses en revue dans l'ordre où elles s'écrivent, et
+      // l'on s'arrête à la PREMIÈRE qui a quelque chose à donner. Une
+      // parenthèse déjà réduite à un nombre et qu'on ne peut pas dépouiller
+      // sans changer le sens ne bloque plus la ligne : on passe à la suivante.
+      for (const par of s.match(/\([^()]+\)/g)
+                       ? [...s.matchAll(/\(([^()]+)\)/g)] : []) {
         // Une parenthèse ne tombe pas d'un coup : on y applique d'abord un cran
         // de priorité, et elle ne disparaît que devenue un nombre. Sinon
         // « (8 + 5 × 3)^2 » se réglerait en une ligne, et l'élève ne verrait
@@ -596,7 +634,24 @@
           return (s.slice(0, par.index - 1) + qTxt(v2)
                   + s.slice(par.index + par[0].length)).trim();
         }
-        return (s.slice(0, par.index) + dedans + s.slice(par.index + par[0].length)).trim();
+        // UNE PARENTHÈSE NE TOMBE QUE SI ELLE NE PORTE RIEN. « 2 : (−3/2) »
+        // n'est pas « 2 : −3/2 » — la barre de fraction du contenu se mettrait
+        // à diviser à son tour, et le calcul change de valeur ; « (29/10) : 5 »
+        // ne se dépouille pas davantage, pour la même raison lue de l'autre
+        // côté. Et « + (−3) » n'est pas « + −3 » : deux signes de suite ne
+        // s'écrivent pas. Quand elle ne peut pas tomber, on la laisse, et le
+        // cran suivant la traitera comme le nombre qu'elle est devenue.
+        const opAvant = s.slice(0, par.index).replace(/\s+$/, '').slice(-1);
+        const opApres = s.slice(par.index + par[0].length).replace(/^\s+/, '')[0] || '';
+        const negatif = dedans[0] === '-';
+        const compose = dedans.indexOf('/') >= 0;
+        const tombe = !(negatif && /[+\-×*/:]/.test(opAvant))
+                   && !(compose && /[/:]/.test(opAvant))
+                   && !(compose && /[/:]/.test(opApres));
+        if (tombe) {
+          return (s.slice(0, par.index) + dedans
+                  + s.slice(par.index + par[0].length)).trim();
+        }
       }
       if (/\^/.test(s)) {
         // les puissances parenthésées d'abord — « (-9/4)^-2 » est un bloc
@@ -626,6 +681,12 @@
       return null;
     }
     function libelle(avant, apres) {
+      // Quand la ligne suivante est un NOMBRE, on n'a pas « retiré les
+      // parenthèses » : on a fini le calcul. Le dire autrement serait mentir
+      // sur le geste, même si l'égalité, elle, reste vraie.
+      if (/^-?\d+(\/\d+)?$/.test(apres) && !/^-?\d+(\/\d+)?$/.test(avant)) {
+        return 'ننجز آخر عملية';
+      }
       if (/\(/.test(avant) && !/\(/.test(apres)) return 'نزيل الأقواس';
       if (/\(/.test(avant) && /\(/.test(apres)) return 'ننجز داخل القوس';
       if (/\^/.test(avant) && !/\^/.test(apres)) return 'ننجز القوى';

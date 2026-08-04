@@ -789,7 +789,7 @@
   lot('Puiss_Q_part3 ex12', 'quotient', 8, 'difficile', [
     '((-8/15)^5)/((-16/75)^5)'
   ]);
-  lot('Puiss_Q_part3 ex13', 'calcul-reel', 8, 'difficile', [
+  lot('Puiss_Q_part3 ex13', 'facteur-commun', 8, 'difficile', [
     '3^-13 × 2^5 - 3^-13 × 5'
   ]);
   lot('Puiss_Q_part3 ex13', 'calcul', 8, 'difficile', [
@@ -798,7 +798,7 @@
   lot('Puiss_Q_part3 ex13', 'quotient', 8, 'difficile', [
     '((-7^-2 × 9^3)^-3)/((7^-4)^4 × 9^2)'
   ]);
-  lot('Puiss_Q_part3 ex14', 'calcul-reel', 8, 'difficile', [
+  lot('Puiss_Q_part3 ex14', 'facteur-commun', 8, 'difficile', [
     '1/4^5 + 1/4^5 + 1/4^5 + 1/4^5'
   ]);
   lot('Puiss_Q_part3 ex14', 'calcul-reel', 8, 'difficile', [
@@ -813,8 +813,206 @@
   // demandent quatre étapes ; « ((−1)⁷⁹ + (−2)²)⁻² » élève une PARENTHÈSE
   // entière à une puissance, forme que la réduction ne sait pas encore
   // dérouler sans se déséquilibrer. La mise en facteur d'une puissance à
-  // exposant NÉGATIF — « 3⁻¹³ × 2⁵ − 3⁻¹³ × 5 » — attend elle aussi sa version
-  // rationnelle ; l'item reste, rangé au calcul, où il est juste.
+  // exposant NÉGATIF — « 3⁻¹³ × 2⁵ − 3⁻¹³ × 5 » — a depuis trouvé sa version
+  // rationnelle : on sort 3⁻¹³, on lit 27 = (1/3)⁻³, et l'on conclut (1/3)¹⁰.
+  // ═══════════════════════════════════════════════════════════════════════
+  // 8ème — feuille « القوى في Q », puissance 8_2012 (5 pages, 15 exercices)
+  //
+  // La feuille la plus longue du lot, et la plus systématique : elle prend
+  // chaque règle et la décline jusqu'à ce qu'elle craque. On la transcrit
+  // exercice par exercice, en gardant l'ordre de la feuille.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Exercice 1 — aⁿ × aᵖ, mais le signe de la base change d'un facteur à l'autre
+  lot('puissance 8_2012 ex1', 'produit', 8, 'moyen', [
+    '(-3/2)^3 × (-3/2)^2', '(1/2)^4 × (1/2)^5', '(3/2)^2 × (3/2)^4',
+    '(-3/4)^3 × (-3/4)^3', '(0,2)^3 × (0,2)^4',
+    '(-17/3)^4 × (-17/3)^3', '(-10/3)^4 × (-10/3)^5'
+  ]);
+  // le même produit, mais l'un des deux facteurs est écrit avec l'autre signe :
+  // il faut voir que (−5/4)² et (5/4)² sont le même nombre avant de sommer.
+  lot('puissance 8_2012 ex1', 'base-commune', 8, 'difficile', [
+    '(-5/4)^3 × (5/4)^2', '(-4/5)^2 × (4/5)^5', '(5/3)^5 × (-5/3)^2',
+    '(-0,2)^2 × 0,2^7', '(5/6)^4 × (-5/6)^3'
+  ]);
+  // et ici c'est un facteur NU qu'il faut reconnaître comme puissance :
+  // 16/625 = (2/5)⁴, −27/8 = (−3/2)³, 81 = (−3)⁴, −216/125 = (−6/5)³…
+  lot('puissance 8_2012 ex1', 'base-commune', 8, 'difficile', [
+    '(2/5)^2 × 16/625', '(-27/8) × (-3/2)^5', '81 × (-3)^4',
+    '(-216/125) × (-6/5)^5', '(64/121) × (-8/11)^2',
+    '(0,75)^3 × (3/4)^7 × 9/16', '16/9 × (3/4)^5'
+  ]);
+  // 25/49 × (−7/5)³ est bien du même geste — 25/49 = (7/5)⁻² —, mais les
+  // exposants se compensent presque : il reste (−7/5)¹, c'est-à-dire un nombre,
+  // et non une puissance. La consigne « écris sous forme de puissance » n'y a
+  // plus d'objet ; l'énoncé reste, rangé au calcul, où il dit vrai.
+  lot('puissance 8_2012 ex1', 'calcul', 8, 'difficile', [
+    '25/49 × (-7/5)^3'
+  ]);
+
+  // Exercice 2 — aⁿ/bⁿ = (a/b)ⁿ, le quotient des bases n'est pas donné
+  lot('puissance 8_2012 ex2', 'meme-exposant', 8, 'difficile', [
+    '((3/4)^3)/((15/8)^3)', '((-5)^2)/((10/3)^2)',
+    '((3/2)^2)/((0,5)^2)', '((-3/2)^5)/((-5/6)^5)'
+  ]);
+
+  // Exercice 3 — (aⁿ)ᵖ, puis un second facteur de même base à absorber
+  lot('puissance 8_2012 ex3', 'puissance-de-puissance', 8, 'moyen', [
+    '((2/5)^2)^5', '((-3/4)^2)^3', '((-7/2)^3)^7'
+  ]);
+  lot('puissance 8_2012 ex3', 'puissance-de-puissance', 8, 'difficile', [
+    '(0,7)^4 × ((7/10)^2)^3', '((-2,25)^3)^5 × 2,25^4',
+    '((-3/4)^2)^4 × ((3/4)^3)^7', '(-8/125) × ((2/5)^3)^4'
+  ]);
+
+  // Exercice 4 — aⁿ × bⁿ = (a×b)ⁿ
+  lot('puissance 8_2012 ex4', 'meme-exposant', 8, 'moyen', [
+    '(2/5)^4 × (3/7)^4', '(-2/5)^3 × (1/2)^3', '2^3 × (7/4)^3',
+    '1/8 × (-3/5)^3'
+  ]);
+
+  // Exercice 5 — un étage de fractions par-dessus les puissances
+  lot('puissance 8_2012 ex5', 'quotient', 8, 'difficile', [
+    '(1/1000 × (0,001)^-5)/(100^2 × 1/((0,01)^-2))'
+  ]);
+  lot('puissance 8_2012 ex5', 'meme-exposant', 8, 'difficile', [
+    '25^-3 × (1/2)^6'
+  ]);
+
+  // Exercice 6 — 49 et 14 cachent le 7, 0,01 et 1/10 cachent le 10
+  lot('puissance 8_2012 ex6', 'quotient', 8, 'difficile', [
+    '(7 × 49^-3 × 14^-2)/(7^-2 × 2^3)',
+    '((0,01)^2 × (1/10)^-3 × 2^2)/(5^-2 × 10^5)'
+  ]);
+  lot('puissance 8_2012 ex6', 'calcul', 8, 'difficile', [
+    '(1/3)^-3 × 1/9 × ((-3/2)^-2 + 5/9)'
+  ]);
+  lot('puissance 8_2012 ex6', 'calcul-reel', 8, 'difficile', [
+    '((-√2)^-3)^2 × (1/2)^-2'
+  ]);
+
+  // Exercice 7 (repris tel quel à l'exercice 11 de la même feuille)
+  lot('puissance 8_2012 ex7', 'base-commune', 8, 'difficile', [
+    '(-7/5)^6 × (5/7)^-3'
+  ]);
+  lot('puissance 8_2012 ex7', 'quotient', 8, 'difficile', [
+    '((0,0001)^3 × (1/1000)^4)/(100^4 × (1/10000)^5)'
+  ]);
+  lot('puissance 8_2012 ex7', 'facteur-commun', 8, 'difficile', [
+    '5^-14 × 15 + 5^-14 × 10'
+  ]);
+  lot('puissance 8_2012 ex7', 'calcul-reel', 8, 'difficile', [
+    '√(49/25) + √(98/8) - √0,09'
+  ]);
+  lot('puissance 8_2012 ex7', 'calcul', 8, 'difficile', [
+    '(3/4)^-2 - (11/7)^0 + (2/3)^2',
+    '(1/2)^-4 × 1/8 × (11/5)^-1 × ((-2/3)^-2 + 3/4 - 2^-2)'
+  ]);
+
+  // Exercice 8 — sommes de puissances, exposants négatifs et exposant nul
+  lot('puissance 8_2012 ex8', 'calcul', 8, 'moyen', [
+    '(1/2)^-2 + (-3)^-2 + (-2/3)^3', '(2/3)^3 + (-3/4)^-2',
+    '(4/5)^-4 + 2^-2 + (-11/7)^0'
+  ]);
+  lot('puissance 8_2012 ex8', 'meme-exposant', 8, 'difficile', [
+    '(3/5)^-2 × (3/2)^2'
+  ]);
+  lot('puissance 8_2012 ex8', 'quotient', 8, 'difficile', [
+    '((6/11)^3)/((-12/22)^3)'
+  ]);
+  lot('puissance 8_2012 ex8', 'quotient', 8, 'difficile', [
+    '((5/7)^7 × (4/3)^12)/((-4/3)^13 × (-5/7)^6)',
+    '((-49/45) × (-6/7)^6)/((3/7)^3 × (-14/15))'
+  ]);
+
+  // Exercice 9 — la puissance de 10 dans tous ses états
+  lot('puissance 8_2012 ex9', 'quotient', 8, 'difficile', [
+    '((10^2)^3 × 10^-5)/((10^-1)^2 × (10^-2)^-3)',
+    '((0,01)^2 × 100^4)/((10^-2)^2 × (0,001)^2)'
+  ]);
+  lot('puissance 8_2012 ex9', 'base-commune', 8, 'difficile', [
+    '(-5/4)^3 × (-4/5)^-7'
+  ]);
+  lot('puissance 8_2012 ex9', 'puissance-de-puissance', 8, 'difficile', [
+    '((-2/7)^-3)^-2 × 4/49'
+  ]);
+  lot('puissance 8_2012 ex9', 'facteur-commun', 8, 'difficile', [
+    '(-3)^-19 × 5 + (-3)^-19 × 4'
+  ]);
+
+  // Exercice 12 — les énoncés du QCM valent comme calculs
+  lot('puissance 8_2012 ex12', 'meme-exposant', 8, 'difficile', [
+    '((-20)^11 × (-3)^11)/((-10)^11)'
+  ]);
+  lot('puissance 8_2012 ex12', 'facteur-commun', 8, 'moyen', [
+    '2^-4 + 2^-4'
+  ]);
+
+  // Exercice 14 — l'étage réel : racines carrées mêlées aux puissances
+  lot('puissance 8_2012 ex14', 'calcul', 8, 'difficile', [
+    '2 + (1 - 5/2)/(1 + 5/2)'
+  ]);
+  lot('puissance 8_2012 ex14', 'calcul-reel', 8, 'difficile', [
+    '√(625/169) + √(13 + 6^2)',
+    '(√(4/9) - 3 × √25/6)/(3/2 × √(50/72) - 9/4)',
+    '(-2)^3 × √(16^-2) × 3 × ((1/3)^-2 × (5/3)^2 + √(9^2))',
+    '(1/2)^-4 × 1/8 × (-5/2)^2 × ((-3/5)^-1 × √(25^-2) + (-5/7)^0)',
+    '√(25^-3) × 5 × 9'
+  ]);
+  lot('puissance 8_2012 ex14', 'quotient', 8, 'difficile', [
+    '((-2/5)^10 × (5/7)^2)/((7/5)^2 × (2/5)^7)'
+  ]);
+  lot('puissance 8_2012 ex14', 'puissance-de-puissance', 8, 'difficile', [
+    '((2/3)^-4)^5 × 16/81'
+  ]);
+
+  // Exercice 15 — la dernière colonne de la feuille
+  lot('puissance 8_2012 ex15', 'calcul', 8, 'moyen', [
+    '-5/2 + 1/2 × 4/5', '1 + (-3/2 + 7/2)/(-3/2)'
+  ]);
+  lot('puissance 8_2012 ex15', 'quotient', 8, 'difficile', [
+    '((-2/3)^2)/((-2/3)^5)',
+    '((10^-1)^2 × 10^3)/((10^-3)^-2 × 10^-8)'
+  ]);
+  lot('puissance 8_2012 ex15', 'base-commune', 8, 'difficile', [
+    '16/25 × (-5/4)^5'
+  ]);
+  lot('puissance 8_2012 ex15', 'facteur-commun', 8, 'difficile', [
+    '(-21)^14 × 5^2 - 2^2 × (-21)^14'
+  ]);
+
+  // ÉCARTÉ DE CETTE FEUILLE, ET POURQUOI
+  //
+  //   ex1 G) « (3/7)³ × (−3/7)¹³ » vaut −(3/7)¹⁶. Un nombre négatif n'est
+  //   qu'une puissance IMPAIRE, et 16 n'a pas de diviseur impair autre que 1 :
+  //   aucune base rationnelle ne rend ce nombre-là. La consigne « écris sous
+  //   forme de puissance » n'a pas de réponse ici. Signalé, non corrigé.
+  //
+  //   ex4 « (−2)⁵ × (−0,5)⁵ » et ex15 « ((0,2)⁻²)³ × 5⁻⁶ » valent 1. Le geste
+  //   est juste — même exposant, bases inverses —, mais 1 n'a pas de base :
+  //   la chaîne s'arrêterait sur « A = 1 », qui ne démontre rien.
+  //
+  //   ex5-2, ex9-2 et ex15-4 demandent une ÉCRITURE SCIENTIFIQUE — « donne le
+  //   résultat sous la forme a × 10ⁿ ». C'est une autre leçon, avec sa propre
+  //   forme à contrôler ; elle aura son chapitre.
+  //
+  //   ex1 h), ex6-3 et ex13-3 sont LITTÉRAUX : « a⁶ × a³ × a² »,
+  //   « (a⁻¹b)³ab⁻² : a³b(a⁻²b⁻¹)² ». Le noyau calcule des nombres, pas des
+  //   lettres ; il n'y a rien à vérifier, donc rien à publier.
+  //
+  //   ex5 D) « ((−3/5)⁻⁵ × (15/7)⁴) : ((4/5)⁸ × (4/25)⁻⁵) » vaut
+  //   −5⁹ : (3 × 7⁴ × 1600) — ni puissance, ni fraction présentable. La
+  //   feuille est sans doute mal recopiée à cet endroit ; on ne devine pas.
+  //
+  //   ex10 et ex12 sont des QCM. Leurs ÉNONCÉS valent comme calculs et sont
+  //   repris à ce titre ; le choix multiple, lui, n'est pas une chaîne.
+
+  // Page 4, question 4 — « avec les étapes rédigées sur la copie »
+  lot('puissance 8_2012 p4', 'calcul', 8, 'difficile', [
+    '(-3/5)^2 × (-1/2)^3', '(-2/3)^2 × 2 - 4/7 × (-2/3)^3',
+    '(-1)^17 × (5,2)^0 × 34/5^2', '(5/2 - 3/5 + 1)/(5/2 × 3/5 - 1)'
+  ]);
+
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //
