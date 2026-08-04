@@ -274,7 +274,7 @@
         posee = true;
         return '√' + radicande;
       }
-      if (e[1] === 1) return nom + '^' + e[0];
+      if (e[1] === 1) return e[0] === 1 ? nom : nom + '^' + e[0];
       return nom + '^(' + e[0] + '/' + e[1] + ')';
     }).filter(x => x !== null);
     const c = t.c;

@@ -589,6 +589,19 @@
     if (etapes.length < 4) return null;
     return finir(item, etapes, qTxt(val), 'القوى قبل الضرب، و الضرب قبل الجمع', false);
 
+    // LE PRODUIT IMPLICITE NE DOIT PAS SE SOUDER. « 4(2/3)⁻³ » est un produit
+    // que la feuille écrit sans signe ; remplacer la puissance par sa valeur
+    // donnait « 427/8 », qui n'est plus le même nombre du tout. Quand deux
+    // morceaux se retrouvent collés et que la soudure formerait un nombre, on
+    // rend le × que l'écriture avait sous-entendu.
+    function recoller(g, mil, d) {
+      let out = g;
+      if (/[\d)]\s*$/.test(g) && /^[\d(√]/.test(mil)) out += ' × ';
+      out += mil;
+      if (/[\d)]$/.test(mil) && /^\s*[\d(√]/.test(d)) out += ' × ';
+      return (out + d).trim();
+    }
+
     // Un seul cran de réduction : la parenthèse la plus profonde, sinon toutes
     // les puissances, sinon tous les produits, sinon la somme.
     function reduire(s) {
@@ -599,15 +612,15 @@
       // Un entier positif entre parenthèses n'a pas besoin d'elles : « (3)^2 »
       // se lit « 3^2 », et le montrer est déjà une étape.
       if (bloc && /^\d+$/.test(bloc[1].trim())) {
-        return (s.slice(0, bloc.index) + bloc[1].trim() + '^' + bloc[2]
-                + s.slice(bloc.index + bloc[0].length)).trim();
+        return recoller(s.slice(0, bloc.index), bloc[1].trim() + '^' + bloc[2],
+                        s.slice(bloc.index + bloc[0].length));
       }
       if (bloc && /^-?\d+(\/\d+)?$/.test(bloc[1].trim())) {
         const v = ratDe(bloc[0]);
         if (v === null) return null;
         const t = qTxt(v);
-        return (s.slice(0, bloc.index) + (v.n < 0n ? '(' + t + ')' : t)
-                + s.slice(bloc.index + bloc[0].length)).trim();
+        return recoller(s.slice(0, bloc.index), (v.n < 0n ? '(' + t + ')' : t),
+                        s.slice(bloc.index + bloc[0].length));
       }
       // On passe les parenthèses en revue dans l'ordre où elles s'écrivent, et
       // l'on s'arrête à la PREMIÈRE qui a quelque chose à donner. Une
@@ -631,8 +644,8 @@
         if (/√\s*$/.test(s.slice(0, par.index))) {
           const v2 = ratDe('√(' + dedans + ')');
           if (v2 === null) return null;
-          return (s.slice(0, par.index - 1) + qTxt(v2)
-                  + s.slice(par.index + par[0].length)).trim();
+          return recoller(s.slice(0, par.index - 1), qTxt(v2),
+                          s.slice(par.index + par[0].length));
         }
         // UNE PARENTHÈSE NE TOMBE QUE SI ELLE NE PORTE RIEN. « 2 : (−3/2) »
         // n'est pas « 2 : −3/2 » — la barre de fraction du contenu se mettrait
@@ -649,8 +662,8 @@
                    && !(compose && /[/:]/.test(opAvant))
                    && !(compose && /[/:]/.test(opApres));
         if (tombe) {
-          return (s.slice(0, par.index) + dedans
-                  + s.slice(par.index + par[0].length)).trim();
+          return recoller(s.slice(0, par.index), dedans,
+                          s.slice(par.index + par[0].length));
         }
       }
       if (/\^/.test(s)) {
@@ -938,7 +951,11 @@
       return { baseTxt: dessous.baseTxt, val: dessous.val,
                exp: dessous.exp * exp, etages: (dessous.etages || 0) + 1 };
     }
-    if (/[()[\]×*+]/.test(baseTxt)) return null;
+    // La base a le droit d'être une SOMME de radicaux : « (√18 + √2)^-2 » se
+    // traite en simplifiant d'abord la base — 4√2 —, et la puissance reste.
+    // Ce qu'elle n'a pas le droit d'être, c'est un produit ou une parenthèse :
+    // là, il y aurait deux facteurs, et ce serait une autre règle.
+    if (/[()[\]×*]/.test(baseTxt)) return null;
     const v = valDe(baseTxt);
     if (!v || Object.keys(v).length === 0) return null;
     return { baseTxt, val: v, exp };
@@ -962,6 +979,9 @@
         // ce geste-là que l'exercice demande.
         const simple = F.ecrire(x.val);
         if (simple === x.baseTxt) return null;
+        // Sans exposant, « simplifier la base » n'est pas une leçon sur les
+        // puissances : c'est un simple calcul, et il a sa propre chaîne.
+        if (x.exp === 1) return null;
         const et = [];
         et.push(['نبسّط الأساس', x.baseTxt + ' = ' + simple]);
         et.push(['الأساس تغيّر شكله لا قيمته',
@@ -1050,6 +1070,101 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LE RECOURS DES RÉELS — « écris sous forme de puissance d'un réel ». Aucune
+  // forme ne se reconnaît dans l'énoncé, et pourtant la VALEUR est une
+  // puissance : 32√2 est (√2)¹¹, −19683√3 est (−√3)¹⁹, 625/512 √5 est (√5/2)⁹.
+  //
+  // Le noyau range chaque nombre en ∏ p^(a/b) : il suffit de lire les exposants
+  // et d'en prendre le pgcd. Un nombre NÉGATIF n'étant qu'une puissance
+  // IMPAIRE, on rabat ce pgcd sur son plus grand diviseur impair, et l'on
+  // VÉRIFIE que la base élevée à cet exposant rend bien la valeur : ce contrôle
+  // ne coûte rien et il a déjà servi.
+  // ═══════════════════════════════════════════════════════════════════════
+  const eNorm = ([n, d]) => {
+    if (d < 0) { n = -n; d = -d; }
+    const g = bpgcd(Math.abs(n), d) || 1;
+    return [n / g, d / g];
+  };
+  const eAdd = (a, b) => eNorm([a[0] * b[1] + b[0] * a[1], a[1] * b[1]]);
+  const ppcm = (a, b) => a / (bpgcd(a, b) || 1) * b;
+
+  function parLesPremiersR(item) {
+    const v = valDe(item.e);
+    if (!v) return null;
+    const ks = Object.keys(v);
+    if (ks.length !== 1) return null;             // une somme n'est pas une puissance
+    const t = v[ks[0]];
+    if (!Object.keys(t.e).length) return null;    // sans radical : affaire des rationnels
+    const c = t.c;
+    if (c.n === 0n) return null;
+    const neg = c.n < 0n;
+
+    const exps = {};
+    const ajoute = (p, e) => { exps[p] = exps[p] ? eAdd(exps[p], e) : eNorm(e); };
+    const haut = F.facteurs(neg ? -c.n : c.n), bas = F.facteurs(c.d);
+    for (const p of Object.keys(haut)) ajoute(p, [haut[p], 1]);
+    for (const p of Object.keys(bas)) ajoute(p, [-bas[p], 1]);
+    for (const p of Object.keys(t.e)) ajoute(p, t.e[p]);
+    const bs = Object.keys(exps).filter(p => exps[p][0] !== 0);
+    if (!bs.length) return null;
+
+    let D = 1;
+    for (const p of bs) D = ppcm(D, exps[p][1]);
+    if (D > 2) return null;              // racines carrées, ou π à un exposant entier
+    const A = {};
+    let G = 0;
+    for (const p of bs) { A[p] = exps[p][0] * (D / exps[p][1]); G = bpgcd(G, Math.abs(A[p])); }
+    if (neg) while (G % 2 === 0) G /= 2;
+    if (G < 2) return null;
+
+    let base = F.cst(F.rat(1n, 1n));
+    for (const p of bs) base = F.fois(base, F.baseP(p, eNorm([A[p] / G, D])));
+    if (neg) base = F.oppose(base);
+    if (!F.memes(F.puis(base, G), v)) return null;      // le contrôle
+
+    const bT = F.ecrire(base), vT = F.ecrire(v);
+
+    // π NE SE DÉCOUPE PAS COMME UN RADICAL. « 9π²/16 » n'a pas de coefficient
+    // rationnel à sortir : il a DEUX facteurs de même exposant, 9/16 = (3/4)²
+    // et π², et c'est la règle du même exposant qui les réunit en (3π/4)².
+    if (Object.keys(t.e).length === 1 && t.e['π'] && t.e['π'][1] === 1) {
+      const k = t.e['π'][0];
+      if (k !== G || G < 2) return null;
+      const cq = Q(neg ? -c.n : c.n, c.d);
+      const prc = primitive(cq);
+      if (!prc || prc.exp !== G) return null;
+      const et = [];
+      et.push(['نحسب العبارة', 'A = ' + vT]);
+      et.push(['نفصل العاملين', vT + ' = ' + qTxt(cq) + ' × π^' + k]);
+      et.push(['نكتب المُعامل بالأسّ ' + G,
+               qTxt(cq) + ' = ' + puis(prc.base, G)]);
+      et.push(['القاعدة', REGLE_MEME_EXP]);
+      et.push(['نضرب الأساسين',
+               qTxt(prc.base) + ' × π = ' + F.ecrire(base)]);
+      et.push(['النتيجة', 'A = ' + puisR(bT, G)]);
+      return finir(item, et, puisR(bT, G),
+                   'نفس الأسّ: نضرب الأساسين', 'reelle');
+    }
+
+    // Ce qui reste une fois la base sortie doit être RATIONNEL : c'est lui
+    // qu'on reconnaîtra comme la même base à l'exposant d'en dessous.
+    const dessous = F.divise(v, base);
+    const dk = Object.keys(dessous);
+    if (dk.length !== 1 || Object.keys(dessous[dk[0]].e).length) return null;
+    const cT = F.ecrire(dessous);
+    const res = puisR(bT, G);
+    const etapes = [];
+    etapes.push(['نحسب العبارة', 'A = ' + vT]);
+    etapes.push(['نعزل الأساس', vT + ' = ' + cT + ' × (' + bT + ')']);
+    etapes.push(['نكتب ' + cT + ' بالأساس ' + bT, cT + ' = ' + puisR(bT, G - 1)]);
+    etapes.push(['القاعدة', REGLE_PRODUIT]);
+    etapes.push(['نجمع الأسّين', (G - 1) + ' + 1 = ' + G]);
+    etapes.push(['النتيجة', 'A = ' + res]);
+    return finir(item, etapes, res,
+                 'احسب أوّلا، ثمّ اقرأ الأساس على النتيجة', 'reelle');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // CONJUGUÉS — le sommet du chapitre de 9ème, et le seul endroit où l'on
   // calcule (√3 + √2)¹⁴ × (√3 − √2)¹⁵ sans écrire un seul grand nombre.
   //
@@ -1132,7 +1247,10 @@
     const bases = grouper(lus);
     if (bases.length !== 2) return null;
     const [u, w] = bases;
-    if (u.exp < 1 || w.exp < 1) return null;
+    // Les deux exposants doivent tirer dans le MÊME sens : « (1+√3)⁻² × (1−√3)⁻² »
+    // s'apparie aussi bien que « X¹⁴ × Y¹⁵ ». Des signes contraires, en revanche,
+    // ne s'annulent pas deux à deux — ce serait un quotient, pas ce geste-ci.
+    if (u.exp * w.exp <= 0) return null;
     if (F.memes(u.val, w.val)) return null;              // même base : autre chaîne
 
     // LE CONTRÔLE. Le produit des deux bases doit être un RATIONNEL — c'est
@@ -1174,10 +1292,11 @@
       return null;
     }
 
-    const m = Math.min(u.exp, w.exp);
-    const reste = u.exp > w.exp ? u : w;
-    const diff = Math.abs(u.exp - w.exp);
-    if (m < 1) return null;
+    const sg = u.exp > 0 ? 1 : -1;
+    const m = sg * Math.min(Math.abs(u.exp), Math.abs(w.exp));
+    const reste = Math.abs(u.exp) > Math.abs(w.exp) ? u : w;
+    const diff = reste.exp - m;
+    if (!m) return null;
 
     const etapes = [];
     bases.forEach(b => {
@@ -1293,6 +1412,29 @@
   function calculReel(item) {
     const v = valDe(item.e);
     if (!v) return null;
+
+    // UNE PARENTHÈSE ÉLEVÉE À UNE PUISSANCE — « (2:√3 − √3:2)² ». On ne
+    // développe pas l'identité remarquable : on réduit d'abord ce qu'il y a
+    // dedans, et l'on élève ensuite. C'est la priorité des opérations prise à
+    // la lettre, et c'est aussi le seul chemin court.
+    const enveloppe = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(item.e.trim());
+    if (enveloppe) {
+      const dedans = peler(enveloppe[1]);
+      const n = Number(enveloppe[2]);
+      if (dedans !== enveloppe[1].trim() && /[+\-×*/:^]/.test(dedans)
+          && n !== 0 && n !== 1) {
+        const vd = valDe(dedans);
+        const txt = vd && F.ecrire(vd);
+        if (vd && txt !== dedans) {
+          const et = [];
+          et.push(['نحدّد الأولوية', 'ما داخل القوس أوّلا، ثمّ القوّة']);
+          et.push(['نبسّط ما داخل القوس', dedans + ' = ' + txt]);
+          et.push(['نرفع إلى القوّة', puisR(txt, n) + ' = ' + F.ecrire(v)]);
+          et.push(['النتيجة', 'A = ' + F.ecrire(v)]);
+          return finir(item, et, F.ecrire(v), 'ابدأ بما داخل القوس', false);
+        }
+      }
+    }
     // Une SOMME se traite terme à terme ; un PRODUIT, facteur par facteur.
     // C'est le même geste — isoler ce qu'on sait calculer — et les feuilles de
     // 9ème mêlent les deux sans prévenir.
@@ -1400,7 +1542,8 @@
     'meme-exposant': [memeExposant, produit, parLesPremiersQ, parLesPremiers],
     'facteur-commun': [facteurCommun, parLesPremiers],
     'decomposer': [decomposer],
-    'puissance-reelle': [produitReel, quotientReel, calculReel],
+    'puissance-reelle': [produitReel, quotientReel, parLesPremiersR,
+                         parLesPremiersQ, calculReel],
     'conjugues': [conjugues, conjuguesSomme, calculReel],
     'calcul-reel': [calculReel],
     'quotient': [quotient, parLesPremiersQ, parLesPremiers, quotientReel, calculReel],
@@ -1422,6 +1565,7 @@
 
   const API = { chaine, produit, memeExposant, facteurCommun, calcul, quotient,
                 produitReel, quotientReel, calculReel, conjugues, conjuguesSomme,
+                parLesPremiersR,
                 parLesPremiersQ,
                 decomposer, parLesPremiers, baseCommune };
   if (M) module.exports = API; else racine.Chaines = API;

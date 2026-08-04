@@ -659,9 +659,14 @@
     '(0,9 × 10^-6)/(3 × 10^-8) + (-√3/3)^2 × (1/10)^-1'
   ]);
 
-  // « (1/√7 − √7)² » — le carré d'une DIFFÉRENCE de radicaux. Il faut
-  // développer avant d'élever, et nos chaînes ne savent pas encore montrer ce
-  // geste-là : elles calculeraient sans l'expliquer. Écarté, et dit.
+  // « (1/√7 − √7)² » — le carré d'une DIFFÉRENCE de radicaux. Longtemps écarté :
+  // la chaîne aurait calculé sans expliquer. Elle sait maintenant, et ce n'est
+  // pas par l'identité remarquable — c'est par la priorité des opérations,
+  // qui est plus courte et plus juste : on réduit ce qu'il y a dans la
+  // parenthèse, et l'on élève ensuite.
+  lot('Puissance_9 ex34', 'calcul-reel', 9, 'difficile', [
+    '(1/√7 - √7)^2'
+  ]);
 
   // ═══════════════════════════════════════════════════════════════════════
   // LES EXERCICES LIÉS — plusieurs questions sur un même préambule.
@@ -1142,6 +1147,305 @@
   //   SCIENTIFIQUE, ex5-4 et ex6-1 sont LITTÉRAUX — « (x⁵+x⁷):(x⁸+x¹⁰) = x⁻³ »,
   //   « Y = ((a⁻³)²(ab⁻¹)²) : (a⁻²b⁻¹)² ». Ni l'une ni les autres ne se
   //   vérifient sur des nombres, et l'on ne publie que ce qui se vérifie.
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 9ème — feuille « القوى في IR – 9 أساسي » (Puissance9-2011, فوزي الغربي)
+  //
+  // Trois exercices, et une obsession : la puissance de 10 sous toutes ses
+  // déguisements. 0,001 est 10⁻³, 1/10000 est 10⁻⁴, 100 est 10², et il faut
+  // les voir tous avant de pouvoir compter. Les derniers items quittent le 10
+  // pour des bases mêlées — 35, 75, 21, 25 —, et là c'est la décomposition en
+  // facteurs premiers qui tranche.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Exercice 1 — les énoncés du QCM, et les calculs de la seconde moitié
+  lot('Puissance9-2011 ex1', 'puissance-reelle', 9, 'difficile', [
+    '(-2√3)^-4', '(-√75/√3)^-2', '(√18 + √2)^-2'
+  ]);
+  lot('Puissance9-2011 ex1', 'calcul-reel', 9, 'difficile', [
+    '(-2)^-3 + (2√2/3)^-2',
+    '((-7)^-1)^-2 × (1/7)^-2 + 1/3^-2 × (3/7)^-1',
+    '5^-1 × (√3)^-2 + 10^-1 - (√17)^0'
+  ]);
+  lot('Puissance9-2011 ex1', 'quotient', 9, 'moyen', [
+    '3^7/(3^4 × 3)'
+  ]);
+  lot('Puissance9-2011 ex1', 'calcul', 9, 'moyen', [
+    '(6^2 × 6^3 × 6)/(6^3 × 6^2)'
+  ]);
+  lot('Puissance9-2011 ex1', 'quotient', 9, 'difficile', [
+    '(2 × 10^-3)/8',
+    '(4 × (10^-2)^3 × 10^2)/(12 × 10^-3)',
+    '(4 × 10^-5 × 10^8)/(12 × 10^-3)',
+    '(12 × 10^-4 × 5 × 10^6)/(15 × 10^3 × 2 × 10^2)'
+  ]);
+
+  // Exercice 2 — « اختصر » : douze quotients de puissances de 10
+  lot('Puissance9-2011 ex2', 'quotient', 9, 'difficile', [
+    '(5 × 10^3 × 7 × 10^-9)/(2 × 10^-2 × 10^-12)',
+    '(9 × 10^-7 × 2 × 10^15)/(0,6 × 10^-5 × 10^19)',
+    '(400 × 10^-3 × 0,6 × 10^-11)/(0,002 × (10^2)^3)',
+    '(10^-8 × 0,7 × 10^-2)/(21 × 10^3)',
+    '(7 × 10^4)/(2 × (10^3)^2)',
+    '(10^-2 × 2^3 × 5^2 × 10)/(10^2 × 10^-4)',
+    '(2^5 × 5^3 × 7 × 11^2)/(8 × 25 × 121)',
+    '(10^5 × 2^5 × 5^2 × 10)/(2^3 × 10^-4)',
+    '(5 × 10^5 × (2 × 10^-1)^3)/(24 × 10^2)',
+    '(25 × 10^2 × 121)/(11 × 150 × 3)'
+  ]);
+
+  // Exercice 3 — « اختصر » encore, mais les bases se cachent mieux
+  lot('Puissance9-2011 ex3', 'produit', 9, 'moyen', [
+    '2^3 × 2^-4 × (2^3)^-5'
+  ]);
+  lot('Puissance9-2011 ex3', 'puissance-de-puissance', 9, 'moyen', [
+    '(2^3)^-2 × 2^5'
+  ]);
+  lot('Puissance9-2011 ex3', 'quotient', 9, 'moyen', [
+    '(5^4 × 5^-3)/5^6', '(7^4 × (7^-2)^3)/7^-5'
+  ]);
+  lot('Puissance9-2011 ex3', 'quotient', 9, 'difficile', [
+    '((7^3 × 5^-2)^3)/((5^3 × 7^-5)^-2)',
+    '(7 × 10^12 × 4 × 10^5/2) × 10^-4',
+    '(3 × 10^5 × 2 × 10^-2)/(8 × 10^4)',
+    '(3 × 10^2 × 1,2 × 10^-5)/(15 × 10^2)',
+    '((1/10)^-3 × 10^5)/((1/10000)^41 × 100^-5)',
+    '((0,001)^-4 × 10^-6)/(10^7 × 1000^-3)',
+    '((0,001)^-2 × (1/10000)^4)/(10^-2 × (1/100)^-3)',
+    '((-3 × 2^3)^3)/((8 × 9)^2)',
+    '((-3/4 × 8/21)^2)/((2/7)^2 × (-81/16))',
+    '((-2)^-7 × (-6)^5 × (-3)^10)/(18^4 × (-12)^3)',
+    '((0,04)^-3 × (0,64)^2)/((0,12)^-3 × (0,48)^2)',
+    '((35)^-7 × (75)^-4)/((21)^-5 × (25)^-7)'
+  ]);
+
+  // ÉCARTÉ DE CETTE FEUILLE, ET POURQUOI
+  //
+  //   Le QCM ex1 propose « (−√3) × (√3)⁵ » avec pour réponses (−3)⁵, (−3)¹⁰ et
+  //   (−√3)¹⁰. Aucune ne convient : l'expression vaut −27. Le premier facteur
+  //   porte sans doute un exposant 5 que la photocopie a mangé. On ne devine
+  //   pas un énoncé ; l'item est laissé de côté.
+  //
+  //   ex1-3 E et ex3 K, L, M, N, J sont LITTÉRAUX (a et b), et « اكتب G على
+  //   شكل aⁿ » ne dit pas ce qu'est G. Rien à vérifier, donc rien à publier.
+  //
+  //   « (7⁵ × (7⁻¹)⁻²) : (7⁴ × 7³) » vaut 7⁰ = 1, et « (3×10⁻²):(1,5×10⁻⁴)
+  //   − 2×10² » vaut 0. Justes tous les deux, mais 1 et 0 n'ont pas de base :
+  //   il n'y a pas de forme à écrire, ni de chaîne à dérouler.
+
+  // ════════════════════════════════════════════════════════════════════════
+  // 9ème — feuille « القوى » 2011 (Puissance2011, فوزي الغربي)
+  //
+  // La sœur de la précédente : mêmes exercices 1, 6 et 7, mêmes A, B, C et
+  // G, H, I — on ne les transcrit pas deux fois. Ce qu'elle apporte en propre,
+  // ce sont ses exercices 2 à 5, où les radicaux et les puissances négatives
+  // s'entremêlent ligne après ligne, et où figure le conjugué le plus haut du
+  // lot : (2√2 − √7)¹⁵³ × (2√2 + √7)¹⁵⁴.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  lot('Puissance2011 ex2', 'calcul', 9, 'difficile', [
+    '(-3/2)^-2 × (3/2)^-3 × 27/8'
+  ]);
+  lot('Puissance2011 ex2', 'calcul-reel', 9, 'difficile', [
+    '((-√2)^3)^2 × (1/2)^-2',
+    '(-√2)^5 + (1/2)^2 × 3(√3)^3 - 1/4(√2 + 4(√3)^2)'
+  ]);
+  lot('Puissance2011 ex2', 'quotient', 9, 'difficile', [
+    '(2^-7 × 3^2)/((1/3)^-2 × (2^-3)^2)'
+  ]);
+  lot('Puissance2011 ex2', 'meme-exposant', 9, 'difficile', [
+    '(5/8)^5 × (-5/4)^-5'
+  ]);
+
+  // Exercice 3 — le sommet : 153 et 154, et pas un chiffre à écrire
+  lot('Puissance2011 ex3', 'conjugues', 9, 'difficile', [
+    '(2√2 - √7)^153 × (2√2 + √7)^154'
+  ]);
+  lot('Puissance2011 ex3', 'calcul-reel', 9, 'difficile', [
+    '2^-4 × (2√2)^3', '(√3)^-1 × √21 - (√7)^-2/(√7)^-5'
+  ]);
+
+  // Exercice 4
+  lot('Puissance2011 ex4', 'calcul', 9, 'difficile', [
+    '9 × (3/2)^-2 - 4(2/3)^-3 × 27^-1'
+  ]);
+  lot('Puissance2011 ex4', 'quotient', 9, 'difficile', [
+    '(5 × 25^-3 × 15^2)/(5^-2 × 3^3)'
+  ]);
+  lot('Puissance2011 ex4', 'calcul-reel', 9, 'difficile', [
+    '√(2^4) - √(2^-4)',
+    '5 × (2^3/5)^-1 + ((-√2)^-2)^3',
+    '(2/√3)^-2 × 3^-1',
+    '((-√5)^-2)^3 × ((1/(2√5))^-2 - (3√5)^2)'
+  ]);
+
+  // Exercice 5
+  lot('Puissance2011 ex5', 'calcul-reel', 9, 'difficile', [
+    '(√5)^-1 × (1/√5 + (√5)^-3)',
+    '(2(√3)^-1 - √3/2)^2'
+  ]);
+  lot('Puissance2011 ex5', 'calcul', 9, 'difficile', [
+    '(5/2)^-2 + 2 × (5/3)^-1 × 3^-1 - 5^-2'
+  ]);
+
+  // Les exercices 1, 6 et 7 de cette feuille sont ceux de Puissance9-2011 et
+  // de puissance 8_2012, au mot près ; A, B, C et G, H, I y reparaissent aussi.
+  // Un énoncé transcrit une fois suffit : le tirage, lui, ne se répète pas.
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 9ème — « سلسلة تمارين عدد 3 », جانفي 2015, الأستاذ عماد الدريدي
+  //
+  // Cinq devoirs de contrôle rassemblés, de 2011 à 2013. Chacun bâtit une
+  // expression littérale, la réduit, puis la fait vivre sur des nombres —
+  // c'est le mouvement du programme de 9ème. On garde la seconde moitié, celle
+  // qui porte sur des nombres : la première ne se vérifie pas.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  lot('dridi ex1', 'calcul', 9, 'difficile', [
+    '3 × (-3/2)^-1 + 9 × (-2/3)^2 - 1/2 × (-3)^-1'
+  ]);
+  lot('dridi ex1', 'calcul-reel', 9, 'difficile', [
+    '(5/√2 - (3/2)^2)^-1'
+  ]);
+  lot('dridi ex1', 'puissance-reelle', 9, 'difficile', [
+    '25^-3 × (1/5)^-4', '(2/√5)^-7 × 5/4'
+  ]);
+  lot('dridi ex1', 'quotient', 9, 'difficile', [
+    '(0,5^-3 × 2^-9)/((1/2)^-4)'
+  ]);
+
+  // Exercice 1, question I-2 — E = a⁻²b⁻² avec a = 1+√3 et b = 1−√3 : deux
+  // conjugués, et le produit tombe avant qu'on ait rien développé.
+  lie('dridi ex1', 'conjugues', 9, 'difficile',
+      'نعتبر E = a^-2 b^-2 حيث a = 1 + √3 و b = 1 - √3', [
+    ['E', '(1 + √3)^-2 × (1 - √3)^-2']
+  ]);
+
+  lot('dridi ex2', 'calcul-reel', 9, 'difficile', [
+    '5^-1 × (√2)^2 - (√3)^2',
+    '(2√2 - 1)/(2√2 + 1) + (2√2 + 1)/(2√2 - 1)'
+  ]);
+  lot('dridi ex2', 'conjugues', 9, 'difficile', [
+    '1/((√5 - 2)^-2012) × (√5 + 2)^2012'
+  ]);
+  lot('dridi ex2', 'puissance-reelle', 9, 'difficile', [
+    '(-5√5 × (√5)^4)/25^3', '((√2/3)^-7 × (2/9)^2)/((3/√2)^-9)'
+  ]);
+  lot('dridi ex2', 'quotient', 9, 'difficile', [
+    '((0,00001)^3 × 3/100)/(0,0003 × 1/10^10)'
+  ]);
+
+  lot('dridi ex3', 'calcul-reel', 9, 'difficile', [
+    '3 × (3/2)^-4 - (√2/√3)^6'
+  ]);
+  // E × F, où F = (a/b)² a été établi à la question précédente
+  lie('dridi ex3', 'calcul-reel', 9, 'difficile',
+      'نعتبر E = 3 × (3/2)^-4 - (√2/√3)^6 و F = (a/b)^2، حيث a = √3 و b = √2', [
+    ['E × F', '(3 × (3/2)^-4 - (√2/√3)^6) × (√3/√2)^2']
+  ]);
+
+  // Exercice 4 — a = 4x², et l'on demande sa valeur pour x = 2⁻² + 2⁻³
+  lie('dridi ex4', 'calcul-reel', 9, 'difficile',
+      'نعتبر a = ((-2)^3/(x(√2)^8))^-2 حيث x = 2^-2 + 2^-3', [
+    ['a', '((-2)^3/((2^-2 + 2^-3) × (√2)^8))^-2']
+  ]);
+  lot('dridi ex4', 'calcul-reel', 9, 'difficile', [
+    '(10^-3/√5)^-2 × 5/(0,01^-3)',
+    '-3(√5)^0 + √(3^3) × 5^-1 × √3'
+  ]);
+  lot('dridi ex4', 'puissance-reelle', 9, 'difficile', [
+    '7(√3)^-2 + (√3/7)^-2 + (√3/5)^-2',
+    '((√2)^3/2) × √(12^4) × (√(9/2))^-2'
+  ]);
+
+  // Exercice 5 — A = 3⁻¹a⁶b⁻⁴, puis sa valeur pour a = √7 et a/b = 3
+  lie('dridi ex5', 'calcul-reel', 9, 'difficile',
+      'نعتبر A = 3^-1 a^6 b^-4 حيث a = √7 و a/b = 3', [
+    ['A', '3^-1 × (√7)^6 × (√7/3)^-4']
+  ]);
+  lot('dridi ex5', 'puissance-reelle', 9, 'difficile', [
+    '(-√3)^5 × 3^7', '36 × 15^-2', '√((8^10 + 4^10)/(2^10 + 1))'
+  ]);
+  lot('dridi ex5', 'calcul-reel', 9, 'difficile', [
+    '(√5)^2 - (-√5)^4 × (-1)^7', '√0,00005 × √0,02'
+  ]);
+
+  // ÉCARTÉ DE CETTE FEUILLE, ET POURQUOI
+  //
+  //   Les premières questions de chaque exercice sont LITTÉRALES : « montre que
+  //   E = a⁻²b⁻² », « montre que F = (a/b)² », « montre que A = 3⁻¹a⁶b⁻⁴ ». Le
+  //   noyau calcule des nombres, pas des lettres — il ne saurait pas vérifier
+  //   ces lignes-là, et une page qu'on ne vérifie pas ne se publie pas. Les
+  //   secondes questions, elles, portent sur des nombres, et ce sont elles
+  //   qu'on transcrit : le résultat littéral y est donné en préambule, comme
+  //   sur la feuille.
+  //
+  //   ex1 J = (10⁻⁴ × (0,01)²) : ((1/100) × (0,001)²) vaut 1, et
+  //   ex5 d = (7⁻³ × (2×3)² × 15⁻² × 5⁻⁴) : ((2×5⁶)⁻¹ × (7⁻¹×2)³) vaut 1 aussi.
+  //   Justes tous les deux, mais 1 n'a pas de base : rien à écrire, rien à
+  //   dérouler.
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 9ème — « خاصيات القوى في مجموعة الأعداد الحقيقية », exercices 36 à 42
+  // (Puissance_9_part1, pages 11 à 13 — la fin de la feuille)
+  //
+  // Les dernières pages sont les plus hautes : la consigne « أكتب في صيغة قوّة
+  // لعدد حقيقي » y revient à chaque ligne, et la base à trouver n'est plus
+  // écrite nulle part. Elle se lit sur la VALEUR, une fois le calcul fait.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  lot('Puissance_9 ex38', 'calcul-reel', 9, 'moyen', [
+    '(1/√3)^-2', '(3/2)^-2 - (√3)^-4'
+  ]);
+  lot('Puissance_9 ex38', 'puissance-reelle', 9, 'difficile', [
+    '5^-2 × (√5)^7', '(√10/3)^-3 × (3/√5)^-3', '√27 × (√3)^-7'
+  ]);
+  lot('Puissance_9 ex38', 'quotient', 9, 'difficile', [
+    '(10^-5 × (0,001)^-1)/((1/100)^-2 × 10^7)'
+  ]);
+
+  lot('Puissance_9 ex39', 'puissance-reelle', 9, 'difficile', [
+    '(2/5)^3 × (-√3/2)^3',
+    '((-√2)^-3)^-5 × ((-√2)^3)^4',
+    '3/4 × (√3/2)^5',
+    '9π^2/16'
+  ]);
+  lot('Puissance_9 ex39', 'facteur-commun', 9, 'moyen', [
+    '3^-5 + 3^-5 + 3^-5'
+  ]);
+
+  lot('Puissance_9 ex40', 'calcul-reel', 9, 'difficile', [
+    '(4/√3)^-2', '((√5)^-2)/((√5)^-4)', '(4 + 3√2)^2'
+  ]);
+  lot('Puissance_9 ex40', 'puissance-reelle', 9, 'difficile', [
+    '(√6)^11 × (√6)^-48', '5^10 × (√5)^-30',
+    '((√11)^40 × (√5)^19)/((√5)^-21)'
+  ]);
+  // X = a⁻³b⁻³ pour a = √3+1 et b = √3−1 : deux conjugués, et le produit
+  // tombe avant qu'on ait développé quoi que ce soit.
+  lie('Puissance_9 ex40', 'conjugues', 9, 'difficile',
+      'نعتبر X = a^-3 b^-3 حيث a = √3 + 1 و b = √3 - 1', [
+    ['X', '(√3 + 1)^-3 × (√3 - 1)^-3']
+  ]);
+
+  // E = a⁻¹b² pour a = √20 et b = √5 — la réduction littérale est donnée
+  lie('Puissance_9 ex41', 'calcul-reel', 9, 'difficile',
+      'نعتبر E = a^-1 b^2 حيث a = √20 و b = √5', [
+    ['E', '(2√5)^-1 × (√5)^2']
+  ]);
+
+  lot('Puissance_9 ex42', 'calcul-reel', 9, 'difficile', [
+    '5^-2/((√5/2)^-2)', '25 × (5/4)^-2 + 6√3 × (√3/2)^-3'
+  ]);
+  lot('Puissance_9 ex42', 'quotient', 9, 'difficile', [
+    '((1/100)^-3 × 1000^2)/(10 × (0,0001)^-2)'
+  ]);
+
+  // ex36, ex37, ex38-4, ex39-3 et ex42-2 sont LITTÉRAUX : « اختصر E = a²(b⁻²)³ :
+  // (a⁻⁶b²)⁻¹ ». Les questions numériques qui les suivent — « احسب A pour
+  // x = −1 et y = −2 » — se réduisent à un produit de deux nombres une fois la
+  // simplification donnée : une ligne, pas une chaîne. On garde celles dont le
+  // calcul, lui, a de la matière.
 
   const par = (f, n, d) => ITEMS.filter(x => x.f === f && x.d === d && x.n <= n);
   const familles = () => [...new Set(ITEMS.map(x => x.f))];
