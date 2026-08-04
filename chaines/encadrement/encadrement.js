@@ -408,7 +408,7 @@
           ['آخر عدد صحيح في المجال', '1 ∈ E'],
           ['النتيجة', 'E ∩ Z = {-2 ; -1 ; 0 ; 1}']
         ],
-        controle: { ens, entiers: [['E', [-2, -1, 0, 1]]] }
+        controle: { ens, entiers: [{ dans: 'E', liste: [-2, -1, 0, 1] }] }
       },
       {
         enonce: posE.concat(['حدّد المجموعة:', 'H ∪ IR+']),
@@ -807,7 +807,373 @@
     ];
   }
 
+  // =========================================================================
+  // التمرين 15 — sept volets sur A = x² - x + 1/2.
+  //
+  //   La forme canonique A = (x - 1/2)² + 1/4 est le pivot : elle résout
+  //   l'équation de 2)ب et donne l'encadrement de 2)ج, que la forme
+  //   développée ne donnerait pas.
+  //
+  //   Noter que les racines de A = 5/2 — 2 et -1 — sont HORS de ]0 ; 1[. Ce
+  //   n'est pas une incohérence de la fiche : la question dit « حل في ℝ ».
+  //   Une étape le dit, sans quoi l'élève croirait 2)ب et 2)ج contradictoires.
+  // =========================================================================
+  function exercice15() {
+    const exprA = 'x^2 - x + 1/2';
+    const exprB = '2x^2 - 3';
+    const domaine = ']0 ; 1[';
+    const pose = ['ليكن x عددا حقيقيا و العبارة:', 'A = ' + exprA];
+    const poseII = pose.concat(['إذا علمت أنّ:', 'x ∈ ]0 ; 1[']);
+
+    return [
+      {
+        enonce: pose.concat(['بيّن أنّ A = 5/2 + √2 في حالة:', 'x = √2 + 1']),
+        indice: 'انشر (√2 + 1)^2 = 3 + 2√2 ثمّ اطرح x',
+        etapes: [
+          ['ننشر المربّع', '(√2 + 1)^2 = 3 + 2√2'],
+          ['نطرح x', '3 + 2√2 - (√2 + 1) = 2 + √2'],
+          ['نضيف 1/2', '2 + √2 + 1/2 = 5/2 + √2'],
+          ['النتيجة', 'A = 5/2 + √2']
+        ],
+        controle: { env: { x: '√2 + 1', A: exprA },
+                    claims: [['A', '5/2 + √2']] }
+      },
+      {
+        enonce: pose.concat(['في حالة x = √2 + 1، قارن A و 4']),
+        indice: 'قارن √2 بـ 3/2: يكفي مقارنة 2 و 9/4',
+        etapes: [
+          ['نقارن المربّعين', '2 < 9/4'],
+          ['نأخذ الجذرين', '√2 < 3/2'],
+          ['نضيف 5/2 إلى الطرفين', '5/2 + √2 < 4'],
+          ['النتيجة', 'A < 4']
+        ],
+        controle: { env: { x: '√2 + 1', A: exprA }, vrai: ['A < 4'] }
+      },
+      {
+        enonce: poseII.concat(['بيّن أنّ:', 'A = (x - 1/2)^2 + 1/4']),
+        indice: 'انشر (x - 1/2)^2 = x^2 - x + 1/4 ثمّ أضف 1/4',
+        etapes: [
+          ['ننشر المربّع', '(x - 1/2)^2 = x^2 - x + 1/4'],
+          ['نضيف 1/4', 'x^2 - x + 1/4 + 1/4 = x^2 - x + 1/2'],
+          ['نتعرّف على A', 'x^2 - x + 1/2 = A'],
+          ['النتيجة', 'A = (x - 1/2)^2 + 1/4']
+        ],
+        controle: { dans: { x: domaine }, derives: { A: exprA },
+                    claims: [['A', '(x - 1/2)^2 + 1/4']] }
+      },
+      {
+        enonce: poseII.concat(['حلّ في ℝ المعادلة: A = 5/2']),
+        indice: 'استعمل الشكل النموذجي: (x - 1/2)^2 = 9/4',
+        etapes: [
+          ['نستعمل الشكل النموذجي', 'A - 1/4 = (x - 1/2)^2'],
+          ['المعادلة تعطي', 'يعني (x - 1/2)^2 = 5/2 - 1/4 = 9/4'],
+          ['نفكّ المربّع', 'يعني x - 1/2 = 3/2 أو x - 1/2 = -3/2'],
+          ['نتحقّق من الحلّ الأوّل', '2^2 - 2 + 1/2 = 5/2'],
+          ['نتحقّق من الحلّ الثاني', '(-1)^2 - (-1) + 1/2 = 5/2'],
+          ['ملاحظة', 'الحلاّن 2 و -1 خارج المجال ]0 ; 1[، و المعادلة مطروحة في ℝ']
+        ],
+        controle: {
+          // Le tirage reste dans ]0 ; 1[, que l'énoncé pose ; les étapes y sont
+          // des identités. L'ensemble des SOLUTIONS, lui, est cherché dans ℝ
+          // par `resolutions` — et ses deux racines tombent hors de ]0 ; 1[,
+          // ce que la dernière étape dit à l'élève.
+          dans: { x: domaine }, derives: { A: exprA },
+          resolutions: [{ cond: 'A = 5/2', valeurs: ['2', '-1'] }],
+          claims: [['A - 1/4', '(x - 1/2)^2']]
+        }
+      },
+      {
+        enonce: poseII.concat(['استنتج حصرا للعبارة A']),
+        indice: 'احصر x - 1/2: أطرافه متقابلة، فمربّعه بين 0 و 1/4',
+        etapes: [
+          ['ننطلق من حصر x', '0 < x < 1'],
+          ['نطرح 1/2 من الأطراف', '-1/2 < x - 1/2 < 1/2'],
+          ['المربّع موجب و أصغر من 1/4', '0 ≤ (x - 1/2)^2 < 1/4'],
+          ['نضيف 1/4 إلى الأطراف', '1/4 ≤ (x - 1/2)^2 + 1/4 < 1/2'],
+          ['النتيجة', '1/4 ≤ A < 1/2']
+        ],
+        controle: { dans: { x: domaine }, derives: { A: exprA },
+                    vrai: ['1/4 ≤ A < 1/2'] }
+      },
+      {
+        enonce: poseII.concat(['لتكن العبارة:', 'B = ' + exprB,
+                               'أوجد حصرا للعبارة B']),
+        indice: 'أطراف حصر x موجبة، فالتربيع يحفظ الترتيب',
+        etapes: [
+          ['ننطلق من حصر x', '0 < x < 1'],
+          ['الأطراف موجبة: نربّع', '0 < x^2 < 1'],
+          ['نضرب في 2 الموجب', '0 < 2x^2 < 2'],
+          ['نطرح 3 من الأطراف', '-3 < 2x^2 - 3 < -1'],
+          ['النتيجة', '-3 < B < -1']
+        ],
+        controle: { dans: { x: domaine }, derives: { A: exprA, B: exprB },
+                    vrai: ['-3 < B < -1'] }
+      },
+      {
+        enonce: poseII.concat(['لتكن العبارة:', 'B = ' + exprB,
+                               'استنتج أنّ:', '-3/2 < A × B < -1/4']),
+        indice: 'لا نضرب حصرين إلاّ إذا كانت أطرافهما موجبة: اقلب إشارة B أوّلا',
+        etapes: [
+          ['حصر A', '1/4 ≤ A < 1/2'],
+          ['حصر B', '-3 < B < -1'],
+          ['نضرب حصر B في -1 فينقلب الترتيب', '1 < -B < 3'],
+          ['الحصران موجبان: نضربهما طرفا بطرف', '1/4 < A × (-B) < 3/2'],
+          ['نضرب في -1 فينقلب الترتيب', '-3/2 < A × B < -1/4']
+        ],
+        controle: { dans: { x: domaine }, derives: { A: exprA, B: exprB },
+                    vrai: ['-3/2 < A × B < -1/4'] }
+      }
+    ];
+  }
+
+  // =========================================================================
+  // التمرين 16 — quatre volets.
+  //
+  //   I ∩ ℤ est INFINI : tous les entiers strictement négatifs. Le validateur
+  //   ne peut pas en dresser la liste, il en contrôle donc une FENÊTRE — et
+  //   la fenêtre fait partie de ce qui est affirmé.
+  //
+  //   La question 3 est la plus fine : montrer que -2√2/3 est dans I ∩ J
+  //   demande d'encadrer 2√2 des DEUX côtés, entre 3/2 et 3.
+  // =========================================================================
+  function exercice16() {
+    const defI = 'I = {x ∈ IR ; x ≤ -1/2}';
+    const defJ = 'J = {x ∈ IR ; |x + 1| < 2/3}';
+    const ens = { I: ']-∞ ; -1/2]', J: ']-5/3 ; -1/3[' };
+    const conditions = { I: 'x ≤ -1/2', J: '|x + 1| < 2/3' };
+    const pose = ['نعتبر المجموعتين I و J التاليتين:', defI, defJ];
+
+    return [
+      {
+        enonce: pose.concat(['أكتب I و J في صيغة مجالات']),
+        indice: 'شرط J قيمة مطلقة: |x + 1| < 2/3 يعني -2/3 < x + 1 < 2/3',
+        etapes: [
+          ['شرط I حصر من جهة واحدة', 'I = ]-∞ ; -1/2]'],
+          ['نفكّ القيمة المطلقة في شرط J', '-2/3 < x + 1 < 2/3'],
+          ['نطرح 1 من الأطراف', '-5/3 < x < -1/3'],
+          ['المجال الثاني', 'J = ]-5/3 ; -1/3[']
+        ],
+        controle: { ens, conditions, dans: { x: 'J' },
+                    egaux: [['I', ']-∞ ; -1/2]'], ['J', ']-5/3 ; -1/3[']] }
+      },
+      {
+        enonce: pose.concat(['حدّد المجموعة:', 'I ∩ J']),
+        indice: 'المجال I مفتوح إلى -∞، فبداية التقاطع هي بداية J',
+        etapes: [
+          ['المجال الأوّل', 'I = ]-∞ ; -1/2]'],
+          ['المجال الثاني', 'J = ]-5/3 ; -1/3['],
+          ['نقارن النهايتين', '-1/2 < -1/3'],
+          ['التقاطع: بداية J و نهاية I', 'I ∩ J = ]-5/3 ; -1/2]'],
+          ['الحدّ -1/2 في I و هو في J', 'القوس مغلق عنده']
+        ],
+        controle: { ens, egaux: [['I ∩ J', ']-5/3 ; -1/2]']] }
+      },
+      {
+        enonce: pose.concat(['حدّد المجموعة:', 'I ∩ Z']),
+        indice: 'أكبر عدد صحيح لا يتجاوز -1/2 هو -1',
+        etapes: [
+          ['المجال', 'I = ]-∞ ; -1/2]'],
+          ['أكبر عدد صحيح في المجال', '-1 ∈ I'],
+          ['العدد 0 ليس في المجال', 'لأنّ 0 أكبر من -1/2'],
+          ['و كل عدد صحيح سالب فيه', '-2 ∈ I'],
+          ['النتيجة', 'I ∩ Z هي مجموعة الأعداد الصحيحة السالبة تماما']
+        ],
+        controle: { ens,
+                    entiers: [{ dans: 'I', fenetre: [-6, 6],
+                                liste: [-6, -5, -4, -3, -2, -1] }] }
+      },
+      {
+        enonce: pose.concat(['بيّن أنّ:', '-2√2/3 ∈ I ∩ J']),
+        indice: 'احصر 2√2 بين 3/2 و 3، ثمّ اقسم على -3: الترتيب ينقلب',
+        etapes: [
+          ['نقارن المربّعين', '8 < 9'],
+          ['نأخذ الجذرين', '2√2 < 3'],
+          ['نقسم على -3 فينقلب الترتيب', '-2√2/3 > -1'],
+          ['و العدد -1 داخل المجال', '-5/3 < -1'],
+          ['نقارن من الجهة الأخرى', '9/4 < 8'],
+          ['نأخذ الجذرين', '3/2 < 2√2'],
+          ['نقسم على -3 فينقلب الترتيب', '-2√2/3 < -1/2'],
+          ['النتيجة', '-2√2/3 ∈ I ∩ J']
+        ],
+        controle: { ens, egaux: [['I ∩ J', ']-5/3 ; -1/2]']] }
+      }
+    ];
+  }
+
+  // =========================================================================
+  // التمرين 17 — neuf volets, et un fil unique : E = 2x - √2.
+  //
+  //   Tout y passe par E. Le signe de 2x² - x√2 vient de celui de E ; F vaut
+  //   E² + 5, ce qui transforme l'équation F = 9 en |E| = 2 et la métrajiha
+  //   √(F - 5) > √2 en |E| > √2 ; et la valeur de E en x = √3 donne
+  //   √(14 - 4√6) = 2√3 - √2 — un radical imbriqué que le noyau sait extraire.
+  //
+  //   La dernière question se résout dans ℤ : l'ensemble des solutions réelles
+  //   est fait de deux morceaux, et les entiers qu'ils contiennent sont tous
+  //   les entiers SAUF 0 et 1.
+  // =========================================================================
+  function exercice17() {
+    const exprE = '2x - √2';
+    const exprF = '4x^2 - 4√2x + 7';
+    const R = ']-∞ ; +∞[';
+    const domaine = '[1/6 ; 1/2]';
+    const pose = ['نعتبر العبارة، حيث x عدد حقيقي:', 'E = ' + exprE,
+                  'إذا علمت أنّ:', '|3x - 1| ≤ 1/2'];
+    const poseF = ['نعتبر العبارتين، حيث x عدد حقيقي:', 'E = ' + exprE,
+                   'F = ' + exprF];
+
+    return [
+      {
+        enonce: pose.concat(['بيّن أنّ:', 'x ∈ [1/6 ; 1/2]']),
+        indice: 'فكّ القيمة المطلقة ثمّ أضف 1 و اقسم على 3',
+        etapes: [
+          ['نفكّ القيمة المطلقة', '-1/2 ≤ 3x - 1 ≤ 1/2'],
+          ['نضيف 1 إلى الأطراف', '1/2 ≤ 3x ≤ 3/2'],
+          ['نقسم على 3 الموجب', '1/6 ≤ x ≤ 1/2'],
+          ['النتيجة', 'x ∈ [1/6 ; 1/2]']
+        ],
+        controle: { dans: { x: domaine }, derives: { E: exprE },
+                    vrai: ['|3x - 1| ≤ 1/2'] }
+      },
+      {
+        enonce: pose.concat(['استنتج حصرا للعبارة E']),
+        indice: 'اضرب حصر x في 2 ثمّ اطرح √2',
+        etapes: [
+          ['ننطلق من حصر x', '1/6 ≤ x ≤ 1/2'],
+          ['نضرب في 2 الموجب', '1/3 ≤ 2x ≤ 1'],
+          ['نطرح √2 من الأطراف', '1/3 - √2 ≤ E ≤ 1 - √2'],
+          ['نقارن 1 بـ √2', '1 < √2'],
+          ['النتيجة', 'E ≤ 1 - √2 < 0']
+        ],
+        controle: { dans: { x: domaine }, derives: { E: exprE },
+                    vrai: ['1/3 - √2 ≤ E ≤ 1 - √2'] }
+      },
+      {
+        enonce: pose.concat(['استنتج علامة العبارة:', '2x^2 - x√2']),
+        indice: 'ضع x عاملا مشتركا: يظهر العامل E الذي عرفت إشارته',
+        etapes: [
+          ['نضع x عاملا مشتركا', '2x^2 - x√2 = x(2x - √2)'],
+          ['العامل الأوّل موجب', 'x ≥ 1/6'],
+          ['العامل الثاني سالب', '2x - √2 ≤ 1 - √2'],
+          ['جداء موجب في سالب', '2x^2 - x√2 < 0'],
+          ['النتيجة', 'العبارة 2x^2 - x√2 سالبة تماما']
+        ],
+        controle: { dans: { x: domaine }, derives: { E: exprE },
+                    vrai: ['2x^2 - x√2 < 0'] }
+      },
+      {
+        enonce: ['نعتبر العبارة، حيث x عدد حقيقي:', 'E = ' + exprE,
+                 'حلّ في ℝ المعادلة: |2x^2 - x√2| = |√2 - 2x|'],
+        indice: 'العاملان |2x - √2| مشتركان بين الطرفين',
+        etapes: [
+          ['نضع x عاملا مشتركا', '2x^2 - x√2 = x(2x - √2)'],
+          ['قيمة مطلقة لجداء', '|2x^2 - x√2| = |x| |2x - √2|'],
+          ['الطرف الأيسر', '|√2 - 2x| = |2x - √2|'],
+          ['نضع |2x - √2| عاملا مشتركا',
+           '|2x^2 - x√2| - |√2 - 2x| = |2x - √2|(|x| - 1)'],
+          ['جداء معدوم', 'يعني 2x - √2 = 0 أو |x| = 1'],
+          ['نتحقّق من الحلّ الأوّل',
+           '|2(√2/2)^2 - (√2/2)√2| = |√2 - 2(√2/2)|'],
+          ['نتحقّق من الحلّ الثاني', '|2 × 1^2 - 1 × √2| = |√2 - 2 × 1|'],
+          ['نتحقّق من الحلّ الثالث', '|2(-1)^2 - (-1)√2| = |√2 - 2(-1)|']
+        ],
+        controle: {
+          dans: { x: R }, derives: { E: exprE },
+          resolutions: [{ cond: '|2x^2 - x√2| = |√2 - 2x|',
+                          valeurs: ['√2/2', '1', '-1'] }],
+          claims: [['|2x^2 - x√2| - |√2 - 2x|', '|2x - √2|(|x| - 1)']]
+        }
+      },
+      {
+        enonce: poseF.concat(['بيّن أنّ:', 'F = E^2 + 5']),
+        indice: 'انشر (2x - √2)^2: تجد 4x^2 - 4√2x + 2',
+        etapes: [
+          ['نتعرّف على المربّع', 'F = (2x - √2)^2 + 5'],
+          ['ننشر المربّع', '(2x - √2)^2 = 4x^2 - 4√2x + 2'],
+          ['نضيف 5', '4x^2 - 4√2x + 2 + 5 = 4x^2 - 4√2x + 7'],
+          ['نستعمل تعريف E', 'E = 2x - √2'],
+          ['النتيجة', 'F = E^2 + 5']
+        ],
+        controle: { dans: { x: R }, derives: { E: exprE, F: exprF },
+                    claims: [['F', 'E^2 + 5']] }
+      },
+      {
+        enonce: poseF.concat(['أحسب F إذا علمت أنّ:', 'x = √3']),
+        indice: 'أحسب E أوّلا، ثمّ ربّعه: يظهر الجداء 2 × 2√3 × √2 = 4√6',
+        etapes: [
+          ['نحسب E', 'E = 2√3 - √2'],
+          ['نربّع', 'E^2 = 12 - 4√6 + 2'],
+          ['نختصر', 'E^2 = 14 - 4√6'],
+          ['نضيف 5', 'F = 14 - 4√6 + 5'],
+          ['النتيجة', 'F = 19 - 4√6']
+        ],
+        controle: { env: { x: '√3', E: exprE, F: exprF },
+                    claims: [['F', '19 - 4√6'], ['E^2', '14 - 4√6']] }
+      },
+      {
+        enonce: poseF.concat(['استنتج حسابا للعدد:', '√(14 - 4√6)']),
+        indice: 'العدد 14 - 4√6 هو E^2 عند x = √3، و √(t^2) = |t|',
+        etapes: [
+          ['نستعمل السؤال السابق', 'E^2 = 14 - 4√6'],
+          ['قاعدة الجذر', '√(E^2) = |E|'],
+          ['نقارن العددين', '√2 < 2√3'],
+          ['نرفع القيمة المطلقة', '|2√3 - √2| = 2√3 - √2'],
+          ['النتيجة', '√(14 - 4√6) = 2√3 - √2']
+        ],
+        controle: { env: { x: '√3', E: exprE, F: exprF },
+                    claims: [['√(14 - 4√6)', '2√3 - √2']] }
+      },
+      {
+        enonce: poseF.concat(['حلّ في ℝ المعادلة: F = 9']),
+        indice: 'استعمل F = E^2 + 5: المعادلة تصير E^2 = 4',
+        etapes: [
+          ['نستعمل الشكل المختصر', 'F = E^2 + 5'],
+          ['نعزل المربّع', 'F - 5 = E^2'],
+          ['المعادلة تعطي', 'يعني E^2 = 4، أي E = 2 أو E = -2'],
+          ['نتحقّق من الحلّ الأوّل',
+           '4((2 + √2)/2)^2 - 4√2((2 + √2)/2) + 7 = 9'],
+          ['نتحقّق من الحلّ الثاني',
+           '4((√2 - 2)/2)^2 - 4√2((√2 - 2)/2) + 7 = 9']
+        ],
+        controle: {
+          dans: { x: R }, derives: { E: exprE, F: exprF },
+          resolutions: [{ cond: 'F = 9',
+                          valeurs: ['(2 + √2)/2', '(√2 - 2)/2'] }],
+          // La grille de `resolutions` est faite de rationnels : elle ne
+          // rencontrerait jamais une racine irrationnelle OUBLIÉE. C'est
+          // l'identité ci-dessous qui interdit d'en oublier une — un produit
+          // de deux facteurs du premier degré n'a pas d'autre racine que les
+          // deux qu'on annonce.
+          claims: [['F', 'E^2 + 5'], ['F - 9', '(E - 2)(E + 2)']]
+        }
+      },
+      {
+        enonce: poseF.concat(['حلّ في Z المتراجحة:', '√(F - 5) > √2']),
+        indice: 'F - 5 = E^2، و √(E^2) = |E|: المتراجحة تصير |2x - √2| > √2',
+        etapes: [
+          ['نعزل المربّع', 'F - 5 = E^2'],
+          ['قاعدة الجذر', '√(E^2) = |E|'],
+          ['المتراجحة تصير', '|2x - √2| > √2'],
+          ['نفكّ القيمة المطلقة', 'يعني 2x - √2 > √2 أو 2x - √2 < -√2'],
+          ['الحالة الأولى', 'x > √2'],
+          ['نتحقّق من الحالة الثانية عند -1',
+           '√(4(-1)^2 - 4√2(-1) + 7 - 5) > √2'],
+          ['الأعداد الصحيحة',
+           'الحلول في Z هي كل عدد صحيح سالب تماما، و كل عدد صحيح أكبر من 1']
+        ],
+        controle: {
+          dans: { x: ']√2 ; +∞[' }, derives: { E: exprE, F: exprF },
+          resolutions: [{ cond: '√(F - 5) > √2',
+                          majals: [']-∞ ; 0[', ']√2 ; +∞['] }],
+          entiers: [{ majals: [']-∞ ; 0[', ']√2 ; +∞['], fenetre: [-6, 6],
+                      liste: [-6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6] }]
+        }
+      }
+    ];
+  }
+
   const API = { exercice1, exercice2, exercice3, exercice10,
-                exercice11, exercice12, exercice13 };
+                exercice11, exercice12, exercice13,
+                exercice15, exercice16, exercice17 };
   if (M) module.exports = API; else racine.Encadrement = API;
 })(typeof window !== 'undefined' ? window : globalThis);

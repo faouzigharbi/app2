@@ -199,14 +199,20 @@ function controlerClaims(c, envs, noms) {
   // intervalle, et c'est justement la question. On énumère donc les entiers du
   // majal et l'on compare à la liste annoncée — les deux bornes comprises,
   // puisque tout le piège est là.
-  for (const [nom, liste] of (c.entiers || [])) {
-    const I = noms[nom];
-    if (!I) { p.push(`المجال ${nom} غير معرّف`); continue; }
+  for (const e of (c.entiers || [])) {
+    const majals = e.majals ? e.majals.map(m => F.intervalle(m)) : [noms[e.dans]];
+    if (majals.some(I => !I)) { p.push(`المجال ${e.dans} غير معرّف`); continue; }
+    // Quand la réponse est infinie — « tous les entiers strictement négatifs »
+    // — on annonce une FENÊTRE et la liste des entiers qu'elle contient. La
+    // fenêtre fait partie de l'affirmation ; elle n'est pas une commodité.
+    const [a, b] = e.fenetre || [-60, 60];
     const trouves = [];
-    for (let k = -60; k <= 60; k++) if (F.dansI(F.S(F.rat(k)), I)) trouves.push(k);
+    for (let k = a; k <= b; k++) {
+      if (majals.some(I => F.dansI(F.S(F.rat(k)), I))) trouves.push(k);
+    }
     controles++;
-    if (trouves.join(',') !== liste.join(',')) {
-      p.push(`${nom} ∩ Z = {${trouves.join(' ; ')}} و ليس {${liste.join(' ; ')}}`);
+    if (trouves.join(',') !== e.liste.join(',')) {
+      p.push(`أعداد صحيحة: {${trouves.join(' ; ')}} و ليس {${e.liste.join(' ; ')}}`);
     }
   }
   if (!(c.claims || []).length && !(c.vrai || []).length && !(c.entiers || []).length
@@ -366,7 +372,7 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("majal H fermé à tort", parQuestion(10, 4),
     c => { c.controle.ens.H = "[-√17 ; √17]"; });
   pousse("borne ouverte comptée parmi les entiers", parQuestion(10, 5),
-    c => { c.controle.entiers[0][1] = [-2, -1, 0, 1, 2]; });
+    c => { c.controle.entiers[0].liste = [-2, -1, 0, 1, 2]; });
   pousse("réunion avec IR+ bornée à droite", parQuestion(10, 6),
     c => { c.controle.egaux[0][1] = "]-√17 ; √17["; });
   pousse("intersection E ∩ F fermée à droite", parQuestion(10, 7),
@@ -414,6 +420,53 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] = "3/(x - 1)"; });
   pousse("encadrement de A décalé", parQuestion(13, 5),
     c => { c.controle.vrai[0] = "-1 ≤ A ≤ 0"; });
+
+  pousse("valeur de A en √2 + 1 décalée", parQuestion(15, 0),
+    c => { c.controle.claims[0][1] = "5/2 - √2"; });
+  pousse("comparaison de A et 4 inversée", parQuestion(15, 1),
+    c => { c.controle.vrai[0] = "A > 4"; });
+  pousse("forme canonique fausse", parQuestion(15, 2),
+    c => { c.controle.claims[0][1] = "(x - 1/2)^2 + 1/2"; });
+  pousse("racine de A = 5/2 oubliée", parQuestion(15, 3),
+    c => { c.controle.resolutions[0].valeurs = ["2"]; });
+  pousse("borne atteinte prise pour ouverte", parQuestion(15, 4),
+    c => { c.controle.vrai[0] = "1/4 < A < 1/2"; });
+  pousse("encadrement de B décalé", parQuestion(15, 5),
+    c => { c.controle.vrai[0] = "-3 < B < -2"; });
+  pousse("produit des encadrements du 15 faussé", parQuestion(15, 6),
+    c => { c.etapes[3][1] = "1/4 < A × (-B) < 1"; });
+
+  pousse("majal J du 16 mal fermé", parQuestion(16, 0),
+    c => { c.controle.ens.J = "[-5/3 ; -1/3]"; });
+  pousse("intersection du 16 fausse", parQuestion(16, 1),
+    c => { c.controle.egaux[0][1] = "]-5/3 ; -1/3["; });
+  pousse("0 compté parmi les entiers de I", parQuestion(16, 2),
+    c => { c.controle.entiers[0].liste = [-6, -5, -4, -3, -2, -1, 0]; });
+  pousse("encadrement de 2√2 mal renversé", parQuestion(16, 3),
+    c => { c.etapes[2][1] = "-2√2/3 < -1"; });
+
+  pousse("domaine du 17 décalé", parQuestion(17, 0),
+    c => { c.controle.vrai[0] = "|3x - 1| ≤ 1/3"; });
+  pousse("encadrement de E décalé", parQuestion(17, 1),
+    c => { c.controle.vrai[0] = "1/3 ≤ E ≤ 1 - √2"; });
+  pousse("signe de 2x^2 - x√2 inversé", parQuestion(17, 2),
+    c => { c.controle.vrai[0] = "2x^2 - x√2 > 0"; });
+  pousse("racine de trop dans l'équation du 17", parQuestion(17, 3),
+    c => { c.controle.resolutions[0].valeurs = ["√2/2", "1", "-1", "2"]; });
+  pousse("forme F = E^2 + 5 faussée", parQuestion(17, 4),
+    c => { c.controle.claims[0][1] = "E^2 + 7"; });
+  pousse("valeur de F en √3 décalée", parQuestion(17, 5),
+    c => { c.controle.claims[0][1] = "19 + 4√6"; });
+  pousse("radical imbriqué mal extrait", parQuestion(17, 6),
+    c => { c.controle.claims[0][1] = "2√3 + √2"; });
+  pousse("racine de F = 9 décalée", parQuestion(17, 7),
+    c => { c.controle.resolutions[0].valeurs = ["(2 + √2)/2", "(√2 - 1)/2"]; });
+  pousse("factorisation de F - 9 faussée", parQuestion(17, 7),
+    c => { c.controle.claims[1][1] = "(E - 2)(E + 4)"; });
+  pousse("un morceau des solutions du 17 oublié", parQuestion(17, 8),
+    c => { c.controle.resolutions[0].majals = ["]√2 ; +∞["]; });
+  pousse("entiers du 17 mal comptés", parQuestion(17, 8),
+    c => { c.controle.entiers[0].liste = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]; });
 
   pousse("étape dupliquée", parQuestion(1, 4),
     c => { c.etapes[2] = c.etapes[1].slice(); });
