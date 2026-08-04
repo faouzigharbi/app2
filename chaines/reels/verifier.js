@@ -18,6 +18,7 @@
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
 require('./reels.js');
+require('./serie2.js');
 require('./gens.js');
 
 const TIRAGES = Number(process.argv[2]) || 120;
@@ -137,6 +138,31 @@ if (process.env.CONTRE_EXEMPLES) {
   // Une falsification doit MORDRE : viser une forme que le tirage ne produit
   // pas toujours obligerait à retirer jusqu'à tomber dessus.
   const parQuestion = (n, i) => F.tirer(n)[i];
+
+  pousse('facteur commun du 11 amputé', parQuestion(11, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/ \+ √\d+\)$/, ')'); });
+  pousse('coefficient numérique du 11 faussé', parQuestion(11, 1),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/^\d+/, m => Number(m) + 1); });
+  pousse('les trois coefficients du 11 mal sommés', parQuestion(11, 4),
+    c => { c.etapes[2][1] = c.etapes[2][1].replace(/= \d+$/, m => '= ' + (Number(m.slice(2)) + 1)); });
+  pousse('rationalisation du 12 à l’envers', parQuestion(12, 1),
+    c => { c.etapes[0][1] = c.etapes[0][1].replace('= ', '= -'); });
+  pousse('division du 12 décalée', parQuestion(12, 3),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('quotient d’un nombre par lui-même ≠ 1', parQuestion(12, 4),
+    c => { c.controle.env.D = c.controle.env.D + ' + 1'; });
+  pousse('valeur absolue du 13 levée avec le mauvais signe', parQuestion(13, 0),
+    c => { c.etapes[1][1] = c.etapes[1][1].replace(/= (\d+) - (√\d+)/, '= $2 - $1'); });
+  pousse('signe du produit du 13 inversé', parQuestion(13, 2),
+    c => { c.controle.claims[0][1] = '-(' + c.controle.claims[0][1] + ')'; });
+  pousse('conjugué du 13 mal utilisé', parQuestion(13, 3),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('racine du 13 hors de l’équation', parQuestion(13, 6),
+    c => { c.controle.env.x = c.controle.env.x + ' + 1'; });
+  pousse('factorisation du 14 fausse', parQuestion(14, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, ' + 1)'); });
+  pousse('|A| du 14 gardé négatif', parQuestion(14, 2),
+    c => { c.controle.claims[1][1] = '-(' + c.controle.claims[1][1] + ')'; });
 
   pousse('identité du 17 faussée', parQuestion(17, 0),
     c => { c.claims = undefined; c.controle.claims[0][1] = '1'; });

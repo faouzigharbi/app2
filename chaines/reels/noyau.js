@@ -324,16 +324,62 @@
     return out;
   }
 
-  // « 26/5 » et « 3/F » s'empilent ; « </span> » ne s'empile pas, car il n'y a
-  // pas de chiffre juste avant sa barre.
-  const FRACTION = /(\d+)\s*\/\s*(\d+|[A-Za-z])(?![\w])/g;
-  const fraction = s => String(s).replace(FRACTION,
-    (_, n, d) => '<span class="frac"><span class="num">' + n
-      + '</span><span class="den">' + d + '</span></span>');
+  // La barre de fraction. Une expression régulière ne suffit pas : le
+  // dénominateur peut être une parenthèse — « 1/(3 + 2√2) » — et compter des
+  // parenthèses n'est pas dans ses moyens. On balaye donc, et de part et
+  // d'autre du « / » on prend soit un groupe parenthésé équilibré, soit la
+  // suite de caractères qui touche la barre.
+  //
+  // Ce passage a lieu AVANT celui des radicaux, sur le texte encore nu : après,
+  // le balisage inséré (« </span> ») offrirait de fausses prises au balayage.
+  function operande(s, i, sens) {
+    if (sens < 0) {                                    // à gauche de la barre
+      let j = i;
+      while (j > 0 && s[j - 1] === ' ') j--;
+      if (s[j - 1] === ')') {
+        let p = 0, k = j - 1;
+        for (; k >= 0; k--) {
+          if (s[k] === ')') p++;
+          else if (s[k] === '(' && --p === 0) break;
+        }
+        return k < 0 ? null : { deb: k, fin: j, txt: s.slice(k + 1, j - 1) };
+      }
+      let k = j;
+      while (k > 0 && /[\w√]/.test(s[k - 1])) k--;
+      return k === j ? null : { deb: k, fin: j, txt: s.slice(k, j) };
+    }
+    let j = i;
+    while (j < s.length && s[j] === ' ') j++;
+    if (s[j] === '(') {
+      let p = 0, k = j;
+      for (; k < s.length; k++) {
+        if (s[k] === '(') p++;
+        else if (s[k] === ')' && --p === 0) break;
+      }
+      return k >= s.length ? null : { deb: j, fin: k + 1, txt: s.slice(j + 1, k) };
+    }
+    let k = j;
+    while (k < s.length && /[\w√]/.test(s[k])) k++;
+    return k === j ? null : { deb: j, fin: k, txt: s.slice(j, k) };
+  }
+
+  function fraction(s) {
+    s = String(s);
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] !== '/') continue;
+      const g = operande(s, i, -1), d = operande(s, i + 1, 1);
+      if (!g || !d) continue;
+      const html = '<span class="frac"><span class="num">' + g.txt
+        + '</span><span class="den">' + d.txt + '</span></span>';
+      s = s.slice(0, g.deb) + html + s.slice(d.fin);
+      i = g.deb + html.length - 1;
+    }
+    return s;
+  }
 
   const puissances = s => String(s).replace(/\^(\d+)/g, '<sup>$1</sup>');
   const bloc = s => '<span dir="ltr" class="expr">'
-    + puissances(fraction(radicaux(echapper(s)))) + '</span>';
+    + puissances(radicaux(fraction(echapper(s)))) + '</span>';
 
   // Aucune expression ne doit rester nue dans un paragraphe RTL : « A = 3 + 2√2 »
   // sans isolation s'affiche à l'envers. Quand une ligne mêle l'arabe et les

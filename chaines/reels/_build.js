@@ -15,6 +15,7 @@ const path = require('path');
 const F = require('./noyau.js');
 
 require('./reels.js');
+require('./serie2.js');
 require('./gens.js');
 const EXOS = Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b);
 
@@ -91,6 +92,7 @@ const page = (n, titre) => `<!doctype html>
 
 <script src="noyau.js"></script>
 <script src="reels.js"></script>
+<script src="serie2.js"></script>
 <script src="gens.js"></script>
 
 <script src="ex${n}.js"></script>
@@ -330,7 +332,7 @@ const index = () => `<!doctype html>
 <body>
 <h3>√ العمليات في مجموعة الأعداد الحقيقية — سلاسل البرهان</h3>
 <p style="text-align:center;color:#95a5a6;font-size:.9em;margin-bottom:16px">
-  تمارين شاملة 17 → 19 — صفحة لكل تمرين، و في الصفحة سؤال لكل سؤال من نصّ التمرين<br>
+  تمارين 11 → 14 و 17 → 19 — صفحة لكل تمرين، و في الصفحة سؤال لكل سؤال من نصّ التمرين<br>
   رتّب مراحل البرهان، و المولّد يغيّر الأعداد في كل تحميل
 </p>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
