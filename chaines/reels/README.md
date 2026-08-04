@@ -17,8 +17,14 @@ Une page par **exercice**, et dans la page **un volet par question de l'énoncé
 | `ex18.html` | A و B مقلوبان | 5 | 1, 2)أ, 2)ب, 3)أ, 3)ب |
 | `ex19.html` | عبارتان مقلوبتان | 5 | 1, 2, 3, 4)أ, 4)ب |
 | `ex20.html` | أربعة عشر سؤالا على عددين مقلوبين | 14 | 1 (A, B), 2)أ→د, 3)أ→د |
+| `ex41.html` | a مربّع كامل | 7 | 1, 2)أ (en deux), 2)ب, 3)أ, 3)ب, 3)ج |
 
-`serie2.js` porte les exercices 11 à 14, `reels.js` les exercices 17 à 20.
+`serie2.js` porte les exercices 11 à 14, `reels.js` les exercices 17 à 20 et 41.
+
+L'énoncé du 41 ne compte que six sous-questions ; le septième volet vient de
+2)أ, coupée en « احسب الجداء a × b » puis « استنتج أنّ العددين مقلوبان » —
+le même découpage qu'au 20, où calculer un produit et en tirer une conclusion
+sont deux gestes distincts.
 
 ## Ce qui se tire, et pourquoi
 
@@ -46,6 +52,13 @@ admet encore des entiers.
 donc tirés d'abord, et les radicandes choisis parmi ceux qu'ils dominent : un
 tirage ne peut pas renverser un signe. Pour `|2x - 1| = 3`, ce sont les deux
 **solutions** qu'on tire, seul moyen qu'elles tombent juste.
+
+**Commandé par un seul paramètre — 41.** Sa clef n'est énoncée qu'à la
+question 3 : `a` est un carré, `a = (√r - 1)²`. Tout en découle — `b = 1/a`
+s'écrit avec `(r-1)²` au dénominateur, et le quotient final se simplifie par
+`(√r - 1)` au lieu de se rationaliser. Seul `r` se tire, plus l'habillage de
+`c` ; imposer `p - q = r - 1` est ce qui fait tomber `(c - a)/(√r - 1)` sur un
+entier, et l'exercice n'a pas d'autre objet que ce moment-là.
 
 **Rigide — 19.** Les nombres y sont imposés par les questions elles-mêmes :
 « `a - b` et `-2ab` opposés » force `a - b = 2`, et `ab = 1` force alors
@@ -87,10 +100,10 @@ l'exercice.
 
 État actuel :
 
-    التمرين 11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓
-    300 tirages par exercice, 14700 questions,
-    163800 relations recalculées et 59700 contrôles, 0 erreur.
-    34/34 falsifications détectées.
+    التمرين 11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓  41 ✓
+    300 tirages par exercice, 16800 questions,
+    173700 relations recalculées et 62700 contrôles, 0 erreur.
+    38/38 falsifications détectées.
 
 ## Régénérer les pages
 

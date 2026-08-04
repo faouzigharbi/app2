@@ -209,6 +209,15 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse('valeur absolue du 20 mal levée', parQuestion(20, 12),
     c => { c.etapes[1][1] = c.etapes[1][1].replace('= E - 1', '= 1 - E'); });
 
+  pousse('développement de a du 41 amputé', parQuestion(41, 0),
+    c => { c.controle.env.a = c.controle.env.a.replace(/ - \d+$/, ''); });
+  pousse('a et b du 41 ne sont plus inverses', parQuestion(41, 1),
+    c => { c.controle.env.b = c.controle.env.b.replace(/^1\//, '2/'); });
+  pousse('carré parfait du 41 faussé', parQuestion(41, 4),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(' - 1)', ' + 1)'); });
+  pousse('simplification du 41 non entière', parQuestion(41, 6),
+    c => { c.controle.env.c = c.controle.env.c + ' + 1'; });
+
   pousse('étape dupliquée', parQuestion(18, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
 

@@ -665,6 +665,135 @@
     return type20();
   }
 
-  const API = { type17, type18, type19, type20, PELL, PELL20 };
+  // =========================================================================
+  // EXERCICE 41 — a = (√r - 1)², et tout le reste en découle.
+  //
+  // L'exercice ne le dit qu'à la question 3, mais c'est sa clef : a est un
+  // carré. De là, b = 1/a s'écrit avec (r-1)² au dénominateur, et le quotient
+  // final se simplifie par (√r - 1) au lieu de se rationaliser.
+  //
+  // Le tirage est donc entièrement commandé par r :
+  //     a = 2√r(√r - 1) - (r-1) = (r+1) - 2√r = (√r - 1)²
+  //     b = 1/(r-1)² × ((r+1) + 2√r)          car (r+1)² - 4r = (r-1)²
+  //     c = √(p²r) - √(q²r) = (p-q)√r,  et p - q = r - 1
+  //     (c - a)/(√r - 1) = r + 1
+  // Rien n'y est libre sauf r et l'habillage de c : imposer p - q = r - 1 est
+  // ce qui fait tomber le quotient sur un entier, et l'exercice n'a pas d'autre
+  // objet que ce moment-là.
+  // =========================================================================
+  function type41() {
+    const r = choix([5, 3, 6, 7]);                     // 5 est celui de la fiche
+    const u = r + 1, k = r - 1, N = carre(r - 1);
+    const a = sSub(num(u), S(rat(2), r));              // (√r - 1)²
+    const ta = sTxt(a);
+    const qs = [];
+    for (let q = 1; q <= 9; q++) if (carre(q + r - 1) * r <= 400) qs.push(q);
+    const q = choix(qs), p = q + r - 1;
+    const c = S(rat(r - 1), r);                        // (p - q)√r
+
+    const exprA = '2√' + r + '(√' + r + ' - 1) - ' + k;
+    const exprB = '1/' + N + ' (' + u + ' + 2√' + r + ')';
+    const exprC = '√' + carre(p) * r + ' - √' + carre(q) * r;
+    const exprQ = '(c - a)/(√' + r + ' - 1)';
+    const env = { a: exprA, b: exprB, c: exprC };
+    const diff = sSub(c, a);                           // (r+1)√r - (r+1)
+
+    return [
+      {
+        enonce: ['نعتبر العدد الحقيقي:', 'a = ' + exprA, 'بيّن أنّ a = ' + ta],
+        indice: 'انشر الجداء أوّلا، و تذكّر أنّ √' + r + ' × √' + r + ' = ' + r,
+        etapes: [
+          ['نستعمل خاصية الجذر', '√' + r + ' × √' + r + ' = ' + r],
+          ['ننشر الجداء',
+           '2√' + r + '(√' + r + ' - 1) = ' + 2 * r + ' - 2√' + r],
+          ['نطرح الثابت', 2 * r + ' - 2√' + r + ' - ' + k + ' = ' + ta],
+          ['النتيجة', 'a = ' + ta]
+        ],
+        controle: { env, claims: [['a', ta]] }
+      },
+      {
+        enonce: ['ليكن العدد الحقيقي:', 'b = ' + exprB, 'احسب الجداء a × b'],
+        indice: 'الجداء (' + u + ' - 2√' + r + ')(' + u + ' + 2√' + r
+                + ') من الشكل (x - y)(x + y)',
+        etapes: [
+          ['نكتب الجداء', 'a × b = (' + ta + ') × 1/' + N + ' (' + u + ' + 2√' + r + ')'],
+          ['نستعمل المتطابقة',
+           '(' + ta + ')(' + u + ' + 2√' + r + ') = ' + u + '^2 - (2√' + r + ')^2'],
+          ['نحسب المربّعين',
+           u + '^2 - (2√' + r + ')^2 = ' + carre(u) + ' - ' + 4 * r + ' = ' + N],
+          ['نقسم على ' + N, 'a × b = ' + N + '/' + N],
+          ['النتيجة', 'a × b = 1']
+        ],
+        controle: { env, claims: [['a × b', '1']] }
+      },
+      {
+        enonce: ['استنتج أنّ العددين a و b مقلوبان'],
+        indice: 'عددان جداؤهما يساوي 1 هما مقلوبان',
+        etapes: [
+          ['ننطلق من الجداء', 'a × b = 1'],
+          ['العددان غير معدومين',
+           'لو كان أحدهما معدوما لكان الجداء معدوما، لا يساوي 1'],
+          ['نقسم على b', '1/b = a'],
+          ['نقسم على a', '1/a = b'],
+          ['النتيجة', 'كل من a و b مقلوب الآخر']
+        ],
+        controle: { env, claims: [['1/b', 'a'], ['1/a', 'b']] }
+      },
+      {
+        enonce: ['بيّن أنّ العددين b و b(a - 1) - 1 متقابلان'],
+        indice: 'انشر b(a - 1) ثمّ استعمل a × b = 1',
+        etapes: [
+          ['ننشر الجداء', 'b(a - 1) = a b - b'],
+          ['نعوّض الجداء', 'a b - b = 1 - b'],
+          ['نطرح 1', 'b(a - 1) - 1 = -b'],
+          ['نجمع العددين', 'b + (b(a - 1) - 1) = 0'],
+          ['النتيجة', 'مجموع العددين معدوم، إذن هما متقابلان']
+        ],
+        controle: { env, claims: [['b(a - 1) - 1', '-b'], ['b + (b(a - 1) - 1)', '0']] }
+      },
+      {
+        enonce: ['بيّن أنّ:', 'a = (√' + r + ' - 1)^2'],
+        indice: 'انشر المربّع بالمتطابقة (x - y)^2 = x^2 - 2xy + y^2',
+        etapes: [
+          ['نستعمل المتطابقة',
+           '(√' + r + ' - 1)^2 = (√' + r + ')^2 - 2√' + r + ' + 1'],
+          ['نحسب المربّع', '(√' + r + ')^2 = ' + r],
+          ['نجمع الثابتين', r + ' - 2√' + r + ' + 1 = ' + ta],
+          ['النتيجة', 'a = (√' + r + ' - 1)^2']
+        ],
+        controle: { env, claims: [['a', '(√' + r + ' - 1)^2']] }
+      },
+      {
+        enonce: ['ليكن العدد الحقيقي:', 'c = ' + exprC, 'بيّن أنّ c = ' + sTxt(c)],
+        indice: 'أخرج المربّع الكامل من تحت كل جذر',
+        etapes: [
+          ['نبسّط الجذر الأوّل',
+           '√' + carre(p) * r + ' = √(' + carre(p) + ' × ' + r + ') = ' + R(p, r)],
+          ['نبسّط الجذر الثاني',
+           '√' + carre(q) * r + ' = √(' + carre(q) + ' × ' + r + ') = ' + R(q, r)],
+          ['نطرح', R(p, r) + ' - ' + R(q, r) + ' = ' + sTxt(c)],
+          ['النتيجة', 'c = ' + sTxt(c)]
+        ],
+        controle: { env, claims: [['c', sTxt(c)]] }
+      },
+      {
+        enonce: ['بيّن أنّ العدد التالي عدد صحيح طبيعي:', exprQ],
+        indice: 'احسب c - a، ثمّ ضع ' + u + ' عاملا مشتركا: يظهر (√' + r
+                + ' - 1) في البسط',
+        etapes: [
+          ['نحسب الفرق', 'c - a = ' + sTxt(c) + ' - (' + ta + ')'],
+          ['نختصر', sTxt(c) + ' - (' + ta + ') = ' + sTxt(diff)],
+          ['نضع ' + u + ' عاملا مشتركا',
+           sTxt(diff) + ' = ' + u + '(√' + r + ' - 1)'],
+          ['نبسّط الكسر', exprQ + ' = ' + u + '(√' + r + ' - 1)/(√' + r + ' - 1)'],
+          ['النتيجة', exprQ + ' = ' + u],
+          ['طبيعة العدد', 'العدد ' + u + ' عدد صحيح طبيعي']
+        ],
+        controle: { env, claims: [[exprQ, String(u)], ['c - a', sTxt(diff)]] }
+      }
+    ];
+  }
+
+  const API = { type17, type18, type19, type20, type41, PELL, PELL20 };
   if (M) module.exports = API; else racine.Fiche = API;
 })(typeof window !== 'undefined' ? window : globalThis);
