@@ -152,18 +152,22 @@
       return S(rat(k, q.d), s);
     }
     if (ks.length === 2 && x['1']) {
+      // p + q√d est un carré dès que (√t₁ + σ√t₂)² le redonne, avec
+      // t₁ et t₂ les racines de t² - p·t + q²d/4 — donc (p ± √(p² - q²d))/2 —
+      // et σ le signe de q. Les deux t doivent être RATIONNELS ; leurs racines,
+      // elles, ne le sont pas forcément : √(8 - 2√15) vaut √5 - √3, qui ne
+      // s'écrit pas r + s√15. C'est pourquoi on les repasse à sSqrt au lieu
+      // d'exiger qu'elles tombent juste.
       const d = Number(ks.find(k => k !== '1'));
       const p = x['1'], q = x[d];
       const rD = rSqrt(rSub(rMul(p, p), rMul(rMul(q, q), rat(d))));
-      if (rD) {
-        for (const signe of [1, -1]) {
-          const r = rSqrt(rMul(rAdd(p, rMul(rD, rat(signe))), rat(1, 2)));
-          if (!r) continue;
-          for (const rr of [r, rNeg(r)]) {
-            if (rr.n === 0) continue;
-            const cand = sAdd(S(rr), S(rDiv(q, rMul(rr, rat(2))), d));
-            if (sEgaux(sMul(cand, cand), x) && sVal(cand) > 0) return cand;
-          }
+      if (rD && p.n > 0) {
+        const t1 = rMul(rAdd(p, rD), rat(1, 2));
+        const t2 = rMul(rSub(p, rD), rat(1, 2));
+        if (t1.n >= 0 && t2.n >= 0) {
+          const s1 = sSqrt(S(t1)), s2 = sSqrt(S(t2));
+          const cand = q.n >= 0 ? sAdd(s1, s2) : sSub(s1, s2);
+          if (sEgaux(sMul(cand, cand), x)) return cand;
         }
       }
     }
