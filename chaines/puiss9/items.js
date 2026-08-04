@@ -710,6 +710,111 @@
   // « a⁴ » de l'exercice 33 tombe sur « ((√5/7)⁻³)⁴ » : une puissance de
   // puissance d'un radical, la forme que le constructeur ne prend pas encore.
   // Les deux autres questions de l'exercice restent.
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 8ème — « تمارين شاملة » (Puiss_Q_part3). Uniquement le difficile : ce sont
+  // les exercices de synthèse de la feuille, ceux qui enchaînent deux règles
+  // ou demandent de reconnaître une base sous un habillage.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  lot('Puiss_Q_part3 ex1', 'calcul', 8, 'difficile', [
+    '(-1/3)^-2 + (-1/2)^-3', '-2^4 + 3^2'
+  ]);
+  lot('Puiss_Q_part3 ex1', 'produit', 8, 'difficile', [
+    '(-2/3)^11 × (-81/16)'
+  ]);
+  lot('Puiss_Q_part3 ex1', 'quotient', 8, 'difficile', [
+    '((-5/17)^-3)/((-4/34)^-3)'
+  ]);
+  lot('Puiss_Q_part3 ex2', 'calcul', 8, 'difficile', [
+    '(-1/5)^-2 + (-1/3)^-3', '-3^3 + 2^5'
+  ]);
+  lot('Puiss_Q_part3 ex2', 'produit', 8, 'difficile', [
+    '(-3/2)^-13 × (-27/8)'
+  ]);
+  lot('Puiss_Q_part3 ex2', 'quotient', 8, 'difficile', [
+    '((-3/7)^-5)/((-5/14)^-5)'
+  ]);
+  lot('Puiss_Q_part3 ex4', 'puissance-de-puissance', 8, 'difficile', [
+    '3^5 × (3^2)^-6'
+  ]);
+  lot('Puiss_Q_part3 ex4', 'quotient', 8, 'difficile', [
+    '((1/3)^8)/((-1/3)^4)'
+  ]);
+  lot('Puiss_Q_part3 ex4', 'produit', 8, 'difficile', [
+    '(-2/5)^7 × (-2/5)^-4'
+  ]);
+  lot('Puiss_Q_part3 ex4', 'calcul-reel', 8, 'difficile', [
+    '√12,25 - √2,89'
+  ]);
+  lot('Puiss_Q_part3 ex7', 'calcul', 8, 'difficile', [
+    '(-2/3)^7 × (4/3)^-4',
+    '(9/4)^2 × (-112/97) + (2/3)^-4 × 15/97'
+  ]);
+  lot('Puiss_Q_part3 ex8', 'calcul', 8, 'difficile', [
+    '(-2/3)^3 × (4/3)^-1', '(-3/7)^-2 × (13/61)^0',
+    '3^-1 × 21 - √25 × 5^-1',
+    '(1/2)^-3 × 1/4 × ((-3/2)^-2 + 4/9 - 3^-2)'
+  ]);
+  lot('Puiss_Q_part3 ex8', 'quotient', 8, 'difficile', [
+    '((-3)^3 × (-3)^-15)/((-3)^-5)'
+  ]);
+  lot('Puiss_Q_part3 ex8', 'produit', 8, 'difficile', [
+    '(-2/3)^-2 × (-2/3)^19'
+  ]);
+  lot('Puiss_Q_part3 ex9', 'produit', 8, 'difficile', [
+    '(4/7)^3 × (4/7)^-12'
+  ]);
+  lot('Puiss_Q_part3 ex9', 'puissance-de-puissance', 8, 'difficile', [
+    '((-5/3)^-5)^-3 × 25/9'
+  ]);
+  lot('Puiss_Q_part3 ex9', 'quotient', 8, 'difficile', [
+    '(9^5 × 81 × 4^-3)/((2^-2)^-5 × 2^-2)'
+  ]);
+  lot('Puiss_Q_part3 ex11', 'calcul', 8, 'difficile', [
+    '-2 × (-3)^-2 - (-3)^2'
+  ]);
+  lot('Puiss_Q_part3 ex11', 'calcul-reel', 8, 'difficile', [
+    '√0,04 + √16', '-√9 - √0,09'
+  ]);
+  lot('Puiss_Q_part3 ex11', 'calcul-reel', 8, 'difficile', [
+    '(4/3)^7 × (0,75)^6', '(-2)^-7 × 2^10'
+  ]);
+  lot('Puiss_Q_part3 ex12', 'calcul', 8, 'difficile', [
+    '(-3/2)^-3 - √(8/162) + (-7/2)^0'
+  ]);
+  lot('Puiss_Q_part3 ex12', 'produit', 8, 'difficile', [
+    '(-5/3)^-7 × (-27/125)'
+  ]);
+  lot('Puiss_Q_part3 ex12', 'quotient', 8, 'difficile', [
+    '((-8/15)^5)/((-16/75)^5)'
+  ]);
+  lot('Puiss_Q_part3 ex13', 'calcul-reel', 8, 'difficile', [
+    '3^-13 × 2^5 - 3^-13 × 5'
+  ]);
+  lot('Puiss_Q_part3 ex13', 'calcul', 8, 'difficile', [
+    '(-2/3)^2 × 27/64 × (3/2)^-1'
+  ]);
+  lot('Puiss_Q_part3 ex13', 'quotient', 8, 'difficile', [
+    '((-7^-2 × 9^3)^-3)/((7^-4)^4 × 9^2)'
+  ]);
+  lot('Puiss_Q_part3 ex14', 'calcul-reel', 8, 'difficile', [
+    '1/4^5 + 1/4^5 + 1/4^5 + 1/4^5'
+  ]);
+  lot('Puiss_Q_part3 ex14', 'calcul-reel', 8, 'difficile', [
+    '(√36)^5 × 24^-2 × 4^5', '(√(9/4))^19 + (-1,5)^19'
+  ]);
+  lot('Puiss_Q_part3 ex14', 'calcul', 8, 'difficile', [
+    '(2/3)^3 - (-2/3)^3'
+  ]);
+
+  // Cinq items de part3 écartés, et dits : « √0,36 », « √0,81 », « √(8/98) »
+  // et « √(32/50) » sont des racines nues, sans opération autour — une seule ligne, et nos chaînes
+  // demandent quatre étapes ; « ((−1)⁷⁹ + (−2)²)⁻² » élève une PARENTHÈSE
+  // entière à une puissance, forme que la réduction ne sait pas encore
+  // dérouler sans se déséquilibrer. La mise en facteur d'une puissance à
+  // exposant NÉGATIF — « 3⁻¹³ × 2⁵ − 3⁻¹³ × 5 » — attend elle aussi sa version
+  // rationnelle ; l'item reste, rangé au calcul, où il est juste.
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //

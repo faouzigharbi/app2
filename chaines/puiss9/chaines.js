@@ -588,6 +588,14 @@
           return (s.slice(0, par.index) + '(' + mieux + ')'
                   + s.slice(par.index + par[0].length)).trim();
         }
+        // Une parenthèse précédée d'un RADICAL ne se dépouille pas :
+        // « √(8/98) » n'est pas « √8/98 ». On la calcule d'un bloc.
+        if (/√\s*$/.test(s.slice(0, par.index))) {
+          const v2 = ratDe('√(' + dedans + ')');
+          if (v2 === null) return null;
+          return (s.slice(0, par.index - 1) + qTxt(v2)
+                  + s.slice(par.index + par[0].length)).trim();
+        }
         return (s.slice(0, par.index) + dedans + s.slice(par.index + par[0].length)).trim();
       }
       if (/\^/.test(s)) {
@@ -819,13 +827,17 @@
     if (!pr || pr.exp < 2) return null;
     const etapes = [];
     etapes.push(['نحسب العبارة', 'A = ' + qTxt(q)]);
+    // Le SIGNE ne se lit pas dans les facteurs premiers : « −1/2187 » n'est
+    // pas « 3⁻⁷ ». Il doit être porté par la ligne, sinon elle est fausse.
+    const signe = q.n < 0n ? '-' : '';
     etapes.push(['نفكّك إلى عوامل أوّلية',
-                 qTxt(q) + ' = ' + pr.bases.map(b => puis(BigInt(b), pr.exps[b])).join(' × ')]);
+                 qTxt(q) + ' = ' + signe
+                 + pr.bases.map(b => puis(BigInt(b), pr.exps[b])).join(' × ')]);
     etapes.push(['أسّة كلّها مضاعفات لـ ' + pr.exp,
                  pr.bases.map(b => pr.exps[b]).join(' و ') + ' مضاعفات للعدد ' + pr.exp]);
-    etapes.push(['نجمّع', 'A = (' + pr.bases.map(b => puis(BigInt(b), pr.exps[b] / pr.exp))
-                          .join(' × ') + ')^' + pr.exp]);
-    etapes.push(['نحسب الأساس', qTxt(pr.base) + ' هو الأساس']);
+    etapes.push(['نجمّع الأسّة', 'كلّ أسّ يُقسم على ' + pr.exp
+                                 + '، و ما يبقى يكوّن الأساس']);
+    etapes.push(['الأساس', qTxt(pr.base) + ' هو الأساس، و الأسّ ' + pr.exp]);
     etapes.push(['النتيجة', 'A = ' + puis(pr.base, pr.exp)]);
     return finir(item, etapes, puis(pr.base, pr.exp),
                  'مرّ بالعوامل الأوّلية: الأسّة تنكشف هناك', true);
@@ -1014,8 +1026,11 @@
       const x = valDe(t.t);
       if (!x) return null;
       vals.push(x);
-      etapes.push([(somme ? 'نحسب الحدّ « ' : 'نحسب العامل « ') + t.t + ' »',
-                   t.t + ' = ' + F.ecrire(x)]);
+      // « 1/4⁵ + 1/4⁵ + 1/4⁵ + 1/4⁵ » : quatre termes identiques. On ne calcule
+      // qu'une fois — répéter la même ligne quatre fois n'est pas une chaîne.
+      const ligneT = t.t + ' = ' + F.ecrire(x);
+      if (etapes.some(e => e[1] === ligneT)) continue;
+      etapes.push([(somme ? 'نحسب الحدّ « ' : 'نحسب العامل « ') + t.t + ' »', ligneT]);
     }
     // « − (5 + 2√6) » ne s'écrit pas « − 5 + 2√6 » : un terme composé doit
     // garder ses parenthèses quand un signe le précède.
