@@ -253,6 +253,14 @@ voit le plus souvent :
 l'élève croit que le terme constant échappe à la factorisation. Il a divisé
 `5a` et `10b` par 5, et laissé `15` intact.
 
+### Jamais deux fois la même faute à la suite
+
+Deux volets de suite sur la même règle et l'élève cesse de juger : il applique.
+L'interdit est donc **dur** — la famille du volet précédent est écartée —, et
+si la question n'offre rien d'autre, **on n'y met aucune faute** plutôt que de
+répéter. Mieux vaut un volet qui fait réfléchir qu'un volet qui fait appliquer.
+Sur `expr7` : zéro répétition consécutive sur 264 enchaînements.
+
 ### Quand aucune faute n'est possible, on n'en invente pas
 
 Certains volets — une évaluation numérique, une chaîne de trois calculs — ne

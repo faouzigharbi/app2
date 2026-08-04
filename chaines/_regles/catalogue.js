@@ -256,6 +256,28 @@
       }
     },
 
+    {
+      id: 'numerateur-non-multiplie',
+      nom: 'المقام وُحّد و البسط لم يتغيّر',
+      quoi: 'عند توحيد المقامات يُضرب البسط في نفس ما ضُرب فيه المقام: '
+          + '9/7 تصير 45/35، لا 9/35',
+      geste: /نوحّد|المقام المشترك|نكتب على نفس المقام/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = termes(r.membres[0]), d = termes(r.membres[1]);
+        if (g.length !== d.length) return null;
+        for (let i = 0; i < g.length; i++) {
+          const a = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(g[i].trim());
+          const b = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(d[i].trim());
+          if (!a || !b || a[3] === b[3] || a[2] === b[2]) continue;
+          const d2 = d.slice();
+          d2[i] = (b[1] || '') + a[2] + '/' + b[3];
+          return r.membres[0] + ' = ' + d2.join(' ');
+        }
+        return null;
+      }
+    },
     // ═════ ORDRE ET ENCADREMENT ═════
     {
       id: 'ordre-non-renverse',

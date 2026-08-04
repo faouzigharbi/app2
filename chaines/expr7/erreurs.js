@@ -248,6 +248,27 @@
       }
     },
     {
+      nom: 'المقام وُحّد و البسط لم يتغيّر',
+      quoi: 'عند توحيد المقامات يُضرب البسط في نفس ما ضُرب فيه المقام: '
+          + '9/7 تصير 45/35، لا 9/35',
+      geste: /نوحّد|المقام المشترك|نكتب على نفس المقام/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = termes(r.membres[0]), d = termes(r.membres[1]);
+        if (g.length !== d.length) return null;
+        for (let i = 0; i < g.length; i++) {
+          const a = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(g[i].trim());
+          const b = /^([+-]?\s*)(\d+)\/(\d+)$/.exec(d[i].trim());
+          if (!a || !b || a[3] === b[3] || a[2] === b[2]) continue;
+          const d2 = d.slice();
+          d2[i] = (b[1] || '') + a[2] + '/' + b[3];
+          return r.membres[0] + ' = ' + d2.join(' ');
+        }
+        return null;
+      }
+    },
+    {
       nom: 'قسمنا حيث يجب أن نضرب',
       quoi: 'للتخلّص من معامل نقسم عليه؛ الضرب فيه يُبعد عن الحلّ بدل أن يقرّب',
       geste: /نقسم|نضرب الطرفين|مقلوب/,
@@ -310,8 +331,15 @@
   // Fabriquer une page d'erreurs à partir d'une question de chaîne.
   //   fautes — 1 au niveau moyen, 2 au niveau avancé
   // -------------------------------------------------------------------------
-  function fabriquer(question, fautes, dejaVues, cle) {
-    dejaVues = dejaVues || new Set();
+  //   interdites — les familles du volet PRÉCÉDENT. Deux fois la même faute à
+  //   la suite et l'élève cesse de juger : il applique. L'interdit est donc
+  //   dur, pas une simple préférence — on ne cède que si la question n'offre
+  //   rien d'autre, car perdre un volet serait pire.
+  //   vues — les familles déjà rencontrées ailleurs dans la page : simple
+  //   pénalité, pour varier sans rigidité.
+  function fabriquer(question, fautes, interdites, vues, cle) {
+    interdites = interdites || new Set();
+    vues = vues || new Set();
     const c = question.controle;
     const envs = F.environnements(c);
     const juge = m => F.evaluerEtape(m, envs);
@@ -338,8 +366,8 @@
           if (!faux || faux === vrai || !credible(faux)) continue;
           if (juge(faux) !== 'fausse') continue;
           out.push({ rang: i, faux: faux, vrai: vrai, famille: fam.nom,
-                     quoi: fam.quoi,
-                     priorite: rang + (dejaVues.has(fam.nom) ? 20 : 0) });
+                     quoi: fam.quoi, interdite: interdites.has(fam.nom),
+                     priorite: rang + (vues.has(fam.nom) ? 20 : 0) });
           break;
         }
       });
@@ -368,11 +396,22 @@
     for (let n = 0; n < fautes; n++) {
       const libres = tous.filter(x => choisies.every(c2 => c2.rang !== x.rang));
       if (!libres.length) return null;
-      const neuves = libres.filter(x => choisies.every(c2 => c2.famille !== x.famille));
-      const pool = neuves.length ? neuves : libres;
+      // 1. jamais la famille du volet précédent ; 2. jamais deux fois la même
+      // dans le volet ; 3. à défaut, on prend ce qui reste plutôt que de
+      // perdre la question.
+      // Si tout ce que la question offre est la famille du volet précédent, on
+      // ne la répète PAS : on laisse le corrigé juste, et l'élève doit le dire.
+      // Mieux vaut un volet qui fait réfléchir qu'un volet qui fait appliquer.
+      const permises = libres.filter(x => !x.interdite);
+      if (!permises.length && !choisies.length) {
+        return { controle: c, enonce: question.enonce, indice: question.indice,
+                 etapes: question.etapes.map(e => [e[0], e[1]]), fautes: [], sain: true };
+      }
+      const base = permises.length ? permises : libres;
+      const neuves = base.filter(x => choisies.every(c2 => c2.famille !== x.famille));
+      const pool = neuves.length ? neuves : base;
       const min = Math.min.apply(null, pool.map(x => x.priorite));
       const pris = F.choix(pool.filter(x => x.priorite === min));
-      dejaVues.add(pris.famille);
       choisies.push(pris);
     }
     choisies.sort((a, b) => a.rang - b.rang);
@@ -424,18 +463,22 @@
 
   function pageErreurs(n, fautes) {
     const vues = new Set();
+    let precedentes = new Set();
     const qs = F.tirer(n);
     return qs.map(function (q, qi) {
       let dernier = null;
       const cle = n + '/' + (qi + 1);
       for (let essai = 0; essai < 10; essai++) {
-        const p = fabriquer(q, fautes, new Set(vues), cle)
-               || fabriquer(q, 1, new Set(vues), cle);
+        const p = fabriquer(q, fautes, precedentes, vues, cle)
+               || fabriquer(q, 1, precedentes, vues, cle);
         if (!p) continue;
         dernier = p;
         if (complete(p)) break;
       }
-      if (dernier) dernier.fautes.forEach(f => vues.add(f.famille));
+      if (dernier) {
+        precedentes = new Set(dernier.fautes.map(f => f.famille));
+        dernier.fautes.forEach(f => vues.add(f.famille));
+      }
       return dernier;
     }).filter(Boolean);
   }
