@@ -205,3 +205,59 @@ sans toucher aux autres. Celui de `encadrement/` porte une couche d'intervalles
 (bornes exactes, crochets, ∩, ∪, appartenance, tirage dans un intervalle) dont
 aucune autre fiche n'a l'emploi — et les quatre autres n'en portent pas une
 ligne.
+
+## 9. Les pages « أين الخطأ؟ » — le miroir de la chaîne
+
+Une seconde famille de pages, bâtie sur les mêmes exercices et le même noyau.
+
+> Dans la **chaîne**, les étapes sont justes et en désordre : l'élève
+> **reconstruit** le raisonnement.
+> Dans la page **erreurs**, elles sont dans l'ordre et l'une d'elles est
+> fausse : l'élève **juge** le raisonnement.
+
+C'est le geste du correcteur, et c'est celui qui manque le plus : on sait
+appliquer une règle bien avant de savoir repérer qu'elle a été mal appliquée.
+
+Deux niveaux : **متوسّط** (une étape fausse) et **متقدّم** (deux). Comme chaque
+étape d'une chaîne est une relation vraie *en elle-même* et non une ligne de
+calcul qui hérite de la précédente, deux fautes ne peuvent pas se masquer l'une
+l'autre — la structure des chaînes offre la garantie sans qu'on ait à la
+construire.
+
+L'élève clique l'étape qu'il condamne, puis choisit la bonne réécriture parmi
+deux ou trois. **Rien à taper**, comme dans la chaîne.
+
+### Des familles, pas du bruit
+
+Une faute n'a de valeur que si c'est celle qu'un élève commet. D'où un
+catalogue de familles **nommées** — الترتيب لم ينقلب, القوس مقلوب, القيمة
+المطلقة رُفعت دون تغيير الإشارة, التقاطع مكان الاتّحاد, حدّ ضائع في المتطابقة,
+إشارة مقلوبة في حدّ. Le retour ne dit pas « faux », il dit *quelle* faute. La
+page n'enseigne pas une correction, elle enseigne une famille de fautes.
+
+Une famille peut exiger le **geste** qui la produit : renverser un encadrement
+n'est la faute de la leçon que là où l'on multiplie, divise ou inverse.
+Ailleurs, ce ne serait qu'une coquille — et l'élève apprendrait à chercher des
+coquilles.
+
+Une faute doit aussi rester **crédible** : pas de coefficient « 1x », pas de
+fraction non réduite « 4/2 », pas de membre identique à son voisin. Aucune
+copie ne porte ces écritures-là.
+
+### Ce que le validateur contrôle
+
+    ERREURS=1 node verifier.js 25
+
+1. chaque étape **plantée** est fausse — sinon on demande à l'élève de
+   condamner du vrai ;
+2. chaque étape **non plantée** est vraie — sinon la page porte une faute
+   qu'elle ignore, et l'élève qui la trouve est compté en échec ;
+3. le nombre de fautes est celui du niveau demandé ;
+4. dans la phase « corrige », la bonne réécriture est vraie et **chaque leurre
+   est faux**.
+
+Le juge est **le même** des deux côtés : la page évalue ses fautes, dans le
+navigateur, avec la fonction qu'emploie le validateur. Et l'échantillon sur
+lequel il juge est **déterministe** — même intervalle, même taille, mêmes
+points. Sans cela une faute pourrait être fausse pour le validateur et vraie
+pour la page, et l'élève aurait raison de contester.

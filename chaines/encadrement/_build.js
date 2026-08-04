@@ -77,6 +77,7 @@ const page = (n, titre) => `<!doctype html>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <span class="badge">حصر و مجال</span>
       <a class="badge" href="index.html">↩ الفهرس</a>
+      <a class="badge" href="err${n}.html">🔎 أين الخطأ؟</a>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn secondary" id="btnPrint">🖨 ورقة للطباعة</button>
@@ -328,6 +329,7 @@ const index = () => `<!doctype html>
 </head>
 <body>
 <h3>حصر و مجال — سلسلة تمارين مراجعة عدد 10 — سلاسل البرهان</h3>
+<p><a class="badge" href="err-index.html">🔎 صفحات « أين الخطأ؟ »</a></p>
 <p style="text-align:center;color:#95a5a6;font-size:.9em;margin-bottom:16px">
   المدرسة الإعدادية النموذجية ضفاف البحيرة — صفحة لكل جزء، و في الصفحة سؤال لكل سؤال<br>
   رتّب مراحل البرهان، و المولّد يغيّر الأعداد في كل تحميل

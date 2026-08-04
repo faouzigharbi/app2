@@ -488,8 +488,14 @@
               : (I.sup !== null ? sVal(I.sup) - 8 : -8);
     const haut = I.sup !== null ? sVal(I.sup)
                : (I.inf !== null ? sVal(I.inf) + 8 : 8);
+    // Le tirage est DÉTERMINISTE — dénominateurs pris dans un cycle fixe, pas
+    // au hasard. C'est ce qui permet aux pages « erreurs » et au validateur de
+    // juger sur EXACTEMENT le même échantillon : une faute qui serait fausse
+    // pour l'un et vraie pour l'autre est une faute que l'élève pourrait
+    // contester à bon droit.
+    const DENOMS = [1, 2, 3, 4, 6, 12, 5, 8, 7, 10];
     for (let essai = 0; out.length < combien && essai < 40 * combien; essai++) {
-      const q = ent(1, 12);
+      const q = DENOMS[essai % DENOMS.length];
       // Un pas de 37 modulo 97 balaie tout l'intervalle au lieu d'entasser les
       // points contre la borne basse : un encadrement se contrôle partout.
       const t = bas + (haut - bas) * (((essai * 37) % 97) + 1) / 98;
@@ -497,6 +503,88 @@
       if (dansI(x, I) && !out.some(y => sEgaux(x, y))) out.push(x);
     }
     return out;
+  }
+
+  // -------------------------------------------------------------------------
+  // ÉVALUER UNE ÉTAPE — le juge, partagé.
+  //
+  // Le validateur s'en sert hors ligne ; les pages « erreurs » s'en servent
+  // DANS LE NAVIGATEUR, pour prouver qu'une faute plantée en est bien une.
+  // C'est le même juge des deux côtés : une page ne peut pas afficher comme
+  // fausse une étape que le validateur tiendrait pour vraie.
+  // -------------------------------------------------------------------------
+  const ARABE0 = /[؀-ۿ]/;
+
+  // La taille de l'échantillon sur lequel une étape est jugée. Une seule
+  // constante, partagée : les pages et le validateur doivent juger pareil.
+  const ECHANTILLON = 16;
+
+  function nomsDe(c) {
+    const n = {};
+    for (const k in (c.ens || {})) n[k] = intervalle(c.ens[k]);
+    return n;
+  }
+
+  // Les environnements dans lesquels une étape doit se vérifier.
+  //   c.dans    — la lettre est prise DANS un ensemble ;
+  //   c.env     — des expressions nommées, évaluées dans l'ordre ;
+  //   c.derives — ce qu'on déduit des lettres tirées.
+  function environnements(c, combien) {
+    const noms = nomsDe(c);
+    if (c.dans) {
+      const lettres = Object.keys(c.dans);
+      const par = lettres.length > 1 ? Math.max(3, Math.round((combien || 24) / 4))
+                                     : (combien || 24);
+      const listes = lettres.map(n => pointsDe(ensemble(c.dans[n], noms), par));
+      let envs = [{}];
+      listes.forEach((liste, k) => {
+        const suivant = [];
+        for (const e of envs) for (const v of liste) {
+          const o = {}; for (const q in e) o[q] = e[q];
+          o[lettres[k]] = v; suivant.push(o);
+        }
+        envs = suivant;
+      });
+      for (const e of envs) {
+        for (const d in (c.derives || {})) {
+          e[d] = analyser(String(c.derives[d]).replace(/×/g, '*'), e);
+        }
+      }
+      return envs;
+    }
+    const e = {};
+    for (const nom in (c.env || {})) e[nom] = analyser(c.env[nom], e);
+    return [e];
+  }
+
+  // 'vraie' | 'fausse' | 'ignoree'. « ignoree » couvre l'arabe, les ensembles
+  // en compréhension et tout ce que l'analyseur ne sait pas lire : on ne
+  // prétend rien sur ce qu'on ne calcule pas.
+  function evaluerEtape(math, envs, noms) {
+    if (typeof math !== 'string' || ARABE0.test(math)) return 'ignoree';
+    if (/[{}]/.test(math)) return 'ignoree';
+    if (/(^|[^A-Za-z])Z([^A-Za-z]|$)|ℤ/.test(math)) return 'ignoree';
+    try {
+      if (/∈/.test(math)) {
+        const [g, d] = String(math).split('∈');
+        const I = ensemble(d, noms);
+        for (const env of envs) {
+          if (!dansI(analyser(g.replace(/×/g, '*'), env), I)) return 'fausse';
+        }
+        return 'vraie';
+      }
+      if (/[∩∪]/.test(math) || /[[\]][^;]*;/.test(math)) {
+        const r = verifierEnsemble(math, noms);
+        if (r === null) { ensemble(math, noms); return 'ignoree'; }
+        return r ? 'fausse' : 'vraie';
+      }
+      for (const env of envs) {
+        const r = verifierRelation(String(math).replace(/×/g, '*'), env);
+        if (r === null) { analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
+        if (r) return 'fausse';
+      }
+      return 'vraie';
+    } catch (e) { return 'fausse'; }
   }
 
   // -------------------------------------------------------------------------
@@ -665,6 +753,7 @@
                 plus, par, analyser, verifierRelation,
                 intervalle, dansI, interI, unionI, egalI, iTxt, ensemble,
                 verifierEnsemble, pointsDe,
+                nomsDe, environnements, evaluerEtape, ECHANTILLON,
                 echapper, radicaux, fraction, bloc, isoMixte, rendreMath, rendre,
                 ARABE, PROBLEMES, enregistrer, tirer, entete, construire };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
