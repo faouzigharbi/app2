@@ -10,5 +10,6 @@ La méthode est décrite dans [`METHODE.md`](METHODE.md). Chaque fiche a son
 | [`reels/`](reels/) | riadhyet — « العمليات في مجموعة الأعداد الحقيقية / تمـارين شـاملة » | 10 → 13, 17 → 20, 26 → 29, 41 |
 | [`serie2/`](serie2/) | une autre fiche du même chapitre | 11 → 14 |
 | [`serie3/`](serie3/) | riadhyet — « الضرب و القسمة في مجموعة الأعداد الحقيقية » | 11 → 17 |
+| [`revision2/`](revision2/) | ضفاف البحيرة — « العمليات الأربعة في IR » (مراجعة) | الجزء 1 → 3 |
 
 Ouvrir `index.html` dans le dossier voulu.

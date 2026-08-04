@@ -435,10 +435,15 @@
   const enregistrer = (n, def) => { PROBLEMES[n] = def; };
   const tirer = n => PROBLEMES[n].f();
 
+  // L'en-tête par défaut est « التمرين N — », mais une fiche découpée en parties
+  // plutôt qu'en exercices numérotés fournit le sien via `entete`.
+  const entete = n => (PROBLEMES[n].entete !== undefined
+    ? PROBLEMES[n].entete : 'التمرين ' + n + ' — ');
+
   function construire(n) {
     return {
       id: 'ex' + n,
-      title: 'التمرين ' + n + ' — ' + PROBLEMES[n].titre,
+      title: entete(n) + PROBLEMES[n].titre,
       questions: tirer(n).map(rendre)
     };
   }
@@ -448,7 +453,7 @@
                 sPuis, sVal, sSigne, sAbs, sEgaux, sCmp, sTxt, estRat, versRat,
                 plus, par, analyser, verifierRelation,
                 echapper, radicaux, fraction, bloc, isoMixte, rendreMath, rendre,
-                ARABE, PROBLEMES, enregistrer, tirer, construire };
+                ARABE, PROBLEMES, enregistrer, tirer, entete, construire };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.Reel = API;
 })(typeof window !== 'undefined' ? window : globalThis);
