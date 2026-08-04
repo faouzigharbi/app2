@@ -15,6 +15,7 @@ const path = require('path');
 const F = require('./noyau.js');
 
 require('./produit.js');
+require('./produit2.js');
 require('./gens.js');
 const EXOS = Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b);
 
@@ -91,6 +92,7 @@ const page = (n, titre) => `<!doctype html>
 
 <script src="noyau.js"></script>
 <script src="produit.js"></script>
+<script src="produit2.js"></script>
 <script src="gens.js"></script>
 
 <script src="ex${n}.js"></script>

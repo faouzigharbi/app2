@@ -18,6 +18,7 @@
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
 require('./produit.js');
+require('./produit2.js');
 require('./gens.js');
 
 const TIRAGES = Number(process.argv[2]) || 120;
@@ -162,6 +163,35 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("racine de B du 13 fausse", parQuestion(13, 4),
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("valeur de E du 14 décalée", parQuestion(14, 0),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("factorisation de F du 14 fausse", parQuestion(14, 1),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
+  pousse("facteur commun du 14 mal sorti", parQuestion(14, 2),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
+  // Casser l'annulation de π : les deux occurrences doivent se compenser, une
+  // seule inversion de signe et a dépend de π — ce que le claim doit refuser.
+  pousse("le pi du 15 ne s\u2019en va plus", parQuestion(15, 0),
+    c => { c.controle.derives.a = c.controle.derives.a.replace(" - π)", " + π)"); });
+  pousse("a et b du 15 ne sont plus opposes", parQuestion(15, 1),
+    c => { c.controle.derives.b = c.controle.derives.b + " + 1"; });
+  pousse("a et c du 15 ne sont plus inverses", parQuestion(15, 2),
+    c => { c.controle.derives.c = c.controle.derives.c + " + 1"; });
+  pousse("le x du 16 ne se simplifie plus", parQuestion(16, 0),
+    c => { c.controle.derives.a = c.controle.derives.a.replace(" + x)", ")"); });
+  pousse("identite remarquable du 16 faussee", parQuestion(16, 1),
+    c => { c.controle.claims[0][1] += " + 1"; });
+  pousse("c du 16 decale", parQuestion(16, 3),
+    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
+  pousse("reduction de E du 17 decalee", parQuestion(17, 0),
+    c => { c.controle.claims[0][1] += " + 1"; });
+  pousse("developpement de F du 17 ampute", parQuestion(17, 1),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/ - \d+$/, ""); });
+  pousse("facteur commun du 17 incomplet", parQuestion(17, 2),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace("x y(", "x("); });
+  pousse("factorisation de H du 17 fausse", parQuestion(17, 3),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
+
   pousse("étape dupliquée", parQuestion(12, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
 

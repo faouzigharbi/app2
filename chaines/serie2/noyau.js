@@ -353,7 +353,7 @@
         return k < 0 ? null : { deb: k, fin: j, txt: s.slice(k + 1, j - 1) };
       }
       let k = j;
-      while (k > 0 && /[\w√]/.test(s[k - 1])) k--;
+      while (k > 0 && /[\w√π]/.test(s[k - 1])) k--;
       return k === j ? null : { deb: k, fin: j, txt: s.slice(k, j) };
     }
     let j = i;
@@ -367,7 +367,7 @@
       return k >= s.length ? null : { deb: j, fin: k + 1, txt: s.slice(j + 1, k) };
     }
     let k = j;
-    while (k < s.length && /[\w√]/.test(s[k])) k++;
+    while (k < s.length && /[\w√π]/.test(s[k])) k++;
     return k === j ? null : { deb: j, fin: k, txt: s.slice(j, k) };
   }
 
