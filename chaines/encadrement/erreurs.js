@@ -299,6 +299,18 @@
     choisies.sort((a, b) => a.rang - b.rang);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
+    //
+    // Un leurre garde le PREMIER MEMBRE de l'étape quand celle-ci est une
+    // égalité à deux membres — « donné = travail ». On ne l'exige PAS d'un
+    // encadrement « -3 < x < -2 » : ses trois membres forment un seul énoncé,
+    // aucun n'y est le donné, et tous ont le droit de bouger.
+    function memeDonnee(leurre, vrai) {
+      const a = relation(leurre), b = relation(vrai);
+      if (!a || !b) return true;
+      if (b.ops.length !== 1 || b.ops[0] !== '=') return true;
+      return a.membres[0].trim() === b.membres[0].trim();
+    }
+
     for (const f of choisies) {
       const opts = [f.vrai];
       for (let essai = 0; essai < 60 && opts.length < 3; essai++) {
@@ -306,6 +318,7 @@
         let leurre;
         try { leurre = fam.faire(f.vrai); } catch (e) { leurre = null; }
         if (!leurre || leurre === f.vrai || leurre === f.faux) continue;
+        if (!memeDonnee(leurre, f.vrai)) continue;
         if (!credible(leurre) || opts.indexOf(leurre) >= 0) continue;
         if (juge(leurre) !== 'fausse') continue;
         opts.push(leurre);

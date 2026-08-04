@@ -106,23 +106,6 @@
   // ── Les règles de CE chapitre ───────────────────────────────────────────
   const FAMILLES = [
     {
-      nom: "قوس مسبوق بناقص رُفع دون تغيير الإشارات",
-      quoi: "قوس مسبوق بـ « - » ترفع إشارات كل حدوده: -(a - b) = -a + b",
-      geste: /نرفع القوس|نزيل الأقواس|بدون أقواس|نكتب المقابل/,
-      faire: function(math) {
-          const r = relation(math);
-          if (!r || r.membres.length !== 2) return null;
-          const m = /-\s*\(([^()]+)\)/.exec(r.membres[0]);
-          if (!m) return null;
-          const t = termes(m[1]);
-          if (t.length < 2) return null;
-          // Le premier terme change de signe, les autres sont recopiés tels
-          // quels : c'est exactement ce que l'élève écrit.
-          const naif = t.map((x, i) => i === 0 ? '-' + sansSigne(x) : x).join(' ');
-          return r.membres[0] + ' = ' + naif;
-        }
-    },
-    {
       nom: "ناقص أمام عدد سالب",
       quoi: "طرح عدد سالب هو إضافة مقابله: a - (-b) = a + b، لا a - b",
       geste: /نحسب|نرفع|نزيل|الفرق|نطرح/,
@@ -206,6 +189,23 @@
           if (!/^[a-zA-Z]/.test(t[0])) return null;
           return math.slice(0, m.index) + m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ')
                + math.slice(m.index + m[0].length);
+        }
+    },
+    {
+      nom: "قوس مسبوق بناقص رُفع دون تغيير الإشارات",
+      quoi: "قوس مسبوق بـ « - » ترفع إشارات كل حدوده: -(a - b) = -a + b",
+      geste: /نرفع القوس|نزيل الأقواس|بدون أقواس|نكتب المقابل/,
+      faire: function(math) {
+          const r = relation(math);
+          if (!r || r.membres.length !== 2) return null;
+          const m = /-\s*\(([^()]+)\)/.exec(r.membres[0]);
+          if (!m) return null;
+          const t = termes(m[1]);
+          if (t.length < 2) return null;
+          // Le premier terme change de signe, les autres sont recopiés tels
+          // quels : c'est exactement ce que l'élève écrit.
+          const naif = t.map((x, i) => i === 0 ? '-' + sansSigne(x) : x).join(' ');
+          return r.membres[0] + ' = ' + naif;
         }
     },
     {
@@ -344,6 +344,23 @@
     return finir(choisies);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
+    //
+    // Un leurre garde le PREMIER MEMBRE de l'étape. Les trois options sont lues
+    // côte à côte comme trois réécritures d'une même ligne : celle qui change
+    // le membre donné ne réécrit plus rien, elle change la question. On a vu
+    // « √5 × √5 = 5 » se faire proposer « √10 = 5 » — l'élève n'y choisit plus,
+    // il devine.
+    //
+    // Le contrôle ne vaut QUE pour l'égalité à deux membres — « donné = travail ».
+    // Un encadrement « -3 < x < -2 » n'a pas de donné à gauche : ses trois
+    // membres forment un seul énoncé, et tous ont le droit de bouger.
+    function memeDonnee(leurre, vrai) {
+      const a = relation(leurre), b = relation(vrai);
+      if (!a || !b) return true;
+      if (b.ops.length !== 1 || b.ops[0] !== '=') return true;
+      return a.membres[0].trim() === b.membres[0].trim();
+    }
+
     function finir(choisies) {
     choisies.sort((a, b) => a.rang - b.rang);
     choisies.forEach(function (f) {
@@ -354,6 +371,7 @@
         try { leurre = fam.faire(f.vrai, A); } catch (e) { leurre = null; }
         if (!leurre || leurre === f.vrai || leurre === f.faux) continue;
         if (!credible(leurre, f.vrai) || opts.indexOf(leurre) >= 0) continue;
+        if (!memeDonnee(leurre, f.vrai)) continue;
         if (juge(leurre) !== 'fausse') continue;
         opts.push(leurre);
       }

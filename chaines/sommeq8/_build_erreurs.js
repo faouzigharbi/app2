@@ -82,7 +82,7 @@ const page = (n, titre) => `<!doctype html>
 <main>
   <div id="barre" class="row">
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <span class="badge">المجموع و الفرق في ℚ — 8 أساسي</span>
+      <span class="badge">8 أساسي</span>
       <a class="badge" href="err-index.html">↩ الفهرس</a>
       <a class="badge" href="ex${String(n).padStart(2, '0')}.html">⛓ سلسلة البرهان</a>
     </div>
@@ -306,11 +306,11 @@ const index = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>أين الخطأ؟ — المجموع و الفرق في ℚ — 8 أساسي</title>
+<title>أين الخطأ؟ — 8 أساسي</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><h1>أين الخطأ؟ — المجموع و الفرق في ℚ — 8 أساسي</h1>
+<header><h1>أين الخطأ؟ — 8 أساسي</h1>
 <p>في كل صفحة، حلّ تلميذ فيه خطأ (أو خطآن في المستوى المتقدّم). ابحث عنه، ثمّ صحّحه.</p></header>
 <main>
 <div class="row" style="margin-bottom:12px">

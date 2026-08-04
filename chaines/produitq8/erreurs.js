@@ -280,11 +280,19 @@
     const mains = (MAIN[cle] || []).filter(f => juge(f.faux) === 'fausse'
                                              && juge(question.etapes[f.rang][1]) === 'vraie');
 
+    const sain = () => ({ controle: c, enonce: question.enonce,
+                          indice: question.indice,
+                          etapes: question.etapes.map(e => [e[0], e[1]]),
+                          fautes: [], sain: true });
+
     const rangs = [];
     question.etapes.forEach(function (e, i) {
       if (juge(e[1]) === 'vraie') rangs.push(i);
     });
-    if (rangs.length < fautes + 1) return null;
+    // Il doit rester du vrai après la faute : une chaîne dont tout serait faux
+    // ne demanderait plus de juger. Faute de quoi, on laisse le corrigé
+    // intact — jamais on ne perd la question, l'élève doit les avoir toutes.
+    if (rangs.length < fautes + 1) return sain();
 
     function candidats(i) {
       const vrai = question.etapes[i][1];
@@ -314,18 +322,13 @@
                                  famille: f.famille, quoi: f.quoi, priorite: -1 }));
     rangs.forEach(function (i) { tous = tous.concat(candidats(i)); });
 
-    const sain = () => ({ controle: c, enonce: question.enonce,
-                          indice: question.indice,
-                          etapes: question.etapes.map(e => [e[0], e[1]]),
-                          fautes: [], sain: true });
-
     // AUCUNE FAUTE DE COMPRÉHENSION POSSIBLE ? On n'en invente pas.
     if (!tous.length) return sain();
 
     const choisies = [];
     for (let n = 0; n < fautes; n++) {
       const libres = tous.filter(x => choisies.every(c2 => c2.rang !== x.rang));
-      if (!libres.length) return null;
+      if (!libres.length) return choisies.length ? finir(choisies) : sain();
       const permises = libres.filter(x => !x.interdite);
       if (!permises.length && !choisies.length) return sain();
       const base = permises.length ? permises : libres;
@@ -334,9 +337,28 @@
       const min = Math.min.apply(null, pool.map(x => x.priorite));
       choisies.push(F.choix(pool.filter(x => x.priorite === min)));
     }
-    choisies.sort((a, b) => a.rang - b.rang);
+    return finir(choisies);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
+    //
+    // Un leurre garde le PREMIER MEMBRE de l'étape. Les trois options sont lues
+    // côte à côte comme trois réécritures d'une même ligne : celle qui change
+    // le membre donné ne réécrit plus rien, elle change la question. On a vu
+    // « √5 × √5 = 5 » se faire proposer « √10 = 5 » — l'élève n'y choisit plus,
+    // il devine.
+    //
+    // Le contrôle ne vaut QUE pour l'égalité à deux membres — « donné = travail ».
+    // Un encadrement « -3 < x < -2 » n'a pas de donné à gauche : ses trois
+    // membres forment un seul énoncé, et tous ont le droit de bouger.
+    function memeDonnee(leurre, vrai) {
+      const a = relation(leurre), b = relation(vrai);
+      if (!a || !b) return true;
+      if (b.ops.length !== 1 || b.ops[0] !== '=') return true;
+      return a.membres[0].trim() === b.membres[0].trim();
+    }
+
+    function finir(choisies) {
+    choisies.sort((a, b) => a.rang - b.rang);
     choisies.forEach(function (f) {
       const opts = [f.vrai];
       for (let essai = 0; essai < 60 && opts.length < 3; essai++) {
@@ -345,6 +367,7 @@
         try { leurre = fam.faire(f.vrai, A); } catch (e) { leurre = null; }
         if (!leurre || leurre === f.vrai || leurre === f.faux) continue;
         if (!credible(leurre, f.vrai) || opts.indexOf(leurre) >= 0) continue;
+        if (!memeDonnee(leurre, f.vrai)) continue;
         if (juge(leurre) !== 'fausse') continue;
         opts.push(leurre);
       }
@@ -365,6 +388,7 @@
       }),
       fautes: choisies
     };
+    }
   }
 
   function melanger(t) {

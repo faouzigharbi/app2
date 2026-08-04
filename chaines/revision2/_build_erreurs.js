@@ -63,7 +63,7 @@ const page = (n, titre) => `<!doctype html>
 <main>
   <div id="barre" class="row">
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <span class="badge">العمليات الأربعة في IR — مراجعة</span>
+      <span class="badge">مراجعة</span>
       <a class="badge" href="err-index.html">↩ الفهرس</a>
       <a class="badge" href="ex${String(n).padStart(2, '0')}.html">⛓ سلسلة البرهان</a>
     </div>
@@ -268,11 +268,11 @@ const index = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>أين الخطأ؟ — العمليات الأربعة في IR — مراجعة</title>
+<title>أين الخطأ؟ — مراجعة</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><h1>أين الخطأ؟ — العمليات الأربعة في IR — مراجعة</h1>
+<header><h1>أين الخطأ؟ — مراجعة</h1>
 <p>في كل صفحة، حلّ تلميذ فيه خطأ (أو خطآن في المستوى المتقدّم). ابحث عنه، ثمّ صحّحه.</p></header>
 <main>
 <div class="row" style="margin-bottom:12px">

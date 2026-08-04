@@ -511,6 +511,384 @@
              + math.slice(m.index + m[0].length);
       }
     },
+    {
+      // Le même aveuglement que ci-dessus, mais dans l'écriture « a√b » : le
+      // facteur carré sort de sous le radical SANS qu'on lui prenne sa racine.
+      // C'est la faute reine du chapitre « الكتابة على شكل a√b ».
+      id: 'carre-parfait-non-extrait',
+      nom: 'المربّع الكامل خرج كما هو',
+      quoi: 'العامل المربّع يخرج من تحت الجذر بجذره لا بقيمته: '
+          + '√112 = √(16 × 7) = 4√7، لا 16√7',
+      geste: /نُرجع|نُبسّط|نفصل|نحسب الجذر|نفكّك/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*√(\d+)\s*$/.exec(r.membres[0]);
+        const d = /^\s*(\d+)\s*√(\d+)\s*$/.exec(r.membres[1]);
+        if (!g || !d) return null;
+        const a = Number(d[1]);
+        if (a * a * Number(d[2]) !== Number(g[1])) return null;
+        return r.membres[0].trim() + ' = ' + (a * a) + '√' + d[2];
+      }
+    },
+    {
+      // « √a × √b = √(a×b) » : ce qui est sous les radicaux se multiplie SOUS
+      // un radical, et il reste à en prendre la racine. L'élève qui l'oublie
+      // écrit « √6 × √6 = 36 » — le geste est juste à mi-chemin.
+      id: 'racine-du-produit-non-simplifiee',
+      nom: 'ضربنا ما تحت الجذرين و بقي الناتج بلا جذر',
+      quoi: '√a × √b = √(a × b) : ما تحت الجذرين يُضرب تحت جذر واحد ثمّ يُؤخذ '
+          + 'جذره — √6 × √6 = √36 = 6، لا 36',
+      geste: /يختفي|نضرب|جداء|نحسب|نجمع تحت|نُبسّط/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const m = /^\s*(\d*)\s*√(\d+)\s*[×*]\s*(\d*)\s*√(\d+)\s*$/.exec(r.membres[0]);
+        // Le second membre est le résultat correct, écrit soit déjà réduit
+        // (« = 6 »), soit encore sous le radical (« = √36 ») : dans les deux
+        // cas la faute consiste à garder le produit des radicandes tel quel.
+        if (!m || !/^\s*(√\s*)?\d+\s*$/.test(r.membres[1])) return null;
+        const v = Number(m[1] || 1) * Number(m[3] || 1) * Number(m[2]) * Number(m[4]);
+        return r.membres[0].trim() + ' = ' + v;
+      }
+    },
+    {
+      // Ce qui sort du radical est un carré, et il en sort SA RACINE. Le reste
+      // y demeure. L'élève qui extrait un facteur quelconque écrit
+      // « √20 = 2√10 » : il a bien décomposé 20 = 2 × 10, mais 2 n'est pas
+      // un carré, il n'avait pas le droit de sortir.
+      id: 'facteur-non-carre-sorti',
+      nom: 'عامل غير مربّع خرج من الجذر',
+      quoi: 'لا يخرج من تحت الجذر إلاّ عامل مربّع كامل، و يخرج بجذره: '
+          + '√20 = √(4 × 5) = 2√5، أمّا √20 = 2√10 فباطلة',
+      geste: /نُرجع|نُبسّط|نفصل|نحسب الجذر|نفكّك/,
+      faire(math, A) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*√(\d+)\s*$/.exec(r.membres[0]);
+        const d = /^\s*(\d+)(?:\s*√(\d+))?\s*$/.exec(r.membres[1]);
+        if (!g || !d) return null;
+        const N = Number(g[1]), a = Number(d[1]);
+        const carre = k => Math.round(Math.sqrt(k)) * Math.round(Math.sqrt(k)) === k;
+        const cands = [];
+        for (let c = 2; c < N; c++) {
+          if (N % c) continue;
+          const m = N / c;
+          // m carré parfait laisserait « 5√4 », que personne n'écrit ;
+          // c = a² serait l'extraction juste.
+          if (m < 2 || carre(m) || c === a * a) continue;
+          cands.push(c + '√' + m);
+        }
+        if (!cands.length) return null;
+        return r.membres[0].trim() + ' = ' + cands[A.ent(0, cands.length - 1)];
+      }
+    },
+    {
+      // « √a × √b = √(a + b) » — la règle du produit appliquée avec l'opération
+      // de la somme. C'est la confusion inverse de `produit-de-racines-devenu-
+      // somme` : là on changeait l'opération dehors, ici on la change dessous.
+      id: 'radicandes-additionnes-au-produit',
+      nom: 'في الجداء جمعنا ما تحت الجذرين',
+      quoi: '√a × √b = √(a × b) : ما تحت الجذرين يُضرب، لا يُجمع — '
+          + '√25 × √5 = √125 و ليس √30',
+      geste: /نفصل|نضرب|جداء|نجمع تحت|نُبسّط/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const P = /(\d*)\s*√(\d+)\s*[×*]\s*(\d*)\s*√(\d+)/;
+        const m1 = P.exec(r.membres[1]);
+        // Le produit est dans le membre de DROITE : la faute s'y écrit sur
+        // place — « √50 = √25 × √2 » devient « √50 = √27 ».
+        if (m1) {
+          const coef = Number(m1[1] || 1) * Number(m1[3] || 1);
+          const somme = (coef === 1 ? '' : coef) + '√' + (Number(m1[2]) + Number(m1[4]));
+          return r.membres[0].trim() + ' = ' + (r.membres[1].slice(0, m1.index) + somme
+                 + r.membres[1].slice(m1.index + m1[0].length)).trim();
+        }
+        // Le produit est le DONNÉ, à gauche : la faute est alors dans le
+        // résultat qu'on en tire — « √5 × √5 = √10 ». On ne touche pas au
+        // donné : une étape fautive garde sa prémisse et se trompe de conclusion.
+        const m0 = P.exec(r.membres[0]);
+        if (!m0 || m0[0].trim() !== r.membres[0].trim()) return null;
+        const coef = Number(m0[1] || 1) * Number(m0[3] || 1);
+        return r.membres[0].trim() + ' = ' + (coef === 1 ? '' : coef)
+             + '√' + (Number(m0[2]) + Number(m0[4]));
+      }
+    },
+    {
+      // (√b)^2 = b, et non b^2 : élever au carré DÉFAIT la racine, il ne
+      // s'ajoute pas à elle.
+      id: 'carre-de-la-racine-non-simplifie',
+      nom: 'مربّع الجذر بقي بلا اختصار',
+      quoi: '(√b)^2 = b لأنّ التربيع يُلغي الجذر: (√6)^2 = 6، لا 36',
+      geste: /المربّع|نربّع|المتطابقة|نحسب/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*\(\s*√(\d+)\s*\)\s*\^\s*2\s*$/.exec(r.membres[0]);
+        if (!g || !/^\s*\d+\s*$/.test(r.membres[1])) return null;
+        const b = Number(g[1]);
+        return r.membres[0].trim() + ' = ' + (b * b);
+      }
+    },
+    {
+      // Élever au carré, ce n'est pas doubler. La confusion « x^2 = 2x » a la
+      // vie dure, et elle se voit très bien sur (√6)^2.
+      id: 'carre-confondu-avec-le-double',
+      nom: 'التربيع خُلط بالمضاعفة',
+      quoi: 'التربيع ضرب العدد في نفسه لا في 2: (√6)^2 = √6 × √6 = 6، و ليس 2√6',
+      geste: /المربّع|نربّع|المتطابقة|نحسب/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*\(\s*(√\d+)\s*\)\s*\^\s*2\s*$/.exec(r.membres[0]);
+        if (!g) return null;
+        return r.membres[0].trim() + ' = 2' + g[1];
+      }
+    },
+    {
+      // La racine carrée n'est pas la moitié. C'est la confusion la plus
+      // ancienne du chapitre, et elle survit longtemps : √36 = 18.
+      id: 'racine-confondue-avec-la-moitie',
+      nom: 'الجذر خُلط بالنصف',
+      quoi: 'جذر العدد ليس نصفه: √36 = 6 لأنّ 6 × 6 = 36، و ليس 18',
+      geste: /نحسب الجذر|نُبسّط|نُرجع/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*√(\d+)\s*$/.exec(r.membres[0]);
+        if (!g) return null;
+        const N = Number(g[1]);
+        // On n'écrit la moitié que si elle est entière : « 25/2 » ne s'écrit
+        // pas dans une copie, on y lit « 12,5 » ou rien.
+        if (N % 2) return null;
+        return r.membres[0].trim() + ' = ' + (N / 2);
+      }
+    },
+    {
+      // Le facteur commun est √11, pas 11. Le sortir sans son radical change
+      // le nombre : c'est le pendant, pour les racines, du facteur mal lu.
+      id: 'facteur-radical-sans-racine',
+      nom: 'العامل المشترك خرج بلا جذر',
+      quoi: 'العامل المشترك بين 6√11 و 3√11 × √13 هو √11، لا 11 : '
+          + 'نُخرج ما هو مشترك فعلا',
+      geste: /نُخرج|العامل المشترك|نفكّك|الشكل المفكّك/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        const k = r.membres.length - 1;
+        const m = /^\s*√(\d+)\s*\(([^()]+)\)\s*$/.exec(r.membres[k]);
+        if (!m) return null;
+        const copie = r.membres.slice();
+        copie[k] = m[1] + '(' + m[2] + ')';
+        return recoller({ membres: copie, ops: r.ops });
+      }
+    },
+    {
+      // Un rationnel et un radical ne se joignent pas — c'est la règle des
+      // termes semblables, transportée dans ℝ. « 3 + 8√3 = 11√3 » est la faute
+      // la plus fréquente de tout le chapitre du développement.
+      id: 'terme-rationnel-joint-au-radical',
+      nom: 'عدد ناطق جُمع مع جذر',
+      quoi: 'العدد الناطق و الجذر حدّان غير متشابهين: '
+          + '3 + 8√3 يبقى كما هو، و ليس 11√3',
+      geste: /نجمع|نرتّب|نعيد كتابة|نطرح|الفرق/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        const k = r.membres.length - 1;
+        const t = termes(r.membres[k]);
+        if (t.length < 2) return null;
+        let ir = -1, iq = -1;
+        t.forEach((x, i) => {
+          const s = x.replace(/\s+/g, '');
+          if (ir < 0 && /^[+-]?\d*√\d+$/.test(s)) ir = i;
+          else if (iq < 0 && /^[+-]?\d+$/.test(s)) iq = i;
+        });
+        if (ir < 0 || iq < 0) return null;
+        const lireR = /^([+-]?)(\d*)√(\d+)$/.exec(t[ir].replace(/\s+/g, ''));
+        const lireQ = /^([+-]?)(\d+)$/.exec(t[iq].replace(/\s+/g, ''));
+        const cr = Number(lireR[2] || 1) * (lireR[1] === '-' ? -1 : 1);
+        const cq = Number(lireQ[2]) * (lireQ[1] === '-' ? -1 : 1);
+        const s = cr + cq;
+        if (s === 0 || s === cr) return null;
+        const joint = (s < 0 ? '-' : '') + (Math.abs(s) === 1 ? '' : Math.abs(s))
+                    + '√' + lireR[3];
+        const t2 = [];
+        t.forEach((x, i) => {
+          if (i === iq) return;
+          t2.push(i === ir ? (t2.length ? (s < 0 ? '- ' : '+ ') + joint.replace(/^-/, '')
+                                        : joint)
+                           : x);
+        });
+        const copie = r.membres.slice();
+        copie[k] = t2.join(' ');
+        return recoller({ membres: copie, ops: r.ops });
+      }
+    },
+    {
+      // (a + √b)(a - √b) = a^2 - b : c'est une DIFFÉRENCE. L'élève qui écrit
+      // a^2 + b a retenu l'identité sans sa soustraction.
+      id: 'conjugue-signe-du-carre',
+      nom: 'المتلازمان — الفرق صار مجموعا',
+      quoi: '(a + √b)(a - √b) = a^2 - b : النتيجة فرق لا مجموع',
+      geste: /مرافق|المتلازم|نستعمل|ننشر|نحسب|نطرح/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        if (!/√/.test(r.membres[0])) return null;
+        const t = termes(r.membres[1]);
+        if (t.length !== 2) return null;
+        const b = /^([+-])\s*(\d+)$/.exec(t[1].replace(/\s+/g, ' ').trim());
+        if (!b) return null;
+        return r.membres[0].trim() + ' = ' + t[0].trim()
+             + (b[1] === '-' ? ' + ' : ' - ') + b[2];
+      }
+    },
+    {
+      // La règle ne vaut que pour le PRODUIT ; l'élève l'étend à la somme.
+      // C'est le même énoncé que `racine-distribuee`, pris par l'autre bout :
+      // là on distribuait sur une somme écrite, ici on remplace le produit
+      // écrit par une somme.
+      id: 'produit-de-racines-devenu-somme',
+      nom: 'الجداء تحت الجذر صار مجموعا',
+      quoi: '√(a × b) = √a × √b : القاعدة للجداء وحده. '
+          + '√90 = √9 × √10 و ليس √9 + √10',
+      geste: /نفصل|نفكّك|نُرجع|نُبسّط/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const produit = /√\d+\s*[×*]\s*√\d+/;
+        const k = produit.test(r.membres[1]) ? 1 : produit.test(r.membres[0]) ? 0 : -1;
+        if (k < 0) return null;
+        const copie = r.membres.slice();
+        copie[k] = r.membres[k].replace(/[×*]/, '+');
+        return copie[0].trim() + ' = ' + copie[1].trim();
+      }
+    },
+    {
+      // Jointes, les racines semblables s'ajoutent PAR LEURS COEFFICIENTS ;
+      // ce qui est sous le radical ne bouge pas. L'élève qui l'ajoute aussi
+      // écrit « 4√3 + 15√3 = 19√6 ».
+      id: 'radicande-additionne',
+      nom: 'جمعنا ما تحت الجذر أيضا',
+      quoi: 'عند جمع جذور متشابهة تُجمع المعاملات وحدها و يبقى الجذر كما هو: '
+          + '2√7 + 3√7 = 5√7، لا 5√14',
+      geste: /نجمع|نعيد كتابة|نضيف|الفرق/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        for (let k = 0; k < 2; k++) {
+          const t = termes(r.membres[k]);
+          if (t.length < 2) continue;
+          // L'AUTRE membre doit être le résultat groupé « c√d » : sinon c'est
+          // un nom — « A » — et le remplacer ne raconterait aucune faute.
+          if (!/^\s*\d*\s*√\d+\s*$/.test(r.membres[1 - k])) continue;
+          let som = 0, rad = null, tot = 0, ok = true;
+          for (const x of t) {
+            const m = /^([+-]?)(\d*)√(\d+)$/.exec(x.replace(/\s+/g, ''));
+            if (!m) { ok = false; break; }
+            const d = Number(m[3]);
+            if (rad === null) rad = d; else if (rad !== d) { ok = false; break; }
+            som += Number(m[2] || 1) * (m[1] === '-' ? -1 : 1);
+            tot += d;
+          }
+          if (!ok || som <= 0 || tot === rad) continue;
+          const copie = r.membres.slice();
+          copie[1 - k] = (som === 1 ? '' : som) + '√' + tot;
+          return copie[0].trim() + ' = ' + copie[1].trim();
+        }
+        return null;
+      }
+    },
+    {
+      // Le facteur commun est ici un RADICAL, mais la règle n'a pas changé :
+      // chaque terme se divise par lui. C'est mot pour mot l'exemple du
+      // maître — « 5a + 10b + 15 = 5(a + 2b + 15) » — écrit dans ℝ.
+      id: 'facteur-radical-non-divise',
+      nom: 'حدّ لم يُقسم على الجذر المشترك',
+      quoi: 'عند إخراج جذر مشترك يُقسم كلّ حدّ عليه: '
+          + '6√11 - 3√11 × √13 = √11(6 - 3√13)، لا √11(6√11 - 3√13)',
+      geste: /نُخرج|العامل المشترك|نفكّك|الشكل المفكّك/,
+      faire(math, A) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        const k = r.membres.length - 1;
+        const m = /^\s*(√\d+)\s*\(([^()]+)\)\s*$/.exec(r.membres[k]);
+        if (!m) return null;
+        const t = termes(m[2]);
+        // Le terme non divisé est un terme SANS radical : c'est celui que
+        // l'élève croit étranger au facteur commun.
+        const libres = [];
+        t.forEach((x, i) => { if (x.indexOf('√') < 0) libres.push(i); });
+        if (!libres.length) return null;
+        const j = libres[A.ent(0, libres.length - 1)];
+        const t2 = t.slice();
+        t2[j] = t[j].replace(/\s+$/, '') + m[1];
+        const copie = r.membres.slice();
+        copie[k] = m[1] + '(' + t2.join(' ') + ')';
+        return recoller({ membres: copie, ops: r.ops });
+      }
+    },
+    {
+      // Rationaliser, c'est multiplier LES DEUX termes du quotient. Le
+      // numérateur seul, et le nombre a changé.
+      id: 'racine-au-numerateur-seul',
+      nom: 'ضربنا البسط وحده في الجذر',
+      quoi: 'لجعل المقام ناطقا نضرب البسط و المقام معا في نفس الجذر: '
+          + 'ضرب البسط وحده يغيّر قيمة الكسر',
+      geste: /نضرب في|نُنطق|ناطقا|مرافق/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const m = /^\s*(.+?)\/\(\s*(.+?)\s*[×*]\s*(√\d+)\s*\)\s*$/.exec(r.membres[1]);
+        if (!m || m[2].indexOf('√') < 0) return null;
+        return r.membres[0].trim() + ' = ' + m[1].trim() + '/(' + m[2].trim() + ')';
+      }
+    },
+    {
+      // (a + b)^2 = a^2 + 2ab + b^2. Le terme du milieu n'est pas un
+      // supplément : il EST l'identité. Sans lui, on a écrit (a+b)^2 = a^2+b^2.
+      id: 'double-produit-oublie',
+      nom: 'الحدّ الأوسط في المتطابقة سقط',
+      quoi: '(a + b)^2 = a^2 + 2ab + b^2 : الحدّ الأوسط جزء من المتطابقة، '
+          + 'و ليس (a + b)^2 = a^2 + b^2',
+      geste: /نجمع|المتطابقة|الحدّ الأوسط|ننشر|نعيد كتابة/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.ops.some(o => o !== '=')) return null;
+        const k = r.membres.length - 1;
+        const t = termes(r.membres[k]);
+        if (t.length !== 3) return null;
+        // Celui qui tombe est le double produit — le terme du milieu, celui
+        // qui porte le radical ou la lettre.
+        if (!/√|[a-zA-Z]/.test(t[1])) return null;
+        const copie = r.membres.slice();
+        copie[k] = t[0] + ' ' + t[2];
+        return recoller({ membres: copie, ops: r.ops });
+      }
+    },
+    {
+      // (a + √b)(a - √b) = a^2 - b : le radical disparaît parce qu'il est
+      // ÉLEVÉ AU CARRÉ. L'élève qui le recopie tel quel n'a pas vu pourquoi
+      // les deux conjugués s'appellent ainsi.
+      id: 'conjugue-mal-developpe',
+      nom: 'المتلازمان — الجذر لم يُربّع',
+      quoi: '(a + √b)(a - √b) = a^2 - b : الجذر يختفي لأنّه يُربّع، '
+          + 'فلا يبقى √b في النتيجة',
+      geste: /مرافق|المتلازم|نستعمل|ننشر|نحسب/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const m = /√(\d+)/.exec(r.membres[0]);
+        if (!m) return null;
+        const t = termes(r.membres[1]);
+        if (t.length !== 2) return null;
+        const b = /^([+-])\s*(\d+)$/.exec(t[1].replace(/\s+/g, ' ').trim());
+        if (!b || b[2] !== m[1]) return null;
+        return r.membres[0].trim() + ' = ' + t[0].trim() + ' ' + b[1] + ' √' + b[2];
+      }
+    },
 
     {
       id: 'conjugue-au-numerateur-seul',

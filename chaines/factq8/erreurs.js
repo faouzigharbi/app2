@@ -346,6 +346,23 @@
     return finir(choisies);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
+    //
+    // Un leurre garde le PREMIER MEMBRE de l'étape. Les trois options sont lues
+    // côte à côte comme trois réécritures d'une même ligne : celle qui change
+    // le membre donné ne réécrit plus rien, elle change la question. On a vu
+    // « √5 × √5 = 5 » se faire proposer « √10 = 5 » — l'élève n'y choisit plus,
+    // il devine.
+    //
+    // Le contrôle ne vaut QUE pour l'égalité à deux membres — « donné = travail ».
+    // Un encadrement « -3 < x < -2 » n'a pas de donné à gauche : ses trois
+    // membres forment un seul énoncé, et tous ont le droit de bouger.
+    function memeDonnee(leurre, vrai) {
+      const a = relation(leurre), b = relation(vrai);
+      if (!a || !b) return true;
+      if (b.ops.length !== 1 || b.ops[0] !== '=') return true;
+      return a.membres[0].trim() === b.membres[0].trim();
+    }
+
     function finir(choisies) {
     choisies.sort((a, b) => a.rang - b.rang);
     choisies.forEach(function (f) {
@@ -356,6 +373,7 @@
         try { leurre = fam.faire(f.vrai, A); } catch (e) { leurre = null; }
         if (!leurre || leurre === f.vrai || leurre === f.faux) continue;
         if (!credible(leurre, f.vrai) || opts.indexOf(leurre) >= 0) continue;
+        if (!memeDonnee(leurre, f.vrai)) continue;
         if (juge(leurre) !== 'fausse') continue;
         opts.push(leurre);
       }
