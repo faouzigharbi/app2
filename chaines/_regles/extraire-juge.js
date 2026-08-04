@@ -35,7 +35,7 @@ const src = fs.readFileSync(path.join(OUT, 'verifier.js'), 'utf8');
 
 // Les fonctions à emporter. Par défaut celles de la charpente commune ;
 // une fiche qui en a d'autres les nomme.
-const noms = (liste || 'environnements,construire,variables,completer,lier')
+const noms = (liste || 'rnd,environnements,construire,variables,completer,lier')
   .split(',').map(s => s.trim()).filter(Boolean);
 
 // Découpe une déclaration de premier niveau en comptant ses accolades — une
@@ -119,19 +119,31 @@ const juge = `// LE JUGE de ${path.basename(OUT)} — partagé.
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.${globalNoyau};
+  const NOYAU = M ? require('./noyau.js') : racine.${globalNoyau};
 ${autres.join('\n')}
   const ECHANTILLONS = ${ech ? Math.min(Number(ech[1]), 16) : 16};
 
-  // La suite DÉTERMINISTE. Longue à dessein : certains énoncés n'ont de sens
-  // que sous une contrainte (« a < b »), et le juge tire jusqu'à en trouver un
-  // cas permis. Un cycle court la rendrait insatisfiable — c'est arrivé.
+  // LE HASARD REMPLACÉ SOUS LE TIRAGE, plutôt qu'au-dessus.
+  //
+  // Chaque fiche a son « rnd » — l'une rend un rationnel, l'autre un réel de
+  // ℚ[√d], une troisième un entier. Le réécrire pour chacune serait le
+  // réinventer, et mal. On lui laisse donc son corps — il est extrait plus bas,
+  // tel quel — et l'on remplace ce sur quoi il s'appuie : le noyau que le juge
+  // lui donne tire ses entiers dans une suite fixe. La forme des valeurs reste
+  // celle de la fiche ; seule leur imprévisibilité disparaît.
+  //
+  // Il le faut : le hasard convient au validateur — il multiplie les cas — mais
+  // pas au juge. Une faute doit être fausse maintenant et fausse dans une
+  // seconde, sinon l'élève pourrait contester à bon droit.
   let curseur = 0;
-  const rnd = () => {
+  const suite = (min, max) => {
+    if (max === undefined) { max = min; min = 0; }
+    const n = max - min + 1;
+    if (n <= 0) return min;
     const i = curseur++;
-    const n = ((i * 37) % 41) - 20;
-    return F.rat(n === 0 ? 7 : n, 1 + (i * 13) % 9);
+    return min + (((i * 37) % 41) * 41 + i) % n;
   };
+  const F = Object.assign({}, NOYAU, { ent: suite });
 
 ${morceaux.join('\n\n')}
 

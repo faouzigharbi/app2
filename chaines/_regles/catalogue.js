@@ -512,6 +512,24 @@
       }
     },
 
+    {
+      id: 'conjugue-au-numerateur-seul',
+      nom: 'المرافق ضُرب في البسط وحده',
+      quoi: 'لإنطاق المقام نضرب البسط و المقام معا في المرافق: ضرب البسط وحده '
+          + 'يغيّر الكسر',
+      geste: /مرافق|نُنطق|إنطاق/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const d = /^\s*(.+?)\s*\/\s*(.+?)\s*$/.exec(r.membres[1]);
+        if (!d || !/[√]/.test(r.membres[0])) return null;
+        // On garde le numérateur multiplié et l'on rend au dénominateur sa
+        // forme d'avant : c'est le geste fait à moitié.
+        const g = /\/\s*(.+?)\s*$/.exec(r.membres[0]);
+        if (!g || g[1].trim() === d[2].trim()) return null;
+        return r.membres[0] + ' = ' + d[1] + '/' + g[1];
+      }
+    },
     // ═════ ÉQUATIONS ═════
     {
       id: 'transposition-sans-signe',
