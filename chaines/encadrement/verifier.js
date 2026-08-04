@@ -1,0 +1,328 @@
+// Valide la fiche « حصر و مجال » — سلسلة تمارين مراجعة عدد 10.
+//   node verifier.js [tirages]   |   CONTRE_EXEMPLES=1 node verifier.js
+//
+// Le principe est celui des autres dossiers : on ne LIT pas les générateurs, on
+// les EXÉCUTE, et chaque étape est réanalysée puis recalculée en arithmétique
+// exacte. Mais cette fiche pose deux objets que les autres n'avaient pas, et
+// chacun demande son contrôle propre :
+//
+//   1. UN ENSEMBLE. « I ∩ J = [-1/2 ; 3/2] » n'est pas une égalité de nombres.
+//      Les bornes sont comparées une à une, crochets compris — un « ] » pour
+//      un « [ » est une faute, et c'est LA faute de cette leçon.
+//
+//   2. UN ENCADREMENT. « -7/2 ≤ A ≤ 1/10 » ne veut rien dire sur un x isolé :
+//      on tire des dizaines de x DANS le domaine, bornes atteintes comprises,
+//      et l'encadrement doit tenir sur tous.
+//
+// Et la définition de chaque ensemble est éprouvée à part : on balaie des
+// rationnels des deux côtés de chaque frontière et l'on exige que « x vérifie
+// la condition de la fiche » et « x est dans le majal annoncé » soient vraies
+// exactement ensemble. C'est ce contrôle-là qui répond à la question de
+// l'énoncé — « أكتب المجموعة في صورة مجال » — et non le tirage.
+const F = require('./noyau.js');
+require('./encadrement.js');
+require('./gens.js');
+
+const TIRAGES = Number(process.argv[2]) || 120;
+const POINTS = 24;                       // x tirés dans le domaine, par question
+let relations = 0, controles = 0, questions = 0;
+const echecs = [];
+
+// Un texte qui décrit un ensemble en compréhension : « {x ∈ ℝ ; x < 2} ». Ce
+// n'est ni une expression ni une relation d'intervalles — c'est la DÉFINITION,
+// et elle est contrôlée par `conditions`, pas par l'analyseur.
+const enCompréhension = s => /[{}]/.test(String(s));
+const enIntervalles = s => /[∩∪]/.test(String(s)) || /[[\]][^;]*;/.test(String(s));
+
+function nomsDe(c) {
+  const n = {};
+  for (const k in (c.ens || {})) n[k] = F.intervalle(c.ens[k]);
+  return n;
+}
+
+// Les environnements dans lesquels chaque étape doit se vérifier.
+//   c.dans    — x pris DANS un ensemble (« I », « I ∩ J », ou un majal écrit) ;
+//   c.env     — des expressions nommées, évaluées dans l'ordre ;
+//   c.derives — ce qu'on déduit du x tiré.
+function environnements(c) {
+  const noms = nomsDe(c);
+  if (c.dans) {
+    const nom = Object.keys(c.dans)[0];
+    const dom = F.ensemble(c.dans[nom], noms);
+    return F.pointsDe(dom, POINTS).map(x => {
+      const e = { [nom]: x };
+      for (const d in (c.derives || {})) e[d] = F.analyser(c.derives[d], e);
+      return e;
+    });
+  }
+  const e = {};
+  for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
+  return [e];
+}
+
+// Le contrôle des DÉFINITIONS : « I = {x ∈ ℝ ; -2 < x ≤ 3/2} » annonce le majal
+// ]-2 ; 3/2]. On balaie donc des rationnels des deux côtés de chaque frontière
+// et l'on exige l'équivalence, dans les deux sens. Un crochet retourné se voit
+// exactement sur la borne — d'où les dénominateurs qui la retombent juste.
+function controlerConditions(c, noms) {
+  const p = [];
+  for (const nom in (c.conditions || {})) {
+    const I = noms[nom];
+    if (!I) { p.push(`المجال ${nom} غير معرّف`); continue; }
+    const cond = c.conditions[nom];
+    for (let num = -40; num <= 40; num++) {
+      for (const den of [1, 2, 3, 4, 6]) {
+        const x = F.S(F.rat(num, den));
+        let tient;
+        try {
+          tient = F.verifierRelation(cond, { x }) === '';
+        } catch (err) {
+          p.push(`تعذّر شرط ${nom} « ${cond} » (${err.message})`);
+          return p;
+        }
+        controles++;
+        if (tient !== F.dansI(x, I)) {
+          p.push(`${nom}: العدد ${F.sTxt(x)} ${tient ? 'يحقّق الشرط و ليس في' : 'لا يحقّق الشرط و هو في'} ${F.iTxt(I)}`);
+          return p;
+        }
+      }
+    }
+  }
+  return p;
+}
+
+// Le contrôle des AFFIRMATIONS, dans tous les environnements.
+function controlerClaims(c, envs, noms) {
+  const p = [];
+  for (const [gauche, droite] of (c.claims || [])) {
+    for (const env of envs) {
+      let g, d;
+      try {
+        g = F.analyser(String(gauche).replace(/×/g, '*'), env);
+        d = F.analyser(String(droite).replace(/×/g, '*'), env);
+      } catch (err) {
+        p.push(`تعذّر « ${gauche} = ${droite} » (${err.message})`);
+        break;
+      }
+      controles++;
+      if (!F.sEgaux(g, d)) {
+        p.push(`« ${gauche} » ≠ « ${droite} » (${F.sTxt(g)} و ${F.sTxt(d)})`);
+        break;
+      }
+    }
+  }
+  // Les encadrements et les signes : une relation qui doit tenir PARTOUT.
+  for (const r of (c.vrai || [])) {
+    for (const env of envs) {
+      let souci;
+      try { souci = F.verifierRelation(r, env); }
+      catch (err) { p.push(`تعذّر « ${r} » (${err.message})`); break; }
+      controles++;
+      if (souci === null) { p.push(`« ${r} » ليست علاقة`); break; }
+      if (souci) {
+        p.push(`« ${r} » لا تتحقّق عند x = ${F.sTxt(env.x)}`);
+        break;
+      }
+    }
+  }
+  // Les égalités d'ensembles.
+  for (const [gauche, droite] of (c.egaux || [])) {
+    let souci;
+    try { souci = F.verifierEnsemble(gauche + ' = ' + droite, noms); }
+    catch (err) { p.push(`تعذّر « ${gauche} = ${droite} » (${err.message})`); continue; }
+    controles++;
+    if (souci === null) p.push(`« ${gauche} = ${droite} » ليست علاقة مجالات`);
+    else if (souci) p.push(souci);
+  }
+  if (!(c.claims || []).length && !(c.vrai || []).length
+      && !(c.egaux || []).length && !(c.conditions || {}).I) {
+    p.push('بلا تأكيد يُراقَب');
+  }
+  return p;
+}
+
+// Une étape ou une ligne d'énoncé : relation d'ensembles, ou relation de
+// nombres dans chaque environnement. Rend le grief, ou '' si tout tient, ou
+// null si le texte n'est pas contrôlable ici.
+function controlerTexte(math, envs, noms) {
+  if (typeof math !== 'string' || F.ARABE.test(math)) return null;
+  if (enCompréhension(math)) return null;              // vu par `conditions`
+  // « x ∈ I » : une APPARTENANCE. L'énoncé la pose, et le tirage doit s'y
+  // plier — c'est ce qui garantit que les x sur lesquels les encadrements sont
+  // éprouvés sont bien ceux dont l'exercice parle.
+  if (/∈/.test(math)) {
+    const [g, d] = String(math).split('∈');
+    const I = F.ensemble(d, noms);
+    for (const env of envs) {
+      const v = F.analyser(g.replace(/×/g, '*'), env);
+      controles++;
+      if (!F.dansI(v, I)) return `« ${F.sTxt(v)} ∈ ${F.iTxt(I)} » فاسدة`;
+    }
+    return '';
+  }
+  if (enIntervalles(math)) {
+    const r = F.verifierEnsemble(math, noms);
+    if (r !== null) { relations++; return r; }
+    F.ensemble(math, noms);                            // au moins, elle se lit
+    relations++;
+    return '';
+  }
+  for (const env of envs) {
+    const r = F.verifierRelation(String(math).replace(/×/g, '*'), env);
+    if (r === null) { F.analyser(String(math).replace(/×/g, '*'), env); return ''; }
+    if (r) return r + (env.x ? ` (عند x = ${F.sTxt(env.x)})` : '');
+    relations++;
+  }
+  return '';
+}
+
+function verifierBrut(brut) {
+  const probs = [];
+  const c = brut.controle;
+  const noms = nomsDe(c);
+  const envs = environnements(c);
+  let verifiees = 0;
+
+  brut.etapes.forEach(([label, math], i) => {
+    let r;
+    try { r = controlerTexte(math, envs, noms); }
+    catch (e) { probs.push(`م${i + 1}: تعذّر « ${math} » (${e.message})`); return; }
+    if (r === null) return;
+    verifiees++;
+    if (r) probs.push(`م${i + 1}: ${r}`);
+  });
+
+  for (const e of brut.enonce) {
+    try {
+      const r = controlerTexte(e, envs, noms);
+      if (r) probs.push(`نصّ الوضعية فاسد: ${r}`);
+    } catch (err) {
+      probs.push(`نصّ غير قابل للتحليل « ${e} » (${err.message})`);
+    }
+  }
+
+  if (verifiees < 2) probs.push('عدد المراحل القابلة للتحقق قليل جدا');
+  probs.push(...controlerConditions(c, noms));
+  probs.push(...controlerClaims(c, envs, noms));
+  const t = brut.etapes.map(e => e.join(': '));
+  if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  // Deux étapes peuvent porter des libellés différents et LA MÊME relation :
+  // l'élève n'a alors aucun moyen de les départager, et l'ordre attendu
+  // devient arbitraire. On compare donc aussi les mathématiques seules.
+  const rel = brut.etapes.map(e => e[1])
+    .filter(s => typeof s === 'string' && !F.ARABE.test(s))
+    .map(s => s.replace(/\s+/g, ''));
+  if (new Set(rel).size !== rel.length) probs.push('علاقة مكرّرة في مرحلتين');
+  if (t.length < 4) probs.push('السلسلة قصيرة جدا');
+  if (!brut.indice) probs.push('بلا مساعدة');
+  return probs;
+}
+
+// -------------------------------------------------------------------------
+// Mode falsification : on abîme volontairement des exercices justes. Si le
+// validateur les accepte, c'est lui qui est faux — pas eux.
+// -------------------------------------------------------------------------
+if (process.env.CONTRE_EXEMPLES) {
+  const cas = [];
+  const copie = q => JSON.parse(JSON.stringify(q));
+  const pousse = (nom, q, f) => { const c = copie(q); f(c); cas.push([nom, c]); };
+  const parQuestion = (n, i) => F.tirer(n)[i];
+
+  // Le crochet retourné : la faute propre à cette leçon, et celle qu'aucun
+  // contrôle numérique ne verrait.
+  pousse("crochet du 1 retourné", parQuestion(1, 0),
+    c => { c.controle.ens.J = c.controle.ens.J.replace("[-1/2", "]-1/2"); });
+  pousse("borne du 1 décalée", parQuestion(1, 0),
+    c => { c.controle.ens.I = c.controle.ens.I.replace("3/2]", "5/2]"); });
+  pousse("intersection du 1 fausse", parQuestion(1, 1),
+    c => { c.controle.egaux[0][1] = "[-1/2 ; 3["; });
+  pousse("réunion du 1 fausse", parQuestion(1, 1),
+    c => { c.controle.egaux[1][1] = "]-2 ; 3]"; });
+  pousse("signe de x + 1 inversé", parQuestion(1, 2),
+    c => { c.controle.vrai[0] = "x + 1 < 0"; });
+  pousse("forme réduite de A fausse", parQuestion(1, 3),
+    c => { c.controle.claims[0][1] = "x - 1 + 1/(x + 1)"; });
+  pousse("encadrement de A resserré", parQuestion(1, 4),
+    c => { c.controle.vrai[0] = "-7/2 ≤ A ≤ 0"; });
+
+  pousse("valeur absolue du 2 mal levée", parQuestion(2, 0),
+    c => { c.controle.conditions.I = "|x - 2| ≤ 2"; });
+  pousse("intersection du 2 fermée à tort", parQuestion(2, 1),
+    c => { c.controle.egaux[0][1] = "[1 ; 2]"; });
+  pousse("réunion du 2 bornée à gauche", parQuestion(2, 1),
+    c => { c.controle.egaux[1][1] = "[1 ; 3]"; });
+  pousse("ordre non renversé dans A", parQuestion(2, 2),
+    c => { c.controle.vrai[0] = "-4 ≤ A ≤ -14"; });
+  pousse("inverse du 2 non renversé", parQuestion(2, 3),
+    c => { c.etapes[2][1] = "1 ≤ 1/(2x - 1) ≤ 1/5"; });
+  pousse("carré du 2 mal encadré", parQuestion(2, 4),
+    c => { c.etapes[1][1] = "1/9 ≤ (x - 10/3)^2 ≤ 4/9"; });
+
+  pousse("division par -4 sans renversement", parQuestion(3, 0),
+    c => { c.etapes[1][1] = "|x| > 2"; });
+  pousse("majal J du 3 fermé à droite", parQuestion(3, 0),
+    c => { c.controle.ens.J = "]-∞ ; 1/2["; });
+  pousse("intersection du 3 fausse", parQuestion(3, 1),
+    c => { c.controle.egaux[0][1] = "]-2 ; 2["; });
+  pousse("signe de 5 - 2x inversé", parQuestion(3, 2),
+    c => { c.controle.vrai[0] = "5 - 2x < 0"; });
+  pousse("mise au même dénominateur fausse", parQuestion(3, 3),
+    c => { c.controle.claims[0][1] = "1/4 x^2 + 7/(2(5 - 2x)) + 1/2"; });
+  pousse("encadrement du 3 trop étroit", parQuestion(3, 4),
+    c => { c.controle.vrai[0] = "-1/9 < A < 1"; });
+  pousse("étape dupliquée", parQuestion(1, 4),
+    c => { c.etapes[2] = c.etapes[1].slice(); });
+  pousse("relation répétée sous un autre libellé", parQuestion(1, 4),
+    c => { c.etapes[2] = ['نعيد', c.etapes[1][1]]; });
+
+  let bon = 0;
+  for (const [nom, q] of cas) {
+    let probs;
+    try { probs = verifierBrut(q); }
+    catch (e) { probs = ['استثناء: ' + e.message]; }
+    if (probs.length) { bon++; console.log(`✗ rejeté  ${nom} — ${probs[0]}`); }
+    else console.log(`⚠ ACCEPTÉ  ${nom} — le validateur est trop faible`);
+  }
+  console.log(`\n${bon}/${cas.length} falsifications détectées.`);
+  process.exit(bon === cas.length ? 0 : 1);
+}
+
+// -------------------------------------------------------------------------
+for (const n of Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b)) {
+  const def = F.PROBLEMES[n];
+  const vus = new Set();
+  let echecsIci = 0;
+  for (let t = 0; t < TIRAGES; t++) {
+    const qs = F.tirer(n);
+    if (qs.length !== def.questions) {
+      echecs.push(`التمرين ${n}: ${qs.length} أسئلة بدل ${def.questions}`);
+      echecsIci++;
+    }
+    qs.forEach(q => {
+      questions++;
+      vus.add(q.enonce.join(' '));
+      let probs;
+      try { probs = verifierBrut(q); }
+      catch (e) { probs = ['استثناء: ' + e.message]; }
+      if (probs.length) {
+        echecsIci++;
+        if (echecs.length < 40) {
+          echecs.push(`التمرين ${n} س${qs.indexOf(q) + 1}: ${q.enonce.join(' ')}\n    - `
+                      + probs.join('\n    - '));
+        }
+      }
+    });
+  }
+  const titre = `التمرين ${n} — ${def.titre}`;
+  const etat = echecsIci ? `✗ ${echecsIci} échec(s)` : '✓ ';
+  console.log(`${titre.padEnd(52)}${etat}  (${def.questions} أسئلة، ${vus.size} صيغة)`);
+}
+
+if (echecs.length) {
+  console.log('\n' + echecs.join('\n'));
+  console.log(`\n${TIRAGES} tirages par exercice, ${questions} questions, `
+              + `${relations} relations recalculées et ${controles} contrôles, ÉCHECS.`);
+  process.exit(1);
+}
+console.log(`\n${TIRAGES} tirages par exercice, ${questions} questions, `
+            + `${relations} relations recalculées et ${controles} contrôles, 0 erreur.`);

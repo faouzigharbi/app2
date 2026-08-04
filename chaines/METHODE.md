@@ -154,6 +154,16 @@ le validateur les acceptait, c'est lui qui serait faux. Toute falsification doit
 L'arithmétique du validateur doit être **exacte**, jamais approchée. Sur une
 fiche de radicaux, un contrôle à 10⁻⁹ près laisserait passer un exercice faux.
 
+Une affirmation qui ne porte pas sur *un* nombre se contrôle sur *un domaine*.
+Un encadrement — « −7/2 ≤ A ≤ 1/10 pour x ∈ [−1/2 ; 3/2] » — vérifié sur la
+seule valeur choisie par le générateur ne prouve rien : le validateur tire donc
+des dizaines de x **dans** le domaine, bornes atteintes comprises, et exige que
+l'encadrement tienne sur tous. De même, quand l'énoncé demande d'écrire un
+ensemble en intervalle, on balaie des rationnels **des deux côtés de chaque
+frontière** et l'on exige que « x vérifie la condition » et « x est dans
+l'intervalle annoncé » soient vraies exactement ensemble : c'est le seul
+contrôle qui voie un crochet retourné (`chaines/encadrement/`).
+
 ## 8. Fichiers d'un dossier
 
 | fichier | rôle |
@@ -179,3 +189,9 @@ Elles ne peuvent donc pas cohabiter dans un même dossier : le second `ex11.html
 `_build.js` et `verifier.js`, ce qui la rend déposable telle quelle. La
 contrepartie est qu'une correction du noyau doit être reportée dans chaque
 dossier — un `diff` entre deux `noyau.js` le dit en une seconde.
+
+Cette autonomie a un second usage : elle laisse une fiche **étendre** son noyau
+sans toucher aux autres. Celui de `encadrement/` porte une couche d'intervalles
+(bornes exactes, crochets, ∩, ∪, appartenance, tirage dans un intervalle) dont
+aucune autre fiche n'a l'emploi — et les quatre autres n'en portent pas une
+ligne.
