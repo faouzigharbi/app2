@@ -336,7 +336,7 @@ if (process.env.ERREURS) {
           continue;
         }
         page.forEach((q, qi) => {
-          const c = F.tirer(n)[qi].controle;
+          const c = q.controle;
           const envs = F.environnements(c, F.ECHANTILLON);
           const noms = F.nomsDe(c);
           const rangs = q.fautes.map(f => f.rang);

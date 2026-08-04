@@ -32,7 +32,14 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Reel;
+  const F = M ? require('./noyau.js') : racine.Expr;
+
+  // CONFIG — ce qui distingue cette fiche d'une autre.
+  //   interdit : ce qu'aucune copie de ce niveau ne peut porter. En 7ème, un
+  //   nombre négatif : le programme ne les a pas encore introduits, et une
+  //   faute qui en produirait serait hors sujet plutôt que fausse.
+  const NEGATIF = /(^|[(:=×*+\-/])\s*-\s*\d/;
+  const interdit = s => NEGATIF.test(s);
 
   // -------------------------------------------------------------------------
   // Découper une expression en ses termes de PREMIER niveau : « a + b(c - d) »
@@ -75,6 +82,7 @@
   // donc les écritures qu'aucune copie ne porte — un coefficient « 1x », une
   // fraction non réduite « 4/2 », un membre identique à son voisin.
   function credible(s) {
+    if (interdit(s)) return false;
     if (/(^|[^\w])1\s*[a-zA-Z(√]/.test(s)) return false;
     let m; const re = /(\d+)\/(\d+)/g;
     while ((m = re.exec(s))) {
@@ -95,56 +103,6 @@
   // sait fabriquer sa faute à partir d'une étape juste, ou renoncer.
   // -------------------------------------------------------------------------
   const FAMILLES = [
-    {
-      nom: 'الترتيب لم ينقلب',
-      quoi: 'عند الضرب أو القسمة على عدد سالب، و عند أخذ المقلوب، ينقلب ترتيب الحصر',
-      geste: /نضرب|نقسم|نقلب|المقلوب|نأخذ/,
-      faire(math) {
-        const r = relation(math);
-        if (!r || r.membres.length !== 3) return null;
-        if (r.ops[0] !== r.ops[1] || !/[<>≤≥]/.test(r.ops[0])) return null;
-        return r.membres[2] + ' ' + r.ops[0] + ' ' + r.membres[1] + ' '
-             + r.ops[1] + ' ' + r.membres[0];
-      }
-    },
-    {
-      nom: 'القوس مقلوب',
-      quoi: 'حدّ مأخوذ كُتب مفتوحا، أو حدّ غير مأخوذ كُتب مغلقا',
-      faire(math) {
-        if (!/[[\]][^;]*;/.test(math)) return null;
-        const pos = [];
-        for (let i = 0; i < math.length; i++) {
-          if (math[i] === '[' || math[i] === ']') pos.push(i);
-        }
-        if (!pos.length) return null;
-        const i = pos[F.ent(0, pos.length - 1)];
-        return math.slice(0, i) + (math[i] === '[' ? ']' : '[') + math.slice(i + 1);
-      }
-    },
-    {
-      nom: 'القيمة المطلقة رُفعت دون تغيير الإشارة',
-      quoi: 'القيمة المطلقة لعدد سالب هي مقابله، لا هو نفسه — و √(t^2) = |t| لا t',
-      faire(math) {
-        const r = relation(math);
-        if (!r || r.ops.some(o => o !== '=')) return null;
-        for (let k = 0; k < r.membres.length; k++) {
-          const m = /^\s*\|(.+)\|\s*$/.exec(r.membres[k]);
-          if (!m) continue;
-          const copie = r.membres.slice();
-          copie[k] = m[1];
-          return copie.join(' = ');
-        }
-        return null;
-      }
-    },
-    {
-      nom: 'التقاطع مكان الاتّحاد',
-      quoi: 'التقاطع يأخذ ما هو مشترك بين المجالين، و الاتّحاد يأخذ كل ما في أحدهما',
-      faire(math) {
-        if (!/[∩∪]/.test(math)) return null;
-        return math.replace(/[∩∪]/g, c => (c === '∩' ? '∪' : '∩'));
-      }
-    },
     {
       nom: 'حدّ ضائع في المتطابقة',
       quoi: 'مربّع مجموع ثلاثة حدود لا حدّان: الحدّ الأوسط، ضعف الجداء، ينسى كثيرا',
@@ -186,6 +144,18 @@
       }
     },
     {
+      nom: 'جمع البسطين و المقامين',
+      quoi: 'لجمع كسرين نوحّد المقام؛ جمع البسطين و المقامين ليس جمعا',
+      faire(math) {
+        const m = /(\d+)\/(\d+)\s*([+\-])\s*(\d+)\/(\d+)/.exec(math);
+        if (!m) return null;
+        const n = m[3] === '+' ? Number(m[1]) + Number(m[4]) : Number(m[1]) - Number(m[4]);
+        const d = m[3] === '+' ? Number(m[2]) + Number(m[5]) : Number(m[2]) - Number(m[5]);
+        if (n <= 0 || d <= 0) return null;
+        return math.slice(0, m.index) + n + '/' + d + math.slice(m.index + m[0].length);
+      }
+    },
+    {
       nom: 'عدد مغيّر في الحساب',
       quoi: 'خطأ عدديّ بسيط: رقم بدل رقم، و كل ما يليه ينهار',
       faire(math) {
@@ -221,9 +191,8 @@
   function fabriquer(question, fautes, dejaVues) {
     dejaVues = dejaVues || new Set();
     const c = question.controle;
-    const envs = F.environnements(c, F.ECHANTILLON);
-    const noms = F.nomsDe(c);
-    const juge = m => F.evaluerEtape(m, envs, noms);
+    const envs = F.environnements(c);
+    const juge = m => F.evaluerEtape(m, envs);
 
     const rangs = [];
     question.etapes.forEach(([, math], i) => {
