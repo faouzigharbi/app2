@@ -1,0 +1,15 @@
+# Rien de secret ne doit entrer dans le dépôt.
+#
+# Une clé d'API qui y entre une fois y reste : l'effacer ne l'efface que de
+# l'avenir, jamais de l'historique. La seule protection est qu'elle n'y entre
+# pas — d'où ces motifs, larges à dessein.
+*.key
+*.pem
+*.env
+.env*
+secrets*
+*secret*
+*API*.txt
+*api*key*
+*token*
+credentials*
