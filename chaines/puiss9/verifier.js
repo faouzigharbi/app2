@@ -10,7 +10,8 @@
 // n'est pas satisfait par un nombre juste mais développé : « 3⁷ » est demandé,
 // « 2187 » ne l'est pas. Une fiche qui accepterait les deux n'enseignerait rien.
 const F = require('./noyau.js');
-require('./familles.js');
+require('./items.js');
+require('./chaines.js');
 require('./gens.js');
 
 const TIRAGES = Number(process.argv[2]) || 40;
