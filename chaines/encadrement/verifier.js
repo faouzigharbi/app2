@@ -33,6 +33,10 @@ const echecs = [];
 // et elle est contrôlée par `conditions`, pas par l'analyseur.
 const enCompréhension = s => /[{}]/.test(String(s));
 const enIntervalles = s => /[∩∪]/.test(String(s)) || /[[\]][^;]*;/.test(String(s));
+// ℤ n'est pas un intervalle — c'est justement ce que la question fait
+// découvrir : « E ∩ Z » est une liste finie, pas un majal. Ces textes-là sont
+// contrôlés par `entiers`, qui énumère les entiers du majal.
+const surLesEntiers = s => /(^|[^A-Za-z])Z([^A-Za-z]|$)|ℤ/.test(String(s));
 
 function nomsDe(c) {
   const n = {};
@@ -47,13 +51,25 @@ function nomsDe(c) {
 function environnements(c) {
   const noms = nomsDe(c);
   if (c.dans) {
-    const nom = Object.keys(c.dans)[0];
-    const dom = F.ensemble(c.dans[nom], noms);
-    return F.pointsDe(dom, POINTS).map(x => {
-      const e = { [nom]: x };
-      for (const d in (c.derives || {})) e[d] = F.analyser(c.derives[d], e);
-      return e;
+    // Deux lettres libres, deux domaines : on croise. Un encadrement de x y
+    // n'atteint ses bornes qu'aux COINS du rectangle — les éprouver séparément
+    // laisserait passer un produit mal borné. `pointsDe` met les bornes
+    // atteintes en tête, les coins sont donc dans le lot.
+    const lettres = Object.keys(c.dans);
+    const par = lettres.length > 1 ? 6 : POINTS;
+    const listes = lettres.map(n => F.pointsDe(F.ensemble(c.dans[n], noms), par));
+    let envs = [{}];
+    listes.forEach((liste, k) => {
+      const suivant = [];
+      for (const e of envs) for (const v of liste) suivant.push({ ...e, [lettres[k]]: v });
+      envs = suivant;
     });
+    for (const e of envs) {
+      for (const d in (c.derives || {})) {
+        e[d] = F.analyser(String(c.derives[d]).replace(/×/g, '*'), e);
+      }
+    }
+    return envs;
   }
   const e = {};
   for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
@@ -134,7 +150,21 @@ function controlerClaims(c, envs, noms) {
     if (souci === null) p.push(`« ${gauche} = ${droite} » ليست علاقة مجالات`);
     else if (souci) p.push(souci);
   }
-  if (!(c.claims || []).length && !(c.vrai || []).length
+  // Les entiers d'un majal : « E ∩ Z = {-2 ; -1 ; 0 ; 1} » n'est pas un
+  // intervalle, et c'est justement la question. On énumère donc les entiers du
+  // majal et l'on compare à la liste annoncée — les deux bornes comprises,
+  // puisque tout le piège est là.
+  for (const [nom, liste] of (c.entiers || [])) {
+    const I = noms[nom];
+    if (!I) { p.push(`المجال ${nom} غير معرّف`); continue; }
+    const trouves = [];
+    for (let k = -60; k <= 60; k++) if (F.dansI(F.S(F.rat(k)), I)) trouves.push(k);
+    controles++;
+    if (trouves.join(',') !== liste.join(',')) {
+      p.push(`${nom} ∩ Z = {${trouves.join(' ; ')}} و ليس {${liste.join(' ; ')}}`);
+    }
+  }
+  if (!(c.claims || []).length && !(c.vrai || []).length && !(c.entiers || []).length
       && !(c.egaux || []).length && !(c.conditions || {}).I) {
     p.push('بلا تأكيد يُراقَب');
   }
@@ -147,6 +177,7 @@ function controlerClaims(c, envs, noms) {
 function controlerTexte(math, envs, noms) {
   if (typeof math !== 'string' || F.ARABE.test(math)) return null;
   if (enCompréhension(math)) return null;              // vu par `conditions`
+  if (surLesEntiers(math)) return null;                // vu par `entiers`
   // « x ∈ I » : une APPARTENANCE. L'énoncé la pose, et le tirage doit s'y
   // plier — c'est ce qui garantit que les x sur lesquels les encadrements sont
   // éprouvés sont bien ceux dont l'exercice parle.
@@ -270,6 +301,27 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] = "1/4 x^2 + 7/(2(5 - 2x)) + 1/2"; });
   pousse("encadrement du 3 trop étroit", parQuestion(3, 4),
     c => { c.controle.vrai[0] = "-1/9 < A < 1"; });
+  pousse("encadrement de xy resserré", parQuestion(10, 0),
+    c => { c.controle.vrai[0] = "-12 ≤ x y ≤ -6"; });
+  pousse("ordre gardé au lieu d'être renversé", parQuestion(10, 1),
+    c => { c.etapes[3][1] = "-4 ≤ -2y ≤ -8"; });
+  pousse("inverse du quotient non renversé", parQuestion(10, 2),
+    c => { c.etapes[1][1] = "1/2 ≤ 1/y ≤ 1/4"; });
+  pousse("valeur absolue de 3x - 2y gardée", parQuestion(10, 3),
+    c => { c.etapes[1][1] = "|3x - 2y| = 3x - 2y"; });
+  pousse("signe de A perdu", parQuestion(10, 3),
+    c => { c.controle.claims[0][1] = "3x^2"; });
+  pousse("majal H fermé à tort", parQuestion(10, 4),
+    c => { c.controle.ens.H = "[-√17 ; √17]"; });
+  pousse("borne ouverte comptée parmi les entiers", parQuestion(10, 5),
+    c => { c.controle.entiers[0][1] = [-2, -1, 0, 1, 2]; });
+  pousse("réunion avec IR+ bornée à droite", parQuestion(10, 6),
+    c => { c.controle.egaux[0][1] = "]-√17 ; √17["; });
+  pousse("intersection E ∩ F fermée à droite", parQuestion(10, 7),
+    c => { c.controle.egaux[0][1] = "[-2 ; 2]"; });
+  pousse("carré mal encadré au bord", parQuestion(10, 8),
+    c => { c.etapes[1][1] = "0 ≤ x^2 ≤ 3"; });
+
   pousse("étape dupliquée", parQuestion(1, 4),
     c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse("relation répétée sous un autre libellé", parQuestion(1, 4),

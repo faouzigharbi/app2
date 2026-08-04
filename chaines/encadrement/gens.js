@@ -11,4 +11,5 @@
   page(1, 'مجالان، ثمّ حصر لعبارة كسرية', V.exercice1, 5);
   page(2, 'من القيمة المطلقة إلى المجال، ثمّ ثلاثة حصور', V.exercice2, 5);
   page(3, 'مجالان بقيمة مطلقة، ثمّ حصر لمجموع مربّع و كسر', V.exercice3, 5);
+  page(10, 'حصر جداء و خارج، ثمّ مجالات و تقاطعات', V.exercice10, 9);
 })(typeof window !== 'undefined' ? window : globalThis);

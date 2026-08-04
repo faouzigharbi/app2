@@ -294,6 +294,159 @@
     ];
   }
 
-  const API = { exercice1, exercice2, exercice3 };
+  // =========================================================================
+  // التمرين 10 — deux parties, neuf questions.
+  //
+  //   (I) x ∈ [-3 ; -2] et y ∈ [2 ; 4] : x est NÉGATIF et y positif, et c'est
+  //   tout le sujet. Chaque multiplication par x renverse l'ordre, chaque
+  //   multiplication par y le garde — et la valeur absolue de la question 2 se
+  //   lève grâce au signe trouvé à la question 1, pas autrement.
+  //
+  //   (II) √17 n'est pas là par hasard : le carré d'un élément de E = [-2 ; 2[
+  //   vaut au plus 4, et 4 < √17 de justesse (16 < 17). C'est ce « de justesse »
+  //   que la question 3 fait démontrer.
+  //
+  //   RÉSERVE SUR LA FICHE. La question (II) 1 dit « أكتب كلاً من E و F و G » :
+  //   elle nomme G, mais l'énoncé ne définit que E, F et H. On lit donc H — le
+  //   troisième ensemble posé — et non un G qui n'existe nulle part.
+  // =========================================================================
+  function exercice10() {
+    const defE = 'E = {x ∈ ℝ ; -2 ≤ x < 2}';
+    const defF = 'F = {x ∈ ℝ ; x ≤ 2}';
+    const defH = 'H = {x ∈ ℝ ; |x| < √17}';
+    const ens = { E: '[-2 ; 2[', F: ']-∞ ; 2]', H: ']-√17 ; √17[',
+                  'IR+': '[0 ; +∞[' };
+    const conditions = { E: '-2 ≤ x < 2', F: 'x ≤ 2', H: '|x| < √17' };
+    const exprA = 'x|3x - 2y| + 2|y| × |x|';
+    // « xy » d'un seul tenant serait UNE lettre pour l'analyseur. Les étapes
+    // écrivent donc « x y », comme on les sépare en les lisant ; l'énoncé, lui,
+    // garde l'écriture de la fiche.
+    const domaines = { x: '[-3 ; -2]', y: '[2 ; 4]' };
+    const pose = ['x و y عددان حقيقيان حيث:', '-3 ≤ x ≤ -2', '2 ≤ y ≤ 4'];
+    const posE = ['نعتبر المجموعات التالية:', defE, defF, defH];
+
+    return [
+      {
+        enonce: pose.concat(['أوجد حصرا للجداء xy']),
+        indice: 'اضرب حصر x في y الموجب، ثمّ احصر الطرفين -3y و -2y',
+        etapes: [
+          ['ننطلق من حصر x', '-3 ≤ x ≤ -2'],
+          ['نضرب في y الموجب فيبقى الترتيب', '-3y ≤ x y ≤ -2y'],
+          ['نحصر الطرف الأيمن', '-12 ≤ -3y ≤ -6'],
+          ['نحصر الطرف الأيسر', '-8 ≤ -2y ≤ -4'],
+          ['نأخذ الأدنى و الأعلى', '-12 ≤ x y ≤ -4'],
+          ['نلاحظ', 'الجداء سالب، و هذا طبيعي: x سالب و y موجب']
+        ],
+        controle: { dans: domaines, vrai: ['-12 ≤ x y ≤ -4'] }
+      },
+      {
+        enonce: pose.concat(['أوجد حصرا للعبارة 3x - 2y']),
+        indice: 'الضرب في 3 يحفظ الترتيب، و الضرب في -2 يقلبه',
+        etapes: [
+          ['ننطلق من حصر x', '-3 ≤ x ≤ -2'],
+          ['نضرب في 3 فيبقى الترتيب', '-9 ≤ 3x ≤ -6'],
+          ['ننطلق من حصر y', '2 ≤ y ≤ 4'],
+          ['نضرب في -2 فينقلب الترتيب', '-8 ≤ -2y ≤ -4'],
+          ['نجمع الحصرين', '-17 ≤ 3x - 2y ≤ -10'],
+          ['نلاحظ', 'العبارة سالبة تماما، و هذا ما سيرفع القيمة المطلقة لاحقا']
+        ],
+        controle: { dans: domaines, vrai: ['-17 ≤ 3x - 2y ≤ -10'] }
+      },
+      {
+        enonce: pose.concat(['أوجد حصرا للكسر (x - 2)/y']),
+        indice: 'احصر البسط x - 2، ثمّ اقلب حصر y: البسط سالب فينقلب الترتيب',
+        etapes: [
+          ['نطرح 2 من حصر x', '-5 ≤ x - 2 ≤ -4'],
+          ['نقلب حصر y فينقلب الترتيب', '1/4 ≤ 1/y ≤ 1/2'],
+          ['البسط سالب: الحدّ الأدنى يوافق أكبر مقلوب', '-5 × 1/2 = -5/2'],
+          ['و الحدّ الأعلى يوافق أصغر مقلوب', '-4 × 1/4 = -1'],
+          ['النتيجة', '-5/2 ≤ (x - 2)/y ≤ -1']
+        ],
+        controle: { dans: domaines, vrai: ['-5/2 ≤ (x - 2)/y ≤ -1'] }
+      },
+      {
+        enonce: pose.concat(['استنتج اختصارا للعبارة:', 'A = ' + exprA]),
+        indice: 'العبارة 3x - 2y سالبة حسب السؤال السابق، و x سالب و y موجب',
+        etapes: [
+          ['نستعمل حصر السؤال السابق', '3x - 2y ≤ -10'],
+          ['نرفع القيمة المطلقة الأولى', '|3x - 2y| = 2y - 3x'],
+          ['العدد y موجب', '|y| = y'],
+          ['العدد x سالب', '|x| = -x'],
+          ['نعوّض في A', 'A = x(2y - 3x) + 2y × (-x)'],
+          ['ننشر القوس', 'x(2y - 3x) = 2x y - 3x^2'],
+          ['نجمع فيتلاشى الحدّان في x y', '2x y - 3x^2 - 2x y = -3x^2'],
+          ['النتيجة', 'A = -3x^2']
+        ],
+        controle: { dans: domaines, derives: { A: exprA },
+                    claims: [['A', '-3x^2']] }
+      },
+      {
+        enonce: posE.concat(['أكتب كلاًّ من E و F و H في صيغة مجالات ثمّ مثّلها على نفس المستقيم المدرّج']),
+        indice: 'شرط H قيمة مطلقة: |x| < √17 يعني -√17 < x < √17',
+        etapes: [
+          ['شرط E حصر مباشر', 'E = [-2 ; 2['],
+          ['شرط F حصر من جهة واحدة', 'F = ]-∞ ; 2]'],
+          ['نفكّ القيمة المطلقة في شرط H', '-√17 < x < √17'],
+          ['المجال الثالث', 'H = ]-√17 ; √17['],
+          ['نوقّع √17 على المدرّج', '4 < √17 < 5']
+        ],
+        controle: { ens, conditions, dans: { x: 'H' },
+                    egaux: [['E', '[-2 ; 2['], ['F', ']-∞ ; 2]'],
+                            ['H', ']-√17 ; √17[']] }
+      },
+      {
+        enonce: posE.concat(['حدّد المجموعة:', 'E ∩ Z']),
+        indice: 'الأعداد الصحيحة من -2 إلى 2، مع الانتباه إلى القوس المفتوح',
+        etapes: [
+          ['المجال', 'E = [-2 ; 2['],
+          ['الحدّ الأدنى مأخوذ', '-2 ∈ E'],
+          ['الحدّ الأعلى غير مأخوذ', 'العدد 2 لا ينتمي إلى E لأنّ القوس مفتوح عنده'],
+          ['آخر عدد صحيح في المجال', '1 ∈ E'],
+          ['النتيجة', 'E ∩ Z = {-2 ; -1 ; 0 ; 1}']
+        ],
+        controle: { ens, entiers: [['E', [-2, -1, 0, 1]]] }
+      },
+      {
+        enonce: posE.concat(['حدّد المجموعة:', 'H ∪ IR+']),
+        indice: 'المجموعة IR+ هي المجال [0 ; +∞[، و هي تلتقي H في 0',
+        etapes: [
+          ['المجال الأوّل', 'H = ]-√17 ; √17['],
+          ['المجال الثاني', 'IR+ = [0 ; +∞['],
+          ['المجالان يتقاطعان', '0 < √17'],
+          ['الاتّحاد يبدأ من بداية H', 'الحدّ -√17 غير مأخوذ، فالقوس يبقى مفتوحا'],
+          ['النتيجة', 'H ∪ IR+ = ]-√17 ; +∞[']
+        ],
+        controle: { ens, egaux: [['H ∪ IR+', ']-√17 ; +∞[']] }
+      },
+      {
+        enonce: posE.concat(['حدّد المجموعة:', 'E ∩ F']),
+        indice: 'كل عدد من E أصغر من 2، إذن هو في F: التقاطع هو E نفسه',
+        etapes: [
+          ['المجال الأوّل', 'E = [-2 ; 2['],
+          ['المجال الثاني', 'F = ]-∞ ; 2]'],
+          ['البداية', 'المجال F مفتوح إلى -∞، فتبقى بداية E هي البداية'],
+          ['النهاية', 'الحدّ 2 مفتوح في E و مغلق في F، فيبقى مفتوحا'],
+          ['النتيجة', 'E ∩ F = [-2 ; 2[']
+        ],
+        controle: { ens, egaux: [['E ∩ F', '[-2 ; 2[']] }
+      },
+      {
+        enonce: posE.concat(['بيّن أنّ مربّع كل عدد ينتمي إلى E هو عدد ينتمي إلى H']),
+        indice: 'أكبر مربّع هو 4، و 4 < √17 لأنّ 16 < 17',
+        etapes: [
+          ['ننطلق من انتماء x إلى E', '-2 ≤ x < 2'],
+          ['نحصر المربّع', '0 ≤ x^2 ≤ 4'],
+          ['نقارن 4 بـ √17', '16 < 17'],
+          ['نستنتج', '4 < √17'],
+          ['المربّع أصغر من √17', 'x^2 < √17'],
+          ['و هو أكبر من -√17 لأنّه موجب', '-√17 < x^2'],
+          ['النتيجة', 'x^2 ∈ H']
+        ],
+        controle: { ens, dans: { x: 'E' }, vrai: ['x^2 < √17'] }
+      }
+    ];
+  }
+
+  const API = { exercice1, exercice2, exercice3, exercice10 };
   if (M) module.exports = API; else racine.Encadrement = API;
 })(typeof window !== 'undefined' ? window : globalThis);
