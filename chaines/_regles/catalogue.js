@@ -323,6 +323,56 @@
         return recoller({ membres: copie, ops: r.ops });
       }
     },
+    {
+      id: 'signe-du-produit',
+      nom: 'إشارة الجداء',
+      quoi: 'جداء عددين سالبين موجب، و جداء عدد سالب في موجب سالب: الإشارة تُحسب '
+          + 'قبل القيم المطلقة، و لا تُنسخ من أحد العاملين',
+      geste: /الإشارة|إشارة الجداء|إشارة الخارج|نحدّد الإشارة|النتيجة/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const d = r.membres[1].trim();
+        const bascule = d[0] === '-' ? d.slice(1).trim() : '-' + d;
+        return r.membres[0] + ' = ' + bascule;
+      }
+    },
+    {
+      id: 'simplification-unilaterale',
+      nom: 'اختصرنا في البسط دون المقام',
+      quoi: 'الاختصار يقسم البسط و المقام معا؛ قسمة البسط وحده تغيّر الكسر',
+      geste: /نبسّط|نختصر|قبل الضرب/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const F1 = /^\s*\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*$/;
+        const g = F1.exec(r.membres[0]), d = F1.exec(r.membres[1]);
+        if (!g || !d) return null;
+        // Le numérateur a bien été simplifié, le dénominateur est resté celui
+        // d'avant : c'est exactement ce que l'élève écrit quand il barre d'un
+        // seul côté de la barre de fraction.
+        if (g[2].trim() === d[2].trim()) return null;
+        return r.membres[0] + ' = (' + d[1].trim() + ') / (' + g[2].trim() + ')';
+      }
+    },
+    {
+      id: 'produit-croise',
+      nom: 'ضربنا البسط في المقام',
+      quoi: 'جداء كسرين: البسط في البسط و المقام في المقام. الضرب في تقاطع '
+          + 'ليس جداء، إنّه قسمة',
+      geste: /جداء|نضرب|نكتب/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const d = /^\s*\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*$/.exec(r.membres[1]);
+        if (!d) return null;
+        const hb = d[1].split('×').map(x => x.trim());
+        const bb = d[2].split('×').map(x => x.trim());
+        if (hb.length !== 2 || bb.length !== 2) return null;
+        return r.membres[0] + ' = (' + hb[0] + ' × ' + bb[1] + ') / ('
+             + bb[0] + ' × ' + hb[1] + ')';
+      }
+    },
     // ═════ ORDRE ET ENCADREMENT ═════
     {
       id: 'ordre-non-renverse',

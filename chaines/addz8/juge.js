@@ -1,4 +1,4 @@
-// LE JUGE de sommeq8 — partagé.
+// LE JUGE de addz8 — partagé.
 //
 // Le validateur s'en sert hors ligne ; les pages « أين الخطأ؟ » s'en servent
 // DANS LE NAVIGATEUR, pour prouver qu'une faute plantée en est bien une. C'est
@@ -9,7 +9,7 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Somme;
+  const F = M ? require('./noyau.js') : racine.AddZ;
 
   const ECHANTILLONS = 16;
 
