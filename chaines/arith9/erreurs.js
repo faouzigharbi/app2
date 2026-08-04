@@ -1,4 +1,4 @@
-// Les pages « أين الخطأ؟ » — addz8.
+// Les pages « أين الخطأ؟ » — arith9.
 //
 // ENGENDRÉ PAR _regles/porter.js — ne pas éditer à la main. Les règles vivent
 // dans _regles/catalogue.js ; une correction s'y fait, puis se rejoue ici.
@@ -19,7 +19,7 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.AddZ;
+  const F = M ? require('./noyau.js') : racine.Arith;
   const J = M ? require('./juge.js') : racine.Juge;
 
   const interdit = () => false;
@@ -106,106 +106,23 @@
   // ── Les règles de CE chapitre ───────────────────────────────────────────
   const FAMILLES = [
     {
-      nom: "قوس مسبوق بناقص رُفع دون تغيير الإشارات",
-      quoi: "قوس مسبوق بـ « - » ترفع إشارات كل حدوده: -(a - b) = -a + b",
-      geste: /نرفع القوس|نزيل الأقواس|بدون أقواس|نكتب المقابل/,
+      nom: "الأسّان جُمعا مكان أن يُضربا",
+      quoi: "عند توحيد الأساس يُضرب الأسّان: (a^p)^m = a^(p×m)، لا a^(p+m). مثال: 49^38 = (7^2)^38 = 7^76، لا 7^40",
+      geste: /نوحّد الأساس|الأساس|نكتب بنفس|قوّة/,
       faire: function(math) {
           const r = relation(math);
-          if (!r || r.membres.length !== 2) return null;
-          const m = /-\s*\(([^()]+)\)/.exec(r.membres[0]);
-          if (!m) return null;
-          const t = termes(m[1]);
-          if (t.length < 2) return null;
-          // Le premier terme change de signe, les autres sont recopiés tels
-          // quels : c'est exactement ce que l'élève écrit.
-          const naif = t.map((x, i) => i === 0 ? '-' + sansSigne(x) : x).join(' ');
-          return r.membres[0] + ' = ' + naif;
-        }
-    },
-    {
-      nom: "ناقص أمام عدد سالب",
-      quoi: "طرح عدد سالب هو إضافة مقابله: a - (-b) = a + b، لا a - b",
-      geste: /نحسب|نرفع|نزيل|الفرق|نطرح/,
-      faire: function(math) {
-          const m = /-\s*\(\s*-\s*([^()]+?)\s*\)/.exec(math);
-          if (!m) return null;
-          return math.slice(0, m.index) + '- ' + m[1] + math.slice(m.index + m[0].length);
-        }
-    },
-    {
-      nom: "حدود غير متشابهة جُمعت",
-      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
-      faire: function(math, A) {
-          const r = relation(math);
-          if (!r) return null;
-          const k = r.membres.length - 1;
-          const t = termes(r.membres[k]);
-          if (t.length < 2) return null;
-          const m1 = monome(t[0]), m2 = monome(t[1]);
-          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
-          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
-          if (!a || !b) return null;
-          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
-          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
-          const copie = r.membres.slice();
-          copie[k] = [fusion].concat(t.slice(2)).join(' ');
-          return recoller({ membres: copie, ops: r.ops });
-        }
-    },
-    {
-      nom: "حدّ نُقل دون تغيير إشارته",
-      quoi: "حدّ يعبر علامة التساوي يغيّر إشارته: نطرح من الطرفين، لا من طرف واحد",
-      geste: /من الطرفين|نضيف|نعزل|ننقل|نجمع حدود/,
-      faire: function(math, A) {
-          const r = relation(math);
-          if (!r || r.ops.some(o => o !== '=') || estMajal(math)) return null;
-          for (let essai = 0; essai < 6; essai++) {
-            const k = A.ent(0, r.membres.length - 1);
-            const t = termes(r.membres[k]);
-            if (t.length < 2) continue;
-            const j = A.ent(1, t.length - 1);
-            const u = t[j];
-            const bascule = u[0] === '-' ? '+ ' + u.slice(1).trim()
-                          : u[0] === '+' ? '- ' + u.slice(1).trim() : null;
-            if (!bascule) continue;
-            const t2 = t.slice(); t2[j] = bascule;
-            const copie = r.membres.slice();
-            copie[k] = t2.join(' ');
-            return copie.join(' = ');
-          }
-          return null;
-        }
-    },
-    {
-      nom: "النشر ناقص — حدّ لم يُضرب",
-      quoi: "عند نشر جداء قوسين، كل حدّ من الأوّل يُضرب في كل حدّ من الثاني: لا حدّ يُترك",
-      geste: /ننشر|نعيد كتابة|نرتّب|نزيل الأقواس|نضرب القوسين|نعوّض/,
-      faire: function(math, A) {
-          const r = relation(math);
-          if (!r || r.ops.some(o => o !== '=') || estMajal(math)) return null;
-          const k = r.membres.length - 1;
-          const t = termes(r.membres[k]);
-          if (t.length < 3) return null;
-          const j = A.ent(1, t.length - 2);
-          const copie = r.membres.slice();
-          copie[k] = t.slice(0, j).concat(t.slice(j + 1)).join(' ');
-          return recoller({ membres: copie, ops: r.ops });
-        }
-    },
-    {
-      nom: "التوزيع على الحدّ الأوّل فقط",
-      quoi: "عند نشر k(a + b) يُضرب k في كل حدّ، لا في الأوّل وحده",
-      faire: function(math) {
-          const m = /([0-9a-zA-Z/^]+)\s*\(([^()]+)\)/.exec(math);
-          if (!m) return null;
-          const t = termes(m[2]);
-          if (t.length < 2) return null;
-          // Le premier terme doit être NU, sinon la faute s'écrit « 2/3 3/5 a »,
-          // que personne n'écrit : elle se repérerait à sa laideur, pas à son
-          // erreur.
-          if (!/^[a-zA-Z]/.test(t[0])) return null;
-          return math.slice(0, m.index) + m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ')
-               + math.slice(m.index + m[0].length);
+          if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+          const g = /^\s*(\d+)\^(\d+)\s*$/.exec(r.membres[0]);
+          const d = /^\s*(\d+)\^(\d+)\s*$/.exec(r.membres[1]);
+          if (!g || !d) return null;
+          const B = Number(g[1]), m1 = Number(g[2]);
+          const b = Number(d[1]), k = Number(d[2]);
+          if (b < 2 || B === b) return null;
+          // B doit être une puissance de b : c'est ce que l'étape vient d'établir.
+          let p = 0, v = 1;
+          while (v < B) { v *= b; p++; }
+          if (v !== B || p * m1 !== k) return null;
+          return r.membres[0] + ' = ' + b + '^' + (p + m1);
         }
     },
     {
@@ -254,6 +171,82 @@
             return recoller({ membres: copie, ops: r.ops });
           }
           return null;
+        }
+    },
+    {
+      nom: "النشر ناقص — حدّ لم يُضرب",
+      quoi: "عند نشر جداء قوسين، كل حدّ من الأوّل يُضرب في كل حدّ من الثاني: لا حدّ يُترك",
+      geste: /ننشر|نعيد كتابة|نرتّب|نزيل الأقواس|نضرب القوسين|نعوّض/,
+      faire: function(math, A) {
+          const r = relation(math);
+          if (!r || r.ops.some(o => o !== '=') || estMajal(math)) return null;
+          const k = r.membres.length - 1;
+          const t = termes(r.membres[k]);
+          if (t.length < 3) return null;
+          const j = A.ent(1, t.length - 2);
+          const copie = r.membres.slice();
+          copie[k] = t.slice(0, j).concat(t.slice(j + 1)).join(' ');
+          return recoller({ membres: copie, ops: r.ops });
+        }
+    },
+    {
+      nom: "حدود غير متشابهة جُمعت",
+      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
+      faire: function(math, A) {
+          const r = relation(math);
+          if (!r) return null;
+          const k = r.membres.length - 1;
+          const t = termes(r.membres[k]);
+          if (t.length < 2) return null;
+          const m1 = monome(t[0]), m2 = monome(t[1]);
+          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
+          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
+          if (!a || !b) return null;
+          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
+          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
+          const copie = r.membres.slice();
+          copie[k] = [fusion].concat(t.slice(2)).join(' ');
+          return recoller({ membres: copie, ops: r.ops });
+        }
+    },
+    {
+      nom: "حدّ نُقل دون تغيير إشارته",
+      quoi: "حدّ يعبر علامة التساوي يغيّر إشارته: نطرح من الطرفين، لا من طرف واحد",
+      geste: /من الطرفين|نضيف|نعزل|ننقل|نجمع حدود/,
+      faire: function(math, A) {
+          const r = relation(math);
+          if (!r || r.ops.some(o => o !== '=') || estMajal(math)) return null;
+          for (let essai = 0; essai < 6; essai++) {
+            const k = A.ent(0, r.membres.length - 1);
+            const t = termes(r.membres[k]);
+            if (t.length < 2) continue;
+            const j = A.ent(1, t.length - 1);
+            const u = t[j];
+            const bascule = u[0] === '-' ? '+ ' + u.slice(1).trim()
+                          : u[0] === '+' ? '- ' + u.slice(1).trim() : null;
+            if (!bascule) continue;
+            const t2 = t.slice(); t2[j] = bascule;
+            const copie = r.membres.slice();
+            copie[k] = t2.join(' ');
+            return copie.join(' = ');
+          }
+          return null;
+        }
+    },
+    {
+      nom: "التوزيع على الحدّ الأوّل فقط",
+      quoi: "عند نشر k(a + b) يُضرب k في كل حدّ، لا في الأوّل وحده",
+      faire: function(math) {
+          const m = /([0-9a-zA-Z/^]+)\s*\(([^()]+)\)/.exec(math);
+          if (!m) return null;
+          const t = termes(m[2]);
+          if (t.length < 2) return null;
+          // Le premier terme doit être NU, sinon la faute s'écrit « 2/3 3/5 a »,
+          // que personne n'écrit : elle se repérerait à sa laideur, pas à son
+          // erreur.
+          if (!/^[a-zA-Z]/.test(t[0])) return null;
+          return math.slice(0, m.index) + m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ')
+               + math.slice(m.index + m[0].length);
         }
     }
   ];

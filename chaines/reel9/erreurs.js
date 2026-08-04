@@ -1,4 +1,4 @@
-// Les pages « أين الخطأ؟ » — addz8.
+// Les pages « أين الخطأ؟ » — reel9.
 //
 // ENGENDRÉ PAR _regles/porter.js — ne pas éditer à la main. Les règles vivent
 // dans _regles/catalogue.js ; une correction s'y fait, puis se rejoue ici.
@@ -19,7 +19,7 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.AddZ;
+  const F = M ? require('./noyau.js') : racine.Reel;
   const J = M ? require('./juge.js') : racine.Juge;
 
   const interdit = () => false;
@@ -106,6 +106,26 @@
   // ── Les règles de CE chapitre ───────────────────────────────────────────
   const FAMILLES = [
     {
+      nom: "حدود غير متشابهة جُمعت",
+      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
+      faire: function(math, A) {
+          const r = relation(math);
+          if (!r) return null;
+          const k = r.membres.length - 1;
+          const t = termes(r.membres[k]);
+          if (t.length < 2) return null;
+          const m1 = monome(t[0]), m2 = monome(t[1]);
+          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
+          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
+          if (!a || !b) return null;
+          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
+          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
+          const copie = r.membres.slice();
+          copie[k] = [fusion].concat(t.slice(2)).join(' ');
+          return recoller({ membres: copie, ops: r.ops });
+        }
+    },
+    {
       nom: "قوس مسبوق بناقص رُفع دون تغيير الإشارات",
       quoi: "قوس مسبوق بـ « - » ترفع إشارات كل حدوده: -(a - b) = -a + b",
       geste: /نرفع القوس|نزيل الأقواس|بدون أقواس|نكتب المقابل/,
@@ -133,26 +153,6 @@
         }
     },
     {
-      nom: "حدود غير متشابهة جُمعت",
-      quoi: "حدود x لا تُجمع مع حدود y: المعاملان لا يُجمعان إلاّ إذا كان الحرف واحدا",
-      faire: function(math, A) {
-          const r = relation(math);
-          if (!r) return null;
-          const k = r.membres.length - 1;
-          const t = termes(r.membres[k]);
-          if (t.length < 2) return null;
-          const m1 = monome(t[0]), m2 = monome(t[1]);
-          if (!m1 || !m2 || !m1.lettre || !m2.lettre || m1.lettre === m2.lettre) return null;
-          const a = A.val(m1.coef || '1'), b = A.val(m2.coef || '1');
-          if (!a || !b) return null;
-          const s = m2.signe === '-' ? A.sub(a, b) : A.add(a, b);
-          const fusion = (A.txt(s) === '1' ? '' : A.txt(s) + ' ') + m1.lettre;
-          const copie = r.membres.slice();
-          copie[k] = [fusion].concat(t.slice(2)).join(' ');
-          return recoller({ membres: copie, ops: r.ops });
-        }
-    },
-    {
       nom: "حدّ نُقل دون تغيير إشارته",
       quoi: "حدّ يعبر علامة التساوي يغيّر إشارته: نطرح من الطرفين، لا من طرف واحد",
       geste: /من الطرفين|نضيف|نعزل|ننقل|نجمع حدود/,
@@ -177,6 +177,22 @@
         }
     },
     {
+      nom: "القيمة المطلقة رُفعت دون تغيير الإشارة",
+      quoi: "القيمة المطلقة لعدد سالب هي مقابله، لا هو نفسه — و √(t^2) = |t| لا t",
+      faire: function(math) {
+          const r = relation(math);
+          if (!r || r.ops.some(o => o !== '=')) return null;
+          for (let k = 0; k < r.membres.length; k++) {
+            const m = /^\s*\|(.+)\|\s*$/.exec(r.membres[k]);
+            if (!m) continue;
+            const copie = r.membres.slice();
+            copie[k] = m[1];
+            return copie.join(' = ');
+          }
+          return null;
+        }
+    },
+    {
       nom: "النشر ناقص — حدّ لم يُضرب",
       quoi: "عند نشر جداء قوسين، كل حدّ من الأوّل يُضرب في كل حدّ من الثاني: لا حدّ يُترك",
       geste: /ننشر|نعيد كتابة|نرتّب|نزيل الأقواس|نضرب القوسين|نعوّض/,
@@ -190,70 +206,6 @@
           const copie = r.membres.slice();
           copie[k] = t.slice(0, j).concat(t.slice(j + 1)).join(' ');
           return recoller({ membres: copie, ops: r.ops });
-        }
-    },
-    {
-      nom: "التوزيع على الحدّ الأوّل فقط",
-      quoi: "عند نشر k(a + b) يُضرب k في كل حدّ، لا في الأوّل وحده",
-      faire: function(math) {
-          const m = /([0-9a-zA-Z/^]+)\s*\(([^()]+)\)/.exec(math);
-          if (!m) return null;
-          const t = termes(m[2]);
-          if (t.length < 2) return null;
-          // Le premier terme doit être NU, sinon la faute s'écrit « 2/3 3/5 a »,
-          // que personne n'écrit : elle se repérerait à sa laideur, pas à son
-          // erreur.
-          if (!/^[a-zA-Z]/.test(t[0])) return null;
-          return math.slice(0, m.index) + m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ')
-               + math.slice(m.index + m[0].length);
-        }
-    },
-    {
-      nom: "حدّ لم يُقسم على العامل المشترك",
-      quoi: "عند التفكيك يُقسم كل حدّ على العامل المشترك، و الحدّ الثابت مثل غيره. الخطأ الشائع: 5a + 10b + 15 = 5(a + 2b + 15) بدل 5(a + 2b + 3)",
-      geste: /نكتب الجداء|نُخرج|نُظهر|عاملا مشتركا|الشكل المفكّك|نفكّك|نضع/,
-      faire: function(math, A) {
-          const r = relation(math);
-          if (!r) return null;
-          for (let k = 0; k < r.membres.length; k++) {
-            const m = /^(.*?)([0-9]+(?:\/[0-9]+)?)((?:\s*[a-zA-Z^0-9]+)*)\s*\(([^()]+)\)\s*$/
-                        .exec(r.membres[k]);
-            if (!m) continue;
-            const facteur = A.val(m[2]);
-            const t = termes(m[4]);
-            if (!facteur) continue;
-            const cands = [];
-            t.forEach((x, i) => { if (monome(x)) cands.push([x, i]); });
-            if (!cands.length) continue;
-            const pick = cands[A.ent(0, cands.length - 1)];
-            const mono = monome(sansSigne(pick[0]));
-  
-            // Le terme NON DIVISÉ, c'est celui qu'on lit dans l'AUTRE membre —
-            // « 7/5 xy(5/2 x + 4 y) = 7/2 x^2 y + 28/5 x y^2 » donne
-            // « 7/5 xy(7/2 x^2 y + 4 y) ». C'est la seule écriture qui raconte
-            // vraiment la faute. Faute d'autre membre, on ne le retrouve qu'en
-            // remultipliant le coefficient, et cela ne suffit que si le facteur
-            // commun est purement numérique.
-            let brutTexte = null;
-            const autre = r.membres[k === 0 ? r.membres.length - 1 : 0];
-            const ta = autre ? termes(autre) : [];
-            if (ta.length === t.length && ta[pick[1]]) {
-              brutTexte = sansSigne(ta[pick[1]]);
-            } else if (!m[3].trim()) {
-              const c2 = A.val(mono.coef || '1');
-              if (!c2) continue;
-              const p = A.mul(facteur, c2);
-              brutTexte = ((A.txt(p) === '1' && mono.lettre) ? '' : A.txt(p))
-                        + (mono.lettre ? ' ' + mono.lettre : '');
-            }
-            if (!brutTexte || brutTexte.trim() === sansSigne(pick[0])) continue;
-            const t2 = t.slice();
-            t2[pick[1]] = (pick[1] === 0 ? '' : '+ ') + brutTexte.trim();
-            const copie = r.membres.slice();
-            copie[k] = m[1] + m[2] + m[3] + '(' + t2.join(' ') + ')';
-            return recoller({ membres: copie, ops: r.ops });
-          }
-          return null;
         }
     }
   ];

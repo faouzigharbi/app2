@@ -258,6 +258,16 @@
           return math.slice(0, m.index) + m[1] + ' ' + t[0] + ' ' + t.slice(1).join(' ')
                + math.slice(m.index + m[0].length);
         }
+    },
+    {
+      nom: "ناقص أمام عدد سالب",
+      quoi: "طرح عدد سالب هو إضافة مقابله: a - (-b) = a + b، لا a - b",
+      geste: /نحسب|نرفع|نزيل|الفرق|نطرح/,
+      faire: function(math) {
+          const m = /-\s*\(\s*-\s*([^()]+?)\s*\)/.exec(math);
+          if (!m) return null;
+          return math.slice(0, m.index) + '- ' + m[1] + math.slice(m.index + m[0].length);
+        }
     }
   ];
 
@@ -287,11 +297,19 @@
     const mains = (MAIN[cle] || []).filter(f => juge(f.faux) === 'fausse'
                                              && juge(question.etapes[f.rang][1]) === 'vraie');
 
+    const sain = () => ({ controle: c, enonce: question.enonce,
+                          indice: question.indice,
+                          etapes: question.etapes.map(e => [e[0], e[1]]),
+                          fautes: [], sain: true });
+
     const rangs = [];
     question.etapes.forEach(function (e, i) {
       if (juge(e[1]) === 'vraie') rangs.push(i);
     });
-    if (rangs.length < fautes + 1) return null;
+    // Il doit rester du vrai après la faute : une chaîne dont tout serait faux
+    // ne demanderait plus de juger. Faute de quoi, on laisse le corrigé
+    // intact — jamais on ne perd la question, l'élève doit les avoir toutes.
+    if (rangs.length < fautes + 1) return sain();
 
     function candidats(i) {
       const vrai = question.etapes[i][1];
@@ -321,18 +339,13 @@
                                  famille: f.famille, quoi: f.quoi, priorite: -1 }));
     rangs.forEach(function (i) { tous = tous.concat(candidats(i)); });
 
-    const sain = () => ({ controle: c, enonce: question.enonce,
-                          indice: question.indice,
-                          etapes: question.etapes.map(e => [e[0], e[1]]),
-                          fautes: [], sain: true });
-
     // AUCUNE FAUTE DE COMPRÉHENSION POSSIBLE ? On n'en invente pas.
     if (!tous.length) return sain();
 
     const choisies = [];
     for (let n = 0; n < fautes; n++) {
       const libres = tous.filter(x => choisies.every(c2 => c2.rang !== x.rang));
-      if (!libres.length) return null;
+      if (!libres.length) return choisies.length ? finir(choisies) : sain();
       const permises = libres.filter(x => !x.interdite);
       if (!permises.length && !choisies.length) return sain();
       const base = permises.length ? permises : libres;
@@ -341,9 +354,11 @@
       const min = Math.min.apply(null, pool.map(x => x.priorite));
       choisies.push(F.choix(pool.filter(x => x.priorite === min)));
     }
-    choisies.sort((a, b) => a.rang - b.rang);
+    return finir(choisies);
 
     // La phase « corrige » : la bonne réécriture, et deux leurres FAUX.
+    function finir(choisies) {
+    choisies.sort((a, b) => a.rang - b.rang);
     choisies.forEach(function (f) {
       const opts = [f.vrai];
       for (let essai = 0; essai < 60 && opts.length < 3; essai++) {
@@ -372,6 +387,7 @@
       }),
       fautes: choisies
     };
+    }
   }
 
   function melanger(t) {

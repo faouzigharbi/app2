@@ -373,6 +373,58 @@
              + bb[0] + ' × ' + hb[1] + ')';
       }
     },
+    {
+      id: 'moins-devant-negatif',
+      nom: 'ناقص أمام عدد سالب',
+      quoi: 'طرح عدد سالب هو إضافة مقابله: a - (-b) = a + b، لا a - b',
+      geste: /نحسب|نرفع|نزيل|الفرق|نطرح/,
+      faire(math) {
+        const m = /-\s*\(\s*-\s*([^()]+?)\s*\)/.exec(math);
+        if (!m) return null;
+        return math.slice(0, m.index) + '- ' + m[1] + math.slice(m.index + m[0].length);
+      }
+    },
+    {
+      id: 'exposant-additionne',
+      nom: 'الأسّان جُمعا مكان أن يُضربا',
+      quoi: 'عند توحيد الأساس يُضرب الأسّان: (a^p)^m = a^(p×m)، لا a^(p+m). '
+          + 'مثال: 49^38 = (7^2)^38 = 7^76، لا 7^40',
+      geste: /نوحّد الأساس|الأساس|نكتب بنفس|قوّة/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = /^\s*(\d+)\^(\d+)\s*$/.exec(r.membres[0]);
+        const d = /^\s*(\d+)\^(\d+)\s*$/.exec(r.membres[1]);
+        if (!g || !d) return null;
+        const B = Number(g[1]), m1 = Number(g[2]);
+        const b = Number(d[1]), k = Number(d[2]);
+        if (b < 2 || B === b) return null;
+        // B doit être une puissance de b : c'est ce que l'étape vient d'établir.
+        let p = 0, v = 1;
+        while (v < B) { v *= b; p++; }
+        if (v !== B || p * m1 !== k) return null;
+        return r.membres[0] + ' = ' + b + '^' + (p + m1);
+      }
+    },
+    {
+      id: 'distance-sans-valeur-absolue',
+      nom: 'البعد كُتب بدون قيمة مطلقة',
+      quoi: 'البعد بين نقطتين هو القيمة المطلقة للفرق: بدونها يصير سالبا أحيانا، '
+          + 'و البعد لا يكون سالبا',
+      geste: /نكتب الفرق|البعد|المسافة/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const m = /^\s*\|(.+)\|\s*$/.exec(r.membres[1]);
+        if (!m) return null;
+        // On échange les deux points : le calcul devient l'opposé, et sans les
+        // barres il change de signe. C'est la faute, pas une réécriture.
+        const t = termes(m[1]);
+        if (t.length !== 2) return null;
+        const b = sansSigne(t[1]);
+        return r.membres[0] + ' = ' + b + ' - ' + t[0];
+      }
+    },
     // ═════ ORDRE ET ENCADREMENT ═════
     {
       id: 'ordre-non-renverse',

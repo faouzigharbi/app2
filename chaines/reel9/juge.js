@@ -1,4 +1,4 @@
-// LE JUGE de produitq8 — partagé.
+// LE JUGE de reel9 — partagé.
 //
 // Le validateur s'en sert hors ligne ; les pages « أين الخطأ؟ » s'en servent
 // DANS LE NAVIGATEUR, pour prouver qu'une faute plantée en est bien une. C'est
@@ -9,8 +9,9 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Produit;
-  const P = M ? require('./produits.js') : racine.Produits;
+  const F = M ? require('./noyau.js') : racine.Reel;
+  const A = M ? require('./algebre.js') : racine.Alg;
+  const X = M ? require('./exercices.js') : racine.Exos;
   const ECHANTILLONS = 16;
 
   // La suite DÉTERMINISTE. Longue à dessein : certains énoncés n'ont de sens
@@ -24,21 +25,40 @@
   };
 
 function environnements(c) {
-  if (c.type === 'identite') {
-    const out = [];
-    for (let i = 0; i < ECHANTILLONS; i++) {
-      const e = {};
-      c.vars.forEach(v => { e[v] = rnd(); });
-      // Le nom de l'expression (X, F, E …) apparaît dans les étapes : on le
-      // lie à SA DÉFINITION, pas au résultat annoncé — sinon on vérifierait
-      // le générateur contre lui-même.
-      if (c.nom) e[c.nom] = F.analyser(c.gauche, e);
-      out.push(e);
+  const envs = [nommer(c, {})];                         // symbolique
+  const pose = sub => { envs.push(nommer(c, Object.assign({}, sub))); };
+  if (c.type === 'substitution') { const s = {}; s[c.lettre] = lire(c.valeur); pose(s); }
+  else if (c.type === 'equation' || c.type === 'valeurAbsolue') {
+    const s = {}; s[c.lettre] = lire(c.solution); pose(s);
+  } else if (c.type === 'absolue') {
+    for (const sol of c.solutions) { const s = {}; s[c.lettre] = lire(sol); pose(s); }
+  } else if (c.type === 'absolueIsolee') {
+    if (c.possible) {
+      const v = lire(c.valeur);
+      for (const w of [v, A.oppose(v)]) { const s2 = {}; s2[c.lettre] = w; pose(s2); }
     }
-    return out;
+  } else if (c.type === 'combinaison') {
+    // « a + b = v » n'est pas une identité : les étapes qui l'utilisent ne
+    // valent que SOUS l'hypothèse. On la matérialise en remplaçant a.
+    pose({ a: A.moins(lire(c.valeur), A.fois(F.rat(c.signeB), A.un('b'))) });
   }
-  return [Object.assign({}, c.env || {})];
+  return envs;
 }
+
+// Les environnements dans lesquels une étape a le droit d'être vraie.
+// Le nom d'une expression — E, C, M… — n'est pas une inconnue : il DÉSIGNE
+// l'expression de l'énoncé. Il faut donc le définir dans chaque environnement,
+// sans quoi la moindre étape écrite « E = … » serait illisible.
+function nommer(c, e) {
+  if (c.noms) {
+    for (const k of Object.keys(c.noms)) {
+      try { e[k] = lire(c.noms[k], e); } catch (x) { /* nom indéfinissable ici */ }
+    }
+  }
+  return e;
+}
+
+const lire = (t, env) => A.analyser(t, env);
 
   // 'vraie' | 'fausse' | 'ignoree'. « ignoree » couvre l'arabe et tout ce que
   // l'analyseur ne sait pas lire : on ne prétend rien sur ce qu'on ne calcule pas.
@@ -55,16 +75,16 @@ function environnements(c) {
         // suivant le sait très bien. Abandonner au premier échec condamnerait
         // des étapes justes — et c'est arrivé.
         let r;
-        try { r = F.verifierRelation(String(math).replace(/×/g, '*'), env); }
+        try { r = A.verifierRelation(String(math).replace(/×/g, '*'), env); }
         catch (e) { continue; }
         lisible = true;
-        if (r === null) { F.analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
+        if (r === null) { A.analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
         if (!r) bon++;
       }
       if (!lisible) return 'fausse';
       // Ce que le validateur de CETTE fiche exige, et rien d'autre : une étape
-      // doit tenir dans TOUS les environnements — sauf disjonction.
-      const attendu = (envs.disjonction ? 1 : envs.length);
+      // vaut si elle tient dans au moins un environnement.
+      const attendu = 1;
       return bon >= attendu ? 'vraie' : 'fausse';
     } catch (e) { return 'fausse'; }
   }

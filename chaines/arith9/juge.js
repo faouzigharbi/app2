@@ -1,4 +1,4 @@
-// LE JUGE de produitq8 — partagé.
+// LE JUGE de arith9 — partagé.
 //
 // Le validateur s'en sert hors ligne ; les pages « أين الخطأ؟ » s'en servent
 // DANS LE NAVIGATEUR, pour prouver qu'une faute plantée en est bien une. C'est
@@ -9,8 +9,9 @@
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Produit;
-  const P = M ? require('./produits.js') : racine.Produits;
+  const F = M ? require('./noyau.js') : racine.Arith;
+  const C = M ? require('./criteres.js') : racine.Crit;
+  const P = M ? require('./puissances.js') : racine.Puiss;
   const ECHANTILLONS = 16;
 
   // La suite DÉTERMINISTE. Longue à dessein : certains énoncés n'ont de sens
@@ -23,21 +24,39 @@
     return F.rat(n === 0 ? 7 : n, 1 + (i * 13) % 9);
   };
 
+// -------------------------------------------------------------------------
+// Les environnements dans lesquels chaque étape doit se vérifier.
+// La plupart des chaînes ne portent aucune lettre : leur environnement est
+// vide, et l'étape doit tenir telle quelle. Celles qui en portent une doivent
+// tenir POUR TOUTES ses valeurs — ce sont des identités.
+// -------------------------------------------------------------------------
+const LETTRES = ['n', 'x', 'y', 'a', 'b', 'k', 'm', 'p', 'q', 'z'];
+
 function environnements(c) {
-  if (c.type === 'identite') {
-    const out = [];
-    for (let i = 0; i < ECHANTILLONS; i++) {
-      const e = {};
-      c.vars.forEach(v => { e[v] = rnd(); });
-      // Le nom de l'expression (X, F, E …) apparaît dans les étapes : on le
-      // lie à SA DÉFINITION, pas au résultat annoncé — sinon on vérifierait
-      // le générateur contre lui-même.
-      if (c.nom) e[c.nom] = F.analyser(c.gauche, e);
-      out.push(e);
-    }
-    return out;
+  if (c.type === 'valeur') {
+    const e = envAleatoire();
+    e[c.variable || 'n'] = F.rat(c.x0);
+    return [nommer(c, e)];
   }
-  return [Object.assign({}, c.env || {})];
+  return Array.from({ length: 12 }, () => nommer(c, envAleatoire(c.eviter)));
+}
+
+function envAleatoire(eviter) {
+  const e = {};
+  LETTRES.forEach(l => {
+    let v;
+    do { v = F.ent(1, 30); } while (eviter !== undefined && v === eviter);
+    e[l] = F.rat(v);
+  });
+  return e;
+}
+
+// Une chaîne peut nommer son expression — « M = 6 + 32/(n + 2) ». Le nom n'est
+// pas une variable libre : il DÉSIGNE l'expression de l'énoncé, et c'est elle
+// qui lui donne sa valeur dans chaque environnement.
+function nommer(c, e) {
+  if (c.nom) e[c.nom] = F.analyser(c.source, e);
+  return e;
 }
 
   // 'vraie' | 'fausse' | 'ignoree'. « ignoree » couvre l'arabe et tout ce que

@@ -19,7 +19,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const [, , dossier, globalNoyau, liste] = process.argv;
+const [, , dossier, globalNoyau, liste, ...options] = process.argv;
+// Deux choses varient d'un validateur à l'autre, et aucune ne se devine :
+//   --relation=A   quel module porte verifierRelation (le noyau par défaut) ;
+//   --un-seul      une étape vaut si elle tient dans AU MOINS un environnement.
+// On les lit dans le validateur quand on peut, on les passe sinon.
+const opt = {};
+options.forEach(o => { const [k, v] = o.replace(/^--/, '').split('='); opt[k] = v || true; });
 if (!dossier || !globalNoyau) {
   console.error('usage: node extraire-juge.js <dossier> <globalNoyau> [fn1,fn2,…]');
   process.exit(1);
@@ -46,7 +52,14 @@ function decouper(nom) {
   while (k > 0 && /^\s*\/\//.test(avant[k - 1])) k--;
   debut = avant.slice(0, k).join('\n').length + (k ? 1 : 0);
 
-  let i = src.indexOf('{', m.index), prof = 0;
+  // Une constante simple — « const LETTRES = ['a','b']; » — n'a pas
+  // d'accolades : elle s'arrête à son point-virgule.
+  const ouvre = src.indexOf('{', m.index);
+  const finLigne = src.indexOf(';', m.index);
+  if (ouvre < 0 || (finLigne >= 0 && finLigne < ouvre)) {
+    return src.slice(debut, finLigne + 1);
+  }
+  let i = ouvre, prof = 0;
   for (; i < src.length; i++) {
     if (src[i] === '{') prof++;
     else if (src[i] === '}') { prof--; if (!prof) break; }
@@ -62,6 +75,29 @@ noms.forEach(n => {
   if (t) morceaux.push(t); else manquants.push(n);
 });
 if (!morceaux.length) { console.error('rien à extraire dans ' + OUT); process.exit(1); }
+
+// Les modules que le validateur requiert en plus du noyau : le juge en a besoin
+// des mêmes, sous les mêmes noms — « A.analyser » ne veut rien dire sans A.
+const autres = [];
+src.replace(/^const ([A-Z][A-Za-z]*) = require\('\.\/([^']+)'\);/gm, (m, nom, f) => {
+  if (f !== 'noyau.js') {
+    // Le nom global d'un module se lit dans le module lui-même : « else
+    // racine.Alg = API ». On ne le devine pas, on va le chercher.
+    let g = nom;
+    try {
+      const t = fs.readFileSync(path.join(OUT, f), 'utf8');
+      const mm = /else\s+racine\.([A-Za-z]+)\s*=/.exec(t);
+      if (mm) g = mm[1];
+    } catch (e) { /* le module reste sous son nom local */ }
+    autres.push("  const " + nom + " = M ? require('./" + f + "') : racine." + g + ";");
+  }
+  return m;
+});
+
+const unSeul = opt['un-seul']
+  || /bon = true;[\s\S]{0,40}break;/.test(src);
+const modRel = opt.relation
+  || (/\b([A-Z][A-Za-z]*)\.verifierRelation\(/.exec(src) || [, 'F'])[1];
 
 const ech = /const ECHANTILLONS\s*=\s*(\d+)/.exec(src);
 
@@ -84,7 +120,7 @@ const juge = `// LE JUGE de ${path.basename(OUT)} — partagé.
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.${globalNoyau};
-
+${autres.join('\n')}
   const ECHANTILLONS = ${ech ? Math.min(Number(ech[1]), 16) : 16};
 
   // La suite DÉTERMINISTE. Longue à dessein : certains énoncés n'ont de sens
@@ -103,16 +139,29 @@ ${morceaux.join('\n\n')}
   // l'analyseur ne sait pas lire : on ne prétend rien sur ce qu'on ne calcule pas.
   function evaluerEtape(math, envs) {
     if (typeof math !== 'string' || F.ARABE.test(math)) return 'ignoree';
+    // Aucun environnement : l'énoncé décrit un cas IMPOSSIBLE (« |x| = -3 »).
+    // Il n'y a rien à juger, donc rien à planter — et surtout rien à condamner.
+    if (!envs || !envs.length) return 'ignoree';
     try {
-      let bon = 0;
+      let bon = 0, lisible = false;
       for (const env of envs) {
-        const r = F.verifierRelation(String(math).replace(/×/g, '*'), env);
-        if (r === null) { F.analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
+        // Le catch est PAR ENVIRONNEMENT, comme dans le validateur : un
+        // environnement symbolique peut ne pas savoir évaluer « |x| » quand le
+        // suivant le sait très bien. Abandonner au premier échec condamnerait
+        // des étapes justes — et c'est arrivé.
+        let r;
+        try { r = ${modRel}.verifierRelation(String(math).replace(/×/g, '*'), env); }
+        catch (e) { continue; }
+        lisible = true;
+        if (r === null) { ${modRel}.analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
         if (!r) bon++;
       }
-      // Dans une disjonction, une étape qui tient dans UN cas est vraie ; partout
-      // ailleurs elle doit tenir dans tous.
-      return bon >= (envs.disjonction ? 1 : envs.length) ? 'vraie' : 'fausse';
+      if (!lisible) return 'fausse';
+      // Ce que le validateur de CETTE fiche exige, et rien d'autre : ${unSeul
+        ? "une étape\n      // vaut si elle tient dans au moins un environnement"
+        : "une étape\n      // doit tenir dans TOUS les environnements — sauf disjonction"}.
+      const attendu = ${unSeul ? '1' : '(envs.disjonction ? 1 : envs.length)'};
+      return bon >= attendu ? 'vraie' : 'fausse';
     } catch (e) { return 'fausse'; }
   }
 

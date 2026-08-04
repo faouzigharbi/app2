@@ -10,7 +10,7 @@
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.AddZ;
-
+  const S = M ? require('./formes.js') : racine.Formes;
   const ECHANTILLONS = 16;
 
   // La suite DÉTERMINISTE. Longue à dessein : certains énoncés n'ont de sens
@@ -109,16 +109,28 @@ const lier = c => env => {
   // l'analyseur ne sait pas lire : on ne prétend rien sur ce qu'on ne calcule pas.
   function evaluerEtape(math, envs) {
     if (typeof math !== 'string' || F.ARABE.test(math)) return 'ignoree';
+    // Aucun environnement : l'énoncé décrit un cas IMPOSSIBLE (« |x| = -3 »).
+    // Il n'y a rien à juger, donc rien à planter — et surtout rien à condamner.
+    if (!envs || !envs.length) return 'ignoree';
     try {
-      let bon = 0;
+      let bon = 0, lisible = false;
       for (const env of envs) {
-        const r = F.verifierRelation(String(math).replace(/×/g, '*'), env);
+        // Le catch est PAR ENVIRONNEMENT, comme dans le validateur : un
+        // environnement symbolique peut ne pas savoir évaluer « |x| » quand le
+        // suivant le sait très bien. Abandonner au premier échec condamnerait
+        // des étapes justes — et c'est arrivé.
+        let r;
+        try { r = F.verifierRelation(String(math).replace(/×/g, '*'), env); }
+        catch (e) { continue; }
+        lisible = true;
         if (r === null) { F.analyser(String(math).replace(/×/g, '*'), env); return 'ignoree'; }
         if (!r) bon++;
       }
-      // Dans une disjonction, une étape qui tient dans UN cas est vraie ; partout
-      // ailleurs elle doit tenir dans tous.
-      return bon >= (envs.disjonction ? 1 : envs.length) ? 'vraie' : 'fausse';
+      if (!lisible) return 'fausse';
+      // Ce que le validateur de CETTE fiche exige, et rien d'autre : une étape
+      // doit tenir dans TOUS les environnements — sauf disjonction.
+      const attendu = (envs.disjonction ? 1 : envs.length);
+      return bon >= attendu ? 'vraie' : 'fausse';
     } catch (e) { return 'fausse'; }
   }
 
