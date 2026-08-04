@@ -12,7 +12,7 @@ La méthode est décrite dans [`METHODE.md`](METHODE.md). Chaque fiche a son
 | [`serie2/`](serie2/) | une autre fiche du même chapitre | 11 → 14 |
 | [`serie3/`](serie3/) | riadhyet — « الضرب و القسمة في مجموعة الأعداد الحقيقية » | 11 → 17 |
 | [`revision2/`](revision2/) | ضفاف البحيرة — « العمليات الأربعة في IR » (مراجعة) | الجزء 1 → 7 · **fidèle à l'original** |
-| [`encadrement/`](encadrement/) | النجاح في الرياضيات — « حصر و مجال » (سلسلة مراجعة عدد 10) | 1 → 3, 10 · **fidèle à l'original** |
+| [`encadrement/`](encadrement/) | النجاح في الرياضيات — « حصر و مجال » (سلسلة مراجعة عدد 10) et « Encadrement » | 1 → 3, 10 → 13 · **fidèle à l'original** |
 
 Ouvrir `index.html` dans le dossier voulu.
 

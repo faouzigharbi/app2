@@ -107,6 +107,51 @@ function controlerConditions(c, noms) {
   return p;
 }
 
+// Le contrôle d'une RÉSOLUTION. « حل في ℝ » appelle un ensemble de solutions,
+// et l'annoncer ne suffit pas : on balaie une grille de rationnels et l'on
+// exige que « la valeur vérifie l'équation » et « la valeur est dans
+// l'ensemble annoncé » soient vraies exactement ensemble.
+//
+// L'ensemble annoncé se donne en deux morceaux, parce que les réponses de cette
+// fiche en prennent deux formes : des MAJALS (« x ≤ 3/4 », et jusqu'à deux
+// morceaux disjoints pour « |2x + 2| ≥ 5 ») et des VALEURS isolées (les racines
+// d'une équation). Les valeurs annoncées sont en outre testées une à une —
+// c'est le seul moyen d'attraper une racine irrationnelle, qu'aucune grille de
+// rationnels ne rencontrerait.
+function controlerResolutions(c) {
+  const p = [];
+  for (const r of (c.resolutions || [])) {
+    const v = r.variable || 'x';
+    const majals = (r.majals || []).map(m => F.intervalle(m));
+    const valeurs = (r.valeurs || []).map(t => F.analyser(t, {}));
+    const dedans = x => majals.some(I => F.dansI(x, I))
+                     || valeurs.some(t => F.sEgaux(x, t));
+    const essaie = x => {
+      const env = { [v]: x };
+      for (const d in (c.derives || {})) {
+        env[d] = F.analyser(String(c.derives[d]).replace(/×/g, '*'), env);
+      }
+      return F.verifierRelation(String(r.cond).replace(/×/g, '*'), env) === '';
+    };
+    const grille = [];
+    for (let num = -40; num <= 40; num++) {
+      for (const den of [1, 2, 4, 5]) grille.push(F.S(F.rat(num, den)));
+    }
+    grille.push(...valeurs);
+    for (const x of grille) {
+      let tient;
+      try { tient = essaie(x); }
+      catch (err) { p.push(`تعذّر « ${r.cond} » (${err.message})`); break; }
+      controles++;
+      if (tient !== dedans(x)) {
+        p.push(`« ${r.cond} »: العدد ${F.sTxt(x)} ${tient ? 'حلّ و ليس في مجموعة الحلول' : 'ليس حلاّ و هو في مجموعة الحلول'}`);
+        break;
+      }
+    }
+  }
+  return p;
+}
+
 // Le contrôle des AFFIRMATIONS, dans tous les environnements.
 function controlerClaims(c, envs, noms) {
   const p = [];
@@ -165,7 +210,8 @@ function controlerClaims(c, envs, noms) {
     }
   }
   if (!(c.claims || []).length && !(c.vrai || []).length && !(c.entiers || []).length
-      && !(c.egaux || []).length && !(c.conditions || {}).I) {
+      && !(c.egaux || []).length && !(c.resolutions || []).length
+      && !(c.conditions || {}).I) {
     p.push('بلا تأكيد يُراقَب');
   }
   return p;
@@ -234,6 +280,7 @@ function verifierBrut(brut) {
 
   if (verifiees < 2) probs.push('عدد المراحل القابلة للتحقق قليل جدا');
   probs.push(...controlerConditions(c, noms));
+  probs.push(...controlerResolutions(c));
   probs.push(...controlerClaims(c, envs, noms));
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
@@ -287,7 +334,7 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("inverse du 2 non renversé", parQuestion(2, 3),
     c => { c.etapes[2][1] = "1 ≤ 1/(2x - 1) ≤ 1/5"; });
   pousse("carré du 2 mal encadré", parQuestion(2, 4),
-    c => { c.etapes[1][1] = "1/9 ≤ (x - 10/3)^2 ≤ 4/9"; });
+    c => { c.etapes[2][1] = "1/9 ≤ (10/3 - x)^2 ≤ 4/9"; });
 
   pousse("division par -4 sans renversement", parQuestion(3, 0),
     c => { c.etapes[1][1] = "|x| > 2"; });
@@ -301,6 +348,11 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] = "1/4 x^2 + 7/(2(5 - 2x)) + 1/2"; });
   pousse("encadrement du 3 trop étroit", parQuestion(3, 4),
     c => { c.controle.vrai[0] = "-1/9 < A < 1"; });
+  // La règle : on ne multiplie jamais les termes d'un encadrement par une
+  // variable. On rend les deux encadrements positifs, on les multiplie entre
+  // eux, puis on revient. Une multiplication par y ferait ici passer une borne.
+  pousse("produit des encadrements faussé", parQuestion(10, 0),
+    c => { c.etapes[3][1] = "4 ≤ (-x) y ≤ 9"; });
   pousse("encadrement de xy resserré", parQuestion(10, 0),
     c => { c.controle.vrai[0] = "-12 ≤ x y ≤ -6"; });
   pousse("ordre gardé au lieu d'être renversé", parQuestion(10, 1),
@@ -321,6 +373,47 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.egaux[0][1] = "[-2 ; 2]"; });
   pousse("carré mal encadré au bord", parQuestion(10, 8),
     c => { c.etapes[1][1] = "0 ≤ x^2 ≤ 3"; });
+
+  pousse("développement de E faussé", parQuestion(11, 0),
+    c => { c.controle.claims[0][1] = "4x^2 + 8x + 5"; });
+  pousse("factorisation de E faussée", parQuestion(11, 1),
+    c => { c.controle.claims[0][1] = "(2x - 1)(2x + 3)"; });
+  pousse("racine de l'équation du 11 oubliée", parQuestion(11, 2),
+    c => { c.controle.resolutions[0].valeurs = ["1/2"]; });
+  pousse("borne de la métrajiha décalée", parQuestion(11, 3),
+    c => { c.controle.resolutions[0].majals = ["]-∞ ; 1]"]; });
+  pousse("ordre non renversé par la division", parQuestion(11, 4),
+    c => { c.etapes[1][1] = "|x - 3| ≥ 2"; });
+  pousse("racine de trop dans l'équation aux valeurs absolues", parQuestion(11, 5),
+    c => { c.controle.resolutions[0].valeurs = ["2", "-1", "-3", "3"]; });
+  pousse("un seul morceau de solutions retenu", parQuestion(11, 6),
+    c => { c.controle.resolutions[0].majals = ["[3/2 ; +∞["]; });
+
+  pousse("racine irrationnelle du 12 décalée", parQuestion(12, 0),
+    c => { c.controle.resolutions[0].valeurs = ["2√2 + 1"]; });
+  pousse("facteur commun du 12 amputé", parQuestion(12, 1),
+    c => { c.etapes[0][1] = "2x^2 - 8 = 2(x - 2)(x + 1)"; });
+  pousse("multiplication par -1 sans renversement", parQuestion(12, 2),
+    c => { c.etapes[2][1] = "1 < x < -2"; });
+  pousse("signe de x - 3 inversé", parQuestion(12, 3),
+    c => { c.controle.vrai[0] = "x - 3 > 0"; });
+  pousse("partage du quotient B faux", parQuestion(12, 4),
+    c => { c.controle.claims[0][1] = "1 - 3/(x - 3)"; });
+  pousse("encadrement de B resserré", parQuestion(12, 5),
+    c => { c.controle.vrai[0] = "-1/2 < B < 0"; });
+
+  pousse("solutions de l'identité réduites à un point", parQuestion(13, 0),
+    c => { c.controle.resolutions[0].majals = ["[0 ; 0]"]; });
+  pousse("racine du 13 décalée", parQuestion(13, 1),
+    c => { c.controle.resolutions[0].valeurs = ["1", "3"]; });
+  pousse("signe de x + 1 inversé au 13", parQuestion(13, 2),
+    c => { c.controle.vrai[0] = "x + 1 > 0"; });
+  pousse("inverse du 13 non renversé", parQuestion(13, 3),
+    c => { c.etapes[1][1] = "-1/2 ≤ 1/(x + 1) ≤ -1"; });
+  pousse("réduction de A - 2 fausse", parQuestion(13, 4),
+    c => { c.controle.claims[0][1] = "3/(x - 1)"; });
+  pousse("encadrement de A décalé", parQuestion(13, 5),
+    c => { c.controle.vrai[0] = "-1 ≤ A ≤ 0"; });
 
   pousse("étape dupliquée", parQuestion(1, 4),
     c => { c.etapes[2] = c.etapes[1].slice(); });

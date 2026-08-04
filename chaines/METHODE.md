@@ -87,6 +87,16 @@ forme :
 }
 ```
 
+Une étape doit être le geste **qu'on enseigne**, pas seulement un geste vrai.
+Sur les encadrements, par exemple : **on ne multiplie jamais les termes d'un
+encadrement par une variable.** Pour encadrer `xy` avec `−3 ≤ x ≤ −2` et
+`2 ≤ y ≤ 4`, on ne multiplie pas le premier encadrement par `y` ; on rend les
+deux encadrements positifs (`2 ≤ −x ≤ 3`), on les multiplie **l'un par
+l'autre** (`4 ≤ (−x)y ≤ 12`), puis on revient (`−12 ≤ xy ≤ −4`). Le raccourci
+donne le même résultat et reste vrai — le validateur ne verrait rien — mais il
+enseigne un geste faux, qui tombera dès que le signe de la variable ne sera
+plus connu.
+
 Règles de composition des étapes :
 
 * une étape = **un geste**, et un seul ;

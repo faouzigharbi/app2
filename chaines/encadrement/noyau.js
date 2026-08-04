@@ -478,8 +478,12 @@
     const out = [];
     if (I.inf !== null && !I.oInf) out.push(I.inf);
     if (I.sup !== null && !I.oSup) out.push(I.sup);
-    const bas = I.inf === null ? sVal(I.sup) - 8 : sVal(I.inf);
-    const haut = I.sup === null ? sVal(I.inf) + 8 : sVal(I.sup);
+    // Une borne infinie n'empêche pas de tirer : on se donne une fenêtre de 8
+    // au-delà de la borne finie — et ℝ tout entier se prend dans [-8 ; 8].
+    const bas = I.inf !== null ? sVal(I.inf)
+              : (I.sup !== null ? sVal(I.sup) - 8 : -8);
+    const haut = I.sup !== null ? sVal(I.sup)
+               : (I.inf !== null ? sVal(I.inf) + 8 : 8);
     for (let essai = 0; out.length < combien && essai < 40 * combien; essai++) {
       const q = ent(1, 12);
       // Un pas de 37 modulo 97 balaie tout l'intervalle au lieu d'entasser les
