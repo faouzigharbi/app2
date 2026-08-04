@@ -95,6 +95,13 @@ const page = (n, titre) => `<!doctype html>
 
   const zone = document.getElementById('questions');
   const R = window.Arith, E = window.Erreurs;
+  // Toutes les fiches n'ont pas le même rendu ni la même forme d'énoncé :
+  // certaines rendent une liste de lignes, d'autres une seule chaîne ; certaines
+  // savent isoler les maths en dir="ltr", d'autres livrent déjà du HTML. On
+  // s'adapte à ce que la fiche donne au lieu de l'exiger.
+  const rm = s => (s === undefined || s === null) ? ''
+                : (typeof R.rendreMath === 'function' ? R.rendreMath(s) : String(s));
+  const lignes = e => (Array.isArray(e) ? e : [e]).map(rm).join('<br>');
 
   function tirer() {
     data = E.pageErreurs(NUM, fautes);
@@ -112,7 +119,7 @@ const page = (n, titre) => `<!doctype html>
 
       const en = document.createElement('div');
       en.className = 'op';
-      en.innerHTML = q.enonce.map(R.rendreMath).join('<br>');
+      en.innerHTML = lignes(q.enonce);
       d.appendChild(en);
 
       const consigne = document.createElement('p');
@@ -130,7 +137,7 @@ const page = (n, titre) => `<!doctype html>
         const el = document.createElement('div');
         el.className = 'etape';
         el.innerHTML = '<span class="rang">' + (i + 1) + '</span><span>'
-          + R.rendreMath(e[0]) + ': ' + R.rendreMath(e[1]) + '</span>';
+          + rm(e[0]) + ': ' + rm(e[1]) + '</span>';
         el.onclick = () => {
           if (el.dataset.fige) return;
           if (choisies.has(i)) { choisies.delete(i); el.classList.remove('choisie'); }
@@ -154,7 +161,7 @@ const page = (n, titre) => `<!doctype html>
 
       const fb = document.createElement('div'); fb.className = 'feedback';
       const hint = document.createElement('div'); hint.className = 'hint'; hint.style.display = 'none';
-      hint.innerHTML = R.rendreMath(q.indice);
+      hint.innerHTML = rm(q.indice) || 'تذكّر قاعدة الدرس.';
       d.appendChild(hb(hint)); d.appendChild(fb);
 
       bH.onclick = () => { hint.style.display = hint.style.display === 'none' ? 'block' : 'none'; };
@@ -188,7 +195,7 @@ const page = (n, titre) => `<!doctype html>
           const bloc = document.createElement('div');
           bloc.className = 'famille';
           bloc.innerHTML = 'المرحلة ' + (f.rang + 1) + ' — <b>' + f.famille + '</b><br>'
-                         + '<small>' + R.rendreMath(f.quoi) + '</small>';
+                         + '<small>' + rm(f.quoi) + '</small>';
           if (f.choix.length > 1) {
             const c = document.createElement('div');
             c.className = 'corrige';
@@ -198,7 +205,7 @@ const page = (n, titre) => `<!doctype html>
             c.appendChild(t);
             f.choix.forEach((opt, k) => {
               const b = document.createElement('button');
-              b.innerHTML = R.rendreMath(opt);
+              b.innerHTML = rm(opt);
               b.onclick = () => {
                 b.classList.add(k === f.bonne ? 'bonne' : 'mauvaise');
                 if (k !== f.bonne) {
@@ -209,7 +216,7 @@ const page = (n, titre) => `<!doctype html>
             });
             bloc.appendChild(c);
           } else {
-            bloc.innerHTML += '<br>الصواب: ' + R.rendreMath(f.vrai);
+            bloc.innerHTML += '<br>الصواب: ' + rm(f.vrai);
           }
           fb.appendChild(bloc);
         });
@@ -241,14 +248,14 @@ const page = (n, titre) => `<!doctype html>
     const bloc = (parent) => data.map((q, qi) =>
       '<div style="break-inside:avoid;margin:0 0 6mm">'
       + '<div class="col-title">السؤال ' + (qi + 1) + '</div>'
-      + '<div class="op">' + q.enonce.map(R.rendreMath).join('<br>') + '</div>'
+      + '<div class="op">' + lignes(q.enonce) + '</div>'
       + q.etapes.map((e, i) => {
           const bad = q.fautes.find(x => x.rang === i);
           return '<div class="etape"' + (parent && bad ? ' style="border-color:#c0392b"' : '')
             + '><span class="rang">' + (i + 1) + '</span><span>'
-            + R.rendreMath(e[0]) + ': ' + R.rendreMath(e[1])
+            + rm(e[0]) + ': ' + rm(e[1])
             + (parent && bad ? ' <b style="color:#c0392b">← ' + bad.famille + '</b>'
-                               + '<br><small>الصواب: ' + R.rendreMath(bad.vrai) + '</small>' : '')
+                               + '<br><small>الصواب: ' + rm(bad.vrai) + '</small>' : '')
             + '</span></div>';
         }).join('')
       + '</div>').join('');
@@ -281,7 +288,7 @@ const index = `<!doctype html>
   <a class="badge" href="index.html">⛓ سلاسل البرهان</a>
 </div>
 <div style="display:grid;gap:10px">
-${EXOS.map(n => `  <a href="err${String(n).padStart(2, '0')}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔎 التمرين ${n} — ${F.PROBLEMES[n].titre} <small style="color:#95a5a6">(${F.PROBLEMES[n].questions} أسئلة)</small></a>`).join('\n')}
+${EXOS.map(n => `  <a href="err${String(n).padStart(2, '0')}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔎 التمرين ${n} — ${F.PROBLEMES[n].titre} <small style="color:#95a5a6">(${F.PROBLEMES[n].questions || F.PAR_PAGE || ''} أسئلة)</small></a>`).join('\n')}
 </div>
 </main>
 </body>

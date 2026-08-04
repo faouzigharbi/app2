@@ -329,3 +329,76 @@ navigateur, avec la fonction qu'emploie le validateur. Et l'échantillon sur
 lequel il juge est **déterministe** — même intervalle, même taille, mêmes
 points. Sans cela une faute pourrait être fausse pour le validateur et vraie
 pour la page, et l'élève aurait raison de contester.
+
+### Deux commandes pour les vingt fiches
+
+    sh _regles/rejouer.sh            # rejoue tout le portage
+    sh _regles/rejouer.sh radic9     # ou une seule fiche
+    sh _regles/valider.sh 20         # chaînes ET pages d'erreurs, toutes
+
+`rejouer.sh` garde, pour chaque fiche, **avec quels arguments elle a été
+portée** : son noyau, le nom que son validateur lui donne, ses modules, son
+badge, et la liste des règles du programme que son chapitre met en jeu. Sans
+ce fichier, la source unique des règles restait une intention : on ne peut pas
+rejouer ce qu'on ne sait plus reconstituer. Une règle corrigée dans
+`_regles/catalogue.js` se retrouve donc partout d'une seule commande, et
+`valider.sh` dit aussitôt si quelque chose a bougé.
+
+### Un leurre garde le premier membre
+
+Dans la phase « corrige », les trois options se lisent **côte à côte**, comme
+trois réécritures d'une même ligne. Celle qui change le membre donné ne réécrit
+plus rien : elle change la question. On a proposé « √10 = 5 » pour corriger
+« √5 × √5 = 5 » — l'élève n'y choisissait plus, il devinait.
+
+La règle ne vaut que pour l'**égalité à deux membres**, « donné = travail ».
+Un encadrement « -3 < x < -2 » n'a pas de donné à gauche : ses trois membres
+forment un seul énoncé, et tous ont le droit de bouger.
+
+### Le niveau est une intention, pas une exigence
+
+Quand une chaîne n'offre pas de quoi placer deux fautes en laissant du vrai
+après elles, on en place **une** plutôt que de rendre le volet sain. Un volet
+sain doit rester un choix — « aucune règle n'est en jeu ici » — jamais un aveu
+d'impuissance.
+
+### Les fiches d'arithmétique — ce qu'on ne peut pas y planter
+
+Dans `diviseurs7`, `pgcd7`, `premiers7`, `divisibilite8`, une étape est une
+**égalité numérique fermée** : « 2^3 × 3^2 × 5 = 360 ». Une faute de règle qui
+change les deux membres à la fois — prendre le plus grand exposant au lieu du
+plus petit, et écrire « 5^3 = 125 » — reste **vraie en elle-même**, et le juge
+ne peut pas la certifier fausse. Elle ne serait fausse que *relativement à la
+question*, ce qui n'est pas de son ressort.
+
+On n'y plante donc que les fautes qui laissent le donné en place et se trompent
+sur la valeur : la puissance lue comme un produit, les parenthèses ignorées, la
+somme mise à la place du produit, l'exposant soustrait au lieu d'être divisé.
+Ce sont aussi, et ce n'est pas un hasard, les seules qu'un élève écrit vraiment.
+
+Le `geste` de ces règles est écrit **à l'envers** des autres : au lieu
+d'énumérer les libellés où la règle a un sens, il énumère ceux où elle n'en a
+pas — « النتيجة », « نترجم », « نلاحظ », « القاعدة ». C'est que dans ces fiches
+toute étape calculée est un pivot. Lister les pivots un par un revenait à en
+oublier, et l'on a vu « م.م.أ: كل عامل بأكبر أسّ » — le pivot même de la leçon
+— rester hors d'atteinte parce que son libellé ne commençait pas par « نحسب ».
+
+Deux détails du juge, chèrement acquis. Passé `2^53`, deux écritures d'un même
+nombre s'arrondissent différemment : le juge s'abstient au-delà de l'entier
+exact, faute de quoi il déclarait fausse l'identité juste
+« 3 × 3^65 + … = 3^65 × (…) ». Et « = 8 », sans membre gauche, annonce le
+résultat de la chaîne : il ne se calcule pas tout seul.
+
+`naturels7` est à part : ses étapes ne sont pas des égalités mais des
+**expressions** — « 26 × 9 + 3 », puis « 234 + 3 », puis « = 237 » —, chacune
+la précédente réécrite plus simplement. L'invariant de la fiche est qu'elles
+valent toutes le résultat final ; son juge tranche donc là-dessus, et une faute
+de règle s'y voit à ce que la réécriture change la valeur.
+
+### Quand une fiche ne parle pas la langue du porteur
+
+`premiers7` nomme ses familles `PREUVES`, `naturels7` livre ses étapes déjà
+rendues en HTML. On ne réécrit pas la fiche pour lui faire parler la langue de
+l'outil : on ajoute un `pont.js`, qui traduit. Il n'invente rien qui n'existe
+déjà — il renomme, il redécoupe, et il complète ce qui manquait vraiment : un
+`controle` qui porte le résultat, un indice.

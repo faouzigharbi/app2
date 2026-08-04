@@ -12,7 +12,21 @@
 const fs = require('fs');
 const path = require('path');
 
-const [, , dossier, global, badge, ...modules] = process.argv;
+let [, , dossier, global, badge, ...modules] = process.argv;
+// Toutes les fiches n'appellent pas leur noyau « noyau.js » : celles
+// d'arithmétique l'appellent arith.js ou moteur.js. On le dit, on ne le devine pas.
+let noyau = 'noyau.js';
+// Le mode ERREURS injecté dans le validateur appelle le noyau par le nom que
+// CE validateur lui donne : « F » partout, mais « A » dans les fiches
+// d'arithmétique. On le passe, on ne le devine pas.
+let nomF = 'F';
+modules = modules.filter(m => {
+  const n = /^--noyau=(.+)$/.exec(m);
+  if (n) { noyau = n[1]; return false; }
+  const f = /^--F=(.+)$/.exec(m);
+  if (f) { nomF = f[1]; return false; }
+  return true;
+});
 const OUT = path.resolve(dossier);
 const R = path.join(__dirname, 'gabarit-pages.js');
 
@@ -28,6 +42,7 @@ page = page.replace('//MODULES//', modules.map(m => "require('./" + m + "');").j
 page = page.replace('//SCRIPTS//', modules.map(m => '<script src="' + m + '"></script>').join('\n'));
 page = page.replace(/\/\/BADGE\/\//g, badge);
 page = page.replace('//GLOBAL//', global);
+page = page.replace(/%NOYAU%/g, noyau);
 fs.writeFileSync(path.join(OUT, '_build_erreurs.js'), page);
 
 const vp = path.join(OUT, 'verifier.js');
@@ -38,6 +53,7 @@ if (v.indexOf('process.env.ERREURS') < 0) {
                       "const E = require('./erreurs.js');\n  const J = require('./juge.js');");
   bloc = bloc.replace(/F\.environnements\(c\)/g, 'J.environnements(c)');
   bloc = bloc.replace(/F\.evaluerEtape\(/g, 'J.evaluerEtape(');
+  if (nomF !== 'F') bloc = bloc.replace(/\bF\./g, nomF + '.');
   // On insère avant la première fonction de vérification, donc avant que le
   // validateur ne se mette à tirer : le mode ERREURS sort par process.exit.
   const anchor = v.match(/\nfunction verifier[A-Za-z]*\(/);

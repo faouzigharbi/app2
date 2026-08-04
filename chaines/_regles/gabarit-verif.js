@@ -26,8 +26,12 @@ if (process.env.ERREURS) {
     for (let t = 0; t < TOURS; t++) {
       for (const niveau of [1, 2]) {
         const page = E.pageErreurs(n, niveau);
-        if (page.length !== def.questions) {
-          griefs.push(`التمرين ${n}: ${page.length} أسئلة بدل ${def.questions}`);
+        // Le nombre de volets attendu se lit dans la fiche : soit exercice par
+        // exercice, soit d'un seul PAR_PAGE pour les fiches d'arithmétique.
+        const attendu = (def.questions !== undefined) ? def.questions
+                      : (F.PAR_PAGE !== undefined ? F.PAR_PAGE : null);
+        if (attendu !== null && page.length !== attendu) {
+          griefs.push(`التمرين ${n}: ${page.length} أسئلة بدل ${attendu}`);
           mauvais++;
           continue;
         }

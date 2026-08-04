@@ -31,6 +31,9 @@ const OUT = path.resolve(dossier);
 const ids = listeRegles.split(',').map(s => s.trim()).filter(Boolean);
 const opts = {};
 reste.forEach(o => { const [k, v] = o.split('='); opts[k.replace(/^--/, '')] = v || true; });
+// Toutes les fiches n'appellent pas leur noyau « noyau.js » : celles
+// d'arithmétique l'appellent arith.js ou moteur.js. On le dit, on ne le devine pas.
+const noyau = (typeof opts.noyau === 'string') ? opts.noyau : 'noyau.js';
 
 const choisies = ids.map(id => {
   const r = C.REGLES.find(x => x.id === id);
@@ -75,7 +78,7 @@ const fichier = `// Les pages « أين الخطأ؟ » — ${path.basename(OUT)
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.${globalNoyau};
+  const F = M ? require('./${noyau}') : racine.${globalNoyau};
   const J = M ? require('./juge.js') : racine.Juge;
 
 ${interdit}
@@ -98,7 +101,11 @@ ${String(C.monome).replace(/^function/, '  function').replace(/\n/g, '\n  ').rep
     txt: F.txt || F.sTxt || F.rTxt,
     add: F.add || F.sAdd, sub: F.sub || F.sSub, mul: F.mul || F.sMul,
     val: t => { try { return F.analyser(String(t).replace(/×/g, '*'), {}); }
-                catch (e) { return null; } }
+                catch (e) { return null; } },
+    // Les fiches d'arithmétique CALCULENT : leur juge expose l'évaluation en
+    // entiers naturels, et les règles de puissance et de priorité s'en
+    // servent. Les autres fiches n'en ont pas, et ces règles s'y abstiennent.
+    nat: (typeof J.nat === 'function') ? J.nat : null
   };
 
   // Une faute doit rester CRÉDIBLE : ce qu'un élève écrit vraiment. On refuse
@@ -171,7 +178,12 @@ ${choisies.map(source).join(',\n')}
     // Il doit rester du vrai après la faute : une chaîne dont tout serait faux
     // ne demanderait plus de juger. Faute de quoi, on laisse le corrigé
     // intact — jamais on ne perd la question, l'élève doit les avoir toutes.
-    if (rangs.length < fautes + 1) return sain();
+    // Le NIVEAU est une intention, pas une exigence : quand la chaîne n'offre
+    // pas de quoi placer deux fautes en laissant du vrai après elles, on en
+    // place une plutôt que de rendre le volet sain. Un volet sain doit être un
+    // choix — « aucune règle n'est en jeu ici » — jamais un aveu d'impuissance.
+    if (rangs.length < fautes + 1) fautes = rangs.length - 1;
+    if (fautes < 1) return sain();
 
     function candidats(i) {
       const vrai = question.etapes[i][1];

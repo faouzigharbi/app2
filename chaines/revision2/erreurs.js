@@ -73,7 +73,11 @@
     txt: F.txt || F.sTxt || F.rTxt,
     add: F.add || F.sAdd, sub: F.sub || F.sSub, mul: F.mul || F.sMul,
     val: t => { try { return F.analyser(String(t).replace(/×/g, '*'), {}); }
-                catch (e) { return null; } }
+                catch (e) { return null; } },
+    // Les fiches d'arithmétique CALCULENT : leur juge expose l'évaluation en
+    // entiers naturels, et les règles de puissance et de priorité s'en
+    // servent. Les autres fiches n'en ont pas, et ces règles s'y abstiennent.
+    nat: (typeof J.nat === 'function') ? J.nat : null
   };
 
   // Une faute doit rester CRÉDIBLE : ce qu'un élève écrit vraiment. On refuse
@@ -367,7 +371,12 @@
     // Il doit rester du vrai après la faute : une chaîne dont tout serait faux
     // ne demanderait plus de juger. Faute de quoi, on laisse le corrigé
     // intact — jamais on ne perd la question, l'élève doit les avoir toutes.
-    if (rangs.length < fautes + 1) return sain();
+    // Le NIVEAU est une intention, pas une exigence : quand la chaîne n'offre
+    // pas de quoi placer deux fautes en laissant du vrai après elles, on en
+    // place une plutôt que de rendre le volet sain. Un volet sain doit être un
+    // choix — « aucune règle n'est en jeu ici » — jamais un aveu d'impuissance.
+    if (rangs.length < fautes + 1) fautes = rangs.length - 1;
+    if (fautes < 1) return sain();
 
     function candidats(i) {
       const vrai = question.etapes[i][1];

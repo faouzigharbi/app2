@@ -108,7 +108,7 @@
   }
 
   const API = { ent, choix, pgcd, pgcdN, ppcm, ppcmN, facteurs, diviseurs,
-                pui, ecrire, decomposer, combiner, rendre, tirer, construire,
+                pui, ecrire, decomposer, combiner, rendreMath, rendre, tirer, construire,
                 enregistrer, PROBLEMES, PAR_PAGE };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.Arith = API;

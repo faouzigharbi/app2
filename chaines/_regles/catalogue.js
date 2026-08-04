@@ -938,10 +938,230 @@
       id: 'division-devenue-multiplication',
       nom: 'قسمنا حيث يجب أن نضرب',
       quoi: 'للتخلّص من معامل نقسم عليه؛ الضرب فيه يُبعد عن الحلّ بدل أن يقرّب',
-      geste: /نقسم|نضرب الطرفين|مقلوب|على المعامل/,
+      geste: /نقسم|نضرب الطرفين|مقلوب|على المعامل|خارج القسمة|نصيب|عدد|الثمن|نبحث/,
       faire(math) {
         if (math.indexOf(':') < 0) return null;
         return math.replace(':', '×');
+      }
+    },
+
+    // ═════ ARITHMÉTIQUE — PUISSANCES ET PRIORITÉS ═════
+    //
+    // Leur `geste` est écrit À L'ENVERS des autres : au lieu d'énumérer les
+    // libellés où la règle a un sens, il énumère ceux où elle n'en a pas —
+    // « النتيجة », « نترجم », « نلاحظ », « القاعدة ». C'est que dans ces fiches
+    // TOUTE étape calculée est un pivot : chacune applique la règle du chapitre
+    // et en tire un nombre. Lister les pivots un par un revenait à en oublier,
+    // et l'on a vu « م.م.أ: كل عامل بأكبر أسّ » — le pivot même de la leçon —
+    // rester hors d'atteinte parce que son libellé ne commençait pas par
+    // « نحسب ».
+    //
+    // Ces trois-là ont besoin de CALCULER : elles reçoivent `A.nat`, qui
+    // évalue une expression d'entiers naturels avec le moteur de la fiche. Les
+    // fiches qui n'en ont pas le leur passent null, et les règles s'abstiennent.
+    //
+    // Une remarque qui vaut pour tout le chapitre : les étapes y sont des
+    // ÉGALITÉS NUMÉRIQUES FERMÉES. Une faute de règle qui change les deux
+    // membres à la fois — « ق.م.أ avec le plus grand exposant » — reste vraie
+    // en elle-même et le juge ne peut pas la certifier fausse. On ne plante
+    // donc ici que les fautes qui laissent le donné en place et se trompent
+    // sur la valeur : ce sont aussi les seules qu'un élève écrit vraiment.
+    {
+      id: 'puissance-confondue-avec-le-produit',
+      nom: 'القوّة خُلطت بالجداء',
+      quoi: 'a^n جداء n عاملا كلّها a، لا a × n : 3^2 = 3 × 3 = 9، و ليس 6',
+      geste: /^(?!\s*(?:النتيجة|نترجم|نلاحظ|القاعدة|إذن|وهو المطلوب|العدد المطلوب|الجذر التربيعي|أكبر حرف|كل الحلول))/,
+      faire(math, A) {
+        if (!A.nat) return null;
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        // La puissance doit être dans le membre CALCULÉ, à gauche : on récrit
+        // la valeur annoncée, jamais le donné.
+        if (!/\d\s*\^\s*\d/.test(r.membres[0])) return null;
+        // Et le membre annoncé doit être un NOMBRE : une étape qui écrit
+        // « 2^4 × 7^4 = (2^2 × 7^2)^2 » annonce une FORME, pas une valeur, et
+        // y substituer un nombre ne raconterait aucune faute d'élève.
+        if (!/^\s*\d+\s*$/.test(r.membres[1])) return null;
+        const naif = r.membres[0].replace(/(\d+)\s*\^\s*(\d+)/g,
+                                          (s, a, n) => '(' + a + ' * ' + n + ')');
+        const v = A.nat(naif), juste = A.nat(r.membres[1]);
+        if (v === null || juste === null || v === juste || v < 0) return null;
+        return r.membres[0].trim() + ' = ' + v;
+      }
+    },
+    {
+      id: 'priorite-non-respectee',
+      nom: 'ترتيب العمليات لم يُحترم',
+      quoi: 'الأقواس أوّلا، ثمّ الضرب و القسمة، ثمّ الجمع و الطرح: '
+          + '2 × (220 + 200) = 840، و ليس 2 × 220 + 200',
+      geste: /^(?!\s*(?:النتيجة|نترجم|نلاحظ|القاعدة|إذن|وهو المطلوب|العدد المطلوب|الجذر التربيعي|أكبر حرف|كل الحلول))/,
+      faire(math, A) {
+        if (!A.nat) return null;
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = r.membres[0];
+        if (!/\(/.test(g)) return null;
+        // Et le membre annoncé doit être un NOMBRE : une étape qui écrit
+        // « 2^4 × 7^4 = (2^2 × 7^2)^2 » annonce une FORME, pas une valeur, et
+        // y substituer un nombre ne raconterait aucune faute d'élève.
+        if (!/^\s*\d+\s*$/.test(r.membres[1])) return null;
+        // Les parenthèses tombent, et l'ordre d'écriture prend leur place :
+        // c'est exactement le calcul de l'élève pressé.
+        const nu = g.replace(/[()]/g, ' ');
+        const v = A.nat(nu), juste = A.nat(g);
+        if (v === null || juste === null || v === juste || v < 0) return null;
+        return g.trim() + ' = ' + v;
+      }
+    },
+    {
+      // « on ajoute 1 à chaque exposant PUIS ON MULTIPLIE », « le PPCM prend
+      // tous les facteurs, et c'est un PRODUIT ». Chaque fois, la règle finit
+      // par une multiplication, et chaque fois l'élève pressé additionne.
+      id: 'somme-au-lieu-du-produit',
+      nom: 'جمعنا حيث تقول القاعدة نضرب',
+      quoi: 'القاعدة تنتهي بجداء لا بمجموع: عدد القواسم (2+1) × (2+1) = 9، '
+          + 'و ليس (2+1) + (2+1) = 6',
+      geste: /^(?!\s*(?:النتيجة|نترجم|نلاحظ|القاعدة|إذن|وهو المطلوب|العدد المطلوب|الجذر التربيعي|أكبر حرف|كل الحلول))/,
+      faire(math, A) {
+        if (!A.nat) return null;
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const g = r.membres[0];
+        if (/[×*]/.test(g)) {
+          // Même exigence : le membre annoncé est une valeur, pas une forme.
+          if (!/^\s*\d+\s*$/.test(r.membres[1])) return null;
+          const somme = g.replace(/[×*]/g, '+');
+          const v = A.nat(somme), juste = A.nat(g);
+          if (v === null || juste === null || v === juste || v < 0) return null;
+          return g.trim() + ' = ' + v;
+        }
+        // Le membre donné est un simple nombre — « 1296 = 216 × 6 » : c'est le
+        // produit annoncé qui devient somme. « 4356 = 2^2 + 3^2 + 11^2 » : la
+        // décomposition écrite en somme de facteurs premiers, qu'on lit dans
+        // les copies chaque année.
+        if (!/^\s*\d+\s*$/.test(g) || !/[×*]/.test(r.membres[1])) return null;
+        const droite = r.membres[1].replace(/[×*]/g, '+');
+        const w = A.nat(droite);
+        if (w === null || w === A.nat(g)) return null;
+        return g.trim() + ' = ' + droite.trim();
+      }
+    },
+    {
+      id: 'exposant-soustrait-au-lieu-de-divise',
+      nom: 'الأسّ طُرح بدل أن يُقسم',
+      quoi: 'لكتابة عدد على شكل مربّع أو مكعّب يُقسم كلّ أسّ على 2 أو على 3، '
+          + 'لا يُطرح منه: 5^6 = (5^3)^2 لأنّ 3 × 2 = 6',
+      geste: /^(?!\s*(?:النتيجة|نترجم|نلاحظ|القاعدة|إذن|وهو المطلوب|العدد المطلوب|الجذر التربيعي|أكبر حرف|كل الحلول))/,
+      faire(math) {
+        const r = relation(math);
+        if (!r || r.membres.length !== 2 || r.ops[0] !== '=') return null;
+        const m = /^\s*\(([^()]+)\)\s*\^\s*(\d+)\s*$/.exec(r.membres[1]);
+        if (!m) return null;
+        const k = Number(m[2]);
+        let fait = false;
+        const base = m[1].replace(/(\d+)\s*\^\s*(\d+)/g, function (s, a, b) {
+          const bb = Number(b) * k - k;
+          if (fait || bb < 1 || bb === Number(b)) return s;
+          fait = true;
+          return a + '^' + bb;
+        });
+        if (!fait) return null;
+        return r.membres[0].trim() + ' = (' + base + ')^' + k;
+      }
+    },
+
+
+    // ═════ ARITHMÉTIQUE — LA CHAÎNE COMME SUITE D'EXPRESSIONS ═════
+    //
+    // Dans les fiches de calcul réfléchi, une étape n'est pas une égalité mais
+    // une EXPRESSION : la précédente, réécrite plus simplement. L'invariant est
+    // qu'elle vaut toujours le même nombre. Une faute s'y voit donc à ce que la
+    // réécriture change la valeur — et le juge de la fiche le vérifie.
+    {
+      id: 'priorite-dans-la-reduction',
+      nom: 'الجمع أُنجز قبل الضرب',
+      quoi: 'الضرب و القسمة قبل الجمع و الطرح: 26 × 9 + 3 = 234 + 3، '
+          + 'و ليس 26 × (9 + 3)',
+      geste: /ننجز|نحسب|نطبّق|نعيد/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي]/.test(t)) return null;
+        // Un produit suivi d'une somme, au même niveau : « a × b + c ».
+        const p = /^(.*[×*]\s*)(\d+)\s*([+\-])\s*(\d+)\s*$/.exec(t);
+        if (!p) return null;
+        return p[1] + '(' + p[2] + ' ' + p[3] + ' ' + p[4] + ')';
+      }
+    },
+    {
+      id: 'regroupement-mal-signe',
+      nom: 'الإشارة تغيّرت داخل القوس',
+      quoi: 'إعادة التجميع تُبقي قيمة العبارة: 487 + (373 - 73) و ليس '
+          + '487 + (373 + 73)',
+      geste: /نجمّع|نعيد التجميع|ننجز/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي]/.test(t)) return null;
+        const m = /\((\s*\d+\s*)([+\-])(\s*\d+\s*)\)/.exec(t);
+        if (!m) return null;
+        return t.slice(0, m.index) + '(' + m[1] + (m[2] === '+' ? '-' : '+') + m[3] + ')'
+             + t.slice(m.index + m[0].length);
+      }
+    },
+    {
+      id: 'facteurs-regroupes-en-somme',
+      nom: 'العوامل جُمعت بدل أن تُضرب',
+      quoi: 'إعادة ترتيب العوامل تُبقي الجداء جداء: 50 × 80 × 2 = (50 × 2) × 80، '
+          + 'و القوس هنا جداء لا مجموع',
+      geste: /نعيد ترتيب|نعيد التجميع|نجمّع/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي]/.test(t)) return null;
+        const m = /\((\s*\d+\s*)[×*](\s*\d+\s*)\)/.exec(t);
+        if (!m) return null;
+        return t.slice(0, m.index) + '(' + m[1] + '+' + m[2] + ')'
+             + t.slice(m.index + m[0].length);
+      }
+    },
+    {
+      id: 'facteur-non-distribue',
+      nom: 'التوزيع على الحدّ الأوّل فقط',
+      quoi: 'عند نشر k × (a + b) يُضرب k في الحدّين: 37 × (37 + 63)، '
+          + 'و ليس 37 × 37 + 63',
+      geste: /ننشر|نوزّع|ننجز/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي]/.test(t)) return null;
+        const m = /^(\d+)\s*[×*]\s*\(\s*(\d+)\s*([+\-])\s*(\d+)\s*\)\s*$/.exec(t);
+        if (!m) return null;
+        return m[1] + ' × ' + m[2] + ' ' + m[3] + ' ' + m[4];
+      }
+    },
+    {
+      id: 'regle-du-terme-commun-mal-signee',
+      nom: 'قاعدة الحدّ المشترك — الإشارة',
+      quoi: '(أ − ج) − (ب − ج) = أ − ب، و (أ − ج) + (ب + ج) = أ + ب : '
+          + 'الإشارة النهائية تُقرأ في القاعدة، لا تُخمَّن',
+      geste: /نطبّق القاعدة/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي()]/.test(t)) return null;
+        const m = /^(\d+)\s*([+\-])\s*(\d+)$/.exec(t);
+        if (!m) return null;
+        return m[1] + ' ' + (m[2] === '+' ? '-' : '+') + ' ' + m[3];
+      }
+    },
+    {
+      id: 'terme-manquant-additionne',
+      nom: 'الحدّ المجهول — جمعنا بدل أن نطرح',
+      quoi: 'للبحث عن الحدّ المجهول في مجموع نطرح: 55 + ... = 65 يعطي 65 - 55، '
+          + 'لا 65 + 55',
+      geste: /نحسب/,
+      faire(math) {
+        const t = String(math).trim();
+        if (/[=a-zA-Zأ-ي()]/.test(t)) return null;
+        const m = /^(\d+)\s*-\s*(\d+)$/.exec(t);
+        if (!m) return null;
+        return m[1] + ' + ' + m[2];
       }
     },
 

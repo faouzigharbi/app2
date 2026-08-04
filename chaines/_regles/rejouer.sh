@@ -22,11 +22,11 @@ cd "$(dirname "$0")/.."
 SEUL="$1"
 
 porte() {
-  dossier="$1"; global="$2"; badge="$3"; modules="$4"; regles="$5"
+  dossier="$1"; global="$2"; badge="$3"; modules="$4"; regles="$5"; extra="$6"
   [ -n "$SEUL" ] && [ "$SEUL" != "$dossier" ] && return 0
   echo "── $dossier"
-  node _regles/porter.js "$dossier" "$global" "$regles"
-  node _regles/porter-pages.js "$dossier" "$global" "$badge" $modules
+  node _regles/porter.js "$dossier" "$global" "$regles" $extra
+  node _regles/porter-pages.js "$dossier" "$global" "$badge" $extra $modules
   ( cd "$dossier" && node _build_erreurs.js >/dev/null )
 }
 
@@ -54,6 +54,33 @@ porte serie3    Reel   'الضرب و القسمة في ℝ' 'produit.js produit
 porte revision2 Reel   'مراجعة'            'revision.js'                   "$COMMUN9,ordre-non-renverse"
 porte radic9    Radic  'العمليات في ℝ'     'racines.js exercices.js' \
   "carre-parfait-mal-sorti,carre-parfait-non-extrait,facteur-non-carre-sorti,racine-confondue-avec-la-moitie,produit-de-racines-devenu-somme,radicandes-additionnes-au-produit,racine-du-produit-non-simplifiee,carre-de-la-racine-non-simplifie,carre-confondu-avec-le-double,radicande-additionne,terme-rationnel-joint-au-radical,facteur-radical-non-divise,facteur-radical-sans-racine,racine-au-numerateur-seul,double-produit-oublie,conjugue-mal-developpe,conjugue-signe-du-carre,valeur-absolue-non-levee,racine-distribuee"
+
+# ── Les six fiches d'arithmétique ───────────────────────────────────────────
+#
+# Elles n'appellent pas leur noyau « noyau.js », et leur validateur ne l'appelle
+# pas « F » : d'où --noyau et --F. Leur juge ne s'extrait pas d'un validateur,
+# il s'engendre — juge-nat.js pour les cinq qui écrivent des égalités, un juge
+# écrit à la main pour naturels7, dont les étapes sont des expressions.
+#
+# premiers7 et naturels7 ont en plus un `pont.js`, qui traduit leur vocabulaire
+# — PREUVES au lieu de PROBLEMES, étapes déjà rendues en HTML — vers celui du
+# porteur. Leur bloc ERREURS a donc été branché À LA MAIN sur ce pont : s'il
+# fallait le réinjecter, il faudrait y remplacer G.PROBLEMES par P.PROBLEMES.
+ARITH='puissance-confondue-avec-le-produit,priorite-non-respectee,somme-au-lieu-du-produit,division-devenue-multiplication,exposant-soustrait-au-lieu-de-divise'
+CALCUL='priorite-dans-la-reduction,regroupement-mal-signe,facteurs-regroupes-en-somme,facteur-non-distribue,regle-du-terme-commun-mal-signee,terme-manquant-additionne'
+
+jugeNat() { [ -z "$SEUL" ] || [ "$SEUL" = "$1" ] && node _regles/juge-nat.js "$1" Moteur --moteur=moteur.js >/dev/null; }
+
+jugeNat diviseurs7
+porte diviseurs7   Arith '7 أساسي — القواسم'          'moteur.js outils.js' "$ARITH" '--noyau=arith.js --F=A'
+jugeNat pgcd7
+porte pgcd7        Arith '7 أساسي — ق.م.أ و م.م.أ'    'moteur.js'           "$ARITH" '--noyau=arith.js --F=A'
+jugeNat divisibilite8
+porte divisibilite8 Arith '8 أساسي — القابلية للقسمة' 'moteur.js outils.js' "$ARITH" '--noyau=arith.js --F=A'
+jugeNat premiers7
+porte premiers7    Pont  '7 أساسي — الأعداد الأوّلية' 'moteur.js generateurs.js' "$ARITH,facteur-non-divise" '--noyau=pont.js --F=G'
+# naturels7 garde son juge écrit à la main : ne pas le régénérer.
+porte naturels7    Pont  '7 أساسي — الأعداد الطبيعية' 'moteur.js generateurs.js' "$CALCUL" '--noyau=pont.js --F=P'
 
 echo
 echo "Portage rejoué. Reste à valider :  sh _regles/valider.sh"
