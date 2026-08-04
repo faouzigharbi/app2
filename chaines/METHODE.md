@@ -154,3 +154,11 @@ fiche de radicaux, un contrôle à 10⁻⁹ près laisserait passer un exercice 
 Les pages `exNN.html` sont **engendrées**, jamais éditées à la main : c'est ce
 qui garantit qu'elles se comportent toutes pareil. Une modification de la page
 se fait dans `_build.js`, suivie de `node _build.js .`.
+
+**Un dossier par fiche, et il est autonome.** Deux fiches différentes numérotent
+souvent les mêmes exercices — il y a un « exercice 11 » dans presque chacune.
+Elles ne peuvent donc pas cohabiter dans un même dossier : le second `ex11.html`
+écraserait le premier. Chaque fiche emporte sa copie de `noyau.js`, `style.css`,
+`_build.js` et `verifier.js`, ce qui la rend déposable telle quelle. La
+contrepartie est qu'une correction du noyau doit être reportée dans chaque
+dossier — un `diff` entre deux `noyau.js` le dit en une seconde.

@@ -5,15 +5,15 @@
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.Reel;
   const A = M ? require('./reels.js') : racine.Fiche;
-  const B = M ? require('./serie2.js') : racine.Fiche2;
   const C = M ? require('./serie3.js') : racine.Fiche3;
+  const D = M ? require('./serie4.js') : racine.Fiche4;
 
   const page = (n, titre, f, questions) => F.enregistrer(n, { titre, f, questions });
 
-  page(11, 'التفكيك إلى جداء عوامل — العامل المشترك', B.type11, 5);
-  page(12, 'عددان مقلوبان — إنطاق المقام و الاختصار', B.type12, 5);
-  page(13, 'القيمة المطلقة — الاختصار ثمّ المعادلات', B.type13, 8);
-  page(14, 'عبارة حرفية — فكّك، حلّ، ثمّ احسب |A|', B.type14, 3);
+  page(10, 'إنطاق المقام — الكتابة الكسرية بلا جذور', D.type10, 3);
+  page(11, 'عددان مقلوبان — من التبسيط إلى الحساب', D.type11, 3);
+  page(12, 'E و F — النسبة و مقلوبها', D.type12, 3);
+  page(13, 'مقلوبان و عدد صحيح طبيعي كبير', D.type13, 4);
 
   page(26, 'العامل المشترك المخفيّ وراء إشارة', C.type26, 4);
   page(27, 'عامل مشترك بين ثلاثة حدود', C.type27, 3);

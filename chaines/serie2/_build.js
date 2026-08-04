@@ -1,10 +1,32 @@
-<!doctype html>
+// Émet une page par EXERCICE de la fiche (exercices 11 à 14),
+// plus l'index.
+//   node _build.js [dossier]
+//
+// Une page = un exercice entier. Toutes ses questions sont posées EN MÊME TEMPS,
+// chacune dans un volet d'accordéon : rater la première n'empêche pas de traiter
+// les suivantes. Chaque volet a sa chaîne, son « تحقق » et son « التصحيح ».
+//
+// Chaque page emporte aussi sa FEUILLE IMPRIMABLE en deux parties : l'élève
+// reçoit les étapes dans le désordre avec des cases à numéroter, le parent
+// reçoit les mêmes étapes dans l'ordre. Le parent peut donc corriger sans savoir
+// refaire l'exercice.
+const fs = require('fs');
+const path = require('path');
+const F = require('./noyau.js');
+
+require('./serie2.js');
+require('./gens.js');
+const EXOS = Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b);
+
+const OUT = process.argv[2] || '.';
+
+const page = (n, titre) => `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <title>التمرين 17 — جداء عددين يساوي 1 — من المتساوية إلى المعادلة</title>
+  <title>${titre}</title>
   <style>
     .q { background:#fff; border:1.5px solid #e8ecf2; border-radius:12px;
          margin-bottom:12px; overflow:hidden }
@@ -47,7 +69,7 @@
 <body>
 
 <header>
-  <h1 id="title">التمرين 17 — جداء عددين يساوي 1 — من المتساوية إلى المعادلة</h1>
+  <h1 id="title">${titre}</h1>
   <p id="meta"></p>
 </header>
 
@@ -68,12 +90,10 @@
 </main>
 
 <script src="noyau.js"></script>
-<script src="reels.js"></script>
-<script src="serie3.js"></script>
-<script src="serie4.js"></script>
+<script src="serie2.js"></script>
 <script src="gens.js"></script>
 
-<script src="ex17.js"></script>
+<script src="ex${n}.js"></script>
 
 <script>
 (function(){
@@ -292,3 +312,40 @@
 
 </body>
 </html>
+`;
+
+const amorce = n => `// Tirage initial ; le bouton « أرقام جديدة » en refait un.
+window.exerciceNumero = ${n};
+window.exerciceData = Reel.construire(${n});
+`;
+
+const index = () => `<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <title>تمارين 11 → 14 — سلاسل البرهان</title>
+</head>
+<body>
+<h3>√ تمارين 11 → 14 — سلاسل البرهان</h3>
+<p style="text-align:center;color:#95a5a6;font-size:.9em;margin-bottom:16px">
+  صفحة لكل تمرين، و في الصفحة سؤال لكل سؤال من نصّ التمرين<br>
+  رتّب مراحل البرهان، و المولّد يغيّر الأعداد في كل تحميل
+</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
+${EXOS.map(n => `  <a href="ex${n}.html" style="display:block;padding:14px;background:#fff;border:1.5px solid #e8ecf2;border-radius:10px;text-decoration:none;color:#2c3e50">🔗 التمرين ${n} — ${F.PROBLEMES[n].titre} <small style="color:#95a5a6">(${F.PROBLEMES[n].questions} أسئلة)</small></a>`).join('\n')}
+</div>
+</body>
+</html>
+`;
+
+fs.mkdirSync(OUT, { recursive: true });
+for (const n of EXOS) {
+  const titre = 'التمرين ' + n + ' — ' + F.PROBLEMES[n].titre;
+  fs.writeFileSync(path.join(OUT, `ex${n}.html`), page(n, titre));
+  fs.writeFileSync(path.join(OUT, `ex${n}.js`), amorce(n));
+  console.log(`ex${n}.html + ex${n}.js — ${titre} (${F.PROBLEMES[n].questions} أسئلة)`);
+}
+fs.writeFileSync(path.join(OUT, 'index.html'), index());
+console.log('index.html — ' + EXOS.length + ' صفحات');

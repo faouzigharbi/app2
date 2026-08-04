@@ -1,4 +1,4 @@
-// Valide les trois exercices de la fiche « العمليات في مجموعة الأعداد الحقيقية ».
+// Valide les exercices 11 à 14 de la fiche.
 //   node verifier.js [tirages]   |   CONTRE_EXEMPLES=1 node verifier.js
 //
 // Le principe est celui de la fiche des expressions littérales : on ne LIT pas
@@ -17,9 +17,7 @@
 //      Une identité qui ne tiendrait que pour la valeur choisie par le
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
-require('./reels.js');
-require('./serie3.js');
-require('./serie4.js');
+require('./serie2.js');
 require('./gens.js');
 
 const TIRAGES = Number(process.argv[2]) || 120;
@@ -140,79 +138,31 @@ if (process.env.CONTRE_EXEMPLES) {
   // pas toujours obligerait à retirer jusqu'à tomber dessus.
   const parQuestion = (n, i) => F.tirer(n)[i];
 
-  pousse('conjugué du 10 mal appliqué', parQuestion(10, 0),
-    c => { c.controle.env.a = c.controle.env.a.replace(' - ', ' + '); });
-  pousse('division du 10 non renversée', parQuestion(10, 1),
+  pousse('facteur commun du 11 amputé', parQuestion(11, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/ \+ √\d+\)$/, ')'); });
+  pousse('coefficient numérique du 11 faussé', parQuestion(11, 1),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/^\d+/, m => Number(m) + 1); });
+  pousse('les trois coefficients du 11 mal sommés', parQuestion(11, 4),
+    c => { c.etapes[2][1] = c.etapes[2][1].replace(/= \d+$/, m => '= ' + (Number(m.slice(2)) + 1)); });
+  pousse('rationalisation du 12 à l’envers', parQuestion(12, 1),
+    c => { c.etapes[0][1] = c.etapes[0][1].replace('= ', '= -'); });
+  pousse('division du 12 décalée', parQuestion(12, 3),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('quotient d’un nombre par lui-même ≠ 1', parQuestion(12, 4),
+    c => { c.controle.env.D = c.controle.env.D + ' + 1'; });
+  pousse('valeur absolue du 13 levée avec le mauvais signe', parQuestion(13, 0),
+    c => { c.etapes[1][1] = c.etapes[1][1].replace(/= (\d+) - (√\d+)/, '= $2 - $1'); });
+  pousse('signe du produit du 13 inversé', parQuestion(13, 2),
     c => { c.controle.claims[0][1] = '-(' + c.controle.claims[0][1] + ')'; });
-  pousse('simplification du 10 qui ne s’annule plus', parQuestion(10, 2),
-    c => { c.controle.env.c = c.controle.env.c + ' + 1'; });
-  pousse('réduction de a du 11 décalée', parQuestion(11, 0),
+  pousse('conjugué du 13 mal utilisé', parQuestion(13, 3),
     c => { c.controle.claims[0][1] += ' + 1'; });
-  pousse('a et b du 11 ne sont plus inverses', parQuestion(11, 1),
-    c => { c.controle.env.b = c.controle.env.b + ' + 1'; });
-  pousse('C du 11 décalé', parQuestion(11, 2),
-    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
-  pousse('facteur commun du 12 mal sorti', parQuestion(12, 0),
-    c => { c.controle.claims[0][1] += ' + 1'; });
-  pousse('quotient E/F du 12 faussé', parQuestion(12, 1),
-    c => { c.controle.claims[1][1] = '2'; });
-  pousse('F - F/E du 12 décalé', parQuestion(12, 2),
-    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
-  pousse('développement de a du 13 amputé', parQuestion(13, 0),
-    c => { c.controle.env.a = c.controle.env.a.replace(/^\d+ \+ /, ''); });
-  pousse('radical de b du 13 oublié', parQuestion(13, 1),
-    c => { c.controle.env.b = c.controle.env.b.replace(/ - √\d+$/, ''); });
-  pousse('grand entier du 13 décalé', parQuestion(13, 3),
-    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
-
-  pousse('changement de signe du 26 oublié', parQuestion(26, 0),
-    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/^\(/, '(-'); });
-  pousse('facteur commun du 26 mal sorti', parQuestion(26, 2),
-    c => { c.controle.claims[0][1] += ' + 1'; });
-  pousse('x du 26 décalé', parQuestion(26, 3),
+  pousse('racine du 13 hors de l’équation', parQuestion(13, 6),
     c => { c.controle.env.x = c.controle.env.x + ' + 1'; });
-  pousse('factorisation du 27 fausse', parQuestion(27, 0),
+  pousse('factorisation du 14 fausse', parQuestion(14, 0),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, ' + 1)'); });
-  pousse('valeur numérique du 27 décalée', parQuestion(27, 1),
-    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
-  pousse('parenthèse du 28 levée sans changer de signe', parQuestion(28, 0),
-    c => { c.controle.env.A = c.controle.env.A.replace('] - [', '] + ['); });
-  pousse('développement du 28 amputé', parQuestion(28, 1),
-    c => { c.controle.claims[0][1] += ' + 1'; });
-  pousse('facteur commun du 28 mal sorti', parQuestion(28, 2),
-    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, ' + 1)'); });
-  pousse('solution du 29 hors de l’équation', parQuestion(29, 0),
-    c => { c.controle.env.x = c.controle.env.x + ' + 1'; });
-  pousse('valeur absolue emboîtée du 29 mal ouverte', parQuestion(29, 2),
-    c => { c.controle.claims[2][1] = String(Number(c.controle.claims[2][1]) + 1); });
-  pousse('identité remarquable du 29 faussée', parQuestion(29, 5),
-    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(' - ', ' + '); });
-
-  pousse('développement de A du 20 amputé', parQuestion(20, 0),
-    c => { c.controle.env.A = c.controle.env.A.replace(/ - √\d+$/, ''); });
-  pousse('rationalisation du 20 fausse', parQuestion(20, 1),
-    c => { c.controle.claims[0][1] += ' + 1'; });
-  pousse('M du 20 ne vaut plus 1', parQuestion(20, 5),
-    c => { c.controle.env.M = c.controle.env.M.replace('- |A|', '+ |A|'); });
-  pousse('N du 20 ne vaut plus -1', parQuestion(20, 6),
-    c => { c.controle.env.N = c.controle.env.N.replace('1/B + B', '1/B - B'); });
-  pousse('entier naturel du 20 décalé', parQuestion(20, 8),
-    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
-  pousse('opposés du 20 faussés', parQuestion(20, 11),
-    c => { c.controle.claims[0][1] = 'E'; });
-  pousse('valeur absolue du 20 mal levée', parQuestion(20, 12),
-    c => { c.etapes[1][1] = c.etapes[1][1].replace('= E - 1', '= 1 - E'); });
-
-  pousse('développement de a du 41 amputé', parQuestion(41, 0),
-    c => { c.controle.env.a = c.controle.env.a.replace(/ - \d+$/, ''); });
-  pousse('a et b du 41 ne sont plus inverses', parQuestion(41, 1),
-    c => { c.controle.env.b = c.controle.env.b.replace(/^1\//, '2/'); });
-  pousse('carré parfait du 41 faussé', parQuestion(41, 4),
-    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(' - 1)', ' + 1)'); });
-  pousse('simplification du 41 non entière', parQuestion(41, 6),
-    c => { c.controle.env.c = c.controle.env.c + ' + 1'; });
-
-  pousse('étape dupliquée', parQuestion(18, 0),
+  pousse('|A| du 14 gardé négatif', parQuestion(14, 2),
+    c => { c.controle.claims[1][1] = '-(' + c.controle.claims[1][1] + ')'; });
+  pousse('étape dupliquée', parQuestion(12, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
 
   let bon = 0;

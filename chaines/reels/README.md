@@ -1,6 +1,7 @@
 # العمليات في مجموعة الأعداد الحقيقية — سلاسل البرهان
 
-Portage en pages « chaîne de démonstration » des fiches du même chapitre.
+Portage en pages « chaîne de démonstration » de la fiche riadhyet
+« تمـارين شـاملة » (جوهر سويسي, 2018-2019).
 La méthode est décrite dans [`../METHODE.md`](../METHODE.md).
 
 ## Structure
@@ -9,10 +10,10 @@ Une page par **exercice**, et dans la page **un volet par question de l'énoncé
 
 | page | exercice | volets | questions de l'énoncé |
 |---|---|---|---|
-| `ex11.html` | التفكيك إلى جداء عوامل | 5 | a, b, c, d, e |
-| `ex12.html` | عددان مقلوبان — إنطاق المقام | 5 | 1, puis A, B, C, D |
-| `ex13.html` | القيمة المطلقة | 8 | 1) A, B, C, D + 2) quatre équations |
-| `ex14.html` | عبارة حرفية | 3 | 1)أ, 1)ب, 2 |
+| `ex10.html` | إنطاق المقام | 3 | a, b, c |
+| `ex11.html` | عددان مقلوبان — التبسيط ثمّ الحساب | 3 | 1, 2, 3 |
+| `ex12.html` | E و F — النسبة و مقلوبها | 3 | 1, 2, 3 |
+| `ex13.html` | مقلوبان و عدد صحيح طبيعي كبير | 4 | 1)أ, 1)ب, 1)ج, 2 |
 | `ex26.html` | العامل المشترك المخفيّ وراء إشارة | 4 | 1 (a, b), 2, 3 |
 | `ex27.html` | عامل مشترك بين ثلاثة حدود | 3 | 1, 2, 3 |
 | `ex28.html` | ارفع، انشر، فكّك | 4 | 1, 2, 3)أ, 3)ب |
@@ -23,8 +24,12 @@ Une page par **exercice**, et dans la page **un volet par question de l'énoncé
 | `ex20.html` | أربعة عشر سؤالا على عددين مقلوبين | 14 | 1 (A, B), 2)أ→د, 3)أ→د |
 | `ex41.html` | a مربّع كامل | 7 | 1, 2)أ (en deux), 2)ب, 3)أ, 3)ب, 3)ج |
 
-`serie2.js` porte les exercices 11 à 14, `serie3.js` les exercices 26 à 29,
+`serie4.js` porte les exercices 10 à 13, `serie3.js` les exercices 26 à 29,
 `reels.js` les exercices 17 à 20 et 41.
+
+> **Une autre fiche porte aussi des exercices 11 à 14**, sans rapport avec
+> ceux-ci. Elle vit dans [`../serie2/`](../serie2/), son propre dossier
+> autonome : deux fiches ne peuvent pas partager un même `ex11.html`.
 
 L'énoncé du 41 ne compte que six sous-questions ; le septième volet vient de
 2)أ, coupée en « احسب الجداء a × b » puis « استنتج أنّ العددين مقلوبان » —
@@ -36,12 +41,13 @@ sont deux gestes distincts.
 Les nombres changent à chaque chargement (« أرقام جديدة »), mais la structure de
 l'énoncé ne bouge jamais — et on ne tire que ce que l'exercice supporte.
 
-**Libres — 11, 14, 17 et 26 à 29.** Chaque expression y est un schéma dont on
+**Libres — 10, 17 et 26 à 29.** Chaque expression y est un schéma dont on
 tire les paramètres. Au 26, le schéma est `√r - k = -(k - √r)` : le facteur
-commun n'est visible qu'après ce changement de signe, et c'est tout l'exercice. Le `26/5` du 17 n'est que `5 + 1/5` ; le `(x-2)(x+2)` du 14 ne
-demande que `p - r = 1` et `q - s = k`.
+commun n'est visible qu'après ce changement de signe, et c'est tout l'exercice. Le `26/5` du 17 n'est que `5 + 1/5`. Au 10, les trois
+réponses sont si nettes — `√r`, `-√s`, `0` — que l'élève voit tout de suite
+s'il s'est trompé.
 
-**Contraints — 12, 18 et 20.** Tous trois reposent sur `(u + v√r)(u - v√r) = 1`, donc
+**Contraints — 11, 12, 13, 18 et 20.** Tous trois reposent sur `(u + v√r)(u - v√r) = 1`, donc
 sur `u² - r v² = 1` : l'équation de Pell. On ne tire pas `(u, v, r)` au hasard,
 on choisit dans une liste de ses solutions — sinon « العددان مقلوبان » serait
 faux. Au 18, les écritures de `A`, `B`, `E`, `F` et la constante de `D` se
@@ -53,11 +59,10 @@ tout tombe. Trois de ses réponses ne dépendent même pas du tirage : `M = 1`,
 en revanche la liste de Pell aux couples pour lesquels son écriture de `A`
 admet encore des entiers.
 
-**Contraint par les signes — 13.** Lever une valeur absolue, c'est d'abord
-établir un signe. `|5 - √3|` ne se lève pas comme `|√3 - 5|`. Les majorants sont
-donc tirés d'abord, et les radicandes choisis parmi ceux qu'ils dominent : un
-tirage ne peut pas renverser un signe. Pour `|2x - 1| = 3`, ce sont les deux
-**solutions** qu'on tire, seul moyen qu'elles tombent juste.
+Aux 11 et 12 la contrainte prend une forme plus simple : `j² = r - 1`, ce qui
+revient à tirer `j` et à en déduire `r`. Au 13, la question 2 est un piège de
+patience — les deux grands numérateurs `N` et `N+1` sont choisis pour que les
+`√w` se détruisent exactement, et `c = (2N+1)u` tombe entier.
 
 **Commandé par un seul paramètre — 41.** Sa clef n'est énoncée qu'à la
 question 3 : `a` est un carré, `a = (√r - 1)²`. Tout en découle — `b = 1/a`
@@ -80,15 +85,6 @@ objets qui n'existent pas. La lire « a et b مقلوبان » ne la sauverait p
 plus — `a×b = (2√7 - 7)(4x-3)²` est toujours négatif ou nul, donc jamais égal
 à 1. La page a donc 4 volets : `a` en produit, `b` en produit, `a + b`, et
 l'équation de la question 3.
-
-## Réserve sur l'expression « e » de l'exercice 11
-
-La fiche imprime `e = 3(√3-2) + √2(√3-2) + 3(√3+2)`. Ce troisième terme, avec
-son `+2`, ne partage aucun facteur avec les deux premiers : la somme vaut
-`6√3 + √6 - 2√2`, qui **n'est pas un produit**. L'exercice demandant de
-factoriser, la page lit le troisième terme comme un `q(√3 - 2)` — le schéma des
-deux autres — ce qui donne `(√3 - 2)(3 + q + √2)`. Si la fiche voulait vraiment
-`+2`, c'est l'énoncé qui est à corriger.
 
 ## Arithmétique
 
@@ -122,10 +118,10 @@ l'exercice.
 
 État actuel :
 
-    11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓  26 ✓  27 ✓  28 ✓  29 ✓  41 ✓
-    400 tirages par exercice, 29600 questions,
-    720400 relations recalculées et 198000 contrôles, 0 erreur.
-    49/49 falsifications détectées.
+    10 ✓  11 ✓  12 ✓  13 ✓  17 ✓  18 ✓  19 ✓  20 ✓  26 ✓  27 ✓  28 ✓  29 ✓  41 ✓
+    400 tirages par exercice, 26400 questions,
+    665200 relations recalculées et 170000 contrôles, 0 erreur.
+    35/35 falsifications détectées.
 
 ## Régénérer les pages
 
