@@ -194,6 +194,21 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.env.c = c.controle.env.c.replace(/^2/, '3'); });
   pousse('l’entier naturel n’en est plus un', parQuestion(19, 4),
     c => { c.controle.env.d = c.controle.env.d + ' + 1'; });
+  pousse('développement de A du 20 amputé', parQuestion(20, 0),
+    c => { c.controle.env.A = c.controle.env.A.replace(/ - √\d+$/, ''); });
+  pousse('rationalisation du 20 fausse', parQuestion(20, 1),
+    c => { c.controle.claims[0][1] += ' + 1'; });
+  pousse('M du 20 ne vaut plus 1', parQuestion(20, 5),
+    c => { c.controle.env.M = c.controle.env.M.replace('- |A|', '+ |A|'); });
+  pousse('N du 20 ne vaut plus -1', parQuestion(20, 6),
+    c => { c.controle.env.N = c.controle.env.N.replace('1/B + B', '1/B - B'); });
+  pousse('entier naturel du 20 décalé', parQuestion(20, 8),
+    c => { c.controle.claims[0][1] = String(Number(c.controle.claims[0][1]) + 1); });
+  pousse('opposés du 20 faussés', parQuestion(20, 11),
+    c => { c.controle.claims[0][1] = 'E'; });
+  pousse('valeur absolue du 20 mal levée', parQuestion(20, 12),
+    c => { c.etapes[1][1] = c.etapes[1][1].replace('= E - 1', '= 1 - E'); });
+
   pousse('étape dupliquée', parQuestion(18, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
 

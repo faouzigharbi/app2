@@ -16,8 +16,9 @@ Une page par **exercice**, et dans la page **un volet par question de l'énoncé
 | `ex17.html` | جداء عددين يساوي 1 | 4 | 1, 2)أ, 2)ب, 3 |
 | `ex18.html` | A و B مقلوبان | 5 | 1, 2)أ, 2)ب, 3)أ, 3)ب |
 | `ex19.html` | عبارتان مقلوبتان | 5 | 1, 2, 3, 4)أ, 4)ب |
+| `ex20.html` | أربعة عشر سؤالا على عددين مقلوبين | 14 | 1 (A, B), 2)أ→د, 3)أ→د |
 
-`serie2.js` porte les exercices 11 à 14, `reels.js` les exercices 17 à 19.
+`serie2.js` porte les exercices 11 à 14, `reels.js` les exercices 17 à 20.
 
 ## Ce qui se tire, et pourquoi
 
@@ -28,11 +29,17 @@ l'énoncé ne bouge jamais — et on ne tire que ce que l'exercice supporte.
 paramètres. Le `26/5` du 17 n'est que `5 + 1/5` ; le `(x-2)(x+2)` du 14 ne
 demande que `p - r = 1` et `q - s = k`.
 
-**Contraints — 12 et 18.** Les deux reposent sur `(u + v√r)(u - v√r) = 1`, donc
+**Contraints — 12, 18 et 20.** Tous trois reposent sur `(u + v√r)(u - v√r) = 1`, donc
 sur `u² - r v² = 1` : l'équation de Pell. On ne tire pas `(u, v, r)` au hasard,
 on choisit dans une liste de ses solutions — sinon « العددان مقلوبان » serait
 faux. Au 18, les écritures de `A`, `B`, `E`, `F` et la constante de `D` se
-recalculent ensuite à partir de `(u, v, r)`.
+recalculent ensuite à partir de `(u, v, r)`. Au 20, c'est tout l'exercice : une
+fois `A × B = 1` acquis à la question 3, les onze questions suivantes ne sont
+plus des calculs mais des **lectures** — `1/A` c'est `B`, `1/B` c'est `A`, et
+tout tombe. Trois de ses réponses ne dépendent même pas du tirage : `M = 1`,
+`N = -1`, et `E(D-1) - 1 = -E` quel que soit le couple choisi. Le 20 restreint
+en revanche la liste de Pell aux couples pour lesquels son écriture de `A`
+admet encore des entiers.
 
 **Contraint par les signes — 13.** Lever une valeur absolue, c'est d'abord
 établir un signe. `|5 - √3|` ne se lève pas comme `|√3 - 5|`. Les majorants sont
@@ -80,10 +87,10 @@ l'exercice.
 
 État actuel :
 
-    التمرين 11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓
-    300 tirages par exercice, 10500 questions,
-    141600 relations recalculées et 54900 contrôles, 0 erreur.
-    27/27 falsifications détectées.
+    التمرين 11 ✓  12 ✓  13 ✓  14 ✓  17 ✓  18 ✓  19 ✓  20 ✓
+    300 tirages par exercice, 14700 questions,
+    163800 relations recalculées et 59700 contrôles, 0 erreur.
+    34/34 falsifications détectées.
 
 ## Régénérer les pages
 

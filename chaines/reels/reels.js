@@ -389,6 +389,282 @@
     return type19();
   }
 
-  const API = { type17, type18, type19, PELL };
+  // =========================================================================
+  // EXERCICE 20 — le plus long de la fiche : 14 questions sur un seul couple.
+  //
+  // A = u - v√r et B = u + v√r, encore une fois avec u² - r v² = 1. Une fois
+  // A × B = 1 acquis à la question 3, les onze questions qui suivent ne sont
+  // plus des calculs mais des LECTURES : 1/A c'est B, 1/B c'est A, et tout
+  // tombe. C'est ce que l'exercice veut faire sentir, et c'est pourquoi ses
+  // réponses sont si rondes — M = 1, N = -1, D/E + E/D entier.
+  //
+  // Trois de ces réponses ne dépendent même pas du tirage : M vaut 1, N vaut
+  // -1, et E(D-1) - 1 vaut -E, quel que soit le couple de Pell choisi.
+  // =========================================================================
+  // Les couples pour lesquels l'écriture « A = (1 + √r)(k√r - j) - √(m²r) »
+  // admet des entiers j ≥ 1 et m ≥ 1 : il faut j = kr - u et m = k - j + v.
+  const PELL20 = [[3, 2, 2], [2, 1, 3], [7, 4, 3], [5, 2, 6]];
+
+  function type20() {
+    const [u, v, r] = choix(PELL20);
+    const A = sSub(num(u), S(rat(v), r));
+    const B = sAdd(num(u), S(rat(v), r));
+    const ta = sTxt(A), tb = sTxt(B);
+    const racr = sSqrt(num(r));
+
+    for (let essai = 0; essai < 500; essai++) {
+      // --- A = (1 + √r)(k√r - j) - √(m²r) --------------------------------
+      const k = ent(1, 5), j = k * r - u, mA = k - j + v;
+      if (j < 1 || mA < 1) continue;
+
+      // --- B = p/(√r - jb) - (√r + q)/(√r + jb) ---------------------------
+      //   p·jb + q·jb - r = u·d   et   p - q + jb = v·d,  avec d = r - jb².
+      const jb = ent(1, 3), d = r - carre(jb);
+      if (d < 1) continue;
+      const somme = (u * d + r) / jb, diff = v * d - jb;
+      if (somme % 1 || (somme + diff) % 2) continue;
+      const p = (somme + diff) / 2, q = p - diff;
+      if (p < 1 || q < 1) continue;
+
+      // --- D = √(a²r) - √(b²r) + √(u²) - √(c²r),  a - b - c = -v ----------
+      const db = ent(2, 6), dc = ent(2, 6), da = db + dc - v;
+      if (da < 2 || new Set([da, db, dc]).size < 3) continue;
+      if ([da, db, dc].some(x => carre(x) * r > 400)) continue;
+
+      // --- E = √r(k3√r + v) - (√s - w)(√s + w),  s = k3·r + w² - u --------
+      const k3 = ent(1, 4), w = ent(2, 3), s = k3 * r + carre(w) - u;
+      if (s < 2 || s <= carre(w) || carre(F.carre(s).k) === s) continue;
+      if (F.carre(s).s === 1) continue;                 // √s doit rester un vrai radical
+
+      // --- les constantes des questions 7, 8 et 12 ------------------------
+      const K = ent(5, 20);                             // (1/A - 1/B) × K√r
+      let wr = 2;
+      while (carre(wr) <= 2 * u) wr++;                  // √(1/A + 1/B + c) = wr
+      const cc = carre(wr) - 2 * u;
+      const nG = ent(1, 2 * v + 1);                     // G = |1 - E| - |D + nG√r|
+
+      const exprA = '(1 + √' + r + ')(' + R(k, r) + ' - ' + j + ') - √' + carre(mA) * r;
+      const exprB = p + '/(√' + r + ' - ' + jb + ') - (√' + r + ' + ' + q + ')/(√'
+                  + r + ' + ' + jb + ')';
+      const exprD = '√' + carre(da) * r + ' - √' + carre(db) * r + ' + √' + carre(u)
+                  + ' - √' + carre(dc) * r;
+      const exprE = '√' + r + '(' + R(k3, r) + ' + ' + v + ') - (√' + s + ' - ' + w
+                  + ')(√' + s + ' + ' + w + ')';
+      const exprM = '|A(B + 1)| - |A|';
+      const exprN = 'A[A - (1/B + B)]';
+      const exprG = '|1 - E| - |D + ' + R(nG, r) + '|';
+      const exprS = '(1/A - 1/B) × ' + R(K, r);
+      const exprT = '√(1/A + 1/B + ' + cc + ')';
+      const env = { A: exprA, B: exprB, M: exprM, N: exprN,
+                    D: exprD, E: exprE, G: exprG };
+
+      const dev1 = sMul(sAdd(num(1), racr), sSub(S(rat(k), r), num(j)));
+      const G = sSub(sMul(num(2 * v - nG), racr), num(1));
+      const somme2 = num(4 * carre(u) - 2);             // D/E + E/D
+      const prodB1 = sMul(sSub(sSqrt(num(s)), num(w)), sAdd(sSqrt(num(s)), num(w)));
+
+      return [
+        {
+          enonce: ['نعتبر العبارة:', 'A = ' + exprA, 'بيّن أنّ A = ' + ta],
+          indice: 'انشر الجداء أوّلا، ثمّ أخرج المربّع الكامل من تحت الجذر',
+          etapes: [
+            ['ننشر الجداء',
+             '(1 + √' + r + ')(' + R(k, r) + ' - ' + j + ') = ' + sTxt(dev1)],
+            ['نبسّط الجذر',
+             '√' + carre(mA) * r + ' = √(' + carre(mA) + ' × ' + r + ') = ' + R(mA, r)],
+            ['نطرح', 'A = ' + sTxt(dev1) + ' - ' + R(mA, r)],
+            ['النتيجة', 'A = ' + ta]
+          ],
+          controle: { env, claims: [['A', ta]] }
+        },
+        {
+          enonce: ['نعتبر العبارة:', 'B = ' + exprB, 'بيّن أنّ B = ' + tb],
+          indice: 'أنطق كل مقام بضربه في مرافقه: (√' + r + ' - ' + jb + ')(√' + r
+                  + ' + ' + jb + ') = ' + d,
+          etapes: [
+            ['مرافق المقام الأوّل',
+             '(√' + r + ' - ' + jb + ')(√' + r + ' + ' + jb + ') = ' + r + ' - '
+             + carre(jb) + ' = ' + d],
+            ['نُنطق الكسر الأوّل',
+             p + '/(√' + r + ' - ' + jb + ') = ' + p + '(√' + r + ' + ' + jb + ')/' + d],
+            ['نُنطق الكسر الثاني',
+             '(√' + r + ' + ' + q + ')/(√' + r + ' + ' + jb + ') = (√' + r + ' + '
+             + q + ')(√' + r + ' - ' + jb + ')/' + d],
+            ['نطرح الكسرين', 'B = ' + p + '(√' + r + ' + ' + jb + ')/' + d
+             + ' - (√' + r + ' + ' + q + ')(√' + r + ' - ' + jb + ')/' + d],
+            ['النتيجة', 'B = ' + tb]
+          ],
+          controle: { env, claims: [['B', tb]] }
+        },
+        {
+          enonce: ['احسب الجداء:', 'A × B'],
+          indice: 'استعمل المتطابقة (x - y)(x + y) = x^2 - y^2',
+          etapes: [
+            ['نعوّض بالشكلين المختصرين', 'A × B = (' + ta + ')(' + tb + ')'],
+            ['نستعمل المتطابقة',
+             '(' + ta + ')(' + tb + ') = ' + u + '^2 - (' + R(v, r) + ')^2'],
+            ['نحسب المربّعين',
+             u + '^2 - (' + R(v, r) + ')^2 = ' + carre(u) + ' - ' + carre(v) * r],
+            ['النتيجة', 'A × B = 1']
+          ],
+          controle: { env, claims: [['A × B', '1']] }
+        },
+        {
+          enonce: ['ماذا تستنتج بالنسبة إلى A و B ؟'],
+          indice: 'عددان جداؤهما يساوي 1 هما مقلوبان',
+          etapes: [
+            ['ننطلق من الجداء', 'A × B = 1'],
+            ['العددان غير معدومين',
+             'لو كان أحدهما معدوما لكان الجداء معدوما، لا يساوي 1'],
+            ['نقسم على B', '1/B = A'],
+            ['نقسم على A', '1/A = B'],
+            ['النتيجة', 'كل من A و B مقلوب الآخر']
+          ],
+          controle: { env, claims: [['1/B', 'A'], ['1/A', 'B']] }
+        },
+        {
+          enonce: ['استنتج أنّ العدد A هو عدد موجب'],
+          indice: 'B موجب بداهة، و A مقلوبه',
+          etapes: [
+            ['إشارة B', 'B = ' + tb + ' > 0'],
+            ['A مقلوب B', 'A = 1/B'],
+            ['قاعدة المقلوب', 'مقلوب عدد موجب هو عدد موجب'],
+            ['نتأكّد بالمقارنة',
+             R(v, r) + ' = √' + carre(v) * r + ' < √' + carre(u) + ' = ' + u],
+            ['النتيجة', 'A > 0']
+          ],
+          controle: { env, claims: [['A', ta]] }
+        },
+        {
+          enonce: ['احسب:', 'M = ' + exprM],
+          indice: 'انشر A(B + 1) و استعمل A × B = 1 قبل رفع القيم المطلقة',
+          etapes: [
+            ['ننشر الجداء', 'A(B + 1) = A B + A'],
+            ['نعوّض الجداء', 'A B + A = 1 + A'],
+            ['إشارة العبارة', '1 + A > 0'],
+            ['نرفع القيمة المطلقة الأولى', '|A(B + 1)| = 1 + A'],
+            ['نرفع القيمة المطلقة الثانية', '|A| = A'],
+            ['نطرح', 'M = (1 + A) - A'],
+            ['النتيجة', 'M = 1']
+          ],
+          controle: { env, claims: [['M', '1']] }
+        },
+        {
+          enonce: ['احسب:', 'N = ' + exprN],
+          indice: 'مقلوب B هو A: ابدأ بحساب ما داخل القوس',
+          etapes: [
+            ['نستعمل أنّ A مقلوب B', '1/B = A'],
+            ['نحسب ما داخل القوس', '1/B + B = A + B = ' + 2 * u],
+            ['نطرح من A', 'A - ' + 2 * u + ' = ' + sTxt(sNeg(B))],
+            ['نضرب في A', 'N = A(' + sTxt(sNeg(B)) + ')'],
+            ['نستعمل A × B = 1', 'A(' + sTxt(sNeg(B)) + ') = -1'],
+            ['النتيجة', 'N = -1']
+          ],
+          controle: { env, claims: [['N', '-1']] }
+        },
+        {
+          enonce: ['أثبت أنّ العدد التالي عدد صحيح طبيعي:', exprS],
+          indice: 'عوّض كل مقلوب بما يساويه، ثمّ لاحظ أنّ √' + r + ' × √' + r
+                  + ' = ' + r,
+          etapes: [
+            ['مقلوب A', '1/A = B'],
+            ['مقلوب B', '1/B = A'],
+            ['نطرح المقلوبين', '1/A - 1/B = B - A = ' + R(2 * v, r)],
+            ['نضرب',
+             R(2 * v, r) + ' × ' + R(K, r) + ' = ' + 2 * v * K + ' × ' + r],
+            ['النتيجة', exprS + ' = ' + 2 * v * K * r],
+            ['طبيعة العدد', 'العدد ' + 2 * v * K * r + ' عدد صحيح طبيعي']
+          ],
+          controle: { env, claims: [[exprS, String(2 * v * K * r)]] }
+        },
+        {
+          enonce: ['أثبت أنّ العدد التالي عدد صحيح طبيعي:', exprT],
+          indice: 'مجموع المقلوبين هو A + B: احسبه قبل أن تأخذ الجذر',
+          etapes: [
+            ['نجمع المقلوبين', '1/A + 1/B = B + A'],
+            ['نحسب المجموع', 'B + A = ' + 2 * u],
+            ['نضيف ' + cc, 2 * u + ' + ' + cc + ' = ' + carre(wr)],
+            ['نأخذ الجذر', '√' + carre(wr) + ' = ' + wr],
+            ['النتيجة', exprT + ' = ' + wr],
+            ['طبيعة العدد', 'العدد ' + wr + ' عدد صحيح طبيعي']
+          ],
+          controle: { env, claims: [[exprT, String(wr)]] }
+        },
+        {
+          enonce: ['نعتبر العبارة:', 'D = ' + exprD, 'بيّن أنّ D = A'],
+          indice: 'أخرج المربّعات الكاملة من تحت الجذور، ثمّ اجمع حدود √' + r,
+          etapes: [
+            ['نبسّط الجذور في √' + r,
+             '√' + carre(da) * r + ' - √' + carre(db) * r + ' - √' + carre(dc) * r
+             + ' = ' + R(da, r) + ' - ' + R(db, r) + ' - ' + R(dc, r)],
+            ['نجمع الحدود المتشابهة',
+             R(da, r) + ' - ' + R(db, r) + ' - ' + R(dc, r) + ' = '
+             + sTxt(S(rat(-v), r))],
+            ['نبسّط الجذر العددي', '√' + carre(u) + ' = ' + u],
+            ['النتيجة', 'D = ' + ta + ' = A']
+          ],
+          controle: { env, claims: [['D', 'A']] }
+        },
+        {
+          enonce: ['نعتبر العبارة:', 'E = ' + exprE, 'بيّن أنّ E = B'],
+          indice: 'الجداء الثاني من الشكل (x - y)(x + y)',
+          etapes: [
+            ['ننشر الجداء الأوّل',
+             '√' + r + '(' + R(k3, r) + ' + ' + v + ') = ' + k3 * r + ' + ' + R(v, r)],
+            ['نستعمل المتطابقة',
+             '(√' + s + ' - ' + w + ')(√' + s + ' + ' + w + ') = ' + s + ' - '
+             + carre(w) + ' = ' + sTxt(prodB1)],
+            ['نطرح',
+             k3 * r + ' + ' + R(v, r) + ' - ' + sTxt(prodB1) + ' = ' + tb],
+            ['النتيجة', 'E = ' + tb + ' = B']
+          ],
+          controle: { env, claims: [['E', 'B']] }
+        },
+        {
+          enonce: ['بيّن أنّ العددين E و E(D - 1) - 1 متقابلان'],
+          indice: 'عوّض D بـ A و E بـ B، ثمّ استعمل A × B = 1',
+          etapes: [
+            ['نستعمل D = A و E = B', 'E(D - 1) = B(A - 1)'],
+            ['ننشر', 'B(A - 1) = A B - B'],
+            ['نعوّض الجداء', 'A B - B = 1 - B'],
+            ['نطرح 1', 'E(D - 1) - 1 = ' + sTxt(sNeg(B))],
+            ['نجمع العددين', 'E + (E(D - 1) - 1) = 0'],
+            ['النتيجة', 'مجموع العددين معدوم، إذن هما متقابلان']
+          ],
+          controle: { env, claims: [['E(D - 1) - 1', '-E'], ['E + (E(D - 1) - 1)', '0']] }
+        },
+        {
+          enonce: ['اختصر العبارة:', 'G = ' + exprG],
+          indice: 'حدّد إشارة كل عبارة داخل القيمتين المطلقتين قبل رفعهما',
+          etapes: [
+            ['إشارة العبارة الأولى', '1 - E < 0'],
+            ['نرفع القيمة المطلقة الأولى', '|1 - E| = E - 1'],
+            ['إشارة العبارة الثانية', 'D + ' + R(nG, r) + ' > 0'],
+            ['نرفع القيمة المطلقة الثانية',
+             '|D + ' + R(nG, r) + '| = D + ' + R(nG, r)],
+            ['نطرح', 'G = (E - 1) - (D + ' + R(nG, r) + ')'],
+            ['النتيجة', 'G = ' + sTxt(G)]
+          ],
+          controle: { env, claims: [['G', sTxt(G)]] }
+        },
+        {
+          enonce: ['أثبت أنّ العدد التالي عدد صحيح طبيعي:', 'D/E + E/D'],
+          indice: 'D = A و E = B، و مقلوب B هو A: كل كسر يصير مربّعا',
+          etapes: [
+            ['نعوّض D و E', 'D/E = A/B'],
+            ['مقلوب B هو A', 'A/B = A × A = A^2'],
+            ['بالمثل للكسر الثاني', 'E/D = B × B = B^2'],
+            ['نجمع المربّعين', 'A^2 + B^2 = ' + sTxt(somme2)],
+            ['النتيجة', 'D/E + E/D = ' + sTxt(somme2)],
+            ['طبيعة العدد', 'العدد ' + sTxt(somme2) + ' عدد صحيح طبيعي']
+          ],
+          controle: { env, claims: [['D/E + E/D', sTxt(somme2)]] }
+        }
+      ];
+    }
+    return type20();
+  }
+
+  const API = { type17, type18, type19, type20, PELL, PELL20 };
   if (M) module.exports = API; else racine.Fiche = API;
 })(typeof window !== 'undefined' ? window : globalThis);
