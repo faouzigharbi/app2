@@ -137,6 +137,115 @@
     '2^3 × (4^3 - 2^2 × 5) + (11^2 - 10 × 11)^2 + (5^2)^2'
   ]);
 
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — feuille « قوة عدد صحيح طبيعي » (تمارين, p. 13) et
+  //         « سلسلة تمارين القوى — 7 أساسي » (p. 10)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // p.13 ex2 — écrire un nombre sous forme de puissance d'exposant ≠ 1
+  lot('قوة عدد صحيح طبيعي p13 ex2', 'decomposer', 7, 'facile', [
+    '49', '25', '125', '32', '8', '16', '81', '27', '121', '4'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex2', 'decomposer', 7, 'moyen', [
+    '64', '36', '100', '144'
+  ]);
+  // p.13 ex4 — les mêmes, mais il faut passer par plusieurs facteurs premiers
+  lot('قوة عدد صحيح طبيعي p13 ex4', 'decomposer', 7, 'difficile', [
+    '160000', '2500', '4900', '8000', '6400'
+  ]);
+
+  // p.13 ex3 — produits et puissances de puissances
+  lot('قوة عدد صحيح طبيعي p13 ex3', 'produit', 7, 'facile', [
+    '2^3 × 2^10'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex3', 'puissance-de-puissance', 7, 'facile', [
+    '(7^3)^2'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex3', 'puissance-de-puissance', 7, 'difficile', [
+    '(2^3)^4 × (2^5)^6'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex3', 'meme-exposant', 7, 'facile', [
+    '2^5 × 7^5'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex3', 'meme-exposant', 7, 'difficile', [
+    '(3^4)^5 × (2^10)^2', '(3^5)^6 × (2^15)^2'
+  ]);
+
+  // p.13 ex5 — LA SOMME DE PUISSANCES ÉGALES. « 2⁷ + 2⁷ » n'est pas 4⁷ : c'est
+  // 2 × 2⁷, donc 2⁸. C'est la faute la plus tenace du chapitre, et l'exercice
+  // est bâti pour elle.
+  lot('قوة عدد صحيح طبيعي p13 ex5', 'facteur-commun', 7, 'moyen', [
+    '2^7 + 2^7', '2^14 + 2^14', '3^5 + 3^5 + 3^5'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex5', 'facteur-commun', 7, 'difficile', [
+    '2^6 + 2^6 + 2^6 + 2^6', '5^4 + 5^4 + 5^4 + 5^4 + 5^4',
+    '4^6 + 4^6 + 4^6 + 4^6'
+  ]);
+
+  // p.13 ex1 — calculs, dont l'exposant 0 posé sur une expression énorme
+  lot('قوة عدد صحيح طبيعي p13 ex1', 'calcul', 7, 'facile', [
+    '10^0', '3^3', '7^4', '2^2 + 3^2', '2^4'
+  ]);
+  lot('قوة عدد صحيح طبيعي p13 ex1', 'calcul', 7, 'moyen', [
+    '(7^59 - 2^3)^0'
+  ]);
+
+  // p.10 ex1 — la batterie de calculs, celle qui prend le plus de temps
+  lot('سلسلة القوى p10 ex1', 'calcul', 7, 'moyen', [
+    '5^4 × 2^3', '5^3 × 2^5', '5^3 + 2^4 + 1', '5^4 × (11 - 3^2)',
+    '8^2 + 9^2 + 1^11', '11 × 3^2 - 4^3 + 2^5'
+  ]);
+  lot('سلسلة القوى p10 ex1', 'calcul', 7, 'difficile', [
+    '7^3 - 2^3 × (2^3 × 3^2 - 7^2)', '(15^2 + 4^11)^0 + 4^3 + 5^3',
+    '125 - 5^2 × (2^3 + 3^2 - 4^2)', '13^2 - 5^3 × (3^2 - 2^3)',
+    '(3^2 + 1) × 5^4 - 5^3 × 3', '(8^2 + 6^2)^3 × (7^2 + 1)'
+  ]);
+
+  // p.10 ex2 — écrire sous forme de puissance d'exposant ≠ 1
+  lot('سلسلة القوى p10 ex2', 'base-commune', 7, 'difficile', [
+    '5^3 × (5^2)^4 × 625', '(11^3 × 121^5)^2 × 11'
+  ]);
+  lot('سلسلة القوى p10 ex2', 'facteur-commun', 7, 'moyen', [
+    '3^4 + 3^4 + 3^4', '3 × 5^5 + 2 × 5^5', '16^11 + 16^11',
+    '27^11 + 27^11 + 27^11'
+  ]);
+  // « 11 × 5⁵ + 21 × 5⁵ » donne 32 × 5⁵, soit 2⁵ × 5⁵ = 10⁵ : la base du
+  // résultat n'est ni 5 ni 32, elle est 10. Le plus bel item de la feuille.
+  lot('سلسلة القوى p10 ex2', 'facteur-commun', 7, 'difficile', [
+    '11 × 5^5 + 21 × 5^5'
+  ]);
+  lot('سلسلة القوى p10 ex2', 'meme-exposant', 7, 'difficile', [
+    '(5 × 3^3)^2 × (5^3 × 3)^2'
+  ]);
+  lot('سلسلة القوى p10 ex2', 'produit', 7, 'difficile', [
+    '16000 × 5^4'
+  ]);
+
+  // p.10 ex3 — « simplifier », sans exiger une puissance unique
+  lot('سلسلة القوى p10 ex3', 'calcul', 7, 'difficile', [
+    '(3 × 5^3)^2 × 3^11', '(5^3 × 2)^11 × 8000'
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // ENCORE ÉCARTÉ, ET DIT
+  //
+  //   « سلسلة القوى p10 ex2 c) 2⁴ (2³ × 5³)⁴ × 625 » vaut 2¹⁶ × 5¹⁶ = 10¹⁶,
+  //   et il est gardé — mais son écriture « 2⁴(…) » sans signe × a été
+  //   normalisée en « 2^4 × (…) » : c'est la même chose, écrite comme le reste
+  //   de la fiche.
+  //
+  //   « سلسلة القوى p10 ex3 a) (3⁵ × 2³)⁴ × 3 × 5³ » ne retombe sur aucune
+  //   puissance unique : trois bases, des exposants sans diviseur commun. La
+  //   consigne y est « بسّط », simplifier — ce que nos chaînes ne savent pas
+  //   encore rendre autrement qu'en calculant. Écarté pour l'instant.
+  //
+  //   « سلسلة القوى p10 ex4 » — des égalités à trous (« 5¹¹ × 2 = 10¹⁴ × 5… »).
+  //   Ce sont d'excellents exercices, mais d'un AUTRE genre que la chaîne de
+  //   démonstration : ils demandent de compléter, non de dérouler. Ils feront
+  //   une famille à part, le jour où on la fera.
+  // ═══════════════════════════════════════════════════════════════════════
+
   // ═══════════════════════════════════════════════════════════════════════
   // CE QUI A ÉTÉ ÉCARTÉ, ET POURQUOI — la feuille prime, mais elle se relit.
   //

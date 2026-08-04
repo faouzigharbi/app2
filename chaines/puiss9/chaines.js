@@ -204,20 +204,22 @@
   // ═══════════════════════════════════════════════════════════════════════
   function facteurCommun(item) {
     const ts = termesDe(item.e);
-    if (ts.length !== 2) return null;
+    // « 2⁶ + 2⁶ + 2⁶ + 2⁶ » en a quatre, « 3⁵ × 15 − 6 × 3⁵ » en a deux :
+    // la mise en facteur ne connaît pas ce nombre-là.
+    if (ts.length < 2) return null;
 
-    // La puissance commune : le plus grand facteur commun des deux termes qui
-    // soit une puissance de la base.
     const vals = ts.map(x => entier(x.t));
     if (vals.some(v => v === null || v <= 0n)) return null;
     const parts = ts.map(x => facteursDe(x.t).map(u => ({ u, v: entier(u) })));
     if (parts.some(p => p.some(x => x.v === null))) return null;
 
-    // on cherche un facteur écrit à l'identique dans les deux termes
+    // Le facteur commun : présent dans TOUS les termes, et l'on préfère celui
+    // qui est écrit comme une puissance — c'est lui que la leçon vise.
     let commun = null;
-    for (const a of parts[0]) for (const b of parts[1]) {
-      if (a.v === b.v && a.v > 1n && /\^/.test(a.u)) { commun = a; break; }
-      if (a.v === b.v && a.v > 1n && !commun) commun = a;
+    for (const a of parts[0]) {
+      if (a.v <= 1n) continue;
+      if (!parts.every(p => p.some(x => x.v === a.v))) continue;
+      if (!commun || (/\^/.test(a.u) && !/\^/.test(commun.u)) || a.v > commun.v) commun = a;
     }
     if (!commun) return null;
 
@@ -230,9 +232,11 @@
     });
     if (reste.some(r => r === null)) return null;
 
-    const g = reste[0].reduce((a, x) => a * x.v, 1n);
-    const d = reste[1].reduce((a, x) => a * x.v, 1n);
-    const dedans = ts[1].signe === '-' ? g - d : g + d;
+    const morceaux = reste.map(r => r.reduce((a, x) => a * x.v, 1n));
+    let dedans = morceaux[0];
+    for (let i = 1; i < ts.length; i++) {
+      dedans = ts[i].signe === '-' ? dedans - morceaux[i] : dedans + morceaux[i];
+    }
     if (dedans <= 0n) return null;
 
     // La base du résultat n'est PAS celle du facteur commun, et c'est là toute
@@ -247,12 +251,12 @@
     const b = prT.base.toString();
 
     const etapes = [];
-    etapes.push(['العامل المشترك', 'العامل المشترك هو ' + commun.u + '، و هو موجود في الحدّين']);
-    const gTxt = reste[0].map(x => x.u).join(' × ');
-    const dTxt = reste[1].map(x => x.u).join(' × ');
-    etapes.push(['نُخرج العامل المشترك',
-                 'A = ' + commun.u + ' × (' + gTxt + ' ' + ts[1].signe + ' ' + dTxt + ')']);
-    etapes.push(['ننجز القوس', gTxt + ' ' + ts[1].signe + ' ' + dTxt + ' = ' + dedans]);
+    etapes.push(['العامل المشترك',
+                 'العامل المشترك هو ' + commun.u + '، و هو موجود في كلّ الحدود']);
+    const dansLeQuoi = reste.map((r, i) =>
+      (i ? ts[i].signe + ' ' : '') + r.map(x => x.u).join(' × ')).join(' ');
+    etapes.push(['نُخرج العامل المشترك', 'A = ' + commun.u + ' × (' + dansLeQuoi + ')']);
+    etapes.push(['ننجز القوس', dansLeQuoi + ' = ' + dedans]);
     etapes.push(['نعيد الكتابة', 'A = ' + commun.u + ' × ' + dedans]);
     // Deux chemins selon que la base commune est celle du facteur ou non.
     const res = puis(b, prT.exp);
@@ -283,6 +287,30 @@
   function calcul(item) {
     const etapes = [];
     let e = item.e;
+
+    // UNE SEULE puissance, sans rien autour : « 3³ », « 10⁰ ». Il n'y a pas de
+    // priorité à trancher — il y a la DÉFINITION à rappeler, et c'est elle que
+    // l'exercice vise.
+    const nu = /^\s*(\d+)\s*\^\s*(\d+)\s*$/.exec(item.e);
+    if (nu) {
+      const [, b, n] = nu;
+      const val = entier(item.e);
+      if (val === null) return null;
+      if (Number(n) === 0) {
+        etapes.push(['القاعدة', 'كلّ عدد غير منعدم مرفوع للأسّ 0 يساوي 1']);
+        etapes.push(['لماذا', 'لأنّ ' + b + '^n : ' + b + '^n = 1، و هو أيضا ' + b + '^(n-n)']);
+        etapes.push(['نطبّق', 'A = ' + b + '^0']);
+        etapes.push(['النتيجة', 'A = 1']);
+      } else {
+        etapes.push(['القاعدة', 'a^n هو جداء n عاملا كلّها a']);
+        etapes.push(['ما معنى ذلك',
+                     b + '^' + n + ' = ' + Array(Number(n)).fill(b).join(' × ')]);
+        etapes.push(['نحسب', Array(Number(n)).fill(b).join(' × ') + ' = ' + val]);
+        etapes.push(['النتيجة', 'A = ' + val]);
+      }
+      return finir(item, etapes, String(val), 'ارجع إلى تعريف القوّة', false);
+    }
+
     const vu = new Set([e]);
     etapes.push(['نحدّد الأولوية', 'الأقواس أوّلا، ثمّ القوى، ثمّ الضرب و القسمة، ثمّ الجمع و الطرح']);
 
@@ -345,6 +373,81 @@
     }
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // DÉCOMPOSER — « écris 64 sous forme de puissance d'exposant différent de 1 ».
+  //
+  // La réponse n'est pas unique : 64 vaut 2⁶, 4³ et 8². On donne la PLUS
+  // décomposée, celle dont la base est première — et l'on montre les autres,
+  // parce qu'un élève qui répond 8² n'a pas tort.
+  // ═══════════════════════════════════════════════════════════════════════
+  function decomposer(item) {
+    const v = entier(item.e);
+    if (v === null || v <= 1n) return null;
+    const f = F.facteurs(v);
+    const bases = Object.keys(f);
+    const pr = primitive(v);
+    if (!pr || pr.exp < 2) return null;
+    const etapes = [];
+    etapes.push(['نفكّك إلى عوامل أوّلية',
+                 v + ' = ' + bases.map(b => puis(b, f[b])).join(' × ')]);
+    if (bases.length === 1) {
+      const b = bases[0];
+      etapes.push(['نعدّ العوامل', 'العدد ' + b + ' مضروب في نفسه ' + f[b] + ' مرّات']);
+      const autres = [];
+      for (let d = 2; d <= f[b] / 2; d++) {
+        if (f[b] % d === 0) autres.push(puis(String(BigInt(b) ** BigInt(d)), f[b] / d));
+      }
+      if (autres.length) etapes.push(['كتابات أخرى ممكنة', 'و كذلك ' + autres.join(' و ')]);
+      else etapes.push(['الأساس أوّلي', 'العدد ' + b + ' أوّلي: لا كتابة أخرى']);
+      etapes.push(['النتيجة', 'A = ' + puis(b, f[b])]);
+      return finir(item, etapes, puis(b, f[b]),
+                   'فكّك العدد إلى عوامل أوّلية، ثمّ اقرأ الأسّ', true);
+    }
+    etapes.push(['أسّة كلّها مضاعفات لـ ' + pr.exp,
+                 bases.map(b => f[b]).join(' و ') + ' مضاعفات للعدد ' + pr.exp]);
+    etapes.push(['نجمّع', v + ' = (' + bases.map(b => puis(b, f[b] / pr.exp)).join(' × ')
+                             + ')^' + pr.exp]);
+    etapes.push(['نحسب الأساس', bases.map(b => puis(b, f[b] / pr.exp)).join(' × ')
+                                + ' = ' + pr.base]);
+    const res = puis(pr.base.toString(), pr.exp);
+    etapes.push(['النتيجة', 'A = ' + res]);
+    return finir(item, etapes, res, 'فكّك العدد إلى عوامل أوّلية، ثمّ اقرأ الأسّ', true);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LE RECOURS GÉNÉRAL — aucune famille ne reconnaît la forme, et pourtant la
+  // VALEUR est une puissance. « 16000 × 5⁴ » vaut 2⁷ × 5⁷, donc 10⁷ : ni base
+  // commune, ni même exposant écrit. Les facteurs premiers, eux, le disent.
+  // ═══════════════════════════════════════════════════════════════════════
+  function parLesPremiers(item) {
+    const v = entier(item.e);
+    if (v === null || v <= 1n) return null;
+    const pr = primitive(v);
+    if (!pr || pr.exp < 2) return null;
+    const f = F.facteurs(v);
+    const bases = Object.keys(f);
+    const fs = facteursDe(item.e);
+    if (fs.length < 2) return null;
+    const etapes = [];
+    etapes.push(['نفكّك كلّ عامل إلى عوامل أوّلية',
+      fs.map(t => {
+        const x = entier(t);
+        const g = F.facteurs(x);
+        return t + ' = ' + Object.keys(g).map(b => puis(b, g[b])).join(' × ');
+      }).join(' ؛ ')]);
+    etapes.push(['نجمع أسّة كلّ أساس',
+                 'A = ' + bases.map(b => puis(b, f[b])).join(' × ')]);
+    etapes.push(['أسّة كلّها مضاعفات لـ ' + pr.exp,
+                 bases.map(b => f[b]).join(' و ') + ' مضاعفات للعدد ' + pr.exp]);
+    etapes.push(['نكتب في صيغة قوّة',
+                 'A = (' + bases.map(b => puis(b, f[b] / pr.exp)).join(' × ') + ')^' + pr.exp]);
+    etapes.push(['نحسب الأساس',
+                 bases.map(b => puis(b, f[b] / pr.exp)).join(' × ') + ' = ' + pr.base]);
+    const res = puis(pr.base.toString(), pr.exp);
+    etapes.push(['النتيجة', 'A = ' + res]);
+    return finir(item, etapes, res, 'مرّ بالعوامل الأوّلية: الأسّة تنكشف هناك', true);
+  }
+
   // ── Commun ──────────────────────────────────────────────────────────────
   const puis = (b, e) => (e === 1 ? String(b) : b + '^' + e);
 
@@ -361,23 +464,33 @@
   }
 
   // Chaque famille sait quel constructeur l'écrit.
+  // Une famille peut avoir PLUSIEURS chemins : on prend le premier qui aboutit.
+  // « 16000 × 5⁴ » ressemble à un produit, mais seule la voie des facteurs
+  // premiers en vient à bout.
   const PAR_FAMILLE = {
-    'produit': produit,
-    'base-commune': produit,
-    'puissance-de-puissance': produit,
-    'meme-exposant': memeExposant,
-    'facteur-commun': facteurCommun,
-    'calcul': calcul
+    'produit': [produit, parLesPremiers],
+    'base-commune': [produit, parLesPremiers, memeExposant],
+    'puissance-de-puissance': [produit, parLesPremiers],
+    'meme-exposant': [memeExposant, produit, parLesPremiers],
+    'facteur-commun': [facteurCommun, parLesPremiers],
+    'decomposer': [decomposer],
+    'calcul': [calcul]
   };
 
   // Rend la chaîne d'un item, ou null si l'énoncé sort de ce que la famille
   // sait démontrer — auquel cas le validateur le dira, et on ira le relire.
   function chaine(item) {
-    const f = PAR_FAMILLE[item.f];
-    if (!f) return null;
-    try { return f(item); } catch (e) { return null; }
+    const voies = PAR_FAMILLE[item.f];
+    if (!voies) return null;
+    for (const f of voies) {
+      let q = null;
+      try { q = f(item); } catch (e) { q = null; }
+      if (q && q.etapes.length >= 4) return q;
+    }
+    return null;
   }
 
-  const API = { chaine, produit, memeExposant, facteurCommun, calcul, baseCommune };
+  const API = { chaine, produit, memeExposant, facteurCommun, calcul,
+                decomposer, parLesPremiers, baseCommune };
   if (M) module.exports = API; else racine.Chaines = API;
 })(typeof window !== 'undefined' ? window : globalThis);
