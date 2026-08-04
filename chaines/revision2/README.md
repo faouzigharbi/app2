@@ -7,48 +7,58 @@ Portage en pages « chaîne de démonstration » de la fiche de révision
 Cette fiche n'est pas découpée en exercices numérotés mais en **parties**.
 Chaque partie devient une page, et chaque question de la partie un volet.
 
+## Fidèle à l'original
+
+Les autres dossiers tirent leurs nombres à chaque chargement. **Pas celui-ci** :
+il reprend ceux de la fiche, à l'identique, parce que c'est la fiche d'un
+professeur précis pour ses élèves. Le bouton « أرقام جديدة » y rebat donc
+l'ordre des étapes, et rien d'autre.
+
+Ce que le validateur contrôle reste entier : chaque étape est réanalysée et
+recalculée en arithmétique exacte, chaque affirmation de l'énoncé vérifiée, et
+les identités en `x` testées sur des dizaines de valeurs.
+
 ## Structure
 
 | page | partie | volets | questions |
 |---|---|---|---|
 | `ex1.html` | الجزء الأوّل | 11 | أ) E, D, C · ب) E×D + déduction · ج) équation · د) M, L, K · ع) T + équation |
-| `ex2.html` | الجزء الثاني | 5 | simplification de z et y · 1 · 2 · 3 · 4 |
+| `ex2.html` | الجزء الثاني | 5 | réduction de z et y · 1 · 2 · 3 · 4 |
 | `ex3.html` | الجزء الثالث | 7 | 1 · 2 · 3 · 4 · 5)أ · 5)ب · 5)ج |
+| `ex4.html` | الجزء الرابع | 12 | 1) d, c, b, a · 2 · 3) n, p, w, z, y, x · 4) X |
+| `ex5.html` | الجزء الخامس | 3 | A · B · C |
+| `ex6.html` | الجزء السادس | 5 | les cinq équations |
+| `ex7.html` | الجزء السابع | 9 | 1 · 2 · 3) les quatre cas · 4 · 5) les deux cas |
 
 Le premier volet de la partie 2 n'est pas dans l'énoncé : celui-ci demande
 directement « بيّن أنّ y هو مقلوب z », mais on ne peut rien en dire avant
 d'avoir réduit `z` et `y`. Cette réduction est donc son propre volet, plutôt
 qu'une chaîne de neuf étapes greffée sur la question 1.
 
-## La partie 4 manque
+## Deux formes à ne pas confondre — partie 7
 
-L'écran envoyé s'arrête sur الجزء الرابع : l'incrustation « Résumer ce fichier »
-du lecteur PDF et la barre de navigation en masquent les questions. Seule la
-première ligne d'expressions est lisible, et pas les consignes. Elle sera
-ajoutée dès qu'une capture la montrera.
+La fiche oppose délibérément, dans sa dernière question :
 
-## Ce qui se tire, et pourquoi
+    √((x + 5)²) - 1 = -√2x     l'exposant est SOUS le radical  →  |x + 5|
+    (√(x + 1))² + 1 = 5        l'exposant est DEHORS           →  x + 1
 
-Le fil commun des trois parties est un couple de nombres inverses :
-`(j + √u)(√u - j) = 1`, donc `u = j² + 1`. On tire `j`, et `u` suit.
+La première demande une valeur absolue et une discussion de cas ; la seconde
+n'est qu'une condition d'existence. Les deux chaînes le disent explicitement.
 
-**Partie 1 — libre.** Chaque expression est un schéma. `E` et `D` valent
-`j + √u` et `√u - j` quelle que soit l'écriture choisie ; `C` se réduit toujours
-à `(p + 2m)√r - q` ; `L` vaut `1/n - e` parce que les quatre radicandes sont
-construits pour que leur quotient soit `e²`.
+## Ce que cette fiche a demandé au noyau
 
-**Partie 2 — deux nombres imposés.** `z = u + √w` avec `w = u² - 1`, ce qui
-laisse `u ∈ {2, 4, 6}` (au-delà, `w` a un facteur carré). Surtout, **les entiers
-3 et 4 ne peuvent pas bouger** : ce sont les seuls entiers consécutifs qui
-encadrent `π`, et tout l'exercice tient à `|4 - π| + |3 - π| = 1`. Ce qui varie
-est l'habillage — les écritures en radicaux de `z` et `y`, et les deux
-radicandes de la valeur absolue.
+Deux capacités, ajoutées pour elle et partagées avec les autres dossiers :
 
-**Partie 3 — libre, mais couplée.** `E = (a x - b)(-c x - b)` et
-`G = (x + g)(a x - b)` partagent le facteur `(a x - b)`, et c'est lui qui permet
-de répondre aux questions 4 et 5)ج sans jamais développer. L'écriture longue de
-`E` est reconstruite à partir de `(a, b, c)` : le terme constant impose
-`R = b(b+1)`, les autres coefficients suivent.
+**Les carrés parfaits de ℚ[√d].** Le `n` de la partie 4 vaut
+`√((3 + √5)/(3 - √5))`, dont le radicande est irrationnel — mais qui est le
+carré de `(3 + √5)/2`. Le noyau les cherche désormais en résolvant
+`(r + s√d)² = p + q√d`, et **re-vérifie** l'égalité exactement avant de rendre
+la racine.
+
+**La valeur absolue juxtaposée.** `2|√3 - 5|` est un produit — la barre y ouvre
+— tandis que dans `|t y|` la barre qui suit `y` ferme. Les deux se distinguent
+par un compteur de profondeur, et par lui seul : hors de toute barre `|` ouvre,
+à l'intérieur il ferme.
 
 ## Le π de la partie 2
 
@@ -71,10 +81,10 @@ saute les étapes de cadrage : une levée fausse y passerait inaperçue.
 
 État actuel :
 
-    الجزء الأوّل ✓   الجزء الثاني ✓   الجزء الثالث ✓
-    300 tirages par partie, 6900 questions,
-    335100 relations recalculées et 69900 contrôles, 0 erreur.
-    17/17 falsifications détectées.
+    الأوّل ✓  الثاني ✓  الثالث ✓  الرابع ✓  الخامس ✓  السادس ✓  السابع ✓
+    300 tirages par partie, 15600 questions,
+    666000 relations recalculées et 127200 contrôles, 0 erreur.
+    41/41 falsifications détectées.
 
 ## Régénérer les pages
 

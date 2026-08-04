@@ -142,14 +142,23 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("facteur commun de D oublie", parQuestion(1, 1),
     c => { c.controle.env.D = c.controle.env.D.replace(")/(", " + 1)/("); });
+  pousse("C du 1 decale", parQuestion(1, 2),
+    c => { c.controle.claims[0][1] += " + 1"; });
   pousse("E et D ne sont plus inverses", parQuestion(1, 3),
     c => { c.controle.env.E = c.controle.env.E + " + 1"; });
+  pousse("deduction du 1 faussee", parQuestion(1, 4),
+    c => { c.controle.claims[0][1] += " + 1"; });
   pousse("racine de l equation du 1 decalee", parQuestion(1, 5),
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("L du 1 decale", parQuestion(1, 7),
+    c => { c.controle.claims[0][1] += " + 1"; });
   pousse("reduction de K faussee", parQuestion(1, 8),
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("factorisation de T fausse", parQuestion(1, 9),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
+  pousse("x du 1 hors de la condition", parQuestion(1, 10),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+
   pousse("simplification de z faussee", parQuestion(2, 0),
     c => { c.controle.claims[0][1] += " + 1"; });
   pousse("z et y ne sont plus inverses", parQuestion(2, 1),
@@ -158,19 +167,65 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.etapes[2][1] = c.etapes[2][1].replace("= 4 - π", "= π - 4"); });
   pousse("signe du produit t y inverse", parQuestion(2, 4),
     c => { c.controle.claims[0][1] = "-(" + c.controle.claims[0][1] + ")"; });
+
   pousse("developpement de E du 3 ampute", parQuestion(3, 0),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/ \+ \d+$/, ""); });
   pousse("valeur de E du 3 decalee", parQuestion(3, 1),
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
   pousse("factorisation de E du 3 fausse", parQuestion(3, 2),
     c => { c.controle.claims[0][0] = c.controle.claims[0][0].replace(/\)$/, " + 1)"); });
-  pousse("scindement de G faux", parQuestion(3, 4),
-    c => { c.controle.claims[0][1] += " + 1"; });
   pousse("factorisation de G fausse", parQuestion(3, 5),
     c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
   pousse("x du 3 hors de la condition", parQuestion(3, 6),
     c => { c.controle.env.x = c.controle.env.x + " + 1"; });
-  pousse("étape dupliquée", parQuestion(3, 0),
+
+  pousse("d du 4 decale", parQuestion(4, 0),
+    c => { c.controle.claims[0][1] += " + 1"; });
+  pousse("b du 4 non simplifie", parQuestion(4, 2),
+    c => { c.controle.env.b = c.controle.env.b.replace("2√5", "3√5"); });
+  pousse("valeur absolue du 4 mal levee", parQuestion(4, 4),
+    c => { c.controle.claims[0][1] = "-(" + c.controle.claims[0][1] + ")"; });
+  pousse("racine dans Q[√5] faussee", parQuestion(4, 5),
+    c => { c.controle.claims[0][1] = "4"; });
+  pousse("signe mal lu dans p", parQuestion(4, 6),
+    c => { c.etapes[1][1] = c.etapes[1][1].replace("= 5 - √3", "= √3 - 5"); });
+  pousse("z du 4 decale", parQuestion(4, 8),
+    c => { c.controle.claims[0][1] += " + 1"; });
+  pousse("conjugue du 4 mal applique", parQuestion(4, 9),
+    c => { c.controle.env.y = c.controle.env.y.replace("4 - √15", "4 + √15"); });
+  pousse("signe de b oublie dans X", parQuestion(4, 11),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace("- 10b", "+ 10b"); });
+
+  pousse("facteur commun de A du 5 fausse", parQuestion(5, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace(/\)$/, " + 1)"); });
+  pousse("racine sortie a l envers dans B", parQuestion(5, 1),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace("- √2 + 1", "+ √2 + 1"); });
+  pousse("signe du reste de C oublie", parQuestion(5, 2),
+    c => { c.controle.derives.C = c.controle.derives.C.replace("- √5x + 1", "+ √5x + 1"); });
+
+  pousse("racine du 6 decalee", parQuestion(6, 0),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("valeur absolue du 6 mal isolee", parQuestion(6, 1),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("racine carree du 6 mal levee", parQuestion(6, 3),
+    c => { c.controle.claims[1][1] = "1/2"; });
+
+  pousse("factorisation de A du 7 fausse", parQuestion(7, 0),
+    c => { c.controle.claims[0][1] = c.controle.claims[0][1].replace("2x - 1", "2x + 1"); });
+  pousse("valeur absolue de A gardee negative", parQuestion(7, 1),
+    c => { c.controle.claims[1][1] = "-(" + c.controle.claims[1][1] + ")"; });
+  pousse("racine de A = 0 decalee", parQuestion(7, 2),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("opposes du 7 fausses", parQuestion(7, 5),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("F du 7 decale", parQuestion(7, 6),
+    c => { c.controle.claims[2][1] = "21"; });
+  pousse("racine carree du carre mal levee", parQuestion(7, 7),
+    c => { c.controle.env.x = c.controle.env.x + " + 1"; });
+  pousse("exposant du 7 lu sous le radical", parQuestion(7, 8),
+    c => { c.controle.claims[0][0] = "√((x + 1)^2) + 1"; c.controle.env.x = "-9"; });
+
+  pousse("étape dupliquée", parQuestion(4, 0),
     c => { c.etapes[2] = c.etapes[1].slice(); });
 
   let bon = 0;

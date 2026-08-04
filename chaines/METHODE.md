@@ -56,6 +56,12 @@ ne bouge jamais. Trois cas se présentent :
   On ne touche alors qu'à l'**habillage** : les écritures en radicaux que
   l'élève doit réduire pour retomber sur les mêmes nombres (ex. 19).
 
+Et un quatrième cas, qui n'est pas une contrainte mathématique mais une
+demande : **la fidélité**. Quand la fiche est celle d'un professeur précis pour
+ses élèves, on reprend ses nombres à l'identique et l'on ne tire rien — le
+bouton « أرقام جديدة » ne rebat alors que l'ordre des étapes. Le validateur,
+lui, ne perd rien : il vérifie exactement les mêmes choses (`chaines/revision2/`).
+
 Quand un tirage produirait un énoncé illisible (radicande à quatre chiffres,
 coefficient 1 écrit « 1√2 », deux étapes identiques), on le rejette et on
 retire — d'où les boucles `for (…) { … continue }` des générateurs.

@@ -123,15 +123,51 @@
     throw new Error('division par une somme de plus de deux radicaux');
   }
 
-  // √ d'un nombre : n'a de sens ici que sur un rationnel positif.
-  // √(n/d) = √(n·d)/d — on ne laisse jamais un radical au dénominateur.
+  const rSub = (x, y) => rAdd(x, rNeg(y));
+  const rDiv = (x, y) => rat(x.n * y.d, x.d * y.n);
+  // La racine carrée d'un rationnel, quand elle est rationnelle — sinon null.
+  function rSqrt(q) {
+    if (q.n < 0) return null;
+    const a = Math.round(Math.sqrt(q.n)), b = Math.round(Math.sqrt(q.d));
+    return (a * a === q.n && b * b === q.d) ? rat(a, b) : null;
+  }
+
+  // √ d'un nombre. Sur un rationnel positif : √(n/d) = √(n·d)/d, et l'on ne
+  // laisse jamais un radical au dénominateur.
+  //
+  // Mais un radicande PEUT être irrationnel et rester un carré parfait, à
+  // condition de l'être dans ℚ[√d] : √((7 + 3√5)/2) vaut (3 + √5)/2. Les fiches
+  // en usent — « √((3 + √5)/(3 - √5)) » n'a pas d'autre sens — donc on le
+  // cherche au lieu de refuser. On pose (r + s√d)² = p + q√d, ce qui donne
+  // r² = (p ± √(p² - q²d))/2 et s = q/2r ; il suffit que les deux racines
+  // intermédiaires soient rationnelles, et l'égalité est ensuite RE-VÉRIFIÉE
+  // exactement avant d'être rendue.
   function sSqrt(x) {
-    if (!Object.keys(x).length) return ZERO;                 // √0 = 0
-    if (!estRat(x)) throw new Error('racine d’une expression irrationnelle');
-    const q = versRat(x);
-    if (q.n < 0) throw new Error('racine d’un nombre négatif');
-    const { k, s } = carre(q.n * q.d);
-    return S(rat(k, q.d), s);
+    const ks = Object.keys(x);
+    if (!ks.length) return ZERO;                             // √0 = 0
+    if (estRat(x)) {
+      const q = versRat(x);
+      if (q.n < 0) throw new Error('racine d’un nombre négatif');
+      const { k, s } = carre(q.n * q.d);
+      return S(rat(k, q.d), s);
+    }
+    if (ks.length === 2 && x['1']) {
+      const d = Number(ks.find(k => k !== '1'));
+      const p = x['1'], q = x[d];
+      const rD = rSqrt(rSub(rMul(p, p), rMul(rMul(q, q), rat(d))));
+      if (rD) {
+        for (const signe of [1, -1]) {
+          const r = rSqrt(rMul(rAdd(p, rMul(rD, rat(signe))), rat(1, 2)));
+          if (!r) continue;
+          for (const rr of [r, rNeg(r)]) {
+            if (rr.n === 0) continue;
+            const cand = sAdd(S(rr), S(rDiv(q, rMul(rr, rat(2))), d));
+            if (sEgaux(sMul(cand, cand), x) && sVal(cand) > 0) return cand;
+          }
+        }
+      }
+    }
+    throw new Error('racine d’une expression irrationnelle');
   }
 
   function sPuis(x, e) {
@@ -205,6 +241,11 @@
   function analyser(src, env) {
     const t = jetons(src);
     let i = 0;
+    // Profondeur des barres ouvertes. « 2|√3 - 5| » est un PRODUIT — la barre y
+    // ouvre une valeur absolue — tandis que dans « |t y| » la barre qui suit y
+    // la FERME. Les deux se distinguent par ce compteur, et par lui seul :
+    // hors de toute barre « | » ouvre, à l'intérieur il ferme.
+    let barres = 0;
     const fin = () => i >= t.length;
     const voir = () => t[i];
 
@@ -238,7 +279,8 @@
         if (j === '×' || j === '*' || j === '/') {
           const op = t[i++];
           v = (op === '/') ? sDiv(v, puissance()) : sMul(v, puissance());
-        } else if (/^\d/.test(j) || NOM.test(j) || j === '(' || j === '√') {
+        } else if (/^\d/.test(j) || NOM.test(j) || j === '(' || j === '√'
+                   || (j === '|' && barres === 0)) {
           v = sMul(v, puissance());        // juxtaposition : « 2√2 » vaut 2 × √2
         } else break;
       }
@@ -261,10 +303,10 @@
         return v;
       }
       if (voir() === '|') {                              // valeur absolue, imbrication comprise
-        i++;
+        i++; barres++;
         const v = expression();
         if (voir() !== '|') throw new Error('barre non fermée: ' + src);
-        i++;
+        i++; barres--;
         return sAbs(v);
       }
       const j = t[i++];
@@ -448,7 +490,7 @@
     };
   }
 
-  const API = { ent, choix, pgcd, rat, rAdd, rMul, rNeg, rTxt, carre,
+  const API = { ent, choix, pgcd, rat, rAdd, rSub, rMul, rDiv, rNeg, rTxt, rSqrt, carre,
                 S, num, ZERO, UN, sAdd, sSub, sNeg, sMul, sDiv, sEch, sSqrt,
                 sPuis, sVal, sSigne, sAbs, sEgaux, sCmp, sTxt, estRat, versRat,
                 plus, par, analyser, verifierRelation,

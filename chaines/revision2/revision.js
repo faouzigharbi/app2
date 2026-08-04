@@ -1,148 +1,80 @@
 // Fiche de révision « العمليات الأربعة في IR » — المدرسة الإعدادية النموذجية
 // ضفاف البحيرة (فوزي الغربي).
 //
-// Elle n'est pas découpée en exercices numérotés mais en PARTIES ; chaque
-// partie devient une page, et chaque question de la partie un volet. La méthode
-// est décrite dans ../METHODE.md.
+// Elle n'est pas découpée en exercices numérotés mais en PARTIES ; chaque partie
+// devient une page, et chaque question de la partie un volet. La méthode est
+// décrite dans ../METHODE.md.
 //
-//   الجزء الأول  — 11 volets : trois calculs, un produit et sa déduction, une
-//                  équation, trois réductions, une factorisation et son équation.
-//   الجزء الثاني —  5 volets : deux nombres inverses, une valeur absolue avec π.
-//   الجزء الثالث —  7 volets : une expression du second degré lue de trois
-//                  façons — développée, factorisée, puis confrontée à une autre.
+// FIDÈLE À L'ORIGINAL — et c'est ici une décision, pas un renoncement. Les
+// autres dossiers tirent leurs nombres à chaque chargement ; celui-ci reprend
+// ceux de la fiche, à l'identique, parce que c'est la fiche d'un professeur
+// précis pour ses élèves. Le bouton « أرقام جديدة » y rebat donc l'ordre des
+// étapes, et rien d'autre.
 //
-// Ce qui se tire : partout où l'exercice le supporte. Le fil commun des trois
-// parties est un couple de nombres inverses (j + √u)(√u - j) = 1, donc
-// u = j² + 1 ; on tire j et tout en découle. Deux choses en revanche ne peuvent
-// pas bouger, et le commentaire les signale sur place : les entiers 3 et 4 de
-// la partie 2 (ce sont les seuls qui encadrent π à une unité près) et la forme
-// du couple (E, G) de la partie 3.
+// Ce que le validateur contrôle reste entier : chaque étape est réanalysée et
+// recalculée en arithmétique exacte, chaque affirmation de l'énoncé vérifiée,
+// et les identités en x testées sur des dizaines de valeurs.
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
-  const F = M ? require('./noyau.js') : racine.Reel;
-  const { rat, num, S, sAdd, sSub, sNeg, sMul, sSqrt, sTxt, plus, ent, choix } = F;
-
-  const R = (c, r) => (c === 1 ? '√' + r : c + '√' + r);
-  const carre = n => n * n;
-  const LIBRES = [2, 3, 5, 6, 7, 10, 11, 13];
-  const mono = (c, v) => (c === 1 ? v : c === -1 ? '-' + v : c + v);
-  const frac = (n, d) => {
-    const g = F.pgcd(Math.abs(n), d) || 1;
-    return (d / g === 1) ? String(n / g) : (n / g) + '/' + (d / g);
-  };
-  const deux = liste => {
-    const l = liste.slice();
-    const a = l.splice(ent(0, l.length - 1), 1)[0];
-    return [a, l[ent(0, l.length - 1)]];
-  };
 
   // =========================================================================
-  // الجزء الأول — E = j + √u et D = √u - j, avec u = j² + 1 donc E × D = 1.
+  // الجزء الأوّل
+  //   E = 2 + √5 et D = √5 - 2 sont inverses : (√5)² - 2² = 1.
   // =========================================================================
   function partie1() {
-    const j = ent(2, 3), u = carre(j) + 1;              // u = 5 ou 10
-    const aD = ent(2, 4), bD = choix(LIBRES.filter(x => x !== u));
-    // C = √(2p²r / 2) - √(3q² / 3) + 2·√(u m² r)/√u
-    const rC = choix(LIBRES), p = ent(2, 4), q = ent(3, 6), mC = ent(1, 3);
-    // ب) √u/(√u - j) - k√u
-    const kB = ent(2, 5);
-    // ج) √(x² + e) = j2√u,  x² = j2²u - e = g²h
-    const j2 = ent(2, 3);
-    const g2 = ent(2, 4), h2 = choix(LIBRES);
-    const e2 = j2 * j2 * u - g2 * g2 * h2;
-    // د) L = 1/nL - eL ;  K = kK - x/rK - mK·sK·x - 1/nK
-    const nL = ent(2, 4), eL = ent(2, 4), bL = choix(LIBRES), cL = choix(LIBRES);
-    const rK = choix(LIBRES), kK = ent(2, 3), sK = choix(LIBRES), mK = ent(1, 3),
-          nK = ent(2, 4);
-    // ع) T = (aT x - √rT)(x + bT) - aT x √rT - aT bT √rT ;  T et cT(x + bT) opposés
-    const aT = ent(2, 4), bT = ent(1, 3), rT = choix(LIBRES), cT = ent(2, 5);
-
-    if (e2 < 1 || bL === cL || carre(mC) * u * rC > 900) return partie1();
-
-    const E = sAdd(num(j), sSqrt(num(u)));
-    const D = sSub(sSqrt(num(u)), num(j));
-    const C = sSub(S(rat(p + 2 * mC), rC), num(q));
-    const exprE = '1/√' + u + ' × (√' + carre(j) * u + ' + 1/√' + u + ') - (1/' + u
-                + ' - √' + u + ')';
-    const exprD = '(' + aD + '(√' + u + ' - ' + j + ') + √' + bD * u + ' - ' + R(j, bD)
-                + ')/(' + aD + ' + √' + bD + ')';
-    const exprC = '√(' + 2 * carre(p) * rC + '/2) - √(' + 3 * carre(q) + '/3) + 2(√'
-                + u * carre(mC) * rC + '/√' + u + ')';
-    const exprB = '√' + u + '/(√' + u + ' - ' + j + ') - ' + R(kB, u);
-    const valB = sAdd(num(u), S(rat(j - kB), u));
-    const exprEq = '√(x^2 + ' + e2 + ') = ' + R(j2, u);
-    const solEq = R(g2, h2);
-    const exprM = '(√' + bD * u + ' - ' + R(j, bD) + ')/√' + bD;
-    const exprL = '1/' + nL + ' - √(' + eL * cL + '/' + bL + ') : (√' + cL + '/√'
-                + eL * bL + ')';
-    const valL = sSub(S(rat(1, nL)), num(eL));
-    const exprK = '1/√' + rK + ' (√' + carre(kK) * rK + ' - x/√' + rK + ') - √' + sK
-                + '(√' + carre(mK) * sK + 'x + 1/√' + carre(nK) * sK + ')';
-    const cxK = sNeg(sAdd(S(rat(1, rK)), num(mK * sK)));
-    const c0K = sSub(num(kK), S(rat(1, nK)));
-    const devK = sTxt(c0K) + plus(cxK).replace(/ $/, '') + ' x';
-    const exprT = '(' + mono(aT, 'x') + ' - √' + rT + ')(x + ' + bT + ') - '
-                + mono(aT, 'x') + '√' + rT + ' - ' + R(aT * bT, rT);
-    const facT = '(x + ' + bT + ')(' + mono(aT, 'x') + ' - ' + R(aT + 1, rT) + ')';
-    const solT = '(' + R(aT + 1, rT) + ' - ' + cT + ')/' + aT;
+    const exprE = '1/√5 × (√20 + 1/√5) - (1/5 - √5)';
+    const exprD = '(3(√5 - 2) + √10 - 2√2)/(3 + √2)';
+    const exprC = '√(126/2) - √(75/3) + 2(√140/√5)';
+    const exprM = '(√10 - 2√2)/√2';
+    const exprL = '1/3 - √(21/5) : (√7/√15)';
+    const exprK = '1/√7 (√28 - x/√7) - √2(√8x + 1/√32)';
+    const exprT = '(3x - √7)(x + 2) - 3x√7 - 6√7';
 
     return [
       {
         enonce: ['أحسب العبارة التالية:', 'E = ' + exprE],
-        indice: 'ابدأ بنشر القوس: 1/√' + u + ' × √' + carre(j) * u + ' = ' + j,
+        indice: 'ابدأ بنشر القوس: 1/√5 × √20 = √20/√5 = 2',
         etapes: [
-          ['ننشر الجداء الأوّل',
-           '1/√' + u + ' × √' + carre(j) * u + ' = √' + carre(j) * u + '/√' + u
-           + ' = ' + j],
-          ['ننشر الجداء الثاني', '1/√' + u + ' × 1/√' + u + ' = 1/' + u],
-          ['نرفع القوس الثاني', '-(1/' + u + ' - √' + u + ') = -1/' + u + ' + √' + u],
-          ['يتلاشى الكسر', '1/' + u + ' - 1/' + u + ' = 0'],
-          ['النتيجة', 'E = ' + sTxt(E)]
+          ['ننشر الجداء الأوّل', '1/√5 × √20 = √20/√5 = 2'],
+          ['ننشر الجداء الثاني', '1/√5 × 1/√5 = 1/5'],
+          ['نرفع القوس الثاني', '-(1/5 - √5) = -1/5 + √5'],
+          ['يتلاشى الكسر', '1/5 - 1/5 = 0'],
+          ['النتيجة', 'E = 2 + √5']
         ],
-        controle: { env: { E: exprE }, claims: [['E', sTxt(E)]] }
+        controle: { env: { E: exprE }, claims: [['E', '2 + √5']] }
       },
       {
         enonce: ['أحسب العبارة التالية:', 'D = ' + exprD],
-        indice: 'البسط يقبل (' + aD + ' + √' + bD + ') عاملا مشتركا',
+        indice: 'البسط يقبل (3 + √2) عاملا مشتركا',
         etapes: [
-          ['نفكّك الحدّين الأخيرين',
-           '√' + bD * u + ' - ' + R(j, bD) + ' = √' + bD + '(√' + u + ' - ' + j + ')'],
-          ['نضع (√' + u + ' - ' + j + ') عاملا مشتركا',
-           aD + '(√' + u + ' - ' + j + ') + √' + bD + '(√' + u + ' - ' + j
-           + ') = (√' + u + ' - ' + j + ')(' + aD + ' + √' + bD + ')'],
-          ['نبسّط الكسر',
-           '(√' + u + ' - ' + j + ')(' + aD + ' + √' + bD + ')/(' + aD + ' + √' + bD
-           + ') = √' + u + ' - ' + j],
-          ['النتيجة', 'D = ' + sTxt(D)]
+          ['نفكّك الحدّين الأخيرين', '√10 - 2√2 = √2(√5 - 2)'],
+          ['نضع (√5 - 2) عاملا مشتركا',
+           '3(√5 - 2) + √2(√5 - 2) = (√5 - 2)(3 + √2)'],
+          ['نبسّط الكسر', '(√5 - 2)(3 + √2)/(3 + √2) = √5 - 2'],
+          ['النتيجة', 'D = √5 - 2']
         ],
-        controle: { env: { D: exprD }, claims: [['D', sTxt(D)]] }
+        controle: { env: { D: exprD }, claims: [['D', '√5 - 2']] }
       },
       {
         enonce: ['أحسب العبارة التالية:', 'C = ' + exprC],
-        indice: 'ابدأ بتبسيط ما تحت كل جذر: ' + 2 * carre(p) * rC + '/2 = '
-                + carre(p) * rC,
+        indice: 'ابدأ بتبسيط ما تحت كل جذر: 126/2 = 63',
         etapes: [
-          ['نبسّط الجذر الأوّل',
-           '√(' + 2 * carre(p) * rC + '/2) = √' + carre(p) * rC + ' = ' + R(p, rC)],
-          ['نبسّط الجذر الثاني', '√(' + 3 * carre(q) + '/3) = √' + carre(q) + ' = ' + q],
-          ['نبسّط الحدّ الثالث',
-           '√' + u * carre(mC) * rC + '/√' + u + ' = √' + carre(mC) * rC + ' = '
-           + R(mC, rC)],
-          ['نجمع حدود √' + rC,
-           R(p, rC) + ' + ' + R(2 * mC, rC) + ' = ' + R(p + 2 * mC, rC)],
-          ['النتيجة', 'C = ' + sTxt(C)]
+          ['نبسّط الجذر الأوّل', '√(126/2) = √63 = 3√7'],
+          ['نبسّط الجذر الثاني', '√(75/3) = √25 = 5'],
+          ['نبسّط الحدّ الثالث', '√140/√5 = √28 = 2√7'],
+          ['نجمع حدود √7', '3√7 + 2 × 2√7 = 7√7'],
+          ['النتيجة', 'C = 7√7 - 5']
         ],
-        controle: { env: { C: exprC }, claims: [['C', sTxt(C)]] }
+        controle: { env: { C: exprC }, claims: [['C', '7√7 - 5']] }
       },
       {
         enonce: ['أحسب الجداء:', 'E × D'],
         indice: 'استعمل المتطابقة (x + y)(x - y) = x^2 - y^2',
         etapes: [
-          ['نعوّض بالقيمتين', 'E × D = (' + sTxt(E) + ')(' + sTxt(D) + ')'],
-          ['نستعمل المتطابقة',
-           '(' + sTxt(E) + ')(' + sTxt(D) + ') = (√' + u + ')^2 - ' + j + '^2'],
-          ['نحسب المربّعين', '(√' + u + ')^2 - ' + j + '^2 = ' + u + ' - ' + carre(j)],
+          ['نعوّض بالقيمتين', 'E × D = (2 + √5)(√5 - 2)'],
+          ['نستعمل المتطابقة', '(2 + √5)(√5 - 2) = (√5)^2 - 2^2'],
+          ['نحسب المربّعين', '(√5)^2 - 2^2 = 5 - 4'],
           ['النتيجة', 'E × D = 1']
         ],
         controle: {
@@ -151,233 +83,173 @@
         }
       },
       {
-        enonce: ['استنتج حسابا للعدد:', exprB],
-        indice: 'من E × D = 1 نستنتج أنّ مقلوب (√' + u + ' - ' + j + ') هو ' + sTxt(E),
+        enonce: ['استنتج حسابا للعدد:', '√5/(√5 - 2) - 4√5'],
+        indice: 'من E × D = 1 نستنتج أنّ مقلوب (√5 - 2) هو 2 + √5',
         etapes: [
-          ['نستعمل الجداء السابق',
-           '1/(√' + u + ' - ' + j + ') = ' + sTxt(E)],
-          ['نضرب في √' + u,
-           '√' + u + '/(√' + u + ' - ' + j + ') = √' + u + '(' + sTxt(E) + ')'],
-          ['ننشر', '√' + u + '(' + sTxt(E) + ') = ' + u + ' + ' + R(j, u)],
-          ['نطرح', u + ' + ' + R(j, u) + ' - ' + R(kB, u) + ' = ' + sTxt(valB)],
-          ['النتيجة', exprB + ' = ' + sTxt(valB)]
+          ['نستعمل الجداء السابق', '1/(√5 - 2) = 2 + √5'],
+          ['نضرب في √5', '√5/(√5 - 2) = √5(2 + √5)'],
+          ['ننشر', '√5(2 + √5) = 5 + 2√5'],
+          ['نطرح', '5 + 2√5 - 4√5 = 5 - 2√5'],
+          ['النتيجة', '√5/(√5 - 2) - 4√5 = 5 - 2√5']
         ],
-        controle: { claims: [[exprB, sTxt(valB)]] }
+        controle: { claims: [['√5/(√5 - 2) - 4√5', '5 - 2√5']] }
       },
       {
-        enonce: ['أوجد العدد الحقيقي x بحيث:', exprEq],
-        indice: 'ربّع الطرفين: √(x^2 + ' + e2 + ') يصير x^2 + ' + e2,
+        enonce: ['أوجد العدد الحقيقي x بحيث:', '√(x^2 + 2) = 2√5'],
+        indice: 'ربّع الطرفين: (2√5)^2 = 20',
         etapes: [
-          ['نربّع الطرفين', '(' + R(j2, u) + ')^2 = ' + carre(j2) * u],
-          ['نكتب المعادلة بدون جذر', 'x^2 + ' + e2 + ' = ' + carre(j2) * u],
-          ['ننقل الحدّ الثابت', 'x^2 = ' + (carre(j2) * u - e2)],
-          ['نأخذ الجذر', '√' + (carre(j2) * u - e2) + ' = ' + solEq],
-          ['نتحقّق', '√((' + solEq + ')^2 + ' + e2 + ') = ' + R(j2, u)],
-          ['النتيجة', 'x = ' + solEq + ' أو x = -' + solEq]
+          ['نربّع الطرف الأيمن', '(2√5)^2 = 20'],
+          ['نكتب المعادلة بدون جذر', 'x^2 + 2 = 20'],
+          ['ننقل الحدّ الثابت', 'x^2 = 18'],
+          ['نأخذ الجذر', '√18 = 3√2'],
+          ['نتحقّق من الحلّ الثاني', '√((-3√2)^2 + 2) = 2√5'],
+          ['النتيجة', 'x = 3√2 أو x = -3√2']
         ],
         controle: {
-          env: { x: solEq },
-          claims: [['√(x^2 + ' + e2 + ')', R(j2, u)],
-                   ['√((-' + solEq + ')^2 + ' + e2 + ')', R(j2, u)]]
+          env: { x: '3√2' },
+          claims: [['√(x^2 + 2)', '2√5'], ['√((-3√2)^2 + 2)', '2√5']]
         }
       },
       {
         enonce: ['أنشر و اختصر العبارة:', 'M = ' + exprM],
-        indice: 'اقسم كل حدّ من البسط على √' + bD,
+        indice: 'اقسم كل حدّ من البسط على √2',
         etapes: [
-          ['نقسم الحدّ الأوّل', '√' + bD * u + '/√' + bD + ' = √' + u],
-          ['نقسم الحدّ الثاني', R(j, bD) + '/√' + bD + ' = ' + j],
-          ['نطرح', 'M = √' + u + ' - ' + j],
-          ['النتيجة', 'M = ' + sTxt(D)]
+          ['نقسم الحدّ الأوّل', '√10/√2 = √5'],
+          ['نقسم الحدّ الثاني', '2√2/√2 = 2'],
+          ['نطرح', 'M = √5 - 2'],
+          ['نلاحظ', 'M = D']
         ],
-        controle: { env: { M: exprM }, claims: [['M', sTxt(D)]] }
+        controle: {
+          env: { D: exprD, M: exprM },
+          claims: [['M', '√5 - 2'], ['M', 'D']]
+        }
       },
       {
         enonce: ['أنشر و اختصر العبارة:', 'L = ' + exprL],
         indice: 'القسمة على كسر هي الضرب في مقلوبه: الجذور تجتمع تحت جذر واحد',
         etapes: [
-          ['نقلب الكسر الثاني',
-           '√(' + eL * cL + '/' + bL + ') : (√' + cL + '/√' + eL * bL
-           + ') = √(' + eL * cL + '/' + bL + ') × √' + eL * bL + '/√' + cL],
-          ['نجمع تحت جذر واحد',
-           '√(' + eL * cL + '/' + bL + ') × √' + eL * bL + '/√' + cL + ' = √('
-           + eL * cL * eL * bL + '/' + bL * cL + ')'],
-          ['نبسّط ما تحت الجذر',
-           '√(' + eL * cL * eL * bL + '/' + bL * cL + ') = √' + carre(eL) + ' = ' + eL],
-          ['نطرح', 'L = 1/' + nL + ' - ' + eL],
-          ['النتيجة', 'L = ' + sTxt(valL)]
+          ['نقلب الكسر الثاني', '√(21/5) : (√7/√15) = √(21/5) × √15/√7'],
+          ['نجمع تحت جذر واحد', '√(21/5) × √15/√7 = √(315/35)'],
+          ['نبسّط ما تحت الجذر', '√(315/35) = √9 = 3'],
+          ['نطرح', 'L = 1/3 - 3'],
+          ['النتيجة', 'L = -8/3']
         ],
-        controle: { env: { L: exprL }, claims: [['L', sTxt(valL)]] }
+        controle: { env: { L: exprL }, claims: [['L', '-8/3']] }
       },
       {
         enonce: ['أنشر و اختصر العبارة، حيث x عدد حقيقي:', 'K = ' + exprK],
-        indice: '√' + carre(kK) * rK + '/√' + rK + ' = ' + kK + '، و √' + sK
-                + ' × √' + carre(mK) * sK + ' = ' + mK * sK,
+        indice: '√28/√7 = 2، و √2 × √8 = 4',
         etapes: [
-          ['ننشر القوس الأوّل',
-           '1/√' + rK + ' (√' + carre(kK) * rK + ' - x/√' + rK + ') = ' + kK
-           + ' - x/' + rK],
-          ['ننشر القوس الثاني',
-           '√' + sK + '(√' + carre(mK) * sK + 'x + 1/√' + carre(nK) * sK + ') = '
-           + mono(mK * sK, 'x') + ' + 1/' + nK],
-          ['نطرح',
-           'K = ' + kK + ' - x/' + rK + ' - ' + mono(mK * sK, 'x') + ' - 1/' + nK],
-          ['نجمع حدود x',
-           '-x/' + rK + ' - ' + mono(mK * sK, 'x') + ' = ' + sTxt(cxK) + ' x'],
-          ['نجمع الأعداد', kK + ' - 1/' + nK + ' = ' + sTxt(c0K)],
-          ['النتيجة', 'K = ' + devK]
+          ['ننشر القوس الأوّل', '1/√7 (√28 - x/√7) = 2 - x/7'],
+          ['ننشر القوس الثاني', '√2(√8x + 1/√32) = 4x + 1/4'],
+          ['نطرح', 'K = 2 - x/7 - 4x - 1/4'],
+          ['نجمع حدود x', '-x/7 - 4x = -29/7 x'],
+          ['نجمع الأعداد', '2 - 1/4 = 7/4'],
+          ['النتيجة', 'K = 7/4 - 29/7 x']
         ],
         controle: {
           libres: ['x'], derives: { K: exprK },
-          claims: [[exprK, devK]]
+          claims: [[exprK, '7/4 - 29/7 x']]
         }
       },
       {
         enonce: ['أكتب العبارة في صيغة جداء عوامل، حيث x عدد حقيقي:', 'T = ' + exprT],
-        indice: 'الحدّان الأخيران يقبلان ' + R(aT, rT) + ' عاملا مشتركا',
+        indice: 'الحدّان الأخيران يقبلان 3√7 عاملا مشتركا',
         etapes: [
-          ['نفكّك الحدّين الأخيرين',
-           '-' + mono(aT, 'x') + '√' + rT + ' - ' + R(aT * bT, rT) + ' = -' + R(aT, rT)
-           + '(x + ' + bT + ')'],
-          ['نعيد كتابة T',
-           'T = (' + mono(aT, 'x') + ' - √' + rT + ')(x + ' + bT + ') - ' + R(aT, rT)
-           + '(x + ' + bT + ')'],
-          ['نضع (x + ' + bT + ') عاملا مشتركا',
-           'T = (x + ' + bT + ')((' + mono(aT, 'x') + ' - √' + rT + ') - ' + R(aT, rT) + ')'],
-          ['نجمع حدود √' + rT,
-           '-√' + rT + ' - ' + R(aT, rT) + ' = -' + R(aT + 1, rT)],
-          ['النتيجة', 'T = ' + facT]
+          ['نفكّك الحدّين الأخيرين', '-3x√7 - 6√7 = -3√7(x + 2)'],
+          ['نعيد كتابة T', 'T = (3x - √7)(x + 2) - 3√7(x + 2)'],
+          ['نضع (x + 2) عاملا مشتركا', 'T = (x + 2)((3x - √7) - 3√7)'],
+          ['نجمع حدود √7', '-√7 - 3√7 = -4√7'],
+          ['النتيجة', 'T = (x + 2)(3x - 4√7)']
         ],
         controle: {
           libres: ['x'], derives: { T: exprT },
-          claims: [[exprT, facT]]
+          claims: [[exprT, '(x + 2)(3x - 4√7)']]
         }
       },
       {
-        enonce: ['أوجد الأعداد الحقيقية x التي تحقّق أنّ T و ' + mono(cT, 'x') + ' + '
-                 + cT * bT + ' متقابلان'],
-        indice: 'متقابلان يعني مجموعهما معدوم، و ' + mono(cT, 'x') + ' + ' + cT * bT
-                + ' = ' + cT + '(x + ' + bT + ')',
+        enonce: ['أوجد الأعداد الحقيقية x التي تحقّق أنّ T و 4x + 8 متقابلان'],
+        indice: 'متقابلان يعني مجموعهما معدوم، و 4x + 8 = 4(x + 2)',
         etapes: [
-          ['شرط التقابل', 'T + (' + mono(cT, 'x') + ' + ' + cT * bT + ') = 0'],
-          ['نفكّك الحدّ الثاني',
-           mono(cT, 'x') + ' + ' + cT * bT + ' = ' + cT + '(x + ' + bT + ')'],
-          ['نضع (x + ' + bT + ') عاملا مشتركا',
-           facT + ' + ' + cT + '(x + ' + bT + ') = (x + ' + bT + ')(' + mono(aT, 'x')
-           + ' - ' + R(aT + 1, rT) + ' + ' + cT + ')'],
-          ['جداء معدوم',
-           'يعني x + ' + bT + ' = 0 أو ' + mono(aT, 'x') + ' - ' + R(aT + 1, rT)
-           + ' + ' + cT + ' = 0'],
-          ['الحلّ الأوّل', 'x = -' + bT],
-          // La seconde racine ne peut pas s'écrire « x = … » : x est lié à la
-          // première, qui seule vérifie ce membre. On la mène donc en nombres.
-          ['الحلّ الثاني يحقّق العامل',
-           aT + ' × (' + solT + ') - ' + R(aT + 1, rT) + ' + ' + cT + ' = 0'],
-          ['النتيجة', 'x = -' + bT + ' أو x = ' + solT]
+          ['شرط التقابل', 'T + (4x + 8) = 0'],
+          ['نفكّك الحدّ الثاني', '4x + 8 = 4(x + 2)'],
+          ['نضع (x + 2) عاملا مشتركا',
+           '(x + 2)(3x - 4√7) + 4(x + 2) = (x + 2)(3x - 4√7 + 4)'],
+          ['جداء معدوم', 'يعني x + 2 = 0 أو 3x - 4√7 + 4 = 0'],
+          ['الحلّ الأوّل', 'x = -2'],
+          ['الحلّ الثاني يحقّق العامل', '3 × ((4√7 - 4)/3) - 4√7 + 4 = 0'],
+          ['النتيجة', 'x = -2 أو x = (4√7 - 4)/3']
         ],
         controle: {
-          env: { x: '-' + bT, T: exprT },
-          claims: [['T + (' + mono(cT, 'x') + ' + ' + cT * bT + ')', '0']]
+          env: { x: '-2', T: exprT },
+          claims: [['T + (4x + 8)', '0'], ['3 × ((4√7 - 4)/3) - 4√7 + 4', '0']]
         }
       }
     ];
   }
 
   // =========================================================================
-  // الجزء الثاني — z = u + √w et y = u - √w, avec w = u² - 1 donc z × y = 1.
+  // الجزء الثاني
+  //   z = 2 + √3 et y = 2 - √3 sont inverses : 2² - 3 = 1.
   //
-  // Les entiers 4 et 3 de la valeur absolue NE PEUVENT PAS bouger : ce sont les
-  // seuls entiers consécutifs qui encadrent π, et tout l'exercice tient à
-  // |4 - π| + |3 - π| = 1. Le validateur lie donc π à un rationnel de ]3 ; 4[ —
-  // une valeur y suffit, puisque c'est cet encadrement, et lui seul, que les
-  // étapes utilisent.
+  //   Les entiers 3 et 4 de la valeur absolue sont les seuls consécutifs qui
+  //   encadrent π, et tout tient à |4 - π| + |3 - π| = 1. Le validateur lie
+  //   donc π à un rationnel de ]3 ; 4[ — c'est cet encadrement, et lui seul,
+  //   que les étapes utilisent.
   // =========================================================================
   function partie2() {
-    const u = choix([2, 4, 6]), w = carre(u) - 1;       // 3, 15, 35 — sans facteur carré
-    const [p, q] = (() => { const [a, b] = deux(LIBRES); return a < b ? [a, b] : [b, a]; })();
-    // z = u + c1√(k1²w) - √(k2²w) - √(k3²w),  c1k1 - k2 - k3 = 1
-    const k1 = ent(2, 3), k2 = ent(2, 4), c1 = ent(3, 6);
-    const k3 = c1 * k1 - k2 - 1;
-    // y = d1√(m1²w) - d2√(m2²w) + √(u²) - d3√w + d4√(m3²w),  somme des coefficients = -1
-    const m1 = ent(2, 3), d1 = ent(2, 3), m2 = ent(4, 5), d2 = ent(2, 3),
-          d3 = ent(3, 6), m3 = ent(2, 3), d4 = ent(3, 5);
-    const reste = d1 * m1 - d2 * m2 - d3 + d4 * m3;
-    if (k3 < 2 || reste !== -1) return partie2();
-    if ([k1, k2, k3, m1, m2, m3].some(k => carre(k) * w > 900)) return partie2();
-
-    const z = sAdd(num(u), sSqrt(num(w)));
-    const y = sSub(num(u), sSqrt(num(w)));
-    const t = sSub(num(1), sSqrt(num(p)));
-    const exprZ = u + ' + ' + c1 + '√' + carre(k1) * w + ' - √' + carre(k2) * w
-                + ' - √' + carre(k3) * w;
-    const exprY = d1 + '√' + carre(m1) * w + ' - ' + d2 + '√' + carre(m2) * w + ' + √'
-                + carre(u) + ' - ' + R(d3, w) + ' + ' + d4 + '√' + carre(m3) * w;
-    const exprT = '|4 - π| + |3 - π| + |√' + p + ' - √' + q + '| - |-√' + q + '|';
-    const exprF = '|t y| + z + √' + p * w;
-    const valF = sAdd(S(rat(2), w), S(rat(u), p));      // 2√w + u√p
-    const num3 = ent(2, 5);
-    let num2 = ent(2, 5);
-    if (num2 === num3) num2 = num3 + 1;
-    const exprQ2 = num3 + '/z - ' + num2 + '/y';
-    const valQ2 = sSub(sMul(num(num3), y), sMul(num(num2), z));
-    // π lié dans ]3 ; 4[ — c'est la seule chose que l'exercice demande de lui.
+    const exprZ = '2 + 6√12 - √27 - √192';
+    const exprY = '2√12 - 3√75 + √4 - 5√3 + 5√27';
+    const exprT = '|4 - π| + |3 - π| + |√2 - √3| - |-√3|';
     const env = { 'π': '22/7', z: exprZ, y: exprY, t: exprT };
 
     return [
       {
         enonce: ['نعتبر العددين:', 'z = ' + exprZ, 'y = ' + exprY,
-                 'بيّن أنّ z = ' + sTxt(z) + ' و y = ' + sTxt(y)],
-        indice: 'أخرج المربّعات الكاملة من تحت كل جذر، ثمّ اجمع حدود √' + w,
+                 'بيّن أنّ z = 2 + √3 و y = 2 - √3'],
+        indice: 'أخرج المربّعات الكاملة من تحت كل جذر، ثمّ اجمع حدود √3',
         etapes: [
-          ['نبسّط جذور z',
-           c1 + '√' + carre(k1) * w + ' = ' + R(c1 * k1, w)],
-          ['نبسّط الجذرين الآخرين في z',
-           '√' + carre(k2) * w + ' + √' + carre(k3) * w + ' = ' + R(k2 + k3, w)],
-          ['نجمع حدود √' + w + ' في z',
-           R(c1 * k1, w) + ' - ' + R(k2 + k3, w) + ' = √' + w],
-          ['نتيجة z', 'z = ' + sTxt(z)],
-          ['نبسّط الجذر العددي في y', '√' + carre(u) + ' = ' + u],
-          ['نبسّط جذور y',
-           d1 + '√' + carre(m1) * w + ' - ' + d2 + '√' + carre(m2) * w + ' + ' + d4
-           + '√' + carre(m3) * w + ' = ' + R(d1 * m1 - d2 * m2 + d4 * m3, w)],
-          ['نجمع حدود √' + w + ' في y',
-           R(d1 * m1 - d2 * m2 + d4 * m3, w) + ' - ' + R(d3, w) + ' = -√' + w],
-          ['نتيجة y', 'y = ' + sTxt(y)]
+          ['نبسّط جذر z الأوّل', '6√12 = 12√3'],
+          ['نبسّط جذري z الآخرين', '√27 + √192 = 3√3 + 8√3 = 11√3'],
+          ['نجمع حدود √3 في z', '12√3 - 11√3 = √3'],
+          ['نتيجة z', 'z = 2 + √3'],
+          ['نبسّط الجذر العددي في y', '√4 = 2'],
+          ['نبسّط جذور y', '2√12 - 3√75 + 5√27 = 4√3 - 15√3 + 15√3 = 4√3'],
+          ['نجمع حدود √3 في y', '4√3 - 5√3 = -√3'],
+          ['نتيجة y', 'y = 2 - √3']
         ],
-        controle: { env, claims: [['z', sTxt(z)], ['y', sTxt(y)]] }
+        controle: { env, claims: [['z', '2 + √3'], ['y', '2 - √3']] }
       },
       {
         enonce: ['بيّن أنّ y هو مقلوب z'],
         indice: 'استعمل المتطابقة (x + y)(x - y) = x^2 - y^2',
         etapes: [
-          ['نكتب الجداء', 'z × y = (' + sTxt(z) + ')(' + sTxt(y) + ')'],
-          ['نستعمل المتطابقة',
-           '(' + sTxt(z) + ')(' + sTxt(y) + ') = ' + u + '^2 - (√' + w + ')^2'],
-          ['نحسب المربّعين', u + '^2 - (√' + w + ')^2 = ' + carre(u) + ' - ' + w],
-          ['نستنتج', carre(u) + ' - ' + w + ' = 1'],
+          ['نكتب الجداء', 'z × y = (2 + √3)(2 - √3)'],
+          ['نستعمل المتطابقة', '(2 + √3)(2 - √3) = 2^2 - (√3)^2'],
+          ['نحسب المربّعين', '2^2 - (√3)^2 = 4 - 3'],
+          ['نستنتج', '4 - 3 = 1'],
           ['النتيجة', 'z × y = 1، إذن y مقلوب z']
         ],
         controle: { env, claims: [['z × y', '1'], ['y', '1/z']] }
       },
       {
-        enonce: ['أحسب:', exprQ2],
+        enonce: ['أحسب:', '3/z - 2/y'],
         indice: 'مقلوب z هو y، و مقلوب y هو z: لا حاجة لتوحيد المقامين',
         etapes: [
           ['مقلوب z', '1/z = y'],
           ['مقلوب y', '1/y = z'],
-          ['نعوّض', exprQ2 + ' = ' + num3 + ' y - ' + num2 + ' z'],
-          ['ننشر',
-           num3 + '(' + sTxt(y) + ') - ' + num2 + '(' + sTxt(z) + ') = ' + sTxt(valQ2)],
-          ['النتيجة', exprQ2 + ' = ' + sTxt(valQ2)]
+          ['نعوّض', '3/z - 2/y = 3 y - 2 z'],
+          ['ننشر', '3(2 - √3) - 2(2 + √3) = 2 - 5√3'],
+          ['النتيجة', '3/z - 2/y = 2 - 5√3']
         ],
-        controle: { env, claims: [[exprQ2, sTxt(valQ2)]] }
+        controle: { env, claims: [['3/z - 2/y', '2 - 5√3']] }
       },
       {
-        enonce: ['اختصر العبارة:', 't = ' + exprT],
-        indice: 'العدد π محصور بين 3 و 4: حدّد إشارة كل عبارة قبل رفع قيمتها المطلقة',
         // Le SIGNE et la LEVÉE sont deux étapes distinctes, et toutes deux
         // portent une relation. Rédigées en une seule phrase arabe, elles
         // échapperaient au validateur — qui saute les étapes de cadrage.
+        enonce: ['اختصر العبارة:', 't = ' + exprT],
+        indice: 'العدد π محصور بين 3 و 4: حدّد إشارة كل عبارة قبل رفع قيمتها المطلقة',
         etapes: [
           ['نحصر π', 'العدد π محصور بين 3 و 4'],
           ['إشارة العبارة الأولى', 'π < 4'],
@@ -385,69 +257,38 @@
           ['إشارة العبارة الثانية', 'π > 3'],
           ['نرفع القيمة المطلقة الثانية', '|3 - π| = π - 3'],
           ['يتلاشى π', '(4 - π) + (π - 3) = 1'],
-          ['نرفع القيمتين الأخيرتين',
-           '|√' + p + ' - √' + q + '| - |-√' + q + '| = (√' + q + ' - √' + p
-           + ') - √' + q],
-          ['نختصر', '(√' + q + ' - √' + p + ') - √' + q + ' = -√' + p],
-          ['النتيجة', 't = ' + sTxt(t)]
+          ['نرفع القيمتين الأخيرتين', '|√2 - √3| - |-√3| = (√3 - √2) - √3'],
+          ['نختصر', '(√3 - √2) - √3 = -√2'],
+          ['النتيجة', 't = 1 - √2']
         ],
-        controle: { env, claims: [['t', sTxt(t)]] }
+        controle: { env, claims: [['t', '1 - √2']] }
       },
       {
-        enonce: ['أحسب:', exprF],
+        enonce: ['أحسب:', '|t y| + z + √6'],
         indice: 'ابدأ بالجداء t y، ثمّ حدّد إشارته قبل رفع القيمة المطلقة',
         etapes: [
-          ['نكتب الجداء', 't y = (' + sTxt(t) + ')(' + sTxt(y) + ')'],
-          ['إشارة العاملين',
-           't سالب لأنّ √' + p + ' > 1، و y موجب لأنّ ' + u + ' > √' + w],
+          ['نكتب الجداء', 't y = (1 - √2)(2 - √3)'],
+          ['إشارة العاملين', 't سالب لأنّ √2 > 1، و y موجب لأنّ 2 > √3'],
           ['إشارة الجداء', 'موجب في سالب يعطي سالبا، إذن t y < 0'],
-          ['نرفع القيمة المطلقة', '|t y| = -(' + sTxt(t) + ')(' + sTxt(y) + ')'],
-          ['ننشر',
-           '-(' + sTxt(t) + ')(' + sTxt(y) + ') = ' + sTxt(sNeg(sMul(t, y)))],
-          ['نجمع مع z و √' + p * w,
-           sTxt(sNeg(sMul(t, y))) + ' + (' + sTxt(z) + ') + √' + p * w + ' = '
-           + sTxt(valF)],
-          ['النتيجة', exprF + ' = ' + sTxt(valF)]
+          ['نرفع القيمة المطلقة', '|t y| = -(1 - √2)(2 - √3)'],
+          ['ننشر', '-(1 - √2)(2 - √3) = 2√2 + √3 - √6 - 2'],
+          ['نجمع مع z و √6', '(2√2 + √3 - √6 - 2) + (2 + √3) + √6 = 2√2 + 2√3'],
+          ['النتيجة', '|t y| + z + √6 = 2√2 + 2√3']
         ],
-        controle: { env, claims: [[exprF, sTxt(valF)]] }
+        controle: { env, claims: [['|t y| + z + √6', '2√2 + 2√3']] }
       }
     ];
   }
 
   // =========================================================================
-  // الجزء الثالث — E = (a x - b)(-c x - b) et G = (x + g)(a x - b).
-  //
-  // Les deux partagent le facteur (a x - b), et c'est ce qui permet de répondre
-  // aux questions 4 et 5)ج sans jamais développer. L'écriture longue de E est
-  // reconstruite à partir de (a, b, c) : le terme constant impose R = b(b+1),
-  // les autres coefficients suivent.
+  // الجزء الثالث
+  //   E = (3x - 4)(-7x - 4) et G = (x + 7)(3x - 4) partagent le facteur
+  //   (3x - 4). C'est lui qui permet de répondre aux questions 4 et 5)ج sans
+  //   jamais développer.
   // =========================================================================
   function partie3() {
-    const a = ent(2, 4), b = ent(2, 5), c = ent(5, 8), Sc = ent(8, 20);
-    const g = ent(3, 8);
-    const Rc = b * (b + 1);
-    const P = -a * c - a + 2 * Sc;
-    const Q = a - b + 2 * Rc - Sc - b * (c - a);
-    const m = ent(2, 4), n = choix(LIBRES);
-    const h1 = ent(2, 6), h2 = ent(1, 3);
-    if (P < 1 || Q < 1 || h1 % h2 || h1 / h2 < 2) return partie3();
-    if (b === g || (b - g) % (1 - c)) return partie3();
-
-    const k = h1 / h2;                                   // E = k(a x - b)
-    const exprE = '(' + mono(a, 'x') + ' - ' + b + ')(x + 1) + ' + mono(P, 'x^2')
-                + ' - ' + mono(Q, 'x') + ' + (2x + 1)(' + Rc + ' - ' + mono(Sc, 'x') + ')';
-    const devE = mono(-a * c, 'x^2') + ' + ' + mono(b * (c - a), 'x') + ' + ' + carre(b);
-    const facE = '(' + mono(a, 'x') + ' - ' + b + ')(' + mono(-c, 'x') + ' - ' + b + ')';
-    const x0 = m + ' - √' + n;
-    const valE = sAdd(sAdd(sMul(num(-a * c), F.sPuis(F.analyser(x0, {}), 2)),
-                           sMul(num(b * (c - a)), F.analyser(x0, {}))), num(carre(b)));
-    const exprG = mono(a, 'x^2') + ' + ' + mono(a * g - b, 'x') + ' - ' + b * g;
-    const scindG = mono(a, 'x^2') + ' + ' + mono(a * g, 'x') + ' - ' + mono(b, 'x')
-                 + ' - ' + b * g;
-    const facG = '(x + ' + g + ')(' + mono(a, 'x') + ' - ' + b + ')';
-    const sol1 = frac(b, a);
-    const sol4 = frac(-(b + k), c);
-    const sol5 = frac(b - g, 1 - c);
+    const exprE = '(3x - 4)(x + 1) + 6x^2 - 8x + (2x + 1)(20 - 15x)';
+    const exprG = '3x^2 + 17x - 28';
 
     return [
       {
@@ -455,156 +296,606 @@
                  'أنشر و اختصر العبارة E'],
         indice: 'انشر الجداءين، ثمّ اجمع حدود x^2 و حدود x و الأعداد',
         etapes: [
-          ['ننشر الجداء الأوّل',
-           '(' + mono(a, 'x') + ' - ' + b + ')(x + 1) = ' + mono(a, 'x^2') + ' + '
-           + mono(a - b, 'x') + ' - ' + b],
-          ['ننشر الجداء الثاني',
-           '(2x + 1)(' + Rc + ' - ' + mono(Sc, 'x') + ') = ' + mono(-2 * Sc, 'x^2')
-           + ' + ' + mono(2 * Rc - Sc, 'x') + ' + ' + Rc],
-          ['نجمع حدود x^2',
-           mono(a, 'x^2') + ' + ' + mono(P, 'x^2') + ' + ' + mono(-2 * Sc, 'x^2')
-           + ' = ' + mono(-a * c, 'x^2')],
-          ['نجمع حدود x',
-           mono(a - b, 'x') + ' - ' + mono(Q, 'x') + ' + ' + mono(2 * Rc - Sc, 'x')
-           + ' = ' + mono(b * (c - a), 'x')],
-          ['نجمع الأعداد', '-' + b + ' + ' + Rc + ' = ' + carre(b)],
-          ['النتيجة', 'E = ' + devE]
+          ['ننشر الجداء الأوّل', '(3x - 4)(x + 1) = 3x^2 - x - 4'],
+          ['ننشر الجداء الثاني', '(2x + 1)(20 - 15x) = -30x^2 + 25x + 20'],
+          ['نجمع حدود x^2', '3x^2 + 6x^2 - 30x^2 = -21x^2'],
+          ['نجمع حدود x', '-x - 8x + 25x = 16x'],
+          ['نجمع الأعداد', '-4 + 20 = 16'],
+          ['النتيجة', 'E = -21x^2 + 16x + 16']
         ],
         controle: {
           libres: ['x'], derives: { E: exprE },
-          claims: [[exprE, devE]]
+          claims: [[exprE, '-21x^2 + 16x + 16']]
         }
       },
       {
-        enonce: ['أحسب E إذا علمت أنّ:', 'x = ' + x0],
-        indice: 'استعمل الشكل المنشور، و تذكّر أنّ (' + x0 + ')^2 = '
-                + sTxt(F.sPuis(F.analyser(x0, {}), 2)),
+        enonce: ['أحسب E إذا علمت أنّ:', 'x = 2 - √3'],
+        indice: 'استعمل الشكل المنشور، و (2 - √3)^2 = 7 - 4√3',
         etapes: [
-          ['نحسب المربّع',
-           '(' + x0 + ')^2 = ' + sTxt(F.sPuis(F.analyser(x0, {}), 2))],
-          ['نضرب في المعامل الأوّل',
-           mono(-a * c, '') + ' × (' + sTxt(F.sPuis(F.analyser(x0, {}), 2)) + ') = '
-           + sTxt(sMul(num(-a * c), F.sPuis(F.analyser(x0, {}), 2)))],
-          ['نضرب في المعامل الثاني',
-           b * (c - a) + '(' + x0 + ') = '
-           + sTxt(sMul(num(b * (c - a)), F.analyser(x0, {})))],
-          ['نجمع مع الحدّ الثابت',
-           sTxt(sMul(num(-a * c), F.sPuis(F.analyser(x0, {}), 2))) + ' + '
-           + sTxt(sMul(num(b * (c - a)), F.analyser(x0, {}))) + ' + ' + carre(b)
-           + ' = ' + sTxt(valE)],
-          ['النتيجة', 'E = ' + sTxt(valE)]
+          ['نحسب المربّع', '(2 - √3)^2 = 7 - 4√3'],
+          ['نضرب في المعامل الأوّل', '-21(7 - 4√3) = -147 + 84√3'],
+          ['نضرب في المعامل الثاني', '16(2 - √3) = 32 - 16√3'],
+          ['نجمع مع الحدّ الثابت', '-147 + 84√3 + 32 - 16√3 + 16 = 68√3 - 99'],
+          ['النتيجة', 'E = 68√3 - 99']
         ],
-        controle: { env: { x: x0, E: exprE }, claims: [['E', sTxt(valE)]] }
+        controle: { env: { x: '2 - √3', E: exprE }, claims: [['E', '68√3 - 99']] }
       },
       {
-        enonce: ['بيّن أنّ:', 'E = ' + facE],
-        indice: 'انشر الجداء ' + facE + ' و قارنه بالشكل المنشور لـ E',
+        enonce: ['بيّن أنّ:', 'E = (3x - 4)(-7x - 4)'],
+        indice: 'انشر الجداء و قارنه بالشكل المنشور لـ E',
         etapes: [
-          ['ننشر الجداء',
-           facE + ' = ' + mono(-a * c, 'x^2') + ' - ' + mono(a * b, 'x') + ' + '
-           + mono(b * c, 'x') + ' + ' + carre(b)],
-          ['نجمع حدود x',
-           '-' + mono(a * b, 'x') + ' + ' + mono(b * c, 'x') + ' = '
-           + mono(b * (c - a), 'x')],
-          ['نقارن بالشكل المنشور', devE + ' = E'],
-          ['النتيجة', 'E = ' + facE]
+          ['ننشر الجداء', '(3x - 4)(-7x - 4) = -21x^2 - 12x + 28x + 16'],
+          ['نجمع حدود x', '-12x + 28x = 16x'],
+          ['نقارن بالشكل المنشور', '-21x^2 + 16x + 16 = E'],
+          ['النتيجة', 'E = (3x - 4)(-7x - 4)']
         ],
         controle: {
           libres: ['x'], derives: { E: exprE },
-          claims: [[facE, devE], [exprE, facE]]
+          claims: [['(3x - 4)(-7x - 4)', '-21x^2 + 16x + 16'],
+                   [exprE, '(3x - 4)(-7x - 4)']]
         }
       },
       {
-        enonce: ['أوجد x إذا علمت أنّ E و ' + mono(a, 'x') + ' - ' + b
-                 + ' متناسبان طردا مع ' + h1 + ' و ' + h2],
-        indice: 'التناسب يعني E/' + h1 + ' = (' + mono(a, 'x') + ' - ' + b + ')/' + h2
-                + '، أي E = ' + k + '(' + mono(a, 'x') + ' - ' + b + ')',
+        enonce: ['أوجد x إذا علمت أنّ E و 3x - 4 متناسبان طردا مع 8 و 2'],
+        indice: 'التناسب يعني E/8 = (3x - 4)/2، أي E = 4(3x - 4)',
         etapes: [
-          ['نكتب شرط التناسب',
-           'E = ' + k + '(' + mono(a, 'x') + ' - ' + b + ')'],
-          ['نستعمل الشكل المفكّك',
-           facE + ' = ' + k + '(' + mono(a, 'x') + ' - ' + b + ')'],
-          ['ننقل و نضع العامل المشترك',
-           '(' + mono(a, 'x') + ' - ' + b + ')(' + mono(-c, 'x') + ' - ' + b + ' - '
-           + k + ') = 0'],
-          ['جداء معدوم',
-           'يعني ' + mono(a, 'x') + ' - ' + b + ' = 0 أو ' + mono(-c, 'x') + ' - '
-           + b + ' - ' + k + ' = 0'],
-          ['الحلّ الأوّل', 'x = ' + sol1],
-          ['الحلّ الثاني يحقّق العامل',
-           '-' + c + ' × (' + sol4 + ') - ' + b + ' - ' + k + ' = 0'],
-          ['النتيجة', 'x = ' + sol1 + ' أو x = ' + sol4]
+          ['نكتب شرط التناسب', 'E = 4(3x - 4)'],
+          ['نستعمل الشكل المفكّك', '(3x - 4)(-7x - 4) = 4(3x - 4)'],
+          ['ننقل و نضع العامل المشترك', '(3x - 4)(-7x - 4 - 4) = 0'],
+          ['جداء معدوم', 'يعني 3x - 4 = 0 أو -7x - 8 = 0'],
+          ['الحلّ الأوّل', 'x = 4/3'],
+          ['الحلّ الثاني يحقّق العامل', '-7 × (-8/7) - 8 = 0'],
+          ['النتيجة', 'x = 4/3 أو x = -8/7']
         ],
         controle: {
-          env: { x: sol1, E: exprE },
-          claims: [['E', k + '(' + mono(a, 'x') + ' - ' + b + ')'],
-                   ['-' + c + ' × (' + sol4 + ') - ' + b + ' - ' + k, '0']]
+          env: { x: '4/3', E: exprE },
+          claims: [['E', '4(3x - 4)'], ['-7 × (-8/7) - 8', '0']]
         }
       },
       {
-        enonce: ['لتكن العبارة:', 'G = ' + exprG, 'بيّن أنّ G = ' + scindG],
-        indice: 'يكفي أن تتحقّق من أنّ ' + a * g + 'x - ' + b + 'x = '
-                + mono(a * g - b, 'x'),
+        enonce: ['لتكن العبارة:', 'G = ' + exprG, 'بيّن أنّ G = 3x^2 + 21x - 4x - 28'],
+        indice: 'يكفي أن تتحقّق من أنّ 21x - 4x = 17x',
         etapes: [
-          ['نشقّ حدّ x', mono(a * g - b, 'x') + ' = ' + mono(a * g, 'x') + ' - '
-           + mono(b, 'x')],
-          ['نعوّض في G', 'G = ' + scindG],
-          ['نتحقّق من حدّ x', mono(a * g, 'x') + ' - ' + mono(b, 'x') + ' = '
-           + mono(a * g - b, 'x')],
-          ['النتيجة', exprG + ' = ' + scindG]
+          ['نشقّ حدّ x', '17x = 21x - 4x'],
+          ['نعوّض في G', 'G = 3x^2 + 21x - 4x - 28'],
+          ['نتحقّق من حدّ x', '21x - 4x = 17x'],
+          ['النتيجة', '3x^2 + 17x - 28 = 3x^2 + 21x - 4x - 28']
         ],
         controle: {
           libres: ['x'], derives: { G: exprG },
-          claims: [[exprG, scindG]]
+          claims: [[exprG, '3x^2 + 21x - 4x - 28']]
         }
       },
       {
         enonce: ['أكتب G في صيغة جداء عوامل، دون الالتجاء إلى النشر'],
-        indice: 'انطلق من الشكل المشقوق: أوّل حدّين يقبلان ' + mono(a, 'x')
-                + ' عاملا مشتركا',
+        indice: 'انطلق من الشكل المشقوق: أوّل حدّين يقبلان 3x عاملا مشتركا',
         etapes: [
-          ['نفكّك الحدّين الأوّلين',
-           mono(a, 'x^2') + ' + ' + mono(a * g, 'x') + ' = ' + mono(a, 'x') + '(x + '
-           + g + ')'],
-          ['نفكّك الحدّين الأخيرين',
-           '-' + mono(b, 'x') + ' - ' + b * g + ' = -' + b + '(x + ' + g + ')'],
-          ['نضع (x + ' + g + ') عاملا مشتركا',
-           mono(a, 'x') + '(x + ' + g + ') - ' + b + '(x + ' + g + ') = ' + facG],
-          ['النتيجة', 'G = ' + facG]
+          ['نفكّك الحدّين الأوّلين', '3x^2 + 21x = 3x(x + 7)'],
+          ['نفكّك الحدّين الأخيرين', '-4x - 28 = -4(x + 7)'],
+          ['نضع (x + 7) عاملا مشتركا', '3x(x + 7) - 4(x + 7) = (x + 7)(3x - 4)'],
+          ['النتيجة', 'G = (x + 7)(3x - 4)']
         ],
         controle: {
           libres: ['x'], derives: { G: exprG },
-          claims: [[exprG, facG]]
+          claims: [[exprG, '(x + 7)(3x - 4)']]
         }
       },
       {
         enonce: ['أوجد x بحيث يكون E هو مقابل G'],
-        indice: 'مقابل يعني E + G = 0، و العبارتان تتقاسمان العامل ('
-                + mono(a, 'x') + ' - ' + b + ')',
+        indice: 'مقابل يعني E + G = 0، و العبارتان تتقاسمان العامل (3x - 4)',
         etapes: [
           ['شرط التقابل', 'E + G = 0'],
-          ['نستعمل الشكلين المفكّكين', 'E + G = ' + facE + ' + ' + facG],
+          ['نستعمل الشكلين المفكّكين',
+           'E + G = (3x - 4)(-7x - 4) + (x + 7)(3x - 4)'],
           ['نضع العامل المشترك',
-           facE + ' + ' + facG + ' = (' + mono(a, 'x') + ' - ' + b + ')(('
-           + mono(-c, 'x') + ' - ' + b + ') + (x + ' + g + '))'],
-          ['نختصر القوس الثاني',
-           '(' + mono(-c, 'x') + ' - ' + b + ') + (x + ' + g + ') = '
-           + mono(1 - c, 'x') + ' + ' + (g - b)],
-          ['جداء معدوم',
-           'يعني ' + mono(a, 'x') + ' - ' + b + ' = 0 أو ' + mono(1 - c, 'x') + ' + '
-           + (g - b) + ' = 0'],
-          ['الحلّان', 'x = ' + sol1 + ' أو x = ' + sol5],
-          ['نتحقّق من الحلّ الأوّل', 'E + G = 0']
+           '(3x - 4)(-7x - 4) + (x + 7)(3x - 4) = (3x - 4)((-7x - 4) + (x + 7))'],
+          ['نختصر القوس الثاني', '(-7x - 4) + (x + 7) = -6x + 3'],
+          ['جداء معدوم', 'يعني 3x - 4 = 0 أو -6x + 3 = 0'],
+          ['الحلّ الثاني يحقّق العامل', '-6 × (1/2) + 3 = 0'],
+          ['النتيجة', 'x = 4/3 أو x = 1/2']
         ],
         controle: {
-          env: { x: sol1, E: exprE, G: exprG },
-          claims: [['E + G', '0'],
-                   ['(' + (1 - c) + ') × (' + sol5 + ') + ' + (g - b), '0']]
+          env: { x: '4/3', E: exprE, G: exprG },
+          claims: [['E + G', '0'], ['-6 × (1/2) + 3', '0']]
         }
       }
     ];
   }
 
-  const API = { partie1, partie2, partie3 };
+  // =========================================================================
+  // الجزء الرابع
+  //   Douze volets : quatre quotients à rendre rationnels, une valeur absolue,
+  //   six calculs, et une réduction sous condition de signe.
+  //
+  //   Le n de la question 3 demande au noyau une racine qu'il ne trouverait pas
+  //   dans les rationnels : √((3 + √5)/(3 - √5)) vaut (3 + √5)/2, un carré
+  //   parfait DANS ℚ[√5]. C'est pour cet exercice que sSqrt sait les chercher.
+  // =========================================================================
+  function partie4() {
+    const exprD = '3√2/√3 + 2√3/(4√2)';
+    const exprC = '(√6 - √2)/√2';
+    const exprB = '(√20 + √45)/(2√5)';
+    const exprA = '(√2/√3) : (4√3/√2)';
+    const exprQ = '|(3 + 2√2)/(2√2 - 3)|';
+    const exprN = '√((3 + √5)/(3 - √5)) + √((3 - √5)/(3 + √5))';
+    const exprP = '2|√3 - 5| - √3|-3/2 - √3| + 7/2 |5 - 2√3|';
+    const exprW = '(√6 + √2)/4 - (√3 - 1)/(3√2)';
+    const exprZ = '2√(5/7) - 3√(20/63) + 2√(45/7)';
+    const exprY = '(√5 - 1)/(4 - √15)';
+    const exprX = '2/√5 + (3√5 + 10)/5';
+    const exprXX = '2√(a^2) - 3√(9a^2 b^2) + 2√(25b^2) - 3a√(b^2) - 2b√(4a^2)';
+    const consigne = 'أحسب العبارة التالية:';
+
+    return [
+      {
+        enonce: [consigne, 'd = ' + exprD],
+        indice: 'أنطق كل مقام بضربه في الجذر الذي فيه',
+        etapes: [
+          ['نُنطق الحدّ الأوّل', '3√2/√3 = 3√2 × √3/3 = √6'],
+          ['نُنطق الحدّ الثاني', '2√3/(4√2) = 2√3 × √2/8 = √6/4'],
+          ['نجمع', '√6 + √6/4 = 5/4√6'],
+          ['النتيجة', 'd = 5/4√6']
+        ],
+        controle: { env: { d: exprD }, claims: [['d', '5/4√6']] }
+      },
+      {
+        enonce: [consigne, 'c = ' + exprC],
+        indice: 'اقسم كل حدّ من البسط على √2',
+        etapes: [
+          ['نقسم الحدّ الأوّل', '√6/√2 = √3'],
+          ['نقسم الحدّ الثاني', '√2/√2 = 1'],
+          ['نطرح', 'c = √3 - 1'],
+          ['النتيجة', 'c = √3 - 1']
+        ],
+        controle: { env: { c: exprC }, claims: [['c', '√3 - 1']] }
+      },
+      {
+        enonce: [consigne, 'b = ' + exprB],
+        indice: 'أخرج المربّعات الكاملة من تحت الجذرين في البسط',
+        etapes: [
+          ['نبسّط الجذر الأوّل', '√20 = 2√5'],
+          ['نبسّط الجذر الثاني', '√45 = 3√5'],
+          ['نجمع البسط', '2√5 + 3√5 = 5√5'],
+          ['نبسّط الكسر', '5√5/(2√5) = 5/2'],
+          ['النتيجة', 'b = 5/2']
+        ],
+        controle: { env: { b: exprB }, claims: [['b', '5/2']] }
+      },
+      {
+        enonce: [consigne, 'a = ' + exprA],
+        indice: 'القسمة على كسر هي الضرب في مقلوبه',
+        etapes: [
+          ['نقلب الكسر الثاني', '(√2/√3) : (4√3/√2) = (√2/√3) × (√2/(4√3))'],
+          ['نضرب البسطين', '√2 × √2 = 2'],
+          ['نضرب المقامين', '√3 × 4√3 = 12'],
+          ['نبسّط الكسر', '2/12 = 1/6'],
+          ['النتيجة', 'a = 1/6']
+        ],
+        controle: { env: { a: exprA }, claims: [['a', '1/6']] }
+      },
+      {
+        enonce: ['بيّن أنّ:', exprQ + ' = (3 + 2√2)^2'],
+        indice: 'لاحظ أنّ 2√2 - 3 هو مقابل 3 - 2√2، و أنّ (3 + 2√2)(3 - 2√2) = 1',
+        etapes: [
+          ['نغيّر إشارة المقام', '2√2 - 3 = -(3 - 2√2)'],
+          ['العددان مقلوبان', '(3 + 2√2)(3 - 2√2) = 9 - 8 = 1'],
+          ['نُنطق المقام', '1/(3 - 2√2) = 3 + 2√2'],
+          ['نحسب الكسر', '(3 + 2√2)/(2√2 - 3) = -(3 + 2√2)^2'],
+          ['نرفع القيمة المطلقة', exprQ + ' = (3 + 2√2)^2'],
+          ['النتيجة', exprQ + ' = 17 + 12√2']
+        ],
+        controle: { claims: [[exprQ, '(3 + 2√2)^2'], [exprQ, '17 + 12√2']] }
+      },
+      {
+        enonce: [consigne, 'n = ' + exprN],
+        indice: 'اضرب بسط كل كسر و مقامه في مرافق المقام: يصير البسط مربّعا كاملا',
+        etapes: [
+          ['نُنطق مقام الكسر الأوّل',
+           '(3 + √5)/(3 - √5) = (3 + √5)^2/(9 - 5) = (3 + √5)^2/4'],
+          ['نأخذ جذره', '√((3 + √5)^2/4) = (3 + √5)/2'],
+          ['نُنطق مقام الكسر الثاني', '(3 - √5)/(3 + √5) = (3 - √5)^2/4'],
+          ['نأخذ جذره', '√((3 - √5)^2/4) = (3 - √5)/2'],
+          ['نجمع فيتلاشى √5', '(3 + √5)/2 + (3 - √5)/2 = 3'],
+          ['النتيجة', 'n = 3']
+        ],
+        controle: { env: { n: exprN }, claims: [['n', '3']] }
+      },
+      {
+        enonce: [consigne, 'p = ' + exprP],
+        indice: 'حدّد إشارة كل عبارة داخل القيم المطلقة: √3 أصغر من 5، و 2√3 أيضا',
+        etapes: [
+          ['إشارة الأولى', '√3 < 5'],
+          ['نرفع القيمة المطلقة الأولى', '|√3 - 5| = 5 - √3'],
+          ['نرفع القيمة المطلقة الثانية', '|-3/2 - √3| = 3/2 + √3'],
+          ['إشارة الثالثة', '2√3 < 5'],
+          ['نرفع القيمة المطلقة الثالثة', '|5 - 2√3| = 5 - 2√3'],
+          ['ننشر الحدّ الأوّل', '2(5 - √3) = 10 - 2√3'],
+          ['ننشر الحدّ الثاني', '-√3(3/2 + √3) = -3/2√3 - 3'],
+          ['ننشر الحدّ الثالث', '7/2 (5 - 2√3) = 35/2 - 7√3'],
+          ['النتيجة', 'p = 49/2 - 21/2√3']
+        ],
+        controle: { env: { p: exprP }, claims: [['p', '49/2 - 21/2√3']] }
+      },
+      {
+        enonce: [consigne, 'w = ' + exprW],
+        indice: 'أنطق مقام الكسر الثاني، ثمّ وحّد المقامين',
+        etapes: [
+          ['نُنطق الكسر الثاني', '(√3 - 1)/(3√2) = (√6 - √2)/6'],
+          ['نوحّد الكسر الأوّل', '(√6 + √2)/4 = (3√6 + 3√2)/12'],
+          ['نوحّد الكسر الثاني', '(√6 - √2)/6 = (2√6 - 2√2)/12'],
+          ['نطرح', '(3√6 + 3√2 - 2√6 + 2√2)/12 = (√6 + 5√2)/12'],
+          ['النتيجة', 'w = 5/12√2 + 1/12√6']
+        ],
+        controle: { env: { w: exprW }, claims: [['w', '5/12√2 + 1/12√6']] }
+      },
+      {
+        enonce: [consigne, 'z = ' + exprZ],
+        indice: 'أنطق كل جذر: √(5/7) = √35/7',
+        etapes: [
+          ['نُنطق الجذر الأوّل', '√(5/7) = √35/7'],
+          ['نُنطق الجذر الثاني', '√(20/63) = 2√35/21'],
+          ['نُنطق الجذر الثالث', '√(45/7) = 3√35/7'],
+          ['نعوّض', 'z = 2√35/7 - 6√35/21 + 6√35/7'],
+          ['نجمع', '2√35/7 - 2√35/7 + 6√35/7 = 6√35/7'],
+          ['النتيجة', 'z = 6/7√35']
+        ],
+        controle: { env: { z: exprZ }, claims: [['z', '6/7√35']] }
+      },
+      {
+        enonce: [consigne, 'y = ' + exprY],
+        indice: 'اضرب البسط و المقام في مرافق المقام: 4 + √15',
+        etapes: [
+          ['نضرب في مرافق المقام', '(4 - √15)(4 + √15) = 16 - 15 = 1'],
+          ['يبقى البسط وحده', 'y = (√5 - 1)(4 + √15)'],
+          ['ننشر', '(√5 - 1)(4 + √15) = 4√5 + √75 - 4 - √15'],
+          ['نبسّط √75', '√75 = 5√3'],
+          ['النتيجة', 'y = 5√3 + 4√5 - 4 - √15']
+        ],
+        controle: { env: { y: exprY }, claims: [['y', '5√3 + 4√5 - 4 - √15']] }
+      },
+      {
+        enonce: [consigne, 'x = ' + exprX],
+        indice: 'أنطق الكسر الأوّل: 2/√5 = 2√5/5',
+        etapes: [
+          ['نُنطق الكسر الأوّل', '2/√5 = 2√5/5'],
+          ['نشقّ الكسر الثاني', '(3√5 + 10)/5 = 3√5/5 + 2'],
+          ['نجمع حدود √5', '2√5/5 + 3√5/5 = √5'],
+          ['النتيجة', 'x = 2 + √5']
+        ],
+        controle: { env: { x: exprX }, claims: [['x', '2 + √5']] }
+      },
+      {
+        enonce: ['ليكن a عددا حقيقيا موجبا و b عددا حقيقيا سالبا. إختصر العبارة:',
+                 'X = ' + exprXX],
+        indice: '√(t^2) = |t|، و بما أنّ b سالب فإنّ |b| = -b',
+        etapes: [
+          ['قاعدة الجذر', 'مهما يكن العدد t فإنّ √(t^2) = |t|'],
+          ['إشارة a', 'a موجب، إذن √(a^2) = a'],
+          ['إشارة b', 'b سالب، إذن √(b^2) = -b'],
+          ['الحدّ الثاني', '-3√(9a^2 b^2) = 9a b'],
+          ['الحدّ الثالث', '2√(25b^2) = -10b'],
+          ['الحدّ الرابع', '-3a√(b^2) = 3a b'],
+          ['الحدّ الخامس', '-2b√(4a^2) = -4a b'],
+          ['نجمع حدود a b', '9a b + 3a b - 4a b = 8a b'],
+          ['النتيجة', 'X = 2a - 10b + 8a b']
+        ],
+        controle: {
+          libres: ['u', 'v'],
+          derives: { a: '|u|', b: '-|v|', X: exprXX },
+          claims: [['X', '2a - 10b + 8a b']]
+        }
+      }
+    ];
+  }
+
+  // =========================================================================
+  // الجزء الخامس — trois mises en facteur, toutes bâties sur le même geste :
+  // reconnaître qu'un reste isolé est un multiple du premier facteur.
+  // =========================================================================
+  function partie5() {
+    const exprA = '(4x - 1)(2x + 3) - x + 1/4';
+    const exprB = '(2x + √2)(x - 1) + √2x + 1';
+    const exprC = '(5x - √5)(2x + 4) - √5x + 1';
+    const consigne = 'أكتب العبارة التالية في صيغة جداء، حيث x عدد حقيقي:';
+
+    return [
+      {
+        enonce: [consigne, 'A = ' + exprA],
+        indice: 'لاحظ أنّ -x + 1/4 هو مقابل 1/4 (4x - 1)',
+        etapes: [
+          ['نفكّك الحدّين الأخيرين', '-x + 1/4 = -1/4 (4x - 1)'],
+          ['نعيد كتابة A', 'A = (4x - 1)(2x + 3) - 1/4 (4x - 1)'],
+          ['نضع (4x - 1) عاملا مشتركا', 'A = (4x - 1)((2x + 3) - 1/4)'],
+          ['نختصر القوس الثاني', '(2x + 3) - 1/4 = 2x + 11/4'],
+          ['النتيجة', 'A = (4x - 1)(2x + 11/4)']
+        ],
+        controle: {
+          libres: ['x'], derives: { A: exprA },
+          claims: [[exprA, '(4x - 1)(2x + 11/4)']]
+        }
+      },
+      {
+        enonce: [consigne, 'B = ' + exprB],
+        indice: 'لاحظ أنّ 2x + √2 = √2(√2x + 1)',
+        etapes: [
+          ['نفكّك القوس الأوّل', '2x + √2 = √2(√2x + 1)'],
+          ['نعيد كتابة B', 'B = √2(√2x + 1)(x - 1) + (√2x + 1)'],
+          ['نضع (√2x + 1) عاملا مشتركا', 'B = (√2x + 1)(√2(x - 1) + 1)'],
+          ['ننشر القوس الثاني', '√2(x - 1) + 1 = √2x - √2 + 1'],
+          ['النتيجة', 'B = (√2x + 1)(√2x - √2 + 1)']
+        ],
+        controle: {
+          libres: ['x'], derives: { B: exprB },
+          claims: [[exprB, '(√2x + 1)(√2x - √2 + 1)']]
+        }
+      },
+      {
+        enonce: [consigne, 'C = ' + exprC],
+        indice: 'لاحظ أنّ 5x - √5 = √5(√5x - 1)، و أنّ -√5x + 1 هو مقابل √5x - 1',
+        etapes: [
+          ['نفكّك القوس الأوّل', '5x - √5 = √5(√5x - 1)'],
+          ['نفكّك الحدّين الأخيرين', '-√5x + 1 = -(√5x - 1)'],
+          ['نعيد كتابة C', 'C = √5(√5x - 1)(2x + 4) - (√5x - 1)'],
+          ['نضع (√5x - 1) عاملا مشتركا', 'C = (√5x - 1)(√5(2x + 4) - 1)'],
+          ['ننشر القوس الثاني', '√5(2x + 4) - 1 = 2√5x + 4√5 - 1'],
+          ['النتيجة', 'C = (√5x - 1)(2√5x + 4√5 - 1)']
+        ],
+        controle: {
+          libres: ['x'], derives: { C: exprC },
+          claims: [[exprC, '(√5x - 1)(2√5x + 4√5 - 1)']]
+        }
+      }
+    ];
+  }
+
+  // =========================================================================
+  // الجزء السادس — cinq équations, cinq gestes différents.
+  // =========================================================================
+  function partie6() {
+    const consigne = 'أوجد العدد الحقيقي x في الحالة التالية:';
+    return [
+      {
+        enonce: [consigne, '(x + 2)^2 - 9 = 0'],
+        indice: 'انقل 9 إلى الطرف الآخر: (x + 2)^2 = 9',
+        etapes: [
+          ['ننقل الحدّ الثابت', '(x + 2)^2 = 9'],
+          ['نفكّ المربّع', 'يعني x + 2 = 3 أو x + 2 = -3'],
+          ['الحلّ الأوّل', 'x = 1'],
+          ['نتحقّق من الحلّ الثاني', '(-5 + 2)^2 - 9 = 0'],
+          ['النتيجة', 'x = 1 أو x = -5']
+        ],
+        controle: {
+          env: { x: '1' },
+          claims: [['(x + 2)^2 - 9', '0'], ['(-5 + 2)^2 - 9', '0']]
+        }
+      },
+      {
+        enonce: [consigne, '|x - 2| - 1 = √3'],
+        indice: 'ابدأ بعزل القيمة المطلقة: |x - 2| = 1 + √3',
+        etapes: [
+          ['نعزل القيمة المطلقة', '|x - 2| = 1 + √3'],
+          ['الطرف الأيسر موجب', '1 + √3 > 0'],
+          ['نفكّ القيمة المطلقة', 'يعني x - 2 = 1 + √3 أو x - 2 = -1 - √3'],
+          ['الحلّ الأوّل', 'x = 3 + √3'],
+          ['نتحقّق من الحلّ الثاني', '|(1 - √3) - 2| - 1 = √3'],
+          ['النتيجة', 'x = 3 + √3 أو x = 1 - √3']
+        ],
+        controle: {
+          env: { x: '3 + √3' },
+          claims: [['|x - 2| - 1', '√3'], ['|(1 - √3) - 2| - 1', '√3']]
+        }
+      },
+      {
+        enonce: [consigne, '√(x + 2) = √(2x - 3)'],
+        indice: 'جذران متساويان معناه أنّ العددين تحتهما متساويان',
+        etapes: [
+          ['شرط الوجود', 'يجب أن يكون x + 2 ≥ 0 و 2x - 3 ≥ 0'],
+          ['نربّع الطرفين', 'x + 2 = 2x - 3'],
+          ['ننقل الحدود', 'x = 5'],
+          ['نتحقّق من الطرف الأيمن', '√(5 + 2) = √7'],
+          ['نتحقّق من الطرف الأيسر', '√(2 × 5 - 3) = √7'],
+          ['النتيجة', 'x = 5']
+        ],
+        controle: {
+          env: { x: '5' },
+          claims: [['√(x + 2)', '√(2x - 3)'], ['√(x + 2)', '√7']]
+        }
+      },
+      {
+        enonce: [consigne, '√((x + 2/3)^2) = (-1/2)^2'],
+        indice: '√(t^2) = |t|، و (-1/2)^2 = 1/4',
+        etapes: [
+          ['نحسب الطرف الأيسر', '(-1/2)^2 = 1/4'],
+          ['نستعمل قاعدة الجذر', '√((x + 2/3)^2) = |x + 2/3|'],
+          ['نكتب المعادلة', '|x + 2/3| = 1/4'],
+          ['نفكّ القيمة المطلقة', 'يعني x + 2/3 = 1/4 أو x + 2/3 = -1/4'],
+          ['الحلّ الأوّل', 'x = -5/12'],
+          ['نتحقّق من الحلّ الثاني', '√((-11/12 + 2/3)^2) = 1/4'],
+          ['النتيجة', 'x = -5/12 أو x = -11/12']
+        ],
+        controle: {
+          env: { x: '-5/12' },
+          claims: [['√((x + 2/3)^2)', '(-1/2)^2'], ['√((-11/12 + 2/3)^2)', '1/4']]
+        }
+      },
+      {
+        enonce: [consigne, '√6 = x√3'],
+        indice: 'اقسم الطرفين على √3',
+        etapes: [
+          ['نقسم على √3', 'x = √6/√3'],
+          ['نبسّط الكسر', '√6/√3 = √2'],
+          ['نتحقّق', '√2 × √3 = √6'],
+          ['النتيجة', 'x = √2']
+        ],
+        controle: { env: { x: '√2' }, claims: [['x√3', '√6']] }
+      }
+    ];
+  }
+
+  // =========================================================================
+  // الجزء السابع
+  //   A = (x - 3√2)(2x - 1) : là encore un facteur commun caché, puisque
+  //   -2x + √72 vaut -2(x - 3√2).
+  // =========================================================================
+  function partie7() {
+    const exprA = '(x - 3√2)(2x + 1) - 2x + √72';
+    const consigne = 'أوجد x في الحالة التالية:';
+
+    return [
+      {
+        enonce: ['نعتبر العبارة، حيث x عدد حقيقي:', 'A = ' + exprA,
+                 'بيّن أنّ A = (x - 3√2)(2x - 1)'],
+        indice: 'لاحظ أنّ √72 = 6√2، و أنّ -2x + 6√2 = -2(x - 3√2)',
+        etapes: [
+          ['نبسّط الجذر', '√72 = 6√2'],
+          ['نفكّك الحدّين الأخيرين', '-2x + 6√2 = -2(x - 3√2)'],
+          ['نعيد كتابة A', 'A = (x - 3√2)(2x + 1) - 2(x - 3√2)'],
+          ['نضع (x - 3√2) عاملا مشتركا', 'A = (x - 3√2)((2x + 1) - 2)'],
+          ['النتيجة', 'A = (x - 3√2)(2x - 1)']
+        ],
+        controle: {
+          libres: ['x'], derives: { A: exprA },
+          claims: [[exprA, '(x - 3√2)(2x - 1)']]
+        }
+      },
+      {
+        enonce: ['أحسب |A| إذا علمت أنّ:', 'x - 3√2 = -√2'],
+        indice: 'من x - 3√2 = -√2 نستنتج x = 2√2، ثمّ استعمل الشكل المفكّك',
+        etapes: [
+          ['نستخرج x', 'x = 2√2'],
+          ['العامل الأوّل', 'x - 3√2 = -√2'],
+          ['العامل الثاني', '2x - 1 = 4√2 - 1'],
+          ['نضرب', 'A = (-√2)(4√2 - 1) = √2 - 8'],
+          ['إشارة A', '√2 < 8'],
+          ['نرفع القيمة المطلقة', '|A| = 8 - √2'],
+          ['النتيجة', '|A| = 8 - √2']
+        ],
+        controle: {
+          env: { x: '2√2', A: exprA },
+          claims: [['A', '√2 - 8'], ['|A|', '8 - √2']]
+        }
+      },
+      {
+        enonce: [consigne, 'A = 0'],
+        indice: 'جداء عاملين معدوم يعني أنّ أحدهما على الأقلّ معدوم',
+        etapes: [
+          ['ننطلق من الشكل المفكّك', 'A = (x - 3√2)(2x - 1)'],
+          ['جداء معدوم', 'يعني x - 3√2 = 0 أو 2x - 1 = 0'],
+          ['الحلّ الأوّل', 'x = 3√2'],
+          ['نتحقّق من الحلّ الثاني', '(1/2 - 3√2)(2 × 1/2 - 1) = 0'],
+          ['النتيجة', 'x = 3√2 أو x = 1/2']
+        ],
+        controle: {
+          env: { x: '3√2', A: exprA },
+          claims: [['A', '0'], ['(1/2 - 3√2)(2 × 1/2 - 1)', '0']]
+        }
+      },
+      {
+        enonce: [consigne, '√(x^2 + 1) = 2√5'],
+        indice: 'ربّع الطرفين: (2√5)^2 = 20',
+        etapes: [
+          ['نربّع الطرف الأيمن', '(2√5)^2 = 20'],
+          ['نكتب المعادلة بدون جذر', 'x^2 + 1 = 20'],
+          ['ننقل الحدّ الثابت', 'x^2 = 19'],
+          ['نتحقّق من الحلّ الأوّل', '√((√19)^2 + 1) = 2√5'],
+          ['نتحقّق من الحلّ الثاني', '√((-√19)^2 + 1) = 2√5'],
+          ['النتيجة', 'x = √19 أو x = -√19']
+        ],
+        controle: {
+          env: { x: '√19' },
+          claims: [['√(x^2 + 1)', '2√5'], ['√((-√19)^2 + 1)', '2√5']]
+        }
+      },
+      {
+        enonce: [consigne, '(3x - 1)^2 - 4 = 0'],
+        indice: 'انقل 4 إلى الطرف الآخر: (3x - 1)^2 = 4',
+        etapes: [
+          ['ننقل الحدّ الثابت', '(3x - 1)^2 = 4'],
+          ['نفكّ المربّع', 'يعني 3x - 1 = 2 أو 3x - 1 = -2'],
+          ['الحلّ الأوّل', 'x = 1'],
+          ['نتحقّق من الحلّ الثاني', '(3 × (-1/3) - 1)^2 - 4 = 0'],
+          ['النتيجة', 'x = 1 أو x = -1/3']
+        ],
+        controle: {
+          env: { x: '1' },
+          claims: [['(3x - 1)^2 - 4', '0'], ['(3 × (-1/3) - 1)^2 - 4', '0']]
+        }
+      },
+      {
+        enonce: ['أوجد x بحيث يكون A و 2x - 1 متقابلين'],
+        indice: 'متقابلان يعني A + (2x - 1) = 0، و العامل (2x - 1) مشترك',
+        etapes: [
+          ['شرط التقابل', 'A + (2x - 1) = 0'],
+          ['نستعمل الشكل المفكّك', '(x - 3√2)(2x - 1) + (2x - 1) = 0'],
+          ['نضع (2x - 1) عاملا مشتركا', '(2x - 1)((x - 3√2) + 1) = 0'],
+          ['جداء معدوم', 'يعني 2x - 1 = 0 أو x - 3√2 + 1 = 0'],
+          ['الحلّ الأوّل', 'x = 1/2'],
+          ['الحلّ الثاني يحقّق العامل', '(3√2 - 1) - 3√2 + 1 = 0'],
+          ['النتيجة', 'x = 1/2 أو x = 3√2 - 1']
+        ],
+        controle: {
+          env: { x: '1/2', A: exprA },
+          claims: [['A + (2x - 1)', '0'], ['(3√2 - 1) - 3√2 + 1', '0']]
+        }
+      },
+      {
+        enonce: ['أحسب F = 3xy - 2√3y إذا كان:', '|y| = 5/√3', '|2 - x√3| = 4'],
+        indice: 'ضع y عاملا مشتركا: F = y(3x - 2√3)، ثمّ حدّد القيم الممكنة',
+        etapes: [
+          ['نضع y عاملا مشتركا', 'F = y(3x - 2√3)'],
+          ['نُنطق قيمة y', '5/√3 = 5√3/3'],
+          ['قيمتا y', 'y = 5√3/3 أو y = -5√3/3'],
+          ['نفكّ القيمة المطلقة الثانية', 'يعني 2 - x√3 = 4 أو 2 - x√3 = -4'],
+          ['قيمتا x', 'x = -2√3/3 أو x = 2√3'],
+          ['العامل الثاني عند x = 2√3', '3 × 2√3 - 2√3 = 4√3'],
+          ['العامل الثاني عند x = -2√3/3', '3 × (-2√3/3) - 2√3 = -4√3'],
+          ['نضرب', '(5√3/3)(4√3) = 20'],
+          ['النتيجة', 'F = 20 أو F = -20']
+        ],
+        controle: {
+          // « 3xy » d'un seul tenant serait UNE lettre pour l'analyseur : on
+          // sépare les facteurs, comme on les sépare en les lisant.
+          env: { x: '2√3', y: '5√3/3', F: '3x y - 2√3 y' },
+          claims: [['|y|', '5/√3'], ['|2 - x√3|', '4'],
+                   ['3x y - 2√3 y', '20'],
+                   ['3 × (-2√3/3) × (5√3/3) - 2√3 × (5√3/3)', '-20']]
+        }
+      },
+      {
+        enonce: [consigne, '√((x + 5)^2) - 1 = -√2x'],
+        indice: '√(t^2) = |t|: المعادلة تصير |x + 5| = 1 - √2x',
+        etapes: [
+          ['نستعمل قاعدة الجذر', '√((x + 5)^2) = |x + 5|'],
+          ['نعزل القيمة المطلقة', '|x + 5| = 1 - √2x'],
+          ['نفكّ القيمة المطلقة', 'يعني x + 5 = 1 - √2x أو x + 5 = √2x - 1'],
+          ['نحلّ الحالة الأولى', 'x(1 + √2) = -4'],
+          ['نُنطق المقام', '-4/(1 + √2) = 4 - 4√2'],
+          ['نتحقّق', '√((x + 5)^2) - 1 = -√2 x'],
+          ['الحالة الثانية مرفوضة',
+           'الحالة الثانية تعطي عددا موجبا، و الطرف الأيسر يصير سالبا: لا تحقّق المعادلة'],
+          ['النتيجة', 'x = 4 - 4√2']
+        ],
+        controle: {
+          env: { x: '4 - 4√2' },
+          claims: [['√((x + 5)^2) - 1', '-√2 x'], ['x', '-4/(1 + √2)']]
+        }
+      },
+      {
+        enonce: [consigne, '(√(x + 1))^2 + 1 = 5'],
+        indice: 'انتبه: الأسّ خارج الجذر هنا، إذن (√(x + 1))^2 = x + 1',
+        etapes: [
+          ['شرط الوجود', 'يجب أن يكون x + 1 ≥ 0'],
+          ['نبسّط المربّع', '(√(x + 1))^2 = x + 1'],
+          ['نكتب المعادلة', 'x + 1 + 1 = 5'],
+          ['نحلّ', 'x = 3'],
+          ['نتحقّق', '(√(x + 1))^2 + 1 = 5'],
+          ['النتيجة', 'x = 3']
+        ],
+        controle: { env: { x: '3' }, claims: [['(√(x + 1))^2 + 1', '5'], ['x', '3']] }
+      }
+    ];
+  }
+
+  const API = { partie1, partie2, partie3, partie4, partie5, partie6, partie7 };
   if (M) module.exports = API; else racine.Revision = API;
 })(typeof window !== 'undefined' ? window : globalThis);
