@@ -19,7 +19,9 @@ let relations = 0, controles = 0, questions = 0;
 const echecs = [];
 
 // Une forme « puissance » : un seul facteur, base et exposant, rien d'autre.
-const EST_PUISSANCE = /^\s*-?\d+\s*\^\s*-?\d+\s*$/;
+// La base peut être un rationnel, et alors elle est parenthésée — « (3/5)^6 »,
+// « (-7/5)^11 » — car « 3/5^6 » ne veut pas dire la même chose.
+const EST_PUISSANCE = /^\s*(?:\d+|\(-?\d+(?:\/\d+)?\))\s*\^\s*-?\d+\s*$/;
 
 function verifierBrut(brut) {
   const probs = [];

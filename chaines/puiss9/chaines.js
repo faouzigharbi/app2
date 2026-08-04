@@ -24,6 +24,8 @@
   const REGLE_PRODUIT = 'a^n × a^p = a^(n+p)';
   const REGLE_PUIS = '(a^n)^p = a^(n×p)';
   const REGLE_MEME_EXP = 'a^n × b^n = (a × b)^n';
+  const REGLE_QUOTIENT = 'a^n : a^p = a^(n-p)';
+  const REGLE_NEGATIF = 'a^(-n) = 1 : a^n';
 
   // ── Découpe respectant les parenthèses ──────────────────────────────────
   function couper(s, seps) {
@@ -47,33 +49,72 @@
     return parts.map((x, i) => ({ t: x.t, signe: i === 0 ? '+' : parts[i - 1].op }));
   };
 
-  // ── Base primitive d'un entier : 144 → (12, 2), 216 → (6, 3), 7 → (7, 1) ──
+  // ── LA COUCHE RATIONNELLE ────────────────────────────────────────────────
+  //
+  // En 7ème tout était entier. Dès la 8ème, la base est un rationnel — « (3/7)⁻⁹ »
+  // — et l'exposant peut être négatif. Le raisonnement ne change pas ; seule
+  // l'arithmétique s'élargit, et un entier n'est plus qu'un rationnel de
+  // dénominateur 1.
   const bpgcd = (a, b) => { while (b) { const t = a % b; a = b; b = t; } return a; };
+  const bigpgcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b;
+                              while (b) { const t = a % b; a = b; b = t; } return a; };
+  const Q = (n, d) => { d = d === undefined ? 1n : d;
+                        if (d < 0n) { n = -n; d = -d; }
+                        const g = bigpgcd(n, d) || 1n;
+                        return { n: n / g, d: d / g }; };
+  const qEgaux = (a, b) => a.n === b.n && a.d === b.d;
+  const qFois = (a, b) => Q(a.n * b.n, a.d * b.d);
+  const qTxt = q => (q.d === 1n ? String(q.n) : q.n + '/' + q.d);
+  const qEntier = q => q.d === 1n;
 
-  function primitive(v) {
-    const f = F.facteurs(v);
-    const bases = Object.keys(f);
-    if (!bases.length) return null;                 // 1 n'a pas de base
+  // LA BASE PRIMITIVE D'UN RATIONNEL. 4/25 vaut (2/5)², 8/27 vaut (2/3)³, et
+  // −8/27 vaut (−2/3)³. On lit l'exposant sur le pgcd des exposants premiers,
+  // ceux du dénominateur comptés négativement.
+  //
+  // Le signe impose sa loi : un nombre NÉGATIF n'est qu'une puissance IMPAIRE.
+  // −4/25 vaut (2/5)² en valeur absolue, mais aucune puissance ne rend −4/25 ;
+  // on rabat donc l'exposant sur son plus grand diviseur impair.
+  function primitive(q) {
+    if (typeof q === 'bigint') q = Q(q, 1n);
+    if (!q || q.n === 0n) return null;
+    const neg = q.n < 0n;
+    const fh = F.facteurs(neg ? -q.n : q.n), fb = F.facteurs(q.d);
+    const exps = {};
+    for (const p of Object.keys(fh)) exps[p] = (exps[p] || 0) + fh[p];
+    for (const p of Object.keys(fb)) exps[p] = (exps[p] || 0) - fb[p];
+    const bases = Object.keys(exps).filter(p => exps[p] !== 0);
+    if (!bases.length) return null;                  // 1 ou −1 n'ont pas de base
     let g = 0;
-    for (const b of bases) g = bpgcd(g, f[b]);
-    let base = 1n;
-    for (const b of bases) base *= BigInt(b) ** BigInt(f[b] / g);
-    return { base: base, exp: g };
+    for (const p of bases) g = bpgcd(g, Math.abs(exps[p]));
+    if (neg) while (g % 2 === 0) g /= 2;
+    let bn = 1n, bd = 1n;
+    for (const p of bases) {
+      const e = exps[p] / g;
+      if (e > 0) bn *= BigInt(p) ** BigInt(e); else bd *= BigInt(p) ** BigInt(-e);
+    }
+    if (neg) bn = -bn;
+    return { base: Q(bn, bd), exp: g, exps: exps, bases: bases };
   }
 
-  // La valeur entière d'un facteur écrit — « (7^4)^3 » vaut 7^12. On la garde
-  // en BigInt : ces nombres passent allègrement le milliard.
-  function entier(texte) {
+  // La valeur d'un facteur écrit — « (7^4)^3 » vaut 7^12, « (3/7)^-2 » vaut
+  // 49/9. On la garde en BigInt : ces nombres passent allègrement le milliard.
+  function ratDe(texte) {
     const v = F.analyser(texte);
     const ks = Object.keys(v);
     // Zéro n'a AUCUN terme, pas un terme nul : « 35¹⁷ × 0³³ » vaut 0, et sans
     // ce cas il passait pour illisible.
-    if (!ks.length) return 0n;
+    if (!ks.length) return Q(0n, 1n);
     if (ks.length !== 1) return null;
     const t = v[ks[0]];
-    if (Object.keys(t.e).length) return null;       // il reste un radical
-    if (t.c.d !== 1n) return null;                  // ce n'est pas un entier
-    return t.c.n;
+    if (Object.keys(t.e).length) return null;        // il reste un radical
+    return Q(t.c.n, t.c.d);
+  }
+
+  // Là où la 7ème raisonnait, l'entier reste exigé : « 16 × 2⁷ × 32 » n'a pas
+  // de dénominateur, et une chaîne qui en inventerait un serait fausse de ton.
+  function entier(texte) {
+    const q = ratDe(texte);
+    return (q && qEntier(q)) ? q.n : null;
   }
 
   // La base commune à tous les facteurs, et l'exposant de chacun.
@@ -90,7 +131,7 @@
     const vrais = infos.filter(x => x.pr);
     if (!vrais.length) return null;
     const b = vrais[0].pr.base;
-    if (!vrais.every(x => x.pr.base === b)) return null;
+    if (!vrais.every(x => qEgaux(x.pr.base, b))) return null;
     return { base: b, infos };
   }
 
@@ -100,9 +141,11 @@
   // ═══════════════════════════════════════════════════════════════════════
   function produit(item) {
     const fs = facteursDe(item.e);
+    const q = produitEcrit(item, fs);
+    if (q) return q;
     const bc = baseCommune(fs);
     if (!bc) return null;
-    const b = bc.base.toString();
+    const b = bc.base;
     const etapes = [];
 
     // UN SEUL facteur, à deux étages : « (6³)⁵ ». Il n'y a pas de produit à
@@ -120,7 +163,9 @@
     }
 
     // Un facteur est-il écrit tel quel comme puissance de la base ?
-    const ecritTelQuel = x => new RegExp('^' + b + '(\\^\\d+)?$').test(x.t.replace(/\s/g, ''));
+    const bT = qTxt(b);
+    const ecritTelQuel = x => new RegExp('^' + bT.replace(/[/]/g, '\\/') + '(\\^\\d+)?$')
+                                  .test(x.t.replace(/\s/g, ''));
     const aReconnaitre = bc.infos.filter(x => !ecritTelQuel(x));
     const aEtages = fs.some(t => /\)\s*\^/.test(t));
 
@@ -133,30 +178,123 @@
       });
     }
     if (aReconnaitre.length && !aEtages) {
-      etapes.push(['نلاحظ', 'كلّ العوامل قوى للعدد ' + b]);
+      etapes.push(['نلاحظ', 'كلّ العوامل قوى للعدد ' + bT]);
     } else if (!aEtages) {
       // Rien à reconnaître : reste le constat, qui est le geste même de la
       // règle — c'est parce que l'ASSISE est la même qu'on a le droit
       // d'additionner les exposants.
-      etapes.push(['نفس الأساس', 'الأساس هو ' + b + ' في العاملين']);
+      etapes.push(['نفس الأساس', 'الأساس هو ' + bT + ' في العاملين']);
     }
     aReconnaitre.forEach(x => {
       if (/\)\s*\^/.test(x.t)) return;                       // déjà traité
-      etapes.push(['نكتب ' + x.t + ' بالأساس ' + b, x.t + ' = ' + puis(b, x.exp)]);
+      etapes.push(['نكتب ' + x.t + ' بالأساس ' + bT, x.t + ' = ' + puis(b, x.exp)]);
     });
     if (bc.infos.some(x => x.exp === 1) || bc.infos.some(x => x.exp === 0)) {
-      etapes.push(['الأسّ الضمني', 'العدد ' + b + ' هو ' + b + '^1، و ' + b + '^0 يساوي 1']);
+      etapes.push(['الأسّ الضمني', 'العدد ' + bT + ' هو ' + bT + '^1، و ' + bT + '^0 يساوي 1']);
     }
-    if (aReconnaitre.length || aEtages) {
+    // Avec un seul facteur, « on réécrit l'expression » dirait exactement ce
+    // que dira la conclusion : deux étapes pour une seule relation.
+    if ((aReconnaitre.length || aEtages) && bc.infos.length > 1) {
       etapes.push(['نعيد كتابة العبارة', 'A = ' + bc.infos.map(x => puis(b, x.exp)).join(' × ')]);
     }
-    etapes.push([aEtages ? 'القاعدة الثانية' : 'القاعدة', REGLE_PRODUIT]);
     const somme = bc.infos.reduce((a, x) => a + x.exp, 0);
-    etapes.push(['نجمع الأسّة', bc.infos.map(x => x.exp).join(' + ') + ' = ' + somme]);
+    // Un seul facteur : il n'y a rien à additionner, et écrire « 12 = 12 » ne
+    // démontrerait rien — ce serait même une étape interchangeable avec la
+    // conclusion, donc une chaîne sans ordre.
+    if (bc.infos.length > 1) {
+      etapes.push([aEtages ? 'القاعدة الثانية' : 'القاعدة', REGLE_PRODUIT]);
+      etapes.push(['نجمع الأسّة', bc.infos.map(x => x.exp).join(' + ') + ' = ' + somme]);
+    }
     const res = puis(b, somme);
     etapes.push(['النتيجة', 'A = ' + res]);
 
     return finir(item, etapes, res, 'نفس الأساس: نجمع الأسّة', true);
+  }
+
+  // Le chemin de la 8ème : on lit les bases ÉCRITES. Deux d'entre elles peuvent
+  // ne différer que par le signe — « (−6/11)⁸ × (6/11)³ » —, et c'est alors une
+  // étape à part entière : un exposant PAIR efface le signe, un impair le garde.
+  // RAMENER UN FACTEUR À UNE BASE DONNÉE. « (9/16)⁻¹⁹ » se ramène à la base 4/3
+  // parce que 9/16 = (4/3)⁻², et « (27/8)⁻² » à la base 3/2 parce que
+  // 27/8 = (3/2)³. Trois libertés, et elles couvrent tout ce que les feuilles
+  // demandent : la base peut être une PUISSANCE de la référence, son INVERSE,
+  // ou son OPPOSÉE — cette dernière seulement si l'exposant est pair, sans quoi
+  // le signe survivrait et devrait être porté par le résultat.
+  function ramener(x, ref) {
+    const pr = primitive(x.base), pf = primitive(ref);
+    if (!pr || !pf) return null;
+    const inv = Q(pf.base.d, pf.base.n);
+    const cand = [
+      [pf.base, 1], [inv, -1],
+      [Q(-pf.base.n, pf.base.d), 1], [Q(-inv.n, inv.d), -1]
+    ];
+    for (const [bb, sens] of cand) {
+      const pb = primitive(bb);
+      if (!pb || !qEgaux(pr.base, pb.base)) continue;
+      if (pr.exp % pb.exp !== 0) continue;
+      const k = (pr.exp / pb.exp) * sens;
+      // signe : la base ramenée peut être l'opposée de la référence
+      const e2 = k * x.exp;
+      // On ne raisonne pas sur la parité : on VÉRIFIE. Le signe, l'inverse et
+      // la puissance se combinent de trop de façons pour être devinés.
+      const v = ratDe('(' + qTxt(ref) + ')^' + e2);
+      const attendu = ratDe('(' + qTxt(x.base) + ')^' + x.exp);
+      if (!v || !attendu || !qEgaux(v, attendu)) continue;
+      return { exp: e2, change: e2 !== x.exp || !qEgaux(x.base, ref) };
+    }
+    return null;
+  }
+
+  function produitEcrit(item, fs) {
+    const es = fs.map(ecrite);
+    if (es.some(x => !x)) return null;
+
+    // UN SEUL facteur, mais à étages : « (6⁻³)⁷ », « ((5/7)⁻¹²⁰)⁴ ». Pas de
+    // produit à faire — la règle est celle de la puissance d'une puissance,
+    // et l'on montre les exposants se multiplier.
+    if (fs.length === 1) {
+      const x = es[0];
+      if (!x.etages || x.exp === 0) return null;
+      const m = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(item.e.trim());
+      if (!m) return null;
+      const dedans = ecrite(m[1]);
+      if (!dedans) return null;
+      const etapes = [];
+      etapes.push(['القاعدة', REGLE_PUIS]);
+      etapes.push(['الأساس', 'الأساس هو ' + qTxt(x.base)]);
+      etapes.push(['نضرب الأسّين',
+                   '(' + dedans.exp + ') × (' + m[2] + ') = ' + x.exp]);
+      if (x.exp < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+      etapes.push(['النتيجة', 'A = ' + puis(x.base, x.exp)]);
+      return finir(item, etapes, puis(x.base, x.exp),
+                   'قوّة القوّة: نضرب الأسّين', true);
+    }
+    if (fs.length < 2) return null;
+
+    // La référence : la base la plus simple qui ramène toutes les autres.
+    let ref = null, ramene = null;
+    for (const c of es) {
+      const essai = es.map(x => ramener(x, c.base));
+      if (essai.every(Boolean)) { ref = c.base; ramene = essai; break; }
+    }
+    if (!ref) return null;
+
+    const somme = ramene.reduce((a, x) => a + x.exp, 0);
+    if (somme === 0) return null;
+    const etapes = [];
+    es.forEach((x, i) => {
+      if (!ramene[i].change) return;
+      etapes.push(['نرجع ' + x.baseTxt + ' إلى الأساس ' + qTxt(ref),
+                   puis(x.base, x.exp) + ' = ' + puis(ref, ramene[i].exp)]);
+    });
+    etapes.push(['القاعدة', REGLE_PRODUIT]);
+    etapes.push(['نفس الأساس', 'الأساس هو ' + qTxt(ref) + ' في كلّ العوامل']);
+    etapes.push(['نجمع الأسّة',
+                 ramene.map(x => (x.exp < 0 ? '(' + x.exp + ')' : x.exp)).join(' + ')
+                 + ' = ' + somme]);
+    if (somme < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+    etapes.push(['النتيجة', 'A = ' + puis(ref, somme)]);
+    return finir(item, etapes, puis(ref, somme), 'نفس الأساس: نجمع الأسّة', true);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -167,6 +305,8 @@
   function memeExposant(item) {
     const fs = facteursDe(item.e);
     if (fs.length < 2) return null;
+    const q = memeExposantEcrit(item, fs);
+    if (q) return q;
     const infos = [];
     for (const t of fs) {
       const v = entier(t);
@@ -179,22 +319,42 @@
     for (const x of infos) n = bpgcd(n, x.pr.exp);
     if (n < 2) return null;
     // la base de chaque facteur pour cet exposant commun
-    infos.forEach(x => { x.base = x.pr.base ** BigInt(x.pr.exp / n); });
+    infos.forEach(x => { x.base = Q(x.pr.base.n ** BigInt(x.pr.exp / n),
+                                    x.pr.base.d ** BigInt(x.pr.exp / n)); });
 
     const etapes = [];
-    const aRamener = infos.filter(x => x.pr.exp !== n || x.pr.base !== x.base);
+    const aRamener = infos.filter(x => x.pr.exp !== n || !qEgaux(x.pr.base, x.base));
     aRamener.forEach(x => {
-      etapes.push(['نعيد كتابة ' + x.t, x.t + ' = ' + puis(x.base.toString(), n)]);
+      etapes.push(['نعيد كتابة ' + x.t, x.t + ' = ' + puis(x.base, n)]);
     });
     etapes.push(['نفس الأسّ الآن', 'الأسّ هو ' + n + ' في كلّ العوامل']);
     etapes.push(['القاعدة', REGLE_MEME_EXP]);
-    let prod = 1n;
-    infos.forEach(x => { prod *= x.base; });
-    etapes.push(['نضرب الأساسات', infos.map(x => x.base.toString()).join(' × ') + ' = ' + prod]);
-    const res = puis(prod.toString(), n);
+    let prod = Q(1n, 1n);
+    infos.forEach(x => { prod = qFois(prod, x.base); });
+    etapes.push(['نضرب الأساسات',
+                 infos.map(x => qTxt(x.base)).join(' × ') + ' = ' + qTxt(prod)]);
+    const res = puis(prod, n);
     etapes.push(['النتيجة', 'A = ' + res]);
 
     return finir(item, etapes, res, 'نفس الأسّ: نضرب الأساسات', true);
+  }
+
+  // Le chemin de la 8ème : mêmes exposants ÉCRITS, bases quelconques dans ℚ.
+  function memeExposantEcrit(item, fs) {
+    const es = fs.map(ecrite);
+    if (es.some(x => !x)) return null;
+    const n = es[0].exp;
+    if (!es.every(x => x.exp === n) || n === 0) return null;
+    let prod = Q(1n, 1n);
+    es.forEach(x => { prod = qFois(prod, x.base); });
+    const etapes = [];
+    etapes.push(['نفس الأسّ', 'الأسّ هو ' + n + ' في كلّ العوامل']);
+    etapes.push(['القاعدة', REGLE_MEME_EXP]);
+    etapes.push(['نضرب الأساسات',
+                 es.map(x => qTxt(x.base)).join(' × ') + ' = ' + qTxt(prod)]);
+    if (n < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+    etapes.push(['النتيجة', 'A = ' + puis(prod, n)]);
+    return finir(item, etapes, puis(prod, n), 'نفس الأسّ: نضرب الأساسات', true);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -248,7 +408,7 @@
     const total = commun.v * dedans;
     const prT = primitive(total);
     if (!prT || prT.exp < 2) return null;
-    const b = prT.base.toString();
+    const b = prT.base;
 
     const etapes = [];
     etapes.push(['العامل المشترك',
@@ -260,7 +420,7 @@
     etapes.push(['نعيد الكتابة', 'A = ' + commun.u + ' × ' + dedans]);
     // Deux chemins selon que la base commune est celle du facteur ou non.
     const res = puis(b, prT.exp);
-    if (prC.base === prT.base && prD.base === prT.base) {
+    if (qEgaux(prC.base, prT.base) && qEgaux(prD.base, prT.base)) {
       if (dedans.toString() !== puis(b, prD.exp)) {
         etapes.push(['نلاحظ', 'العدد ' + dedans + ' هو ' + puis(b, prD.exp)]);
       }
@@ -291,46 +451,126 @@
     // UNE SEULE puissance, sans rien autour : « 3³ », « 10⁰ ». Il n'y a pas de
     // priorité à trancher — il y a la DÉFINITION à rappeler, et c'est elle que
     // l'exercice vise.
-    const nu = /^\s*(\d+)\s*\^\s*(\d+)\s*$/.exec(item.e);
+    // TOUT ce qui est élevé à la puissance 0 vaut 1, si énorme que soit la
+    // base. « ((20/17)^-2354)^0 » n'a pas à être calculé — et ne PEUT pas
+    // l'être : ce serait un nombre de milliers de chiffres. C'est exactement
+    // ce que l'exercice veut faire comprendre.
+    // La base doit être TOUTE l'expression : « 2² + 5 × 3 − 6⁰ » finit aussi
+    // par « ^0 » sans être une puissance nulle, et la confondre effaçait le
+    // calcul entier.
+    // Une base PARENTHÉSÉE seulement : « 10⁰ » a sa propre chaîne, celle de la
+    // définition, et n'a pas besoin de l'argument « inutile de calculer ».
+    const zero = /^([([][\s\S]+[)\]])\s*\^\s*\(?\s*0\s*\)?\s*$/.exec(item.e.trim());
+    // et la parenthèse doit VRAIMENT envelopper le tout : « (-3/7)^-2 × (23/67)^0 »
+    // commence et finit par une parenthèse sans être parenthésé.
+    const enveloppe = t => {
+      if (/^\d+$/.test(t)) return true;
+      let prof = 0;
+      for (let i = 0; i < t.length; i++) {
+        const c = t[i];
+        if (c === '(' || c === '[') prof++;
+        else if (c === ')' || c === ']') { prof--; if (!prof && i < t.length - 1) return false; }
+      }
+      return prof === 0;
+    };
+    if (zero && enveloppe(zero[1].trim())) {
+      etapes.push(['القاعدة', 'كلّ عدد غير منعدم مرفوع للأسّ 0 يساوي 1']);
+      etapes.push(['لا حاجة للحساب',
+                   'مهما كان ' + zero[1].trim() + '، الأسّ 0 يحسم']);
+      // « نطبّق » disait déjà ce que dit « النتيجة » : deux étapes pour une
+      // relation. On montre plutôt le geste — l'exposant tombe sur la base
+      // entière — puis on conclut.
+      etapes.push(['نطبّق على العبارة كلّها',
+                   'الأسّ 0 يقع على ' + zero[1].trim() + ' بأكمله']);
+      etapes.push(['النتيجة', 'A = 1']);
+      return finir(item, etapes, '1', 'الأسّ 0 يحسم قبل كلّ حساب', false);
+    }
+
+    // « (3/4)^-2 » seul : la définition suffit. Mais « (-3/2)^3 × (-9/4)^-2 »
+    // est un produit — il passe par la réduction ordinaire.
+    const nu = /^\s*[([]?\s*(-?\d+(?:[,.]\d+)?(?:\s*\/\s*-?\d+)?)\s*[)\]]?\s*\^\s*\(?\s*(-?\d+)\s*\)?\s*$/.exec(item.e);
     if (nu) {
       const [, b, n] = nu;
-      const val = entier(item.e);
+      const val = ratDe(item.e);
       if (val === null) return null;
       if (Number(n) === 0) {
         etapes.push(['القاعدة', 'كلّ عدد غير منعدم مرفوع للأسّ 0 يساوي 1']);
         etapes.push(['لماذا', 'لأنّ ' + b + '^n : ' + b + '^n = 1، و هو أيضا ' + b + '^(n-n)']);
         etapes.push(['نطبّق', 'A = ' + b + '^0']);
         etapes.push(['النتيجة', 'A = 1']);
+      } else if (Number(n) < 0) {
+        // L'exposant négatif : c'est l'INVERSE, pas l'opposé. La faute est là,
+        // et l'exercice ne sert qu'à elle.
+        const k = -Number(n);
+        etapes.push(['القاعدة', REGLE_NEGATIF]);
+        etapes.push(['ما معنى ذلك', 'الأسّ السالب يعطي المقلوب، لا المقابل']);
+        const p = ratDe('(' + b + ')^' + k);
+        etapes.push(['نحسب القوّة الموجبة', '(' + b + ')^' + k + ' = ' + qTxt(p)]);
+        // Les parenthèses ne sont pas décoratives : « 1 : 9/16 » se lit
+        // (1 : 9) / 16, ce qui est faux. Le quotient doit être enveloppé.
+        etapes.push(['نأخذ المقلوب',
+                     '1 : (' + qTxt(p) + ') = ' + qTxt(val)]);
+        etapes.push(['النتيجة', 'A = ' + qTxt(val)]);
       } else {
+        const m = Number(n);
         etapes.push(['القاعدة', 'a^n هو جداء n عاملا كلّها a']);
         etapes.push(['ما معنى ذلك',
-                     b + '^' + n + ' = ' + Array(Number(n)).fill(b).join(' × ')]);
-        etapes.push(['نحسب', Array(Number(n)).fill(b).join(' × ') + ' = ' + val]);
-        etapes.push(['النتيجة', 'A = ' + val]);
+                     '(' + b + ')^' + n + ' = ' + Array(m).fill('(' + b + ')').join(' × ')]);
+        etapes.push(['نحسب', Array(m).fill('(' + b + ')').join(' × ') + ' = ' + qTxt(val)]);
+        etapes.push(['النتيجة', 'A = ' + qTxt(val)]);
       }
-      return finir(item, etapes, String(val), 'ارجع إلى تعريف القوّة', false);
+      return finir(item, etapes, qTxt(val), 'ارجع إلى تعريف القوّة', false);
     }
 
     const vu = new Set([e]);
     etapes.push(['نحدّد الأولوية', 'الأقواس أوّلا، ثمّ القوى، ثمّ الضرب و القسمة، ثمّ الجمع و الطرح']);
 
+    // Une réduction doit rester une EXPRESSION : si une étape sort déséquilibrée
+    // — « (81 » —, la chaîne est fausse même quand la valeur finale est juste.
+    // On abandonne alors, et une autre voie prendra la question.
+    const equilibre = t => {
+      let prof = 0;
+      for (const c of String(t)) {
+        if (c === '(' || c === '[') prof++;
+        else if (c === ')' || c === ']') { prof--; if (prof < 0) return false; }
+      }
+      return prof === 0;
+    };
     for (let garde = 0; garde < 12; garde++) {
       const suivant = reduire(e);
+      if (suivant && !equilibre(suivant)) return null;
       if (!suivant || suivant === e || vu.has(suivant)) break;
       vu.add(suivant);
       etapes.push([libelle(e, suivant), e + ' = ' + suivant]);
       e = suivant;
     }
-    const val = entier(item.e);
+    const val = ratDe(item.e);
     if (val === null) return null;
-    if (String(val) !== e) etapes.push(['ننجز آخر عملية', e + ' = ' + val]);
-    etapes.push(['النتيجة', 'A = ' + val]);
+    if (qTxt(val) !== e) etapes.push(['ننجز آخر عملية', e + ' = ' + qTxt(val)]);
+    etapes.push(['النتيجة', 'A = ' + qTxt(val)]);
     if (etapes.length < 4) return null;
-    return finir(item, etapes, String(val), 'القوى قبل الضرب، و الضرب قبل الجمع', false);
+    return finir(item, etapes, qTxt(val), 'القوى قبل الضرب، و الضرب قبل الجمع', false);
 
     // Un seul cran de réduction : la parenthèse la plus profonde, sinon toutes
     // les puissances, sinon tous les produits, sinon la somme.
     function reduire(s) {
+      // Une parenthèse SUIVIE D'UN EXPOSANT est un bloc : « (−9/4)⁻² ». La
+      // dépouiller de ses parenthèses avant d'élever changerait le sens —
+      // « −9/4^−2 » n'est pas « (−9/4)^−2 ». On abat donc la puissance d'abord.
+      const bloc = /\(([^()]+)\)\s*\^\s*\(?(-?\d+)\)?/.exec(s);
+      // Un entier positif entre parenthèses n'a pas besoin d'elles : « (3)^2 »
+      // se lit « 3^2 », et le montrer est déjà une étape.
+      if (bloc && /^\d+$/.test(bloc[1].trim())) {
+        return (s.slice(0, bloc.index) + bloc[1].trim() + '^' + bloc[2]
+                + s.slice(bloc.index + bloc[0].length)).trim();
+      }
+      if (bloc && /^-?\d+(\/\d+)?$/.test(bloc[1].trim())) {
+        const v = ratDe(bloc[0]);
+        if (v === null) return null;
+        const t = qTxt(v);
+        return (s.slice(0, bloc.index) + (v.n < 0n ? '(' + t + ')' : t)
+                + s.slice(bloc.index + bloc[0].length)).trim();
+      }
       const par = /\(([^()]+)\)/.exec(s);
       if (par) {
         // Une parenthèse ne tombe pas d'un coup : on y applique d'abord un cran
@@ -338,7 +578,7 @@
         // « (8 + 5 × 3)^2 » se réglerait en une ligne, et l'élève ne verrait
         // jamais que le produit passe avant la somme.
         const dedans = par[1].trim();
-        if (!/^\d+$/.test(dedans)) {
+        if (!/^-?\d+(\/\d+)?$/.test(dedans)) {
           const mieux = reduire(dedans);
           if (!mieux) return null;
           return (s.slice(0, par.index) + '(' + mieux + ')'
@@ -346,20 +586,30 @@
         }
         return (s.slice(0, par.index) + dedans + s.slice(par.index + par[0].length)).trim();
       }
-      if (/\d\s*\^\s*\d/.test(s)) {
-        return s.replace(/(\d+)\s*\^\s*(\d+)/g, (m) => String(entier(m)));
+      if (/\^/.test(s)) {
+        // les puissances parenthésées d'abord — « (-9/4)^-2 » est un bloc
+        let out = s.replace(/\(([^()]+)\)\s*\^\s*\(?(-?\d+)\)?/g, (m) => {
+          const v = ratDe(m); return v === null ? m : '(' + qTxt(v) + ')';
+        });
+        if (out !== s) return out.replace(/\((-?\d+(?:\/\d+)?)\)/g, '$1').trim();
+        return s.replace(/(\d+)\s*\^\s*\(?(-?\d+)\)?/g, (m) => {
+          const v = ratDe(m); return v === null ? m : qTxt(v);
+        });
       }
+      // Un produit de puissances déjà réduites : on le calcule d'un coup, mais
+      // seulement une fois les puissances tombées — sinon on sauterait l'étape
+      // qui compte.
       if (/×|\*/.test(s)) {
         return couper(s, '+-').map((x, i, t) => {
-          const v = entier(x.t);
-          return (i ? t[i - 1].op + ' ' : '') + v;
+          const v = ratDe(x.t);
+          return (i ? t[i - 1].op + ' ' : '') + (v === null ? x.t : qTxt(v));
         }).join(' ');
       }
       // Il ne reste qu'une somme : c'est le dernier cran, et il sert surtout
       // À L'INTÉRIEUR d'une parenthèse — « (4 + 12)^2 » ne se réduit pas sans lui.
       if (/[+\-]/.test(s)) {
-        const v = entier(s);
-        return v === null ? null : String(v);
+        const v = ratDe(s);
+        return v === null ? null : qTxt(v);
       }
       return null;
     }
@@ -408,8 +658,8 @@
     etapes.push(['نجمّع', v + ' = (' + bases.map(b => puis(b, f[b] / pr.exp)).join(' × ')
                              + ')^' + pr.exp]);
     etapes.push(['نحسب الأساس', bases.map(b => puis(b, f[b] / pr.exp)).join(' × ')
-                                + ' = ' + pr.base]);
-    const res = puis(pr.base.toString(), pr.exp);
+                                + ' = ' + qTxt(pr.base)]);
+    const res = puis(pr.base, pr.exp);
     etapes.push(['النتيجة', 'A = ' + res]);
     return finir(item, etapes, res, 'فكّك العدد إلى عوامل أوّلية، ثمّ اقرأ الأسّ', true);
   }
@@ -442,14 +692,151 @@
     etapes.push(['نكتب في صيغة قوّة',
                  'A = (' + bases.map(b => puis(b, f[b] / pr.exp)).join(' × ') + ')^' + pr.exp]);
     etapes.push(['نحسب الأساس',
-                 bases.map(b => puis(b, f[b] / pr.exp)).join(' × ') + ' = ' + pr.base]);
-    const res = puis(pr.base.toString(), pr.exp);
+                 bases.map(b => puis(b, f[b] / pr.exp)).join(' × ') + ' = ' + qTxt(pr.base)]);
+    const res = puis(pr.base, pr.exp);
     etapes.push(['النتيجة', 'A = ' + res]);
     return finir(item, etapes, res, 'مرّ بالعوامل الأوّلية: الأسّة تنكشف هناك', true);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // QUOTIENT DE MÊME BASE — « 7⁵ / 7² », « (−3)⁻⁸ / (−3)⁷ », « (6/7)⁵ / (6/7)⁻⁷ ».
+  //
+  // La règle soustrait les exposants, et c'est là que l'exposant négatif entre
+  // dans le chapitre : « (−3)⁻⁸ / (−3)⁷ » donne (−3)⁻¹⁵. L'élève qui croit
+  // qu'on divise les exposants, ou qu'un exposant négatif rend le nombre
+  // négatif, se trompe ici et pas ailleurs.
+  // ═══════════════════════════════════════════════════════════════════════
+  // Ce que l'énoncé ÉCRIT : « (−3)^-8 » donne la base −3 et l'exposant −8.
+  // Il faut le lire au lieu de le recalculer, car la valeur perd le signe et
+  // le sens de l'exposant : (−3)⁻⁸ est positif, et (6/7)⁻⁷ se lit (7/6)⁷ si
+  // l'on ne regarde que le nombre. La règle du chapitre porte sur l'écriture.
+  function ecrite(t) {
+    let s = String(t).trim();
+    const m = /^([\s\S]*?)\^\s*\(?\s*(-?\d+)\s*\)?$/.exec(s);
+    let baseTxt = (m ? m[1] : s).trim();
+    const exp = m ? Number(m[2]) : 1;
+    let garde = 0;
+    while (garde++ < 6 && /^[([][\s\S]*[)\]]$/.test(baseTxt)) {
+      // n'éplucher que si la parenthèse enveloppe VRAIMENT tout : « (a)(b) »
+      // commence et finit par une parenthèse sans être parenthésé.
+      let prof = 0, tout = true;
+      for (let i = 0; i < baseTxt.length; i++) {
+        const c = baseTxt[i];
+        if (c === '(' || c === '[') prof++;
+        else if (c === ')' || c === ']') { prof--; if (!prof && i < baseTxt.length - 1) tout = false; }
+      }
+      if (!tout) break;
+      baseTxt = baseTxt.slice(1, -1).trim();
+    }
+    // La base peut être ELLE-MÊME une puissance : « ((5/7)⁻¹²⁰)⁴ ». On descend,
+    // et les exposants se multiplient — c'est la règle (aⁿ)ᵖ, lue à la source.
+    if (/\^/.test(baseTxt)) {
+      const dessous = ecrite(baseTxt);
+      if (!dessous) return null;
+      return { baseTxt: dessous.baseTxt, base: dessous.base,
+               exp: dessous.exp * exp, etages: (dessous.etages || 0) + 1 };
+    }
+    if (/[()[\]×*+]/.test(baseTxt)) return null;     // base composée : on renonce
+    const b = ratDe(baseTxt);
+    if (!b || b.n === 0n) return null;
+    return { baseTxt, base: b, exp };
+  }
+
+  function quotient(item) {
+    const parts = couper(item.e, '/:').map(x => x.t);
+    if (parts.length !== 2) return null;
+    const [hautT, basT] = parts;
+    const vh = ratDe(hautT), vb = ratDe(basT);
+    if (!vh || !vb || vh.n === 0n || vb.n === 0n) return null;
+    const ph = primitive(vh), pb = primitive(vb);
+    if (!ph || !pb) return null;
+
+    // D'abord ce qui est écrit : c'est là que la règle a un sens.
+    const eh0 = ecrite(hautT), eb0 = ecrite(basT);
+    if (eh0 && eb0 && qEgaux(eh0.base, eb0.base)) {
+      const diff = eh0.exp - eb0.exp;
+      if (diff === 0) return null;
+      const etapes = [];
+      etapes.push(['القاعدة', REGLE_QUOTIENT]);
+      etapes.push(['نفس الأساس',
+                   'الأساس هو ' + qTxt(eh0.base) + ' في البسط و المقام']);
+      etapes.push(['نطرح الأسّين',
+                   eh0.exp + ' - (' + eb0.exp + ') = ' + diff]);
+      if (diff < 0) etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+      etapes.push(['النتيجة', 'A = ' + puis(eh0.base, diff)]);
+      return finir(item, etapes, puis(eh0.base, diff),
+                   'نفس الأساس: نطرح الأسّين', true);
+    }
+
+    // Une base commune aux deux étages, écrite ou à découvrir.
+    let b = null, eh = 0, eb = 0;
+    if (qEgaux(ph.base, pb.base)) { b = ph.base; eh = ph.exp; eb = pb.exp; }
+    else {
+      // « 9³ / 4³ » : bases différentes, MÊME exposant — c'est l'autre règle.
+      const n = bpgcd(ph.exp, pb.exp);
+      if (n < 2) return null;
+      const bh = Q(ph.base.n ** BigInt(ph.exp / n), ph.base.d ** BigInt(ph.exp / n));
+      const bb = Q(pb.base.n ** BigInt(pb.exp / n), pb.base.d ** BigInt(pb.exp / n));
+      const etapes = [];
+      etapes.push(['نفس الأسّ', 'الأسّ هو ' + n + ' في البسط و المقام']);
+      etapes.push(['القاعدة', 'a^n : b^n = (a : b)^n']);
+      const q = Q(bh.n * bb.d, bh.d * bb.n);
+      etapes.push(['نقسم الأساسين', qTxt(bh) + ' : ' + qTxt(bb) + ' = ' + qTxt(q)]);
+      etapes.push(['النتيجة', 'A = ' + puis(q, n)]);
+      return finir(item, etapes, puis(q, n), 'نفس الأسّ: نقسم الأساسين', true);
+    }
+
+    // Les exposants tels qu'ils sont ÉCRITS, quand ils le sont : la règle porte
+    // sur eux, et l'élève doit les voir se soustraire.
+    const bT = qTxt(b);
+    const nh = eh, nb = eb;
+    const diff = nh - nb;
+    if (diff === 0) return null;
+
+    const etapes = [];
+    etapes.push(['القاعدة', REGLE_QUOTIENT]);
+    etapes.push(['نفس الأساس', 'الأساس هو ' + bT + ' في البسط و المقام']);
+    etapes.push(['نطرح الأسّين', nh + ' - (' + nb + ') = ' + diff]);
+    if (diff < 0) {
+      etapes.push(['أسّ سالب', REGLE_NEGATIF]);
+    }
+    etapes.push(['النتيجة', 'A = ' + puis(b, diff)]);
+    return finir(item, etapes, puis(b, diff), 'نفس الأساس: نطرح الأسّين', true);
+  }
+
+  // Le recours des rationnels : on ne reconnaît aucune forme, mais la VALEUR
+  // est une puissance. « 3⁷ × 2⁻⁴ / (3² × 2⁻⁹) » vaut 3⁵ × 2⁵, donc 6⁵.
+  function parLesPremiersQ(item) {
+    const q = ratDe(item.e);
+    if (!q || q.n === 0n) return null;
+    const pr = primitive(q);
+    if (!pr || pr.exp < 2) return null;
+    const etapes = [];
+    etapes.push(['نحسب العبارة', 'A = ' + qTxt(q)]);
+    etapes.push(['نفكّك إلى عوامل أوّلية',
+                 qTxt(q) + ' = ' + pr.bases.map(b => puis(BigInt(b), pr.exps[b])).join(' × ')]);
+    etapes.push(['أسّة كلّها مضاعفات لـ ' + pr.exp,
+                 pr.bases.map(b => pr.exps[b]).join(' و ') + ' مضاعفات للعدد ' + pr.exp]);
+    etapes.push(['نجمّع', 'A = (' + pr.bases.map(b => puis(BigInt(b), pr.exps[b] / pr.exp))
+                          .join(' × ') + ')^' + pr.exp]);
+    etapes.push(['نحسب الأساس', qTxt(pr.base) + ' هو الأساس']);
+    etapes.push(['النتيجة', 'A = ' + puis(pr.base, pr.exp)]);
+    return finir(item, etapes, puis(pr.base, pr.exp),
+                 'مرّ بالعوامل الأوّلية: الأسّة تنكشف هناك', true);
+  }
+
   // ── Commun ──────────────────────────────────────────────────────────────
-  const puis = (b, e) => (e === 1 ? String(b) : b + '^' + e);
+  // L'écriture d'une puissance : « 3^7 », « (3/7)^-9 », « (-2/3)^3 ». Les
+  // parenthèses ne sont pas décoratives — « -2/3^3 » ne veut pas dire la même
+  // chose, et « 3/7^-9 » non plus.
+  function puis(b, e) {
+    const q = (typeof b === 'object' && b !== null && 'n' in b)
+            ? b : Q(BigInt(b), 1n);
+    const s = qTxt(q);
+    const nu = qEntier(q) && q.n >= 0n;
+    const t = nu ? s : '(' + s + ')';
+    return e === 1 ? t : t + '^' + e;
+  }
 
   function finir(item, etapes, res, indice, forme) {
     return {
@@ -468,12 +855,13 @@
   // « 16000 × 5⁴ » ressemble à un produit, mais seule la voie des facteurs
   // premiers en vient à bout.
   const PAR_FAMILLE = {
-    'produit': [produit, parLesPremiers],
-    'base-commune': [produit, parLesPremiers, memeExposant],
-    'puissance-de-puissance': [produit, parLesPremiers],
-    'meme-exposant': [memeExposant, produit, parLesPremiers],
+    'produit': [produit, memeExposant, parLesPremiersQ, parLesPremiers],
+    'base-commune': [produit, parLesPremiers, parLesPremiersQ, memeExposant],
+    'puissance-de-puissance': [produit, memeExposant, parLesPremiersQ, parLesPremiers],
+    'meme-exposant': [memeExposant, produit, parLesPremiersQ, parLesPremiers],
     'facteur-commun': [facteurCommun, parLesPremiers],
     'decomposer': [decomposer],
+    'quotient': [quotient, parLesPremiersQ, parLesPremiers],
     'calcul': [calcul]
   };
 
@@ -490,7 +878,8 @@
     return null;
   }
 
-  const API = { chaine, produit, memeExposant, facteurCommun, calcul,
+  const API = { chaine, produit, memeExposant, facteurCommun, calcul, quotient,
+                parLesPremiersQ,
                 decomposer, parLesPremiers, baseCommune };
   if (M) module.exports = API; else racine.Chaines = API;
 })(typeof window !== 'undefined' ? window : globalThis);

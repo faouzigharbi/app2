@@ -204,8 +204,11 @@
 
   // p.10 ex2 — écrire sous forme de puissance d'exposant ≠ 1
   lot('سلسلة القوى p10 ex2', 'base-commune', 7, 'difficile', [
-    '5^3 × (5^2)^4 × 625', '(11^3 × 121^5)^2 × 11'
+    '5^3 × (5^2)^4 × 625'
   ]);
+  // « (11³ × 121⁵)² × 11 » vaut 11²⁷. Sa chaîne écrirait deux fois la même
+  // relation — le facteur parenthésé et le produit refait — et deux étapes
+  // interchangeables ne font pas une démonstration. Écarté, et dit.
   lot('سلسلة القوى p10 ex2', 'facteur-commun', 7, 'moyen', [
     '3^4 + 3^4 + 3^4', '3 × 5^5 + 2 × 5^5', '16^11 + 16^11',
     '27^11 + 27^11 + 27^11'
@@ -244,6 +247,201 @@
   //   Ce sont d'excellents exercices, mais d'un AUTRE genre que la chaîne de
   //   démonstration : ils demandent de compléter, non de dérouler. Ils feront
   //   une famille à part, le jour où on la fera.
+  // ═══════════════════════════════════════════════════════════════════════
+
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 8ème — « القوى في مجموعة الأعداد الكسرية », riadhyet (Puiss_Q_part2)
+  //
+  // Tout change de nature ici : la base devient un rationnel, l'exposant peut
+  // être négatif, et le résultat s'écrit « (3/7)⁻⁹ » et non plus « 3⁷ ».
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ex2 — produit de puissances de même base, dans ℚ
+  lot('Puiss_Q ex2', 'produit', 8, 'facile', [
+    '3^2 × 3^5', '(3/7)^-4 × (3/7)^-5', '(-4)^-2 × (-4)^7',
+    '(-6/11)^8 × (6/11)^3', '(6,3)^5 × (6,3)^-12'
+  ]);
+  lot('Puiss_Q ex2', 'puissance-de-puissance', 8, 'moyen', [
+    '(5^3)^6', '(6^-3)^7', '((-8)^5)^4', '(((-5/7)^-7))^-5'
+  ]);
+  lot('Puiss_Q ex2', 'meme-exposant', 8, 'moyen', [
+    '9^3 × (-2)^3', '(-1,1)^-6 × 4^-6', '(9/14)^8 × (-7/6)^8'
+  ]);
+  lot('Puiss_Q ex2', 'quotient', 8, 'facile', [
+    '7^5/7^2', '(-3)^-8/(-3)^7', '(9,5)^4/(9,5)^10',
+    '(-2,19)^-4/(-2,19)^-7', '(6/7)^5/(6/7)^-7', '(5/7)^-9/(-5/7)^6'
+  ]);
+  lot('Puiss_Q ex2', 'quotient', 8, 'moyen', [
+    '9^3/4^3', '(7/3)^-3/(-5/4)^-3', '(-10)^-6/(-9)^-6', '(-7)^11/5^11'
+  ]);
+  lot('Puiss_Q ex2', 'quotient', 8, 'difficile', [
+    '3^7 × 2^-4/(3^2 × 2^-9)', '(63/50)^-8/(21/20)^-8'
+  ]);
+
+  // ex3 — calculs, et l'exposant négatif rencontré pour lui-même
+  lot('Puiss_Q ex3', 'calcul', 8, 'facile', [
+    '(-2)^3', '(-3)^2', '5^-2', '(-2/5)^2', '(3/4)^-2', '(-1)^4', '1^-3'
+  ]);
+  lot('Puiss_Q ex3', 'calcul', 8, 'moyen', [
+    '(-3/7)^-2 × (23/67)^0'
+  ]);
+  lot('Puiss_Q ex3', 'produit', 8, 'moyen', [
+    '(-3)^5 × (-3)^6'
+  ]);
+  lot('Puiss_Q ex3', 'meme-exposant', 8, 'difficile', [
+    '(-5)^4 × 3^4'
+  ]);
+  lot('Puiss_Q ex3', 'puissance-de-puissance', 8, 'facile', [
+    '((-2)^3)^4'
+  ]);
+  lot('Puiss_Q ex3', 'quotient', 8, 'moyen', [
+    '(-7)^9/(-7)^4'
+  ]);
+
+  // ex6, ex7 — le même geste, avec des fractions partout
+  lot('Puiss_Q ex6', 'produit', 8, 'moyen', [
+    '(2/5)^3 × (2/5)^-9', '(-5/4)^-6 × (7/5)^-6', '8^-2 × (1/5)^6'
+  ]);
+  lot('Puiss_Q ex6', 'quotient', 8, 'moyen', [
+    '(-5/7)^10/(5/7)^6', '(-11/3)^9/(-5/2)^9'
+  ]);
+  lot('Puiss_Q ex7', 'produit', 8, 'facile', [
+    '(3/5)^-12 × (3/5)^18', '(-1/2)^18 × (1/2)^19', '(11/5)^-17 × 11/5'
+  ]);
+  lot('Puiss_Q ex7', 'puissance-de-puissance', 8, 'moyen', [
+    '((1/2)^3)^-2'
+  ]);
+  lot('Puiss_Q ex7', 'produit', 8, 'difficile', [
+    '(4/3)^18 × (9/16)^-19', '(5^4 × 3^-2)^4 × 3^24'
+  ]);
+
+  // ex8 — quotients de fractions, et la descente vers les puissances de 10
+  lot('Puiss_Q ex8', 'produit', 8, 'moyen', [
+    '(9/5)^-11 × (9/5)^20', '(7/5)^29 × (-7/5)^-8'
+  ]);
+  lot('Puiss_Q ex8', 'quotient', 8, 'facile', [
+    '(7/3)^24/(7/3)^14'
+  ]);
+  lot('Puiss_Q ex8', 'quotient', 8, 'difficile', [
+    '0,001^4 × 1000^-2/(100^-3 × 0,01^-5)'
+  ]);
+  lot('Puiss_Q ex8', 'produit', 8, 'difficile', [
+    '(27/8)^-2 × (3/2)^4'
+  ]);
+
+  // ex9 — les grands exposants, où seule la règle sauve
+  lot('Puiss_Q ex9', 'produit', 8, 'difficile', [
+    '(-6,17)^147 × (-6,17)^23', '(-0,9)^-2009 × (307/333)^-2009'
+  ]);
+  lot('Puiss_Q ex9', 'quotient', 8, 'difficile', [
+    '(-19)^167/(-19)^57'
+  ]);
+  lot('Puiss_Q ex9', 'puissance-de-puissance', 8, 'difficile', [
+    '((5/7)^-120)^4'
+  ]);
+
+  // ex10, ex11, ex12 — la batterie finale
+  lot('Puiss_Q ex10', 'calcul', 8, 'moyen', [
+    '(3/5)^-2', '(-1/2)^3', '((20/17)^-2354)^0'
+  ]);
+  // « (20/17)²⁰¹⁷ × (20/17)⁻²⁰¹⁶ » a pour exposant 1 : la réponse est 20/17,
+  // une valeur et non une puissance. L'item reste, rangé au calcul.
+  lot('Puiss_Q ex10', 'calcul', 8, 'moyen', [
+    '(20/17)^2017 × (20/17)^-2016'
+  ]);
+  lot('Puiss_Q ex10', 'meme-exposant', 8, 'moyen', [
+    '(5/9)^-7 × 3^-7'
+  ]);
+  lot('Puiss_Q ex10', 'produit', 8, 'facile', [
+    '(7/6)^16 × (-7/6)^-5'
+  ]);
+  lot('Puiss_Q ex10', 'quotient', 8, 'moyen', [
+    '10^18/10^-2'
+  ]);
+  lot('Puiss_Q ex10', 'base-commune', 8, 'difficile', [
+    '(7^4)^-3 × 49'
+  ]);
+  lot('Puiss_Q ex11', 'calcul', 8, 'facile', [
+    '(-2/3)^4', '(4/5)^-2', '(-2/3)^3', '(0,75)^-2'
+  ]);
+  lot('Puiss_Q ex11', 'calcul', 8, 'difficile', [
+    '(-3,5)^97/(3,5)^95'
+  ]);
+  lot('Puiss_Q ex11', 'produit', 8, 'moyen', [
+    '(-6/7)^5 × (-6/7)^-9', '(9/4)^-3 × (3/2)^29'
+  ]);
+  lot('Puiss_Q ex11', 'meme-exposant', 8, 'moyen', [
+    '(0,6)^3 × (3/5)^-5'
+  ]);
+  // « (−4,2)⁻³ × (4,2)⁴ » vaut −21/5 : l'exposant y tombe à 1, et une
+  // « puissance » d'exposant 1 n'enseigne rien. Rangé au calcul.
+  lot('Puiss_Q ex11', 'calcul', 8, 'moyen', [
+    '(-4,2)^-3 × (4,2)^4'
+  ]);
+  lot('Puiss_Q ex11', 'puissance-de-puissance', 8, 'difficile', [
+    '((3/5)^4)^-14 × 3/5'
+  ]);
+  lot('Puiss_Q ex11', 'calcul', 8, 'difficile', [
+    '(-3)^19/3^20'
+  ]);
+  lot('Puiss_Q ex12', 'quotient', 8, 'facile', [
+    '(-2/3)^2/(-2/3)^5'
+  ]);
+  lot('Puiss_Q ex12', 'produit', 8, 'moyen', [
+    '16/25 × (-5/4)^5'
+  ]);
+  lot('Puiss_Q ex12', 'calcul', 8, 'difficile', [
+    '(-3/2)^3 × (-9/4)^-2'
+  ]);
+  lot('Puiss_Q ex12', 'puissance-de-puissance', 8, 'moyen', [
+    '((0,2)^-2)^3 × 5^-6'
+  ]);
+  lot('Puiss_Q ex12', 'quotient', 8, 'difficile', [
+    '(10^-1)^2 × 10^3/((10^-3)^-2 × 10^-8)'
+  ]);
+  lot('Puiss_Q ex12', 'facteur-commun', 8, 'difficile', [
+    '(-21)^14 × 5^2 - 2^2 × (-21)^14'
+  ]);
+
+  // ex16, ex17 — puissances de 10 et bases à ramener
+  lot('Puiss_Q ex16', 'calcul', 8, 'moyen', [
+    '(2^-1)^-3', '2^-3 × 2^-5 × 2^8', '10^3 × 10^-7 × 1000'
+  ]);
+  lot('Puiss_Q ex16', 'quotient', 8, 'moyen', [
+    '(1/2)^-3 × 2^4/((1/8)^-1)'
+  ]);
+  lot('Puiss_Q ex17', 'meme-exposant', 8, 'facile', [
+    '2^-16 × 5^-16'
+  ]);
+  lot('Puiss_Q ex17', 'produit', 8, 'facile', [
+    '(4/7)^3 × (4/7)^-12'
+  ]);
+  lot('Puiss_Q ex17', 'quotient', 8, 'facile', [
+    '(2/5)^3/(2/5)^-7'
+  ]);
+  lot('Puiss_Q ex17', 'quotient', 8, 'difficile', [
+    '100 × (10^-4)^-2/10^-12'
+  ]);
+  lot('Puiss_Q ex17', 'puissance-de-puissance', 8, 'difficile', [
+    '((-5/3)^-5)^-3 × 25/9'
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // QUATRE ITEMS DE 8ème DÉPLACÉS, ET POURQUOI
+  //
+  // La consigne y est « أكتب في صيغة قوة لعدد كسري نسبي », mais leur valeur
+  // n'est la puissance d'aucun rationnel — pas avec un exposant supérieur à 1 :
+  //
+  //   7⁴ × 5⁵ vaut 5⁵ × 7⁴, dont les exposants n'ont aucun diviseur commun ;
+  //   (−3,5)⁹⁷ / (3,5)⁹⁵ vaut −49/4, soit −(7/2)² : le signe interdit d'en
+  //     faire une puissance, car aucune puissance ne rend un négatif au carré ;
+  //   (−3)¹⁹ / 3²⁰ vaut −1/3 et (−3/2)³ × (−9/4)⁻² vaut −2/3 : l'exposant y
+  //     tombe à 1, et une « puissance » d'exposant 1 n'enseigne rien.
+  //
+  // Ils restent dans la fiche — ce sont de bons calculs — mais rangés parmi
+  // les calculs, où la réponse attendue est une valeur. La feuille n'est pas
+  // corrigée : elle est relue.
   // ═══════════════════════════════════════════════════════════════════════
 
   // ═══════════════════════════════════════════════════════════════════════
