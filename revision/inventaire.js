@@ -147,7 +147,8 @@
         { n: 13, questions: 2, notions: ['milieux', 'symétrie', 'réciproque des milieux'],
           sort: 'bibliothèque',
           ou: 'quatre questions ; sa seconde partie (I milieu de [MN], G = (MQ)∩(BN)) est tronquée dans la feuille — la question n\'y figure pas' },
-        { n: 14, questions: 2, notions: ['parallélogramme', 'Thalès', 'milieu'], sort: 'à faire' },
+        { n: 14, questions: 2, notions: ['centre d\'un parallélogramme', 'réciproque des milieux', 'ligne des milieux'],
+          sort: 'bibliothèque', ou: 'cinq questions ; le centre O sert de milieu deux fois' },
         { n: 15, questions: 3, notions: ['trapèze', 'projection selon une direction'], sort: 'à faire' }
       ],
       machine: ['« قطرا المستطيل متقايسان » — les diagonales d\'un rectangle sont égales (ex12 q2)',

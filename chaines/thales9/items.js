@@ -1931,6 +1931,59 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex14 — LE CENTRE DU PARALLÉLOGRAMME EST UN MILIEU QUI SERT
+  //
+  // « ABCD متوازي أضلاع مركزه O حيث AB = 8 و BD = 12. المستقيم المارّ من A و
+  // الموازي لـ(BD) يقطع (BC) في E و (CD) في F. »
+  //
+  //   1) بيّن أنّ B منتصف [CE]      2) أحسب EF و CF
+  //
+  // O est le milieu de [AC] — c'est la définition du centre — et (OB) est
+  // portée par (BD), parallèle à (AE) : dans le triangle CAE, la droite des
+  // milieux se lit à l'envers et donne B. Puis, B et D étant les milieux de
+  // [CE] et [CF], le segment [BD] est la ligne des milieux du triangle CEF.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex14', 'probleme', 'difficile', () => {
+    // AB et BD doivent tomber justes : on pose la diagonale par un couple
+    // pythagoricien, et le côté sur l'axe.
+    const [u, v] = F.choix([[3, 4], [4, 3], [6, 8], [5, 12], [8, 15]]);
+    const k = F.ent(1, 3), p = F.ent(3, 9);
+    const A = F.pt(0, 0), B = F.pt(p, 0);
+    const D = F.pt(F.q(p + u * k), F.q(v * k));
+    const C = F.pt(F.q(2 * p + u * k), F.q(v * k));
+    const O = F.milieu(A, C);
+    const E = F.intersection(B, C, A, F.translate(A, B, D));
+    const Fp = F.intersection(C, D, A, F.translate(A, B, D));
+    if (!E || !Fp) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B, C, D, O, E, F: Fp },
+      pgrams: ['ABCD'],
+      milieux: [['O', 'A', 'C'], ['O', 'B', 'D']],
+      para: [[dr('O', 'B'), dr('A', 'E')], [dr('O', 'D'), dr('A', 'F')]],
+      thales: [{ S: 'C', B: 'A', C: 'E', M: 'O', N: 'B' },
+               { S: 'C', B: 'A', C: 'F', M: 'O', N: 'D' },
+               { S: 'C', B: 'E', C: 'F', M: 'B', N: 'D' }],
+      donne: [seg('A', 'B'), seg('B', 'D')],
+      buts: [
+        { but: ['milieu', 'B', 'C', 'E'], question: 'بيّن أنّ B هي منتصف [CE].' },
+        { but: ['milieu', 'D', 'C', 'F'], question: 'بيّن أنّ D هي منتصف [CF].' },
+        { but: ['lg2', seg('E', 'F'), null], question: 'أحسب EF.' },
+        { but: ['lg2', seg('C', 'D'), null], question: 'أحسب CD.' },
+        { but: ['lg2', seg('C', 'F'), null], question: 'استنتج CF.' }
+      ],
+      texte: g => ['ABCD متوازي أضلاع مركزه O حيث AB = ' + g(seg('A', 'B'))
+                   + ' و BD = ' + g(seg('B', 'D')) + '.',
+                   'المستقيم المارّ من A و الموازي لـ (BD) يقطع (BC) في E و (CD) في F.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['A', 'C'], ['B', 'D'], ['E', 'F']],
+                droites: [['B', 'C'], ['C', 'D']],
+                marques: [['A', 'O', 1], ['O', 'C', 1]] },
+      indice: 'O منتصف [AC] : اقلب مبرهنة المنتصفين في المثلّث CAE'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },

@@ -1144,7 +1144,12 @@
         const out = [];
         for (const g of f.pgram) {
           const [A, B, C, D] = g[1].split('');
-          for (const [x, y, u, v] of [[A, B, D, C], [A, D, B, C]]) {
+          // LES DEUX SENS, ET NON UN. La règle donnait [AB] à partir de [DC]
+          // et jamais l'inverse : devant « ABCD parallélogramme, AB = 8,
+          // calcule CD », elle se taisait. Deux côtés opposés sont égaux, et
+          // l'égalité n'a pas de direction.
+          for (const [x, y, u, v] of [[A, B, D, C], [D, C, A, B],
+                                      [A, D, B, C], [B, C, A, D]]) {
             const su = f.lg2.get(seg(u, v));
             if (su && !f.lg2.has(seg(x, y))) {
               out.push({ but: ['lg2', seg(x, y), su],
