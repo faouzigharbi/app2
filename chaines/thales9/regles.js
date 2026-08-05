@@ -249,9 +249,13 @@
         for (const t of ctx.thales || []) {
           const p = ['para', dr(t.M, t.N), dr(t.B, t.C)];
           if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
-          const but = ['prop', seg(t.S, t.M) + '|' + seg(t.S, t.B),
-                              seg(t.S, t.N) + '|' + seg(t.S, t.C),
-                              seg(t.M, t.N) + '|' + seg(t.B, t.C)];
+          // LES RAPPORTS SE LISENT DEPUIS LE SOMMET, comme le maître les
+          // écrit : AM/AB = AN/AC = MN/BC. L'ordre alphabétique des clés de
+          // segment donnait « DI/BD = CD/AD », juste et illisible — la
+          // question posait DI/DB et la réponse répondait DI/BD.
+          const but = ['prop', t.S + t.M + '|' + t.S + t.B,
+                              t.S + t.N + '|' + t.S + t.C,
+                              t.M + t.N + '|' + t.B + t.C];
           if (f.prop.some(x => cleFait(x) === cleFait(but))) continue;
           out.push({ but, depuis: [p], conf: t });
         }

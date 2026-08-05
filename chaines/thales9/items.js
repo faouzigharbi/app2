@@ -181,9 +181,9 @@
         thales: [{ S: nS, B: nB, C: nC, M: nM, N: nN }],
         para: [[dr(nM, nN), dr(nB, nC)]],
         donne: [],
-        but: ['prop', seg(nS, nM) + '|' + seg(nS, nB),
-                      seg(nS, nN) + '|' + seg(nS, nC),
-                      seg(nM, nN) + '|' + seg(nB, nC)],
+        but: ['prop', nS + nM + '|' + nS + nB,
+                      nS + nN + '|' + nS + nC,
+                      nM + nN + '|' + nB + nC],
         texte: () => ['في المثلّث ' + nS + nB + nC + ' لدينا (' + nM + nN
                       + ') // (' + nB + nC + ')،',
                       'و ' + nM + ' ∈ (' + nS + nB + ') و ' + nN
@@ -1176,6 +1176,145 @@
       indice: 'طالس في المثلّث OBE يعطي OD/OE = OA/OB'
     };
   }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES0 2014 ex1 — SEPT QUESTIONS, ET PAS UNE DE MOINS
+  //
+  // « ABC مثلّث بحيث AB = 2 و AC = 3 و D نقطة من [AC] بحيث AD = 1 » — puis
+  // sept questions qui s'appuient l'une sur l'autre :
+  //
+  //   1) I, projeté de C sur (BD) selon (AB) : بيّن أنّ DI/DB = DC/DA = IC/AB
+  //   2) أحسب IC
+  //   3) J, projeté de C sur (AB) selon (BD) : بيّن أنّ BJ = 4
+  //   4) M = (IJ) ∩ (AC) : بيّن أنّ MJ/MI = MA/MC = AJ/IC
+  //   5) بيّن أنّ MA/3 = MC/2
+  //   6) استنتج MA و MC
+  //   7) بيّن أنّ MC² = MA × MD
+  //
+  // On n'en gardait que deux. Le maître le dit depuis le premier jour :
+  // couper un exercice à sa première question, ce n'est pas le raccourcir,
+  // c'est le supprimer — ce qui reste tient en une application de Thalès, et
+  // c'est pourquoi tout sortait « moyen ».
+  //
+  // La septième est une identité, et non un accident du tirage : avec A = 0,
+  // C = c et D = d sur la droite, M = c²/(2c − d), d'où MC² = MA·MD quels que
+  // soient c et d. Le validateur la recalcule sur les coordonnées à chaque
+  // tirage, comme tout le reste.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex1 — سبع مراحل', 'probleme', 'difficile', jolie(() => {
+    const g = triangle();
+    const A = g.A, B = g.B, C = g.C;
+    const mu = rapport();
+    const D = F.surDroite(A, C, mu);                 // D ∈ [AC]
+    // I : sur (BD), tel que (IC) // (AB) — le projeté selon la direction (AB).
+    const Ip = F.intersection(B, D, C, F.translate(C, A, B));
+    // J : sur (AB), tel que (JC) // (BD).
+    const J = F.intersection(A, B, C, F.translate(C, B, D));
+    const Mp = F.intersection(Ip, J, A, C);
+    if (!Ip || !J || !Mp) throw new Error('pose dégénérée');
+    const P = F.plan(1);
+    const rap = F.racQ(F.qDiv(P.carre(A, J), P.carre(Ip, C)));
+    if (!rap) throw new Error('rapport irrationnel');
+    return {
+      K: 1, points: { A, B, C, D, I: Ip, J, M: Mp },
+      thales: [{ S: 'D', B: 'B', C: 'A', M: 'I', N: 'C' },
+               { S: 'A', B: 'B', C: 'D', M: 'J', N: 'C' },
+               { S: 'M', B: 'I', C: 'C', M: 'J', N: 'A' }],
+      // (AJ) et (AB) sont le même mستقيم — J est sur (AB) par construction ;
+      // la figure le montre, et l'énoncé le dit.
+      para: [[dr('I', 'C'), dr('A', 'B')], [dr('J', 'C'), dr('B', 'D')],
+             [dr('A', 'J'), dr('C', 'I')]],
+      entre: [['A', 'D', 'C'], ['A', 'B', 'J'], ['A', 'M', 'C'], ['A', 'D', 'M']],
+      relations: [{ op: 'produit', rapports: [['M', 'A', 'M', 'C']], valeur: rap,
+                    longueurs: [seg('A', 'J'), seg('I', 'C')],
+                    depuis: [[dr('A', 'J'), dr('C', 'I')]] },
+                  { op: 'produit',
+                    rapports: [['M', 'C', 'M', 'A'], ['M', 'C', 'M', 'D']],
+                    valeur: F.Q1,
+                    longueurs: [seg('M', 'A'), seg('M', 'C'), seg('M', 'D')],
+                    depuis: [[dr('A', 'J'), dr('C', 'I')]] }],
+      donne: [seg('A', 'B'), seg('A', 'C'), seg('A', 'D')],
+      buts: [
+        { but: ['prop', 'DI|DB', 'DC|DA', 'IC|BA'],
+          question: 'بيّن أنّ DI/DB = DC/DA = IC/BA.' },
+        { but: ['lg2', seg('I', 'C'), null], question: 'أحسب IC.' },
+        { but: ['lg2', seg('B', 'J'), null], question: 'أحسب BJ.' },
+        { but: ['prop', 'MJ|MI', 'MA|MC', 'JA|IC'],
+          question: 'بيّن أنّ MJ/MI = MA/MC = JA/IC.' },
+        { but: ['relation', 'produit', 'M|A|M|C', rap.n + '/' + rap.d],
+          question: 'بيّن أنّ النّسبة MA/MC تساوي AJ/IC.' },
+        { but: ['lg2', seg('M', 'A'), null], question: 'استنتج MA.' },
+        { but: ['lg2', seg('M', 'C'), null], question: 'استنتج MC.' },
+        { but: ['relation', 'produit', 'M|C|M|A;M|C|M|D', '1/1'],
+          question: 'بيّن أنّ MC² = MA × MD.' }
+      ],
+      texte: g2 => ['ABC مثلّث حيث AB = ' + g2(seg('A', 'B')) + ' و AC = '
+                    + g2(seg('A', 'C')) + '، و D نقطة من [AC] بحيث AD = '
+                    + g2(seg('A', 'D')) + '.',
+                    'I هي مسقط C على (BD) وفقا لمنحى (AB)، و J هي مسقط C على (AB) وفقا لمنحى (BD).',
+                    'M هي نقطة تقاطع (IJ) و (AC).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['B', 'D'],
+                           ['I', 'C'], ['J', 'C'], ['I', 'J']],
+                droites: [['B', 'D'], ['A', 'J']] },
+      indice: 'ثلاث وضعيات لطالس : في المثلّث DBA، ثمّ في ABD، ثمّ الفراشة في M'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // UNE MÊME FIGURE, TOUT LE CHAPITRE — Pythagore (3) مسألة, TRIANGLES9_23
+  //
+  // Le maître le dit : le triangle rectangle — Pythagore, sa réciproque, le
+  // cercle et son diamètre — et le centre de gravité — les médianes, les deux
+  // tiers — SONT des exercices de Thalès. Ils ne sont pas un autre chapitre
+  // qu'on visiterait à côté : ce sont ses conséquences, et ses feuilles les
+  // posent sur la même figure.
+  //
+  // C'est ce qui manquait pour qu'un exercice de Thalès soit difficile. Une
+  // application de Thalès, même répétée sept fois, ne fait choisir qu'une
+  // fois ; ici il faut choisir à chaque pas — Pythagore, puis le cercle
+  // circonscrit, puis les rayons, puis les milieux, puis les deux tiers.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Pythagore (3) مسألة — الشكل الواحد', 'probleme', 'difficile', () => {
+    const [x, y] = F.choix(TRIPLETS);
+    const k = F.ent(1, 3);
+    const A = F.pt(0, 0), B = F.pt(x * k, 0), C = F.pt(F.Q0, F.q(y * k));
+    const Ip = F.milieu(B, C), Mp = F.milieu(A, B), J = F.milieu(A, C);
+    const G = F.plan(1).centreGravite(A, B, C);
+    return {
+      K: 1, points: { A, B, C, I: Ip, M: Mp, J, G },
+      rects: [['B', 'A', 'C']],
+      milieux: [['I', 'B', 'C'], ['M', 'A', 'B'], ['J', 'A', 'C']],
+      gravites: [{ G: 'G', tri: 'ABC', I: 'I', J: 'J' }],
+      // Deux configurations de Thalès sur la même figure : la droite des
+      // milieux [MJ] parallèle à (BC), et [MI] parallèle à (AC).
+      thales: [{ S: 'A', B: 'B', C: 'C', M: 'M', N: 'J' },
+               { S: 'B', B: 'A', C: 'C', M: 'M', N: 'I' }],
+      entre: [['A', 'G', 'I']],
+      donne: [seg('A', 'B'), seg('A', 'C')],
+      buts: [
+        { but: ['lg2', seg('B', 'C'), null], question: 'أحسب BC.' },
+        { but: ['cercle', 'I', 'ABC'],
+          question: 'بيّن أنّ النّقط A و B و C تنتمي إلى دائرة مركزها I.' },
+        { but: ['lg2', seg('I', 'A'), null], question: 'استنتج IA.' },
+        { but: ['para', dr('M', 'I'), dr('A', 'C')],
+          question: 'بيّن أنّ (MI) // (AC).' },
+        { but: ['lg2', seg('M', 'I'), null], question: 'أحسب MI.' },
+        { but: ['lg2', seg('A', 'G'), null], question: 'أحسب AG.' },
+        { but: ['lg2', seg('G', 'I'), null], question: 'استنتج GI.' }
+      ],
+      texte: g2 => ['ABC مثلّث قائم الزاوية في A حيث AB = ' + g2(seg('A', 'B'))
+                    + ' و AC = ' + g2(seg('A', 'C')) + '.',
+                    'I منتصف [BC] و M منتصف [AB] و J منتصف [AC].',
+                    'G هي نقطة تقاطع (AI) و (BJ).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'I'],
+                           ['B', 'J'], ['M', 'I'], ['M', 'J']],
+                angles: [['B', 'A', 'C']],
+                marques: [['B', 'I', 1], ['I', 'C', 1], ['A', 'M', 2], ['M', 'B', 2]] },
+      indice: 'بيتاغور، ثمّ الدائرة المحيطة، ثمّ المنتصفان، ثمّ مركز الثقل'
+    };
+  });
 
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },

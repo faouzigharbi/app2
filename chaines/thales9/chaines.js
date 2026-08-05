@@ -146,7 +146,7 @@
         // le triangle, ou qui ne dit pas quelles droites sont parallèles, est
         // FAUSSE — et la copie vaut zéro. Ce n'est donc pas une mise en forme,
         // c'est le raisonnement lui-même, et le validateur le contrôle.
-        if (n.conf) { pousserThales(etapes, n, S, donnees, dire); continue; }
+        if (n.conf) { pousserThales(etapes, n, S, donnees, dire, dites); continue; }
         if (!dites.has(n.regle.cle)) {
           dites.add(n.regle.cle);
           etapes.push(['القاعدة', n.regle.nom]);
@@ -203,16 +203,16 @@
 
   // ── LE GABARIT DE THALÈS ─────────────────────────────────────────────────
   // Les trois rapports, lus depuis le sommet, comme sur la feuille.
-  const rapportsDe = t => [[seg(t.S, t.M), seg(t.S, t.B)],
-                           [seg(t.S, t.N), seg(t.S, t.C)],
-                           [seg(t.M, t.N), seg(t.B, t.C)]];
+  const rapportsDe = t => [[t.S + t.M, t.S + t.B],
+                           [t.S + t.N, t.S + t.C],
+                           [t.M + t.N, t.B + t.C]];
   const troisRapports = t => rapportsDe(t).map(r => F.ecrireRapport(r[0], r[1])).join(' = ');
   const cadreDe = t => '(' + t.M + t.N + ') // (' + t.B + t.C + ')  و  '
     + t.M + ' ∈ (' + t.S + t.B + ')  و  ' + t.N + ' ∈ (' + t.S + t.C + ')';
   const appartenances = t => t.M + ' ∈ (' + t.S + t.B + ')  و  '
     + t.N + ' ∈ (' + t.S + t.C + ')';
 
-  function pousserThales(etapes, n, S, donnees, dire) {
+  function pousserThales(etapes, n, S, donnees, dire, dites) {
     const t = n.conf;
     const tri = t.S + t.B + t.C;
     const ecrit = k => {
@@ -245,6 +245,16 @@
         F.ecrireRapport(nom(p.connu[0]), nom(p.connu[1])) + ' = '
         + F.ecrireRapport(nom(p.cible[0]), nom(p.cible[1]))]);
     } else if (n.calcul) {
+      // LE PARTAGE A UN NOM, ET IL DOIT ÊTRE DIT. Les règles du partage —
+      // « on connaît le rapport et la somme », « on connaît le rapport et le
+      // reste » — s'appuient sur Thalès mais ne s'y réduisent pas. Le gabarit
+      // les avait rendues muettes : la correction montrait le théorème, puis
+      // un résultat, sans la règle qui les relie. Le classement s'en est
+      // aperçu avant moi — le trapèze était retombé « facile ».
+      if (n.regle && !/^thales/.test(n.regle.cle) && dites && !dites.has(n.regle.cle)) {
+        dites.add(n.regle.cle);
+        etapes.push(['القاعدة', n.regle.nom]);
+      }
       etapes.push(['نطبّق', n.depuis.map(f => dire(f)).join('  و  ')]);
     }
     etapes.push(['إذن', dire(n.fait) + (p ? '' : calculDe(n, S, donnees))]);

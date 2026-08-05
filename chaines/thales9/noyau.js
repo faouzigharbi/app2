@@ -464,7 +464,14 @@
       // l'étiquette même — « نفس الأساس », « نجمع الأسّة ». On prend donc l'une
       // ou l'autre, et l'on écarte ce qui n'est qu'ossature.
       difficulte: (() => {
-        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|^[0-9]+\)$/;
+        // L'OSSATURE N'EST PAS UNE NOTION. Le gabarit de Thalès a ajouté
+        // quatre étiquettes — « في المثلّث ABC لنا », « نعوّض », « إذن » —,
+        // et le compteur les a prises pour autant de théorèmes : tout le
+        // chapitre est passé « صعب » d'un coup, 258 exercices sur 412. Un
+        // classement qui grimpe parce qu'on a changé la mise en page ne
+        // classe rien. Seule « حسب نظرية طالس لنا » compte, parce que c'est
+        // elle qui nomme le théorème appliqué.
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|نعوّض|^إذن$|^و لدينا$|^في المثلّث |^[0-9]+\)$/;
         const notions = new Set();
         for (const e of (brut.etapes || [])) {
           if (CADRE.test(e[0])) continue;

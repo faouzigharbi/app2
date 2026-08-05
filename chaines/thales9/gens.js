@@ -27,6 +27,7 @@
     ['cascade', 'تتالي المتوازيات'],
     ['relation-rapports', 'علاقة بين نسب'],
     ['chaine-longue', 'سلاسل طويلة — عدّة مبرهنات'],
+    ['probleme', 'مسألة — سبع مراحل و أكثر'],
     ['quadrilatere', 'طبيعة رباعي'],
     ['centre-gravite', 'مركز ثقل مثلّث'],
     ['orthocentre', 'المركز القائم لمثلّث'],
