@@ -357,7 +357,9 @@
     return {
       operation: brut.enonce.map(rendreMath).join('<br>'),
       steps: brut.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
-      hint: brut.indice
+      hint: brut.indice,
+      // LA PROVENANCE VOYAGE AVEC L'EXERCICE — voir ci-dessus.
+      source: brut.source || ''
     };
   }
 

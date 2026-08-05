@@ -95,7 +95,11 @@
   const rendre = b => ({
     operation: b.enonce.map(rendreMath).join('<br>'),
     steps: b.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
-    hint: b.indice
+    hint: b.indice,
+    // LA PROVENANCE VOYAGE AVEC L'EXERCICE. La bibliothèque ne sert plus
+    // seulement à imprimer : pour un document de révision du concours, il
+    // faut pouvoir dire de quelle feuille et de quelle année l'exercice sort.
+    source: b.source || ''
   });
 
   const PROBLEMES = {};

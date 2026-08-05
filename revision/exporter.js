@@ -174,7 +174,9 @@ function exporter(dossier, nom, niveau, parCase) {
         + ', difficulte: ' + JSON.stringify(def.difficulte || '')
         + ',\n    enonce: ' + JSON.stringify(normaliser(q.operation))
         + ',\n    correction: ' + JSON.stringify(q.steps.map(couper))
-        + ',\n    indice: ' + JSON.stringify(q.hint || '') + ' }');
+        + ',\n    indice: ' + JSON.stringify(q.hint || '')
+        // La feuille d'origine, quand la fiche la connaît : « RevisBeja ex3 ».
+        + (q.source ? ',\n    source: ' + JSON.stringify(q.source) : '') + ' }');
     }
   }
   if (!total) return { dossier, erreur: 'aucune question' };
