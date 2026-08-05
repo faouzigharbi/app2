@@ -387,6 +387,62 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LES CHAÎNES LONGUES — donner MOINS, demander PLUS LOIN
+  //
+  // Le maître demande des exercices difficiles depuis le premier jour, et le
+  // classement par longueur de correction a montré que le chapitre était à
+  // CENT POUR CENT facile. La cause n'était pas le classement : c'était que
+  // chaque item donnait exactement ce qu'il faut pour UNE application, donc
+  // la chaîne faisait un pas. Le moteur, qui cherche en largeur, trouvait
+  // évidemment ce pas unique.
+  //
+  // On ne change ni le moteur ni les règles : on donne MOINS, et l'on demande
+  // PLUS LOIN. Le chemin s'allonge de lui-même.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Pythagore, puis la relation métrique : deux théorèmes pour une hauteur.
+  item('Pythagore (3) — سلسلة طويلة', 'chaine-longue', 'difficile', () => {
+    const [x, y] = F.choix(TRIPLETS);
+    const A = F.pt(0, 0), B = F.pt(x, 0), C = F.pt(0, y);
+    const P = F.plan(1), H = P.projete(A, B, C);
+    return {
+      K: 1, points: { A, B, C, H },
+      triangles: [['B', 'A', 'C']], rects: [['B', 'A', 'C']],
+      pieds: { ['A' + seg('B', 'C')]: 'H' },
+      donne: [seg('A', 'B'), seg('A', 'C')],       // BC n'est PAS donné
+      but: ['lg2', seg('A', 'H'), null],
+      texte: g => ['ABC مثلّث قائم الزاوية في A حيث AB = ' + g(seg('A', 'B'))
+                   + ' و AC = ' + g(seg('A', 'C')) + '.',
+                   'H هو المسقط العمودي للنقطة A على (BC).'],
+      question: 'أحسب الارتفاع AH.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'H']],
+                angles: [['B', 'A', 'C'], ['A', 'H', 'B']] },
+      indice: 'ابدأ ببيتاغور لإيجاد BC، ثمّ استعمل العلاقة القياسية'
+    };
+  });
+
+  // Pythagore, le cercle circonscrit, puis le rayon : trois théorèmes.
+  item('Pythagore (3) مراجعة — سلسلة طويلة', 'chaine-longue', 'difficile', () => {
+    const [x, y] = F.choix(TRIPLETS);
+    const A = F.pt(0, 0), B = F.pt(x, 0), C = F.pt(0, y);
+    const I2 = F.milieu(B, C);
+    return {
+      K: 1, points: { A, B, C, I: I2 },
+      triangles: [['B', 'A', 'C']], rects: [['B', 'A', 'C']],
+      milieux: [['I', 'B', 'C']],
+      donne: [seg('A', 'B'), seg('A', 'C')],       // ni BC ni BI
+      but: ['lg2', seg('I', 'A'), null],
+      texte: g => ['ABC مثلّث قائم الزاوية في A حيث AB = ' + g(seg('A', 'B'))
+                   + ' و AC = ' + g(seg('A', 'C')) + '، و I منتصف [BC].'],
+      question: 'أحسب المسافة IA.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['I', 'A']],
+                angles: [['B', 'A', 'C']],
+                marques: [['B', 'I', 1], ['I', 'C', 1]] },
+      indice: 'بيتاغور، ثمّ الدائرة المحيطة، ثمّ نصف القطر'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // LA RELATION HARMONIQUE — THALES0 2014 ex5
   //
   // « ABCD شبه منحرف قاعدتاه (AB) و (CD) و قائم في A و D » ; E est le point de

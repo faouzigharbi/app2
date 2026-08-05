@@ -171,7 +171,9 @@ function exporter(dossier, nom, niveau, parCase) {
         // La difficulté n'est déclarée que par les fiches qui la connaissent.
         // Ailleurs elle est VIDE, et une case vide se tire à tous les niveaux :
         // mieux vaut ne rien dire que d'inventer un niveau.
-        + ', difficulte: ' + JSON.stringify(def.difficulte || '')
+        // La difficulté vient de l'EXERCICE quand il la connaît — elle se lit
+        // sur sa correction — et de la fiche seulement à défaut.
+        + ', difficulte: ' + JSON.stringify(q.difficulte || def.difficulte || '')
         + ',\n    enonce: ' + JSON.stringify(normaliser(q.operation))
         + ',\n    correction: ' + JSON.stringify(q.steps.map(couper))
         + ',\n    indice: ' + JSON.stringify(q.hint || '')

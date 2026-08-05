@@ -310,6 +310,13 @@
   function question(type, enonce, math, chaine) {
     return {
       operation: math ? enonce + ' ' + md(math, true) : iso(enonce, true),
+      // LA DIFFICULTÉ SE LIT SUR LA CORRECTION — voir noyau.js des chapitres
+      // récents : c'est la LONGUEUR du chemin qui fait qu'un exercice est dur,
+      // et elle se compte sur la correction elle-même, pas sur la rubrique.
+      difficulte: (() => {
+        const n = (chaine.etapes || []).length;
+        return n <= 4 ? 'facile' : (n <= 6 ? 'moyen' : 'difficile');
+      })(),
       steps: chaine.etapes.map(e => e[0] + ': ' + md(e[1], true)),
       hint: INDICES[type]
     };

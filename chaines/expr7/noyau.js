@@ -223,7 +223,19 @@
       steps: brut.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
       hint: brut.indice,
       // LA PROVENANCE VOYAGE AVEC L'EXERCICE — voir ci-dessus.
-      source: brut.source || ''
+      source: brut.source || '',
+// LA DIFFICULTÉ SE LIT SUR LA CORRECTION, elle ne se décrète pas.
+      //
+      // Ce qui fait qu'un exercice est dur, c'est la LONGUEUR du chemin —
+      // combien d'étapes l'élève doit franchir. Deux exercices d'une même
+      // rubrique n'ont pas la même chaîne, et l'étiquette posée sur la
+      // rubrique mentait donc pour l'un des deux. On la compte ici, sur la
+      // correction elle-même, et le seuil vient de la répartition réelle des
+      // 4767 exercices : trois quarts tiennent entre quatre et six étapes.
+      difficulte: (() => {
+        const n = (brut.etapes || []).length;
+        return n <= 4 ? 'facile' : (n <= 6 ? 'moyen' : 'difficile');
+      })()
     };
   }
 

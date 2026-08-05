@@ -22,6 +22,7 @@
     ['projection-parallele', 'المسقط وفقا لمنحى'],
     ['cascade', 'تتالي المتوازيات'],
     ['relation-rapports', 'علاقة بين نسب'],
+    ['chaine-longue', 'سلاسل طويلة — عدّة مبرهنات'],
     ['quadrilatere', 'طبيعة رباعي'],
     ['centre-gravite', 'مركز ثقل مثلّث'],
     ['orthocentre', 'المركز القائم لمثلّث'],
