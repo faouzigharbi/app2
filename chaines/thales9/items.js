@@ -167,8 +167,17 @@
         K, points: { A, B, C, M: F.surDroite(A, B, s), N: F.surDroite(A, C, s) },
         thales: [{ S: 'A', B: 'B', C: 'C', M: 'M', N: 'N' }],
         para: [[dr('M', 'N'), dr('B', 'C')]],
+        // PAS D'ENTRE DANS LE PAPILLON. Là, N est sur le PROLONGEMENT : il
+        // n'est pas entre A et C, et CN vaut AC + AN, non AC − AN. Déclarer
+        // l'entre sans regarder la pose, c'est affirmer de la figure ce
+        // qu'elle ne montre pas — le validateur l'a refusé.
+        entre: papillon ? [] : [['A', 'N', 'C']],
+        buts: papillon
+          ? [{ but: ['lg2', seg('A', 'N'), null], question: 'أحسب AN.' }]
+          : [{ but: ['lg2', seg('A', 'N'), null], question: 'أحسب AN.' },
+             { but: ['lg2', seg('N', 'C'), null], question: 'استنتج NC.' }],
         donne: [seg('A', 'M'), seg('A', 'B'), seg('A', 'C')],
-        but: ['lg2', seg('A', 'N'), null],
+
         texte: g => ['المستقيمان (MN) و (BC) متوازيان، و :',
                      'AM = ' + g(seg('A', 'M')) + ' ؛ AB = ' + g(seg('A', 'B'))
                      + ' ؛ AC = ' + g(seg('A', 'C')) + '.'],
@@ -193,8 +202,11 @@
       K: 1,
       points: { A, B, C, K: K2, L },
       thales: [{ S: 'A', B: 'C', C: 'B', M: 'K', N: 'L' }],
-      donne: [seg('A', 'K'), seg('A', 'C'), seg('A', 'L'), seg('A', 'B')],
-      but: ['para', dr('K', 'L'), dr('C', 'B')],
+      donne: [seg('A', 'K'), seg('A', 'C'), seg('A', 'L'), seg('A', 'B'),
+              seg('B', 'C')],
+      buts: [{ but: ['para', dr('K', 'L'), dr('C', 'B')],
+               question: 'بيّن أنّ (KL) // (BC).' },
+             { but: ['lg2', seg('K', 'L'), null], question: 'أحسب KL.' }],
       texte: g => ['ABC مثلّث، K نقطة من [AC] و L نقطة من [AB] بحيث :',
                    'AK = ' + g(seg('A', 'K')) + ' ، AC = ' + g(seg('A', 'C'))
                    + ' ، AL = ' + g(seg('A', 'L')) + ' ، AB = ' + g(seg('A', 'B')) + '.'],
@@ -217,9 +229,11 @@
       points: { A, B, C, I, J },
       thales: [{ S: 'A', B: 'B', C: 'C', M: 'I', N: 'J' }],
       milieux: [['I', 'A', 'B'], ['J', 'A', 'C']],
-      donne: [seg('B', 'C')],
-      but: ['lg2', seg('I', 'J'), null],
-      texte: g => ['ABC مثلّث حيث BC = ' + g(seg('B', 'C')) + '.',
+      donne: [seg('B', 'C'), seg('A', 'B')],
+      buts: [{ but: ['lg2', seg('I', 'J'), null], question: 'أحسب IJ.' },
+             { but: ['lg2', seg('A', 'I'), null], question: 'أحسب AI.' }],
+      texte: g => ['ABC مثلّث حيث BC = ' + g(seg('B', 'C')) + ' و AB = '
+                   + g(seg('A', 'B')) + '.',
                    'I و J منتصفا الضّلعين [AB] و [AC] على التّوالي.'],
       question: 'أحسب المسافة IJ.',
       figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['I', 'J']],
@@ -240,9 +254,11 @@
       thales: [{ S: 'C', B: 'B', C: 'A', M: 'M', N: 'N' }],
       milieux: [['M', 'B', 'C']],
       para: [[dr('M', 'N'), dr('A', 'B')]],
-      donne: [],
-      but: ['milieu', 'N', ...seg('A', 'C').split('')],
-      texte: () => ['ABC مثلّث و M منتصف [BC].',
+      donne: [seg('A', 'C')],
+      buts: [{ but: ['milieu', 'N', ...seg('A', 'C').split('')],
+               question: 'بيّن أنّ N منتصف [AC].' },
+             { but: ['lg2', seg('A', 'N'), null], question: 'استنتج AN.' }],
+      texte: g => ['ABC مثلّث و M منتصف [BC]، و AC = ' + g(seg('A', 'C')) + '.',
                     'المستقيم المارّ من M و الموازي للمستقيم (AB) يقطع [AC] في النّقطة N.'],
       question: 'بيّن أنّ N منتصف [AC].',
       figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['M', 'N']],
@@ -333,12 +349,16 @@
   item('Pythagore (3) — عكس', 'pythagore-reciproque', 'moyen', () => {
     const [x, y] = F.choix(TRIPLETS);
     const A = F.pt(0, 0), B = F.pt(x, 0), C = F.pt(0, y);
+    const P = F.plan(1);
     return {
       K: 1,
-      points: { A, B, C },
+      points: { A, B, C, H: P.projete(A, B, C) },
       triangles: [['B', 'A', 'C']],
+      pieds: { ['A' + seg('B', 'C')]: 'H' },
       donne: [seg('A', 'B'), seg('A', 'C'), seg('B', 'C')],
-      but: ['rect', 'B', 'A', 'C'],
+      buts: [{ but: ['rect', 'B', 'A', 'C'],
+               question: 'بيّن أنّ المثلّث ABC قائم الزاوية في A.' },
+             { but: ['lg2', seg('A', 'H'), null], question: 'أحسب الارتفاع AH.' }],
       texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
                    + g(seg('A', 'C')) + ' و BC = ' + g(seg('B', 'C')) + '.'],
       question: 'بيّن أنّ المثلّث ABC قائم الزاوية في A.',
@@ -701,17 +721,23 @@
   // ═══════════════════════════════════════════════════════════════════════
 
   item('Pythagore (3) ex4', 'centre-gravite', 'difficile', () => {
-    const a = F.ent(3, 7), b = F.ent(3, 7);
-    const A = F.pt(0, 0), B = F.pt(6 * a, 0), C = F.pt(F.q(2 * b), F.q(3 * b));
-    const Ip = F.milieu(B, C), J = F.milieu(A, C);
+    // LA MÉDIANE DOIT ÊTRE RATIONNELLE : la seconde question soustrait AG à
+    // AI, et sans cela la règle se tait. On pose donc I sur un triplet, puis
+    // on en déduit B — au lieu de poser B et C et d'espérer.
+    const m = F.ent(1, 4), c1 = F.ent(1, 9), c2 = F.ent(1, 9);
+    const A = F.pt(0, 0), Ip = F.pt(3 * m, 4 * m);
+    const C = F.pt(c1, c2), B = F.pt(6 * m - c1, 8 * m - c2);
+    const J = F.milieu(A, C);
     const P = F.plan(1);
     const G = P.centreGravite(A, B, C);
     return {
       K: 1, points: { A, B, C, I: Ip, J, G },
       gravites: [{ G: 'G', tri: 'ABC', I: 'I', J: 'J' }],
       milieux: [['I', 'B', 'C'], ['J', 'A', 'C']],
+      entre: [['A', 'G', 'I']],
       donne: [seg('A', 'I')],
-      but: ['lg2', seg('A', 'G'), null],
+      buts: [{ but: ['lg2', seg('A', 'G'), null], question: 'أحسب AG.' },
+             { but: ['lg2', seg('G', 'I'), null], question: 'استنتج GI.' }],
       texte: g => ['I منتصف [BC] و J منتصف [AC]، و G نقطة تقاطع (AI) و (BJ).',
                    'AI = ' + g(seg('A', 'I')) + '.'],
       question: 'أحسب AG.',
@@ -768,7 +794,9 @@
       K: 1, points: { O, A, B, C: A2, D: B2 },
       symetries: [['C', 'A', 'O'], ['D', 'B', 'O']],
       donne: [seg('A', 'B')],
-      but: ['lg2', seg('C', 'D'), null],
+      buts: [{ but: ['lg2', seg('C', 'D'), null], question: 'أحسب CD.' },
+             { but: ['para', dr('A', 'B'), dr('C', 'D')],
+               question: 'بيّن أنّ (AB) // (CD).' }],
       texte: g => ['C هي نظيرة A و D هي نظيرة B بالتناظر المركزي الذي مركزه O.',
                    'AB = ' + g(seg('A', 'B')) + '.'],
       question: 'أحسب CD.',
