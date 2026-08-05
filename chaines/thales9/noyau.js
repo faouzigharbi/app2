@@ -125,6 +125,25 @@
     const pythagore = (A, S, C) =>
       qEgaux(carre(A, C), qAdd(carre(S, A), carre(S, C)));
 
+    // DEUX ANGLES ÉGAUX, SANS TRIGONOMÉTRIE ET SANS APPROXIMATION.
+    //
+    // Thales 2008 ex7 donne deux angles de 60° et attend qu'on en déduise un
+    // parallélisme. Un angle n'est pas rationnel, mais son cosinus l'est :
+    // cos ÂSB = (SA·SB)/(SA×SB), et deux angles de [0, π] sont égaux si et
+    // seulement si leurs cosinus le sont. On compare donc les carrés —
+    // (SA·SB)²·(TC²×TD²) contre (TC·TD)²·(SA²×SB²) — en exigeant d'abord que
+    // les produits scalaires aient le MÊME SIGNE : sans quoi un angle aigu
+    // passerait pour son supplémentaire.
+    const memeAngle = (A, S, B, C, T, D) => {
+      const u = vec(S, A), v = vec(S, B), w = vec(T, C), z = vec(T, D);
+      if (!droiteOk(S, A) || !droiteOk(S, B) || !droiteOk(T, C) || !droiteOk(T, D)) return false;
+      const d1 = pScal(u, v), d2 = pScal(w, z);
+      if (qNul(d1) !== qNul(d2)) return false;
+      if (qPos(d1) !== qPos(d2)) return false;
+      return qEgaux(qMul(qMul(d1, d1), qMul(pScal(w, w), pScal(z, z))),
+                    qMul(qMul(d2, d2), qMul(pScal(u, u), pScal(v, v))));
+    };
+
     // Le projeté orthogonal de P sur (AC) — c'est ici que K entre vraiment.
     function projete(P, A, C) {
       if (!droiteOk(A, C)) throw new Error('projection sur une droite dégénérée');
@@ -155,7 +174,7 @@
     const cocycliques = (O, L) => L.every(P => qEgaux(carre(O, P), carre(O, L[0])));
 
     return { k, pScal, carre, droiteOk, perp, para, memeLongueur, estMilieu,
-             estMediatrice, memeRapport, rapportVaut, pythagore, projete,
+             estMediatrice, memeRapport, rapportVaut, pythagore, memeAngle, projete,
              distanceCarre, symetriqueDroite, centreGravite, orthocentre,
              circoncentre, cocycliques,
              // le flottant, pour le DESSIN seulement
@@ -296,6 +315,30 @@
       p.forEach(z => M.pt(z[0], z[1], 1, 1));
       out.push('<polyline points="' + p.map(z => z[0].toFixed(1) + ',' + z[1].toFixed(1)).join(' ')
         + '" fill="none" stroke="' + COUL.marque + '" stroke-width="1.3"/>');
+    }
+    // LES ANGLES ÉGAUX SE MARQUENT PAR UN ARC. Sans lui, l'hypothèse de
+    // Thales 2008 ex7 — « les deux angles sont de même mesure » — ne serait
+    // écrite que dans le texte, et la figure ne montrerait rien. L'arc est
+    // mesuré comme le reste : ses deux extrémités et son sommet entrent dans
+    // le cadre, sinon il sortirait de la boîte comme la lettre du chapitre
+    // des angles.
+    for (const a of fig.arcs || []) {
+      const [u, S, v, n] = a;
+      const d1 = unit(X(S), Y(S), X(u), Y(u)), d2 = unit(X(S), Y(S), X(v), Y(v));
+      const sens = (d1[0] * d2[1] - d1[1] * d2[0]) > 0 ? 1 : 0;
+      for (let i = 0; i < (n || 1); i++) {
+        const r = 13 + i * 4;
+        const z1 = [X(S) + d1[0] * r, Y(S) + d1[1] * r];
+        const z2 = [X(S) + d2[0] * r, Y(S) + d2[1] * r];
+        const mi = [d1[0] + d2[0], d1[1] + d2[1]];
+        const h = Math.hypot(mi[0], mi[1]) || 1;
+        M.pt(z1[0], z1[1], 1, 1); M.pt(z2[0], z2[1], 1, 1);
+        M.pt(X(S) + mi[0] / h * r, Y(S) + mi[1] / h * r, 1, 1);
+        out.push('<path d="M ' + z1[0].toFixed(1) + ' ' + z1[1].toFixed(1)
+          + ' A ' + r + ' ' + r + ' 0 0 ' + sens + ' ' + z2[0].toFixed(1) + ' '
+          + z2[1].toFixed(1) + '" fill="none" stroke="' + COUL.marque
+          + '" stroke-width="1.3"/>');
+      }
     }
     // Les marques de segments égaux : un ou deux tirets au milieu.
     for (const mk of fig.marques || []) {

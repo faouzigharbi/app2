@@ -18,6 +18,7 @@
 
   // ── Écrire un fait en arabe ──────────────────────────────────────────────
   const L = s => '[' + s[0] + s[1] + ']';
+  const chapeau = t => t[0] + t[1] + '̂' + t[2];
   // Le mode d'écriture voyage avec le fait : « donnee » pour ce que l'énoncé
   // fournit, rien pour ce que la chaîne a trouvé.
   const dit = {
@@ -28,6 +29,8 @@
     rect: (A, S, C) => 'المثلّث ' + A + S + C + ' قائم الزاوية في ' + S,
     cercle: (O, t) => 'النّقط ' + t.split('').join(' و ') + ' تنتمي إلى دائرة مركزها ' + O,
     aligne: (A, B, C) => A + ' و ' + B + ' و ' + C + ' على استقامة واحدة',
+    // Le sommet porte le chapeau, comme au tableau : ETO s'écrit ET̂O.
+    angles: (a, b) => 'الزاويتان ' + chapeau(a) + ' و ' + chapeau(b) + ' متقايستان',
     // Trois rapports empilés, reliés par des égalités — comme au tableau.
     prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = '),
     pgram: Q => 'الرّباعي ' + Q + ' متوازي أضلاع',
@@ -41,7 +44,11 @@
       .map(x => { const p = x.split('|');
                   return F.ecrireRapport(p[0] + p[1], p[2] + p[3]); })
       .join(op === 'produit' ? ' × ' : ' + ')
-      + ' = ' + (String(val).endsWith('/1') ? String(val).slice(0, -2) : String(val))
+      // LA VALEUR EST UN NOMBRE, ET S'ÉCRIT COMME TEL. « 4/9 » posé à plat au
+      // bout d'une ligne de fractions empilées se lisait comme un reste de
+      // code ; c'est un quotient, il s'empile comme les autres.
+      + ' = ' + (String(val).endsWith('/1') ? String(val).slice(0, -2)
+                 : F.ecrireRapport(...String(val).split('/')))
   };
   const ecrire = (f, m) => dit[f[0]](f[1], f[2], f[0] === 'lg2' ? m : f[3]);
   // (prop) prend ses trois rapports en f[1], f[2], f[3] — cf. dit.prop
@@ -65,6 +72,13 @@
     for (const y of s.symetries || []) hyp.push(['sym', y[0], y[1], y[2]]);
     for (const g of s.pgrams || []) hyp.push(['pgram', g]);
     for (const q of s.perps || []) hyp.push(['perp', q[0], q[1]]);
+    // L'ÉGALITÉ DES ANGLES ET LA CONFIGURATION SORTENT DE LA MÊME DÉCLARATION.
+    // L'item dit une fois « ces deux angles-là sont alternes-internes et de
+    // même mesure » ; l'hypothèse et le contexte en découlent tous deux, et
+    // ne peuvent donc pas se contredire.
+    for (const a of s.alternes || []) {
+      hyp.push(['angles', a.p + a.s1 + a.s2, a.q + a.s2 + a.s1]);
+    }
 
     // Le contexte : ce que la FIGURE fournit, et qui n'est pas à démontrer.
     const milieux = {};
@@ -73,6 +87,7 @@
       thales: s.thales || [], triangles: s.triangles || [],
       quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
       orthos: s.orthos || [], entre: s.entre || [], relations: s.relations || [],
+      alternes: s.alternes || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -151,7 +166,7 @@
         etapesCalcul: suite.map(n => ({
           regle: n.regle.cle, fait: sec(n.fait), depuis: n.depuis.map(sec)
         })),
-        ctx: { thales: S.ctx.thales, triangles: S.ctx.triangles,
+        ctx: { thales: S.ctx.thales, triangles: S.ctx.triangles, alternes: S.ctx.alternes,
                quadrilateres: S.ctx.quadrilateres, gravites: S.ctx.gravites,
                orthos: S.ctx.orthos, entre: S.ctx.entre,
                relations: S.ctx.relations,
@@ -190,6 +205,8 @@
       // l'on pense, et l'élève n'a plus rien à faire.
       if (c[3] === 'partage') return '  ، لأنّ النّسبة ' + F.ecrireRapport(e(c[0]), e(c[1]))
         + ' و المجموع ' + e(c[2]);
+      if (c[3] === 'externe') return '  ، لأنّ النّسبة ' + F.ecrireRapport(e(c[0]), e(c[1]))
+        + ' و الفرق ' + e(c[2]);
       if (c[3] === 'plus') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' + ' + e(c[1]);
       if (c[3] === 'moins') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' − ' + e(c[1]);
       if (c[3] === 'metrique') return '  ، لأنّ ' + n.fait[1] + ' × ' + e(c[2])
@@ -203,7 +220,7 @@
     if (!f) return null;
     return F.dessiner({ P: S.P, points: S.pts, segments: f.segments || [],
                         droites: f.droites || [], angles: f.angles || [],
-                        marques: f.marques || [] });
+                        marques: f.marques || [], arcs: f.arcs || [] });
   }
 
   const API = { chaine, scene, ecrire, dit, sec };

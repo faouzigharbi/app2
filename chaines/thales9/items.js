@@ -23,6 +23,65 @@
   const TRIPLETS = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15],
                     [12, 16, 20], [7, 24, 25], [20, 21, 29]];
 
+  // ── UN TRIANGLE DONT LES TROIS CÔTÉS SONT RATIONNELS ────────────────────
+  //
+  // Les exercices 5 à 9 de Thales 2008 donnent et demandent des longueurs sur
+  // LES TROIS côtés à la fois — AT, TH et SH ; GH, GD et HD. Un triplet
+  // pythagoricien n'y suffit plus : il ne rend rationnel qu'un triangle
+  // rectangle, et l'angle droit se verrait sur toutes les figures. On pose
+  // donc des triangles héroniens, dont les trois côtés sont entiers en
+  // coordonnées entières, puis on met à l'échelle par un rationnel — ce qui
+  // rend les décimales des feuilles : 17,5 ; 14,2 ; 7,3 ; 12,6.
+  //
+  //   [b, cx, cy] : A = (0,0), B = (b,0), C = (cx,cy), les trois côtés entiers.
+  const HERON = [[6, 3, 4], [14, 5, 12], [10, 5, 12], [21, 6, 8], [12, 6, 8],
+                 [25, 7, 24], [11, 16, 12], [4, 9, 12],
+                 [4, 0, 3], [9, 0, 12], [8, 0, 6], [5, 0, 12], [16, 0, 12]];
+  const ECHELLES = [[1, 1], [1, 2], [3, 2], [7, 10], [4, 5], [1, 5], [2, 1],
+                    [5, 2], [3, 10], [9, 10], [1, 4]];
+  function triangle() {
+    const [b, cx, cy] = F.choix(HERON);
+    const [n, d] = F.choix(ECHELLES);
+    const s = F.q(n, d);
+    return { A: F.pt(0, 0),
+             B: F.pt(F.qMul(F.q(b), s), F.Q0),
+             C: F.pt(F.qMul(F.q(cx), s), F.qMul(F.q(cy), s)) };
+  }
+  // Un rapport strictement compris entre 0 et 1 — le pied d'une parallèle.
+  const rapport = () => { const n = F.ent(1, 5); return F.q(n, n + F.ent(1, 5)); };
+
+  // LES DONNÉES DE LA FEUILLE S'ÉCRIVENT AVEC UNE VIRGULE.
+  //
+  // Un tirage au hasard donne des rationnels parfaitement exacts et
+  // parfaitement étrangers aux feuilles : « RQ = 65/18 » est juste, mais le
+  // maître écrit 3 ; 7,5 ; 12,6 ; 17,5. On retire donc la pose jusqu'à ce que
+  // TOUTES les données aient une écriture décimale finie. Les RÉPONSES, elles,
+  // ne changent pas de régime : elles restent des fractions irréductibles dès
+  // qu'elles n'ont pas de virgule — c'est la règle du maître, et elle ne vaut
+  // que parce que l'énoncé, lui, est propre.
+  function toutesDecimales(pts, cles) {
+    const P = F.plan(1);
+    for (const k of cles) {
+      const A = pts[k[0]], C = pts[k[1]];
+      if (!A || !C) return false;
+      const r = F.racQ(P.carre(A, C));
+      if (!r) return false;
+      let d = r.d;
+      while (d % 2n === 0n) d /= 2n;
+      while (d % 5n === 0n) d /= 5n;
+      if (d !== 1n) return false;
+    }
+    return true;
+  }
+  const jolie = poser => () => {
+    let s = poser();
+    for (let i = 0; i < 400; i++) {
+      if (toutesDecimales(s.points, (s.donne || []).map(k => k.split('')))) return s;
+      s = poser();
+    }
+    return s;
+  };
+
   // ═══════════════════════════════════════════════════════════════════════
   // THALÈS — calculer une longueur (THALES9 ex11-13 ; Thales 2021 ex5, ex8)
   // ═══════════════════════════════════════════════════════════════════════
@@ -815,6 +874,338 @@
       indice: 'التناظر المركزي يحفظ المسافات'
     };
   });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008, ex5 à ex9 — les figures nues, une inconnue par question
+  //
+  // « أحسب الأعداد الحقيقية x و y و z التالية » : trois figures, trois
+  // inconnues, et aucune phrase. C'est l'exercice d'entraînement pur, celui
+  // que la feuille pose une fois la théorie faite — et ses trois cas ne se
+  // ressemblent pas : le premier demande une somme avant Thalès, le deuxième
+  // est un papillon, le troisième met l'inconnue DERRIÈRE le rapport.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ex5 a. — (MT)//(SH) ; AT = 3, TH = 7, SH = 17,5 ; x = MT
+  item('Thales 2008 ex5-a', 'thales-inconnues', 'moyen', jolie(() => {
+    const g = triangle();                       // A, B → H, C → S
+    const A = g.A, H = g.B, S = g.C;
+    const t = rapport();
+    const T = F.surDroite(A, H, t), Mp = F.surDroite(A, S, t);
+    return {
+      K: 1, points: { A, S, H, M: Mp, T },
+      thales: [{ S: 'A', B: 'S', C: 'H', M: 'M', N: 'T' }],
+      para: [[dr('M', 'T'), dr('S', 'H')]],
+      entre: [['A', 'T', 'H']],
+      donne: [seg('A', 'T'), seg('T', 'H'), seg('S', 'H')],
+      but: ['lg2', seg('M', 'T'), null],
+      texte: g2 => ['ASH مثلّث، M نقطة من [AS] و T نقطة من [AH] حيث (MT) // (SH).',
+                    'AT = ' + g2(seg('A', 'T')) + ' و TH = ' + g2(seg('T', 'H'))
+                    + ' و SH = ' + g2(seg('S', 'H')) + '.'],
+      question: 'أحسب العدد الحقيقي x حيث x = MT.',
+      figure: { segments: [['A', 'S'], ['S', 'H'], ['H', 'A'], ['M', 'T']] },
+      indice: 'AH لا يُعطى : أحسبه أوّلا بجمع AT و TH'
+    };
+  }));
+
+  // ex5 b. — le papillon : (RO)//(SK) ; RC = 3, SC = 10,5, CK = 7 ; y = CO
+  item('Thales 2008 ex5-b', 'thales-inconnues', 'facile', jolie(() => {
+    const g = triangle();                       // A → C, B → K, C → S
+    const Cp = g.A, K = g.B, S = g.C;
+    const t = F.qNeg(rapport());
+    const R = F.surDroite(Cp, K, t), O = F.surDroite(Cp, S, t);
+    return {
+      K: 1, points: { C: Cp, K, S, R, O },
+      thales: [{ S: 'C', B: 'K', C: 'S', M: 'R', N: 'O' }],
+      para: [[dr('R', 'O'), dr('K', 'S')]],
+      entre: [['R', 'C', 'K'], ['O', 'C', 'S']],
+      donne: [seg('C', 'R'), seg('C', 'K'), seg('C', 'S')],
+      but: ['lg2', seg('C', 'O'), null],
+      texte: g2 => ['النّقط R و C و K على استقامة واحدة، و كذلك O و C و S،',
+                    'و (RO) // (SK).',
+                    'RC = ' + g2(seg('C', 'R')) + ' و CK = ' + g2(seg('C', 'K'))
+                    + ' و SC = ' + g2(seg('C', 'S')) + '.'],
+      question: 'أحسب العدد الحقيقي y حيث y = CO.',
+      figure: { segments: [['R', 'K'], ['O', 'S'], ['R', 'O'], ['S', 'K']] },
+      indice: 'وضعية الفراشة : الرّأس هو C، و النّسب هي نفسها'
+    };
+  }));
+
+  // ex5 c. — (HO)//(IK) ; CO = 2, HO = 3, IK = 9 ; z = OK
+  //
+  // ICI L'INCONNUE EST DERRIÈRE. Thalès donne CK et non OK : il faut ensuite
+  // retrancher CO. C'est le seul des trois cas qui demande deux notions, et
+  // c'est celui que la feuille met en dernier.
+  item('Thales 2008 ex5-c', 'thales-inconnues', 'moyen', jolie(() => {
+    const g = triangle();                       // A → C, B → K, C → I
+    const Cp = g.A, K = g.B, Ip = g.C;
+    const t = rapport();
+    const O = F.surDroite(Cp, K, t), H = F.surDroite(Cp, Ip, t);
+    return {
+      K: 1, points: { C: Cp, I: Ip, K, H, O },
+      thales: [{ S: 'C', B: 'K', C: 'I', M: 'O', N: 'H' }],
+      para: [[dr('O', 'H'), dr('K', 'I')]],
+      entre: [['C', 'O', 'K']],
+      donne: [seg('C', 'O'), seg('H', 'O'), seg('I', 'K')],
+      but: ['lg2', seg('O', 'K'), null],
+      texte: g2 => ['CIK مثلّث، H نقطة من [CI] و O نقطة من [CK] حيث (HO) // (IK).',
+                    'CO = ' + g2(seg('C', 'O')) + ' و HO = ' + g2(seg('H', 'O'))
+                    + ' و IK = ' + g2(seg('I', 'K')) + '.'],
+      question: 'أحسب العدد الحقيقي z حيث z = OK.',
+      figure: { segments: [['C', 'I'], ['I', 'K'], ['K', 'C'], ['H', 'O']] },
+      indice: 'طالس يعطي CK ، و OK = CK − CO'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008 ex6 — « أوجد الأعداد المجهولة »
+  //
+  // Sa première figure superpose DEUX configurations de Thalès sur le même
+  // sommet : (RQ)//(CD) dans ACD et (RP)//(CB) dans ACB, la seconde parallèle
+  // portant la première. Trois inconnues s'y suivent — x = CD, y = QP,
+  // z = PB —, et chacune se sert de ce que la précédente a donné.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2008 ex6 — الشكل الأول', 'cascade', 'difficile', jolie(() => {
+    const g = triangle();
+    const A = g.A, B = g.B, C = g.C;
+    const mu = rapport(), lam = rapport();
+    const D = F.surDroite(C, B, mu);
+    const R = F.surDroite(A, C, lam), P = F.surDroite(A, B, lam),
+          Q = F.surDroite(A, D, lam);
+    return {
+      K: 1, points: { A, B, C, D, R, P, Q },
+      thales: [{ S: 'A', B: 'C', C: 'D', M: 'R', N: 'Q' },
+               { S: 'A', B: 'C', C: 'B', M: 'R', N: 'P' }],
+      para: [[dr('R', 'Q'), dr('C', 'D')], [dr('R', 'P'), dr('C', 'B')]],
+      entre: [['A', 'R', 'C'], ['C', 'D', 'B'], ['R', 'Q', 'P'], ['A', 'P', 'B']],
+      donne: [seg('A', 'R'), seg('R', 'C'), seg('R', 'Q'), seg('D', 'B'), seg('A', 'B')],
+      buts: [{ but: ['lg2', seg('C', 'D'), null], question: 'أحسب x = CD.' },
+             { but: ['lg2', seg('Q', 'P'), null], question: 'استنتج y = QP.' },
+             { but: ['lg2', seg('P', 'B'), null], question: 'استنتج z = PB.' }],
+      texte: g2 => ['ABC مثلّث، R نقطة من [AC] و P نقطة من [AB] حيث (RP) // (BC).',
+                    'D نقطة من [CB]، و (AD) يقطع [RP] في Q.',
+                    'AR = ' + g2(seg('A', 'R')) + ' و RC = ' + g2(seg('R', 'C'))
+                    + ' و RQ = ' + g2(seg('R', 'Q')) + ' و DB = ' + g2(seg('D', 'B'))
+                    + ' و AB = ' + g2(seg('A', 'B')) + '.'],
+      figure: { segments: [['A', 'C'], ['C', 'B'], ['A', 'B'], ['R', 'P'], ['A', 'D']] },
+      indice: 'نفس النّسبة AR/AC تخدم في المثلّثين ACD و ACB'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // L'INCONNUE DES DEUX CÔTÉS — Thales 2008 ex6, seconde figure et menhir
+  //
+  // « (BC)//(DE) ; AB = 5 ; BC = 3 ; DE = 4 ; CE = 2 : أحسب AC ». Ni AC ni AE
+  // n'est donné : ce que la figure fournit, c'est leur DIFFÉRENCE. Le rapport
+  // seul ne conclut pas, et c'est exactement l'équation « x/(x+3) = 45/50 »
+  // que l'ex1 de la même feuille faisait résoudre en algèbre.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2008 ex6 — الشكل الثاني', 'thales-part', 'moyen', jolie(() => {
+    const g = triangle();                       // A, B → D, C → E
+    const A = g.A, D = g.B, E = g.C;
+    const r = rapport();
+    const B = F.surDroite(A, D, r), C = F.surDroite(A, E, r);
+    return {
+      K: 1, points: { A, B, C, D, E },
+      thales: [{ S: 'A', B: 'D', C: 'E', M: 'B', N: 'C' }],
+      para: [[dr('B', 'C'), dr('D', 'E')]],
+      entre: [['A', 'B', 'D'], ['A', 'C', 'E']],
+      donne: [seg('A', 'B'), seg('B', 'C'), seg('D', 'E'), seg('C', 'E')],
+      buts: [{ but: ['lg2', seg('A', 'D'), null], question: 'أحسب AD.' },
+             { but: ['lg2', seg('A', 'C'), null], question: 'أحسب x = AC.' }],
+      texte: g2 => ['ADE مثلّث، B نقطة من [AD] و C نقطة من [AE] حيث (BC) // (DE).',
+                    'AB = ' + g2(seg('A', 'B')) + ' و BC = ' + g2(seg('B', 'C'))
+                    + ' و DE = ' + g2(seg('D', 'E')) + ' و CE = ' + g2(seg('C', 'E')) + '.'],
+      figure: { segments: [['A', 'D'], ['A', 'E'], ['D', 'E'], ['B', 'C']] },
+      indice: 'AC و AE مجهولان معا، لكنّ فرقهما CE معلوم'
+    };
+  }));
+
+  // Le menhir de la même feuille : « Le menhir est à … ». On vise le sommet
+  // inaccessible depuis deux jalons, et la mesure se lit sur le sol.
+  item('Thales 2008 ex6 — المنهير', 'thales-part', 'moyen', jolie(() => {
+    // UN MENHIR SE MESURE EN MÈTRES, PAS EN CENTIMÈTRES. L'échelle ordinaire
+    // des figures donnait « CD = 1,875 m » : exact, et absurde sur le terrain.
+    // La feuille dit 45 m et 50 m ; on tire donc dans cet ordre de grandeur.
+    const g = triangle();                       // A → M, B → A, C → B
+    const f = F.q(F.ent(4, 14));
+    const ech = X => F.pt(F.qMul(X.x, f), F.qMul(X.y, f));
+    const Mp = g.A, A = ech(g.B), B = ech(g.C);
+    const r = rapport();
+    const C = F.surDroite(Mp, A, r), D = F.surDroite(Mp, B, r);
+    return {
+      K: 1, points: { M: Mp, A, B, C, D },
+      thales: [{ S: 'M', B: 'A', C: 'B', M: 'C', N: 'D' }],
+      para: [[dr('C', 'D'), dr('A', 'B')]],
+      entre: [['M', 'C', 'A'], ['M', 'D', 'B']],
+      donne: [seg('C', 'D'), seg('A', 'B'), seg('A', 'C')],
+      buts: [{ but: ['lg2', seg('C', 'M'), null], question: 'أحسب المسافة CM.' },
+             { but: ['lg2', seg('A', 'M'), null], question: 'استنتج المسافة AM.' }],
+      texte: g2 => ['M حجر منتصب (منهير) يتعذّر الوصول إليه.',
+                    'النّقط M و C و A على استقامة واحدة، و كذلك M و D و B،',
+                    'و (CD) // (AB) حيث CD = ' + g2(seg('C', 'D')) + ' m و AB = '
+                    + g2(seg('A', 'B')) + ' m و CA = ' + g2(seg('A', 'C')) + ' m.'],
+      question: 'أحسب المسافة CM.',
+      figure: { segments: [['M', 'A'], ['M', 'B'], ['A', 'B'], ['C', 'D']] },
+      indice: 'CM و AM مجهولان، و فرقهما CA معلوم'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008 ex7 — LE PARALLÉLISME N'EST PAS DONNÉ, IL SE DÉMONTRE
+  //
+  // Deux angles de 60°, de part et d'autre de la sécante : c'est de là que
+  // vient le parallélisme, et Thalès ne vient qu'après. L'exercice est le
+  // seul de la feuille où la première étape n'est pas une longueur.
+  //
+  // LA FEUILLE ÉCRIT 60°, NOUS ÉCRIVONS « MÊME MESURE ». Un angle de 60°
+  // n'existe pas en coordonnées rationnelles, et l'on n'énonce jamais ici ce
+  // que la figure ne porte pas exactement. L'égalité, elle, est exacte — et
+  // c'est elle seule qui sert.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2008 ex7', 'angles-paralleles', 'moyen', jolie(() => {
+    const g = triangle();                       // A → O, B → T, C → E
+    const O = g.A, T = g.B, E = g.C;
+    const t = F.qNeg(rapport());
+    const Ip = F.surDroite(O, T, t), R = F.surDroite(O, E, t);
+    return {
+      K: 1, points: { E, T, O, I: Ip, R },
+      alternes: [{ p: 'E', s1: 'T', s2: 'I', q: 'R' }],
+      thales: [{ S: 'O', B: 'I', C: 'R', M: 'T', N: 'E' }],
+      entre: [['T', 'O', 'I'], ['E', 'O', 'R']],
+      donne: [seg('E', 'T'), seg('O', 'T'), seg('O', 'R'), seg('R', 'I')],
+      buts: [{ but: ['lg2', seg('O', 'E'), null], question: 'أحسب OE.' },
+             { but: ['lg2', seg('O', 'I'), null], question: 'أحسب OI.' }],
+      texte: g2 => ['النّقط T و O و I على استقامة واحدة، و كذلك E و O و R.',
+                    'الزاويتان ETI و RIT متقايستان.',
+                    'ET = ' + g2(seg('E', 'T')) + ' cm و OT = ' + g2(seg('O', 'T'))
+                    + ' cm و OR = ' + g2(seg('O', 'R')) + ' cm و RI = '
+                    + g2(seg('R', 'I')) + ' cm.'],
+      figure: { segments: [['T', 'E'], ['I', 'R'], ['T', 'I'], ['E', 'R']],
+                arcs: [['E', 'T', 'I', 1], ['R', 'I', 'T', 1]] },
+      indice: 'الزاويتان متبادلتان داخليا : ابدأ بإثبات (ET) // (IR)'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008 ex8 — le papillon en décimaux
+  // GH = 15 ; GF = 6 ; GD = 14,2 ; HD = 7,3 → EG et EF
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2008 ex8', 'thales-decimaux', 'facile', jolie(() => {
+    const g = triangle();                       // A → G, B → H, C → D
+    const G = g.A, H = g.B, D = g.C;
+    const t = F.qNeg(rapport());
+    const Fp = F.surDroite(G, H, t), E = F.surDroite(G, D, t);
+    return {
+      K: 1, points: { E, F: Fp, G, H, D },
+      thales: [{ S: 'G', B: 'H', C: 'D', M: 'F', N: 'E' }],
+      para: [[dr('E', 'F'), dr('H', 'D')]],
+      entre: [['F', 'G', 'H'], ['E', 'G', 'D']],
+      donne: [seg('G', 'H'), seg('G', 'F'), seg('G', 'D'), seg('H', 'D')],
+      buts: [{ but: ['lg2', seg('E', 'G'), null], question: 'أحسب EG.' },
+             { but: ['lg2', seg('E', 'F'), null], question: 'أحسب EF.' }],
+      texte: g2 => ['النّقط F و G و H على استقامة واحدة، و كذلك E و G و D،',
+                    'و (EF) // (HD).',
+                    'GH = ' + g2(seg('G', 'H')) + ' cm و GF = ' + g2(seg('G', 'F'))
+                    + ' cm و GD = ' + g2(seg('G', 'D')) + ' cm و HD = '
+                    + g2(seg('H', 'D')) + ' cm.'],
+      figure: { segments: [['E', 'F'], ['H', 'D'], ['F', 'H'], ['E', 'D']] },
+      indice: 'النّسبة GF/GH هي نفسها لـ EG/GD و EF/HD'
+    };
+  }));
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008 ex9 — « استعمل المعطيات في كل حالة »
+  //
+  // La même figure, quatre jeux de données, quatre inconnues différentes :
+  // c'est l'exercice qui apprend à choisir SON rapport plutôt qu'à réciter
+  // le premier. Le quatrième cas de la feuille demande AC en donnant BC, DE
+  // et AB — trois données qui déterminent AD et non AC ; on garde ses
+  // données et l'on demande ce qu'elles donnent.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2008 ex6 — « OD/OE = ? »
+  //
+  // Deux parallèles emboîtées : (AD)//(BE) et (DB)//(EC). La feuille propose
+  // quatre réponses — OB/OC, 4/5, OA/OB, 4/9 — dont trois sont justes ; ce
+  // qu'elle veut faire voir, c'est que le MÊME rapport se lit à deux endroits
+  // de la figure. On garde la figure et l'on pose les questions dans l'ordre
+  // où l'élève doit les traverser.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2008 ex6 — OD/OE', 'relation-rapports', 'difficile', jolie(() => {
+    // OA/OB = OB/OC : c'est la condition pour que les DEUX parallèles
+    // coexistent sur la même figure. OC se déduit donc de OA et de OB.
+    const a = F.ent(2, 8), b = a + F.ent(1, 6);
+    const O = F.pt(0, 0), A = F.pt(a, 0), B = F.pt(b, 0);
+    const C = F.pt(F.q(b * b, a), F.Q0);
+    const [ex, ey] = F.choix([[3, 4], [5, 12], [8, 15], [7, 24], [20, 21]]);
+    const m = F.ent(1, 3);
+    const E = F.pt(F.q(ex * m), F.q(ey * m));
+    const D = F.surDroite(O, E, F.q(a, b));
+    const r = F.q(a, b);
+    return {
+      K: 1, points: { O, A, B, C, D, E },
+      thales: [{ S: 'O', B: 'B', C: 'E', M: 'A', N: 'D' },
+               { S: 'O', B: 'C', C: 'E', M: 'B', N: 'D' }],
+      para: [[dr('A', 'D'), dr('B', 'E')], [dr('D', 'B'), dr('E', 'C')]],
+      entre: [['O', 'A', 'B'], ['O', 'B', 'C'], ['O', 'D', 'E']],
+      relations: [{ op: 'produit', rapports: [['O', 'D', 'O', 'E']], valeur: r,
+                    longueurs: [seg('O', 'A'), seg('O', 'B')],
+                    depuis: [[dr('A', 'D'), dr('B', 'E')]] },
+                  { op: 'produit', rapports: [['O', 'B', 'O', 'C']], valeur: r,
+                    longueurs: [seg('O', 'D'), seg('O', 'E')],
+                    depuis: [[dr('D', 'B'), dr('E', 'C')]] }],
+      donne: [seg('O', 'A'), seg('A', 'B'), seg('O', 'E')],
+      buts: [{ but: ['lg2', seg('O', 'B'), null], question: 'أحسب OB.' },
+             { but: ['relation', 'produit', 'O|D|O|E', r.n + '/' + r.d],
+               question: 'أحسب النّسبة OD/OE.' },
+             { but: ['lg2', seg('O', 'D'), null], question: 'استنتج OD.' },
+             { but: ['relation', 'produit', 'O|B|O|C', r.n + '/' + r.d],
+               question: 'بيّن أنّ OB/OC = OD/OE.' }],
+      texte: g2 => ['النّقط O و A و B و C على استقامة واحدة، و D نقطة من [OE].',
+                    '(AD) // (BE) و (DB) // (EC).',
+                    'OA = ' + g2(seg('O', 'A')) + ' و AB = ' + g2(seg('A', 'B'))
+                    + ' و OE = ' + g2(seg('O', 'E')) + '.'],
+      figure: { segments: [['O', 'C'], ['O', 'E'], ['A', 'D'], ['B', 'E'],
+                           ['D', 'B'], ['E', 'C']] },
+      indice: 'طالس في المثلّث OBE يعطي OD/OE = OA/OB'
+    };
+  }));
+
+  const CAS9 = [
+    { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
+    { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
+    { nom: '3', donne: [['A', 'C'], ['D', 'E'], ['B', 'C']], but: ['A', 'E'] },
+    { nom: '4', donne: [['B', 'C'], ['D', 'E'], ['A', 'B']], but: ['A', 'D'] }
+  ];
+  for (const cas of CAS9) {
+    item('Thales 2008 ex9-' + cas.nom, 'thales-cas', 'facile', jolie(() => {
+      const g = triangle();
+      const A = g.A, B = g.B, C = g.C;
+      const t = rapport();
+      const D = F.surDroite(A, B, t), E = F.surDroite(A, C, t);
+      const noms = cas.donne.map(x => x.join(''));
+      return {
+        K: 1, points: { A, B, C, D, E },
+        thales: [{ S: 'A', B: 'B', C: 'C', M: 'D', N: 'E' }],
+        para: [[dr('D', 'E'), dr('B', 'C')]],
+        entre: [['A', 'D', 'B'], ['A', 'E', 'C']],
+        donne: cas.donne.map(x => seg(x[0], x[1])),
+        but: ['lg2', seg(cas.but[0], cas.but[1]), null],
+        texte: g2 => ['ABC مثلّث، D نقطة من [AB] و E نقطة من [AC] حيث (DE) // (BC).',
+                      noms.map((n, i) => n + ' = '
+                        + g2(seg(cas.donne[i][0], cas.donne[i][1]))).join(' و ') + '.'],
+        question: 'أحسب ' + cas.but.join('') + '.',
+        figure: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C'], ['D', 'E']] },
+        indice: 'اختر النّسبتين اللّتين تجمعان المعطيات و المطلوب'
+      };
+    }));
+  }
 
   const API = { ITEMS, TRIPLETS };
   if (M) module.exports = API; else racine.Items = API;

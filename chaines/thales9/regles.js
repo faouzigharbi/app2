@@ -32,7 +32,7 @@
       para: [], perp: [], milieu: [], lg2: new Map(), rect: [],
       rapport: [], aligne: [], cercle: [], prop: [],
       pgram: [], rect4: [], losange: [], gravite: [], ortho: [], sym: [],
-      relation: []
+      relation: [], angles: []
     };
     for (const f of faits) {
       if (f[0] === 'lg2') t.lg2.set(f[1], f[2]);
@@ -398,6 +398,19 @@
         for (const r of ctx.relations || []) {
           const dep = (r.depuis || []).map(p => ['para', p[0], p[1]]);
           if (dep.some(d => !f.para.some(x => cleFait(x) === cleFait(d)))) continue;
+          // D'OÙ SORT LA VALEUR ? Quand la relation vaut 1 — Ménélaüs, le
+          // trapèze —, elle ne vient d'aucune mesure et les parallèles
+          // suffisent. Mais « OD/OE = 4/9 » vient de OA et de OB, et sans
+          // elles la correction annoncerait un nombre tombé du ciel. L'item
+          // dit alors quelles longueurs le portent, et la règle attend de les
+          // avoir avant de conclure.
+          let manque = false;
+          for (const k of r.longueurs || []) {
+            const v = f.lg2.get(k);
+            if (!v) { manque = true; break; }
+            dep.push(['lg2', k, v]);
+          }
+          if (manque) continue;
           const but = ['relation', r.op, r.rapports.map(x => x.join('|')).join(';'),
                        r.valeur.n + '/' + r.valeur.d];
           if (f.relation.some(x => cleFait(x) === cleFait(but))) continue;
@@ -452,6 +465,87 @@
                          calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'partage'] });
             }
           }
+        }
+        return out;
+      }
+    },
+    // ── B quinquies. LE SOMMET HORS DU MORCEAU ────────────────────────────
+    //
+    // « (BC)//(DE) ; AB = 5 ; BC = 3 ; DE = 4 ; CE = 2 : أحسب AC » — Thales
+    // 2008 ex6. Ni AC ni AE ne sont connus : le rapport seul ne suffit pas, et
+    // la règle de Thalès reste muette. Ce qu'on sait, c'est AC/AE = 3/4 et
+    // AE − AC = CE = 2 ; c'est encore un système, mais l'autre — le sommet est
+    // DEHORS, et la partie connue est celle qui reste.
+    //
+    //     AC = CE · r/(1 − r)      AE = CE/(1 − r)
+    //
+    // C'est la forme que la feuille appelle « x/(x + 3) = 45/50 » : l'inconnue
+    // des deux côtés de la proportion. Le menhir de son ex6 en vit, et son ex1
+    // l'annonçait déjà en algèbre pure.
+    {
+      cle: 'partage-externe',
+      nom: 'إذا عُلمت النّسبة و عُلم الجزء الباقي، أمكن حساب الطولين',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.thales || []) {
+          const p = ['para', dr(t.M, t.N), dr(t.B, t.C)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          const mn = f.lg2.get(seg(t.M, t.N)), bc = f.lg2.get(seg(t.B, t.C));
+          if (!mn || !bc) continue;
+          const r = F.racQ(F.qDiv(mn, bc));
+          if (!r || F.qNul(r)) continue;
+          const reste = F.qSub(F.Q1, r);
+          // r = 1 : les deux droites seraient confondues ; r > 1 : le morceau
+          // connu ne serait pas celui qu'on croit. On se tait.
+          if (!F.qPos(reste)) continue;
+          for (const [X, Y] of [[t.M, t.B], [t.N, t.C]]) {
+            // X ENTRE S ET Y, lu sur la figure : c'est ce qui distingue cette
+            // règle de la précédente, où le sommet est au milieu.
+            if (!(ctx.entre || []).some(e => e[1] === X
+                  && seg(e[0], e[2]) === seg(t.S, Y))) continue;
+            const tot = f.lg2.get(seg(X, Y));
+            if (!tot) continue;
+            const L = F.racQ(tot);
+            if (!L) continue;
+            const court = F.qDiv(F.qMul(L, r), reste);     // SX
+            const long = F.qDiv(L, reste);                 // SY
+            const dep = [p, ['lg2', seg(t.M, t.N), mn], ['lg2', seg(t.B, t.C), bc],
+                         ['lg2', seg(X, Y), tot]];
+            if (!f.lg2.has(seg(t.S, X))) {
+              out.push({ but: ['lg2', seg(t.S, X), F.qMul(court, court)], depuis: dep,
+                         calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'externe'] });
+            }
+            if (!f.lg2.has(seg(t.S, Y))) {
+              out.push({ but: ['lg2', seg(t.S, Y), F.qMul(long, long)], depuis: dep,
+                         calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'externe'] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+
+    // ── B sexies. DEUX ANGLES ALTERNES-INTERNES ÉGAUX ─────────────────────
+    //
+    // Thales 2008 ex7 ne donne pas le parallélisme : il donne deux angles de
+    // même mesure, de part et d'autre de la sécante, et c'est à l'élève d'en
+    // tirer que les droites sont parallèles avant d'appliquer Thalès. La règle
+    // vient de 8ᵉ ; sans elle, l'exercice commencerait par sa réponse.
+    //
+    // La configuration — QUI est la sécante, et de quel côté sont les deux
+    // sommets — se lit sur la figure, comme un alignement. L'ÉGALITÉ, elle,
+    // est une hypothèse, et le validateur la recalcule sur les coordonnées.
+    {
+      cle: 'para-alternes',
+      nom: 'إذا تقايست زاويتان متبادلتان داخليا فالمستقيمان متوازيان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of ctx.alternes || []) {
+          const eg = ['angles', a.p + a.s1 + a.s2, a.q + a.s2 + a.s1];
+          if (!f.angles.some(x => cleFait(x) === cleFait(eg))) continue;
+          const p = ['para', dr(a.p, a.s1), dr(a.q, a.s2)];
+          if (f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          out.push({ but: p, depuis: [eg] });
         }
         return out;
       }

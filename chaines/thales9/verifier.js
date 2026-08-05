@@ -152,6 +152,13 @@ function verifierFait(f, S) {
       return F.qEgaux(acc, v) ? null
         : 'la relation vaut ' + acc.n + '/' + acc.d + ' et non ' + f[3];
     }
+    // DEUX ANGLES ANNONCÉS ÉGAUX LE SONT-ILS ? Le cosinus de chacun se lit
+    // sur les coordonnées, et l'on compare sans jamais approcher.
+    case 'angles': {
+      const [A, S1, B2] = f[1].split(''), [C, T, D] = f[2].split('');
+      return P.memeAngle(p(A), p(S1), p(B2), p(C), p(T), p(D)) ? null
+        : 'les angles ' + f[1] + ' et ' + f[2] + ' ne sont pas de même mesure';
+    }
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
         : f[1] + ', ' + f[2] + ', ' + f[3] + ' ne sont pas alignés';
@@ -367,9 +374,29 @@ if (process.env.CONTRE_EXEMPLES) {
     if (!p.fait) throw new Error('rien à fausser');
     p.fait[3] = Object.keys(c.controle.points).find(z => z !== p.fait[2] && z !== p.fait[3]);
   });
+  // L'ÉGALITÉ D'ANGLES EST UNE HYPOTHÈSE COMME UNE AUTRE : elle doit se
+  // recalculer. Sans cette épreuve, « ces deux angles sont égaux » serait la
+  // seule phrase du chapitre que rien ne mesure — et c'est d'elle que sort le
+  // parallélisme de l'ex7.
+  pousse('deux angles déclarés égaux sans l’être', c => {
+    const h = c.controle.hyp.find(x => x[0] === 'angles');
+    if (!h) throw new Error('pas d’angles');
+    const autre = Object.keys(c.controle.points).find(z => !h[2].includes(z));
+    if (!autre) throw new Error('pas de point libre');
+    h[2] = h[2][0] + h[2][1] + autre;
+  });
   pousse('un parallélisme inventé', c => {
     const noms = Object.keys(c.controle.points);
     c.controle.etapesCalcul[0].fait = ['para', noms[0] + noms[1], noms[1] + noms[2]];
+  });
+  // La règle neuve du partage extérieur doit être rejouée comme les autres :
+  // c'est elle qui résout « x/(x + 3) = 45/50 », et une longueur fausse ne
+  // doit pas pouvoir s'y glisser.
+  pousse('le partage extérieur faussé', c => {
+    const p = c.controle.etapesCalcul.find(x => x.regle === 'partage-externe');
+    if (!p) throw new Error('pas de partage extérieur');
+    const [n, d] = p.fait[2].split('/');
+    p.fait[2] = (BigInt(n) + BigInt(d)) + '/' + d;
   });
   pousse('la réponse annoncée changée', c => {
     const d = c.controle.etapesCalcul[c.controle.etapesCalcul.length - 1];
