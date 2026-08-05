@@ -215,14 +215,22 @@
             const a = f.lg2.get(hj), b = f.lg2.get(bj);
             if (!a || !b) continue;
             const hb = f.lg2.get(bi), hh = f.lg2.get(hi);
+            // LA CONFIGURATION VOYAGE AVEC LE PAS. Ce n'est pas un ornement :
+            // le maître exige que la rédaction nomme le triangle, la
+            // parallèle et les appartenances — sans elles, la réponse est
+            // fausse et la note est zéro. La règle rend donc de quoi écrire
+            // sa justification en entier, et le validateur vérifie ensuite
+            // qu'elle y est.
             if (hb && !hh) {
               out.push({ but: ['lg2', hi, F.qDiv(F.qMul(hb, a), b)],
                          depuis: [p, ['lg2', hj, a], ['lg2', bj, b], ['lg2', bi, hb]],
+                         conf: t, paires: { connu: [hj, bj], cible: [hi, bi], inconnu: hi },
                          calcul: [hi, bi, hj, bj, 'thales'] });
             }
             if (hh && !hb) {
               out.push({ but: ['lg2', bi, F.qDiv(F.qMul(hh, b), a)],
                          depuis: [p, ['lg2', hj, a], ['lg2', bj, b], ['lg2', hi, hh]],
+                         conf: t, paires: { connu: [hj, bj], cible: [hi, bi], inconnu: bi },
                          calcul: [bi, hi, bj, hj, 'thales'] });
             }
           }
@@ -245,7 +253,7 @@
                               seg(t.S, t.N) + '|' + seg(t.S, t.C),
                               seg(t.M, t.N) + '|' + seg(t.B, t.C)];
           if (f.prop.some(x => cleFait(x) === cleFait(but))) continue;
-          out.push({ but, depuis: [p] });
+          out.push({ but, depuis: [p], conf: t });
         }
         return out;
       }
@@ -265,6 +273,7 @@
           out.push({ but: p,
                      depuis: [['lg2', seg(t.S, t.M), a], ['lg2', seg(t.S, t.B), b],
                               ['lg2', seg(t.S, t.N), c], ['lg2', seg(t.S, t.C), d]],
+                     conf: t, sens: 'reciproque',
                      calcul: [seg(t.S, t.M), seg(t.S, t.B),
                               seg(t.S, t.N), seg(t.S, t.C), 'reciproque'] });
         }
@@ -456,12 +465,14 @@
               out.push({ but: ['lg2', seg(t.S, X), F.qMul(un, un)],
                          depuis: [p, ['lg2', seg(t.M, t.N), mn],
                                   ['lg2', seg(t.B, t.C), bc], ['lg2', seg(X, Y), tot]],
+                         conf: t,
                          calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'partage'] });
             }
             if (!f.lg2.has(seg(t.S, Y))) {
               out.push({ but: ['lg2', seg(t.S, Y), F.qMul(deux, deux)],
                          depuis: [p, ['lg2', seg(t.M, t.N), mn],
                                   ['lg2', seg(t.B, t.C), bc], ['lg2', seg(X, Y), tot]],
+                         conf: t,
                          calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'partage'] });
             }
           }
@@ -513,10 +524,12 @@
                          ['lg2', seg(X, Y), tot]];
             if (!f.lg2.has(seg(t.S, X))) {
               out.push({ but: ['lg2', seg(t.S, X), F.qMul(court, court)], depuis: dep,
+                         conf: t,
                          calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'externe'] });
             }
             if (!f.lg2.has(seg(t.S, Y))) {
               out.push({ but: ['lg2', seg(t.S, Y), F.qMul(long, long)], depuis: dep,
+                         conf: t,
                          calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'externe'] });
             }
           }
@@ -801,7 +814,11 @@
           const k = cleFait(p.but);
           if (connus.has(k)) continue;
           if (p.depuis.some(d => !connus.has(cleFait(d)))) continue;
-          connus.set(k, { fait: p.but, regle: r, depuis: p.depuis, calcul: p.calcul });
+          // La configuration et les rapports voyagent avec le pas : c'est
+          // avec eux que la rédaction se fait, et sans eux la justification
+          // de Thalès serait muette sur le triangle.
+          connus.set(k, { fait: p.but, regle: r, depuis: p.depuis, calcul: p.calcul,
+                          conf: p.conf, paires: p.paires, sens: p.sens });
           neuf = true;
           if (vise(p.but)) return remonter(connus, k);
         }

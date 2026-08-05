@@ -132,6 +132,21 @@
       // ramener chaque réponse à sa question.
       if (blocs.length > 1) etapes.push([(i + 1) + ')', bloc.question]);
       for (const n of bloc.suite) {
+        // ── LA RÉDACTION DE THALÈS EST UN GABARIT, PAS UNE PHRASE ──────────
+        //
+        // « النشاط الأول » et « النشاط الثالث » l'imposent case par case :
+        //
+        //     في المثلّث ABC لنا
+        //     (MN) // (BC)
+        //     M ∈ (AB)  و  N ∈ (AC)
+        //     حسب نظرية طالس لنا
+        //     AM/AB = AN/AC = MN/BC
+        //
+        // Le maître est formel : une application de Thalès qui ne nomme pas
+        // le triangle, ou qui ne dit pas quelles droites sont parallèles, est
+        // FAUSSE — et la copie vaut zéro. Ce n'est donc pas une mise en forme,
+        // c'est le raisonnement lui-même, et le validateur le contrôle.
+        if (n.conf) { pousserThales(etapes, n, S, donnees, dire); continue; }
         if (!dites.has(n.regle.cle)) {
           dites.add(n.regle.cle);
           etapes.push(['القاعدة', n.regle.nom]);
@@ -163,6 +178,15 @@
         points: Object.fromEntries(Object.keys(S.pts).map(n =>
           [n, [S.pts[n].x.n + '/' + S.pts[n].x.d, S.pts[n].y.n + '/' + S.pts[n].y.d]])),
         hyp: S.hyp.map(sec), but: sec(buts[buts.length - 1].but),
+        // CE QUE LA RÉDACTION DOIT CONTENIR, pour chaque application de
+        // Thalès : le triangle, la parallèle, les deux appartenances. Le
+        // validateur relit le texte et refuse ce qui en manque.
+        redactions: suite.filter(n => n.conf).map(n => ({
+          tri: n.conf.S + n.conf.B + n.conf.C,
+          para: '(' + n.conf.M + n.conf.N + ') // (' + n.conf.B + n.conf.C + ')',
+          sur: [n.conf.M + ' ∈ (' + n.conf.S + n.conf.B + ')',
+                n.conf.N + ' ∈ (' + n.conf.S + n.conf.C + ')']
+        })),
         etapesCalcul: suite.map(n => ({
           regle: n.regle.cle, fait: sec(n.fait), depuis: n.depuis.map(sec)
         })),
@@ -176,6 +200,55 @@
   }
   // Un fait, sérialisé : les rationnels y deviennent du texte.
   const sec = f => f.map(x => (x && x.n !== undefined ? x.n + '/' + x.d : x));
+
+  // ── LE GABARIT DE THALÈS ─────────────────────────────────────────────────
+  // Les trois rapports, lus depuis le sommet, comme sur la feuille.
+  const rapportsDe = t => [[seg(t.S, t.M), seg(t.S, t.B)],
+                           [seg(t.S, t.N), seg(t.S, t.C)],
+                           [seg(t.M, t.N), seg(t.B, t.C)]];
+  const troisRapports = t => rapportsDe(t).map(r => F.ecrireRapport(r[0], r[1])).join(' = ');
+  const cadreDe = t => '(' + t.M + t.N + ') // (' + t.B + t.C + ')  و  '
+    + t.M + ' ∈ (' + t.S + t.B + ')  و  ' + t.N + ' ∈ (' + t.S + t.C + ')';
+  const appartenances = t => t.M + ' ∈ (' + t.S + t.B + ')  و  '
+    + t.N + ' ∈ (' + t.S + t.C + ')';
+
+  function pousserThales(etapes, n, S, donnees, dire) {
+    const t = n.conf;
+    const tri = t.S + t.B + t.C;
+    const ecrit = k => {
+      const v = S.val(k);
+      return F.ecrireRacine(v, donnees.has(R.cleFait(['lg2', k, v])) ? 'donnee' : null);
+    };
+    // L'ORDRE DE LA FEUILLE : la configuration d'abord, le théorème ensuite.
+    if (n.sens === 'reciproque') {
+      const [r1, r2] = rapportsDe(t);
+      etapes.push(['في المثلّث ' + tri + ' لنا', appartenances(t)]);
+      etapes.push(['و لدينا', F.ecrireRapport(r1[0], r1[1]) + ' = ' + F.ecrireRapport(r2[0], r2[1])
+        + '  ، أي  ' + F.ecrireRapport(ecrit(r1[0]), ecrit(r1[1])) + ' = '
+        + F.ecrireRapport(ecrit(r2[0]), ecrit(r2[1]))]);
+      etapes.push(['حسب عكس نظرية طالس لنا', dire(n.fait)]);
+      return;
+    }
+    etapes.push(['في المثلّث ' + tri + ' لنا', cadreDe(t)]);
+    // « النشاط الأول » ne demande rien d'autre que les trois rapports : ils
+    // sont alors la conclusion, et non le point de départ d'un calcul.
+    if (n.fait[0] === 'prop') {
+      etapes.push(['حسب نظرية طالس لنا', dire(n.fait)]);
+      return;
+    }
+    etapes.push(['حسب نظرية طالس لنا', troisRapports(t)]);
+    // La substitution, puis la réponse : « 5/6 = AN/7,2 » puis « AN = 6 ».
+    const p = n.paires;
+    if (p) {
+      const nom = k => (k === p.inconnu ? k : ecrit(k));
+      etapes.push(['نعوّض',
+        F.ecrireRapport(nom(p.connu[0]), nom(p.connu[1])) + ' = '
+        + F.ecrireRapport(nom(p.cible[0]), nom(p.cible[1]))]);
+    } else if (n.calcul) {
+      etapes.push(['نطبّق', n.depuis.map(f => dire(f)).join('  و  ')]);
+    }
+    etapes.push(['إذن', dire(n.fait) + (p ? '' : calculDe(n, S, donnees))]);
+  }
 
   // Le détail du calcul, quand la règle en a fait un.
   function calculDe(n, S, donnees) {

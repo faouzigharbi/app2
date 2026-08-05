@@ -274,10 +274,40 @@ function verifierBrut(brut) {
     }
   }
 
+  // 5 ter. LA RÉDACTION DE THALÈS, MOT POUR MOT.
+  //
+  // « ne pas préciser le triangle ou le parallélisme donne une réponse fausse
+  // automatiquement, et la note est systématiquement 0. » Ce n'est donc pas
+  // une question de présentation : une application de Thalès qui ne nomme pas
+  // sa configuration n'est pas une démonstration. On relit le texte produit et
+  // l'on exige d'y trouver, pour chaque application, le triangle, la parallèle
+  // et les deux appartenances.
+  {
+    const tout = brut.etapes.map(e => e[0] + ' ' + e[1]).join('\n');
+    for (const r of c.redactions || []) {
+      if (!tout.includes('في المثلّث ' + r.tri)) {
+        probs.push('تحرير ناقص : المثلّث ' + r.tri + ' غير مذكور');
+      }
+      if (r.para && !tout.includes(r.para) && !tout.includes(r.para.replace(' // ', ' // '))) {
+        probs.push('تحرير ناقص : التوازي ' + r.para + ' غير مذكور');
+      }
+      for (const s of r.sur || []) {
+        if (!tout.includes(s)) probs.push('تحرير ناقص : الانتماء ' + s + ' غير مذكور');
+      }
+    }
+  }
+
   // 6. La forme de la fiche.
-  const t = brut.etapes.map(e => e.join(': '));
+  // LE GABARIT SE RÉPÈTE, ET C'EST VOULU. Le maître réécrit la configuration
+  // à CHAQUE application de Thalès — c'est même tout l'objet de sa consigne.
+  // Le contrôle des étapes dupliquées ne doit donc pas porter sur ces deux
+  // lignes-là ; il porte sur ce qui les suit, et deux applications réellement
+  // identiques restent prises par leurs lignes de calcul.
+  const GABARIT = /^(في المثلّث |و لدينا$|حسب (عكس )?نظرية طالس لنا$)/;
+  const t = brut.etapes.filter(e => !GABARIT.test(e[0])).map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
-  if (t.length < 4) probs.push('السلسلة قصيرة جدا');
+  // La longueur, elle, se mesure sur la fiche entière — gabarit compris.
+  if (brut.etapes.length < 4) probs.push('السلسلة قصيرة جدا');
   if (!brut.indice) probs.push('بلا مساعدة');
   const svg = (brut.enonce || []).find(x => x && typeof x === 'object' && x.svg);
   if (!svg) probs.push('بلا رسم');
@@ -470,6 +500,20 @@ if (process.env.CONTRE_EXEMPLES) {
     const p2 = c.controle.etapesCalcul.find(x => x.fait[0] === 'relation');
     if (!p2) throw new Error('pas de relation');
     p2.fait[3] = '2/1';
+  });
+  // LA CONSIGNE DU MAÎTRE, MISE À L'ÉPREUVE. « Ne pas préciser le triangle
+  // ou le parallélisme donne une réponse fausse automatiquement, et la note
+  // est systématiquement 0. » Une correction amputée de l'un ou de l'autre
+  // doit donc être refusée ici — sinon la fiche produirait des copies à zéro.
+  pousse('la rédaction sans le nom du triangle', c => {
+    const i = c.etapes.findIndex(e => /^في المثلّث /.test(e[0]));
+    if (i < 0) throw new Error('pas de rédaction de Thalès');
+    c.etapes[i] = ['نطبّق', c.etapes[i][1]];
+  });
+  pousse('la rédaction sans le parallélisme ni les appartenances', c => {
+    const i = c.etapes.findIndex(e => /^في المثلّث /.test(e[0]) && / \/\/ /.test(e[1]));
+    if (i < 0) throw new Error('pas de rédaction de Thalès');
+    c.etapes[i] = [c.etapes[i][0], 'لدينا المعطيات'];
   });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });
