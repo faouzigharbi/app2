@@ -35,6 +35,9 @@ window.CLASSEMENT = {
   // مناظرة, pas quand on apprend une leçon. Elle garde donc son nom.
   brevet: { nom: 'البريفي — مراجعة المناظرة' },
 
+  // repere9 porte la LEÇON du repère ; il reste chez lui, c'est un chapitre du
+  // programme et non une série de révision.
+
   // ── 7ᵉ ────────────────────────────────────────────────────────────────
   // « سلاسل البرهان » ne dit pas de quoi il s'agit : carré parfait, cube,
   // multiple — c'est de l'arithmétique, et sa place est avec les diviseurs.

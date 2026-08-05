@@ -322,6 +322,9 @@
                 'LE REPÈRE EST FAIT — chaines/brevet/repere.js : points construits, '
                 + 'jamais recopiés, et chaque affirmation de l\'énoncé recalculée '
                 + 'dessus. Le livre pose un exercice de repère par séance : il resservira',
+                'LE CHAPITRE DU REPÈRE EST FAIT — chaines/repere9 : huit familles '
+                + 'engendrées (milieu, symétrique, distance, nature d\'un quadrilatère, '
+                + 'alignement, directions, quatrième sommet, cercle circonscrit)',
                 'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
                 'les onze autres séances restent à ouvrir'],
       // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
