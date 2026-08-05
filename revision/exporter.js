@@ -126,7 +126,8 @@ function moissonner(construire, n, parCase) {
 const NOMS = { puiss9: 'القوى', droites7: 'التعامد و التوازي',
                angles7: 'الزوايا',
                thales9: 'طالس و بيتاغور',
-               proport9: 'التناسب — أكمل الكسور' };
+               proport9: 'التناسب — أكمل الكسور',
+               canonique9: 'الشكل القانوني و المعادلات' };
 
 function titreDe(dossier) {
   if (NOMS[dossier]) return NOMS[dossier];
