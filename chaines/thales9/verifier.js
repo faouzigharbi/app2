@@ -170,6 +170,21 @@ function verifierFait(f, S) {
         : 'le rapport ' + f[1] + ' vaut ' + vrai.n + '/' + vrai.d
           + ' et non ' + f[2];
     }
+    // UN PÉRIMÈTRE SE REFAIT COMME UNE LONGUEUR : on additionne les côtés
+    // lus sur les coordonnées, et l'on compare au carré annoncé.
+    case 'perimetre': {
+      const s2 = f[1].split('');
+      let somme = F.q(0);
+      for (let i = 0; i < s2.length; i++) {
+        const L = F.racQ(P.carre(p(s2[i]), p(s2[(i + 1) % s2.length])));
+        if (L === null) return 'un côté de ' + f[1] + ' n’a pas de longueur rationnelle';
+        somme = F.qAdd(somme, L);
+      }
+      const vrai = F.qMul(somme, somme);
+      return F.qEgaux(vrai, lireQ(f[2])) ? null
+        : 'le périmètre de ' + f[1] + ' vaut ' + F.ecrireRacine(vrai).replace(/<[^>]+>/g, '')
+          + ' et non ' + F.ecrireRacine(lireQ(f[2])).replace(/<[^>]+>/g, '');
+    }
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
         : f[1] + ', ' + f[2] + ', ' + f[3] + ' ne sont pas alignés';

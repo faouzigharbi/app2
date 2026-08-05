@@ -206,12 +206,11 @@
         { n: 'II-1', questions: 2, notions: ['triangle médian', 'angles égaux'],
           sort: 'hors machinerie', pourquoi: 'égalité d\'angles À DÉMONTRER : le moteur sait vérifier une égalité d\'angles donnée, non la conclure d\'un parallélisme' },
         { n: 'II-2', questions: 1, notions: ['triangle médian', 'périmètre'],
-          sort: 'à faire', pourquoi: 'le périmètre est une somme de trois côtés — il manque un but « محيط »' },
+          sort: 'bibliothèque', ou: 'cinq questions : les trois côtés, puis les deux périmètres' },
         { n: 'II-3', questions: 1, notions: ['milieux', 'périmètre d\'un quadrilatère'],
-          sort: 'à faire', pourquoi: 'même manque' }
+          sort: 'à faire', pourquoi: 'la brique « périmètre » existe désormais — il ne manque que la pose' }
       ],
-      machine: ['un but « périmètre » (somme de côtés)',
-                'conclure une égalité d\'angles à partir d\'un parallélisme — l\'inverse de para-alternes'] },
+      machine: ['les ANGLES CORRESPONDANTS — « زاويتان متقابلتان ». Le moteur ne connaît que les alternes-internes, et dans le triangle médian les angles égaux sont correspondants : (DF)//(AC) coupées par (AB) donnent FD̂B = CÂB, F et C étant du MÊME côté de la sécante. Deux essais, deux refus du validateur, et c\'est lui qui a tranché.'] },
 
     { fichier: 'revision_Concours_2019__TarTib.pdf', pages: 6, texte: 'lisible',
       etat: 'non lu', exercices: 8, chapitres: ['reel9', 'encadrement'],

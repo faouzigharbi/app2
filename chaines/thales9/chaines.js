@@ -39,6 +39,8 @@
     rapport: (k, v) => F.ecrireRapport(...k.split('|')) + ' = '
       + (String(v.d) === '1' ? String(v.n)
          : F.ecrireRapport(String(v.n), String(v.d))),
+    perimetre: (P, v) => 'محيط ' + (P.length === 3 ? 'المثلّث ' : 'الرّباعي ') + P
+      + ' = ' + F.ecrireRacine(v),
     // Trois rapports empilés, reliés par des égalités — comme au tableau.
     prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = '),
     pgram: Q => 'الرّباعي ' + Q + ' متوازي أضلاع',
@@ -94,6 +96,16 @@
       hyp.push(['angles', a.p + a.s1 + a.s2, a.q + a.s2 + a.s1]);
     }
 
+    // DEUX RÉGIMES POUR UNE MÊME CONFIGURATION, et il faut les distinguer.
+    //
+    //   alternes        l'énoncé DONNE l'égalité des angles (Thales 2008 ex7),
+    //                   et l'on en déduit le parallélisme ;
+    //   anglesAdeduire  l'énoncé donne le parallélisme, et c'est l'égalité des
+    //                   angles qu'il faut démontrer (Thales 2020, partie II).
+    //
+    // La configuration se lit sur la figure dans les deux cas ; ce qui change,
+    // c'est le sens de la marche — et poser l'égalité en hypothèse quand elle
+    // est la QUESTION, ce serait donner la réponse.
     // Le contexte : ce que la FIGURE fournit, et qui n'est pas à démontrer.
     const milieux = {};
     for (const m of s.milieux || []) milieux[seg(m[1], m[2])] = m[0];
@@ -101,7 +113,9 @@
       thales: s.thales || [], triangles: s.triangles || [],
       quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
       orthos: s.orthos || [], entre: s.entre || [], relations: s.relations || [],
-      alternes: s.alternes || [], rapports: s.rapports || [],
+      alternes: (s.alternes || []).concat(s.anglesAdeduire || []),
+      rapports: s.rapports || [],
+      perimetres: s.perimetres || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -234,7 +248,8 @@
                // rejouait « كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر
                // لها » sur une scène sans cercle, et la règle ne donnait
                // évidemment rien : 32 refus, tous justes.
-               diametres: S.ctx.diametres, rapports: S.ctx.rapports }
+               diametres: S.ctx.diametres, rapports: S.ctx.rapports,
+               perimetres: S.ctx.perimetres }
       }
     };
   }

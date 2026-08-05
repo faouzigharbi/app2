@@ -1628,6 +1628,66 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2020, PARTIE II — « القطعة الرابطة بين منتصفي ضلعين »
+  //
+  // Sa première partie reprend Thales 2008 ; sa seconde est neuve, et c'est
+  // le TRIANGLE MÉDIAN : les trois segments des milieux, chacun moitié du côté
+  // qu'il ne touche pas.
+  //
+  //   « أحسب محيط المثلث ABC مع تعليل الجواب » — on donne les trois segments,
+  //   on demande le périmètre du grand triangle.
+  //
+  // Le maître demande aussi « بيّن أنّ BÂE = EF̂D » : l'égalité d'angles se
+  // DÉDUIT du parallélisme. Le moteur savait l'inverse — des angles égaux vers
+  // le parallélisme — et pas ce sens-là ; il l'a maintenant.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2020 — الجزء الثاني', 'probleme', 'difficile', () => {
+    // Les trois côtés doivent être rationnels ensemble : triangle héronien.
+    const g = triangle(1);
+    const A = g.A, B = g.B, C = g.C;
+    const D = F.milieu(A, B), E = F.milieu(A, C), Fp = F.milieu(B, C);
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp },
+      milieux: [['D', 'A', 'B'], ['E', 'A', 'C'], ['F', 'B', 'C']],
+      // Les trois configurations du théorème des milieux, une par côté.
+      thales: [{ S: 'A', B: 'B', C: 'C', M: 'D', N: 'E' },
+               { S: 'B', B: 'A', C: 'C', M: 'D', N: 'F' },
+               { S: 'C', B: 'A', C: 'B', M: 'E', N: 'F' }],
+      // L'ÉGALITÉ D'ANGLES DU MAÎTRE N'EST PAS ICI, ET VOICI POURQUOI.
+      //
+      // Deux essais, deux refus du validateur, et le second m'a appris la
+      // géométrie de la chose : dans le triangle médian, les angles égaux sont
+      // CORRESPONDANTS, non alternes-internes. (DF)//(AC) coupées par (AB)
+      // donnent FD̂B = CÂB — F et C sont du MÊME côté de la sécante. Les
+      // angles alternes-internes, eux, exigent des côtés opposés.
+      //
+      // Le moteur ne connaît que les alternes-internes. Il lui manque donc
+      // « زاويتان متقابلتان » — les angles correspondants —, et c'est écrit
+      // dans la carte d'identité plutôt que maquillé ici. Deux règles fausses
+      // valent moins qu'une absence déclarée.
+      perimetres: ['ABC', 'DEF'],
+      // L'ÉNONCÉ DONNE LES SEGMENTS, PAS LES CÔTÉS — c'est tout l'exercice.
+      donne: [seg('D', 'E'), seg('D', 'F'), seg('E', 'F')],
+      buts: [
+        { but: ['lg2', seg('B', 'C'), null], question: 'أحسب BC.' },
+        { but: ['lg2', seg('A', 'C'), null], question: 'أحسب AC.' },
+        { but: ['lg2', seg('A', 'B'), null], question: 'أحسب AB.' },
+        { but: ['perimetre', 'ABC', null], question: 'أحسب محيط المثلّث ABC.' },
+        { but: ['perimetre', 'DEF', null], question: 'أحسب محيط المثلّث DEF.' }
+      ],
+      texte: g2 => ['ABC مثلّث، D منتصف [AB] و E منتصف [AC] و F منتصف [BC].',
+                    'DE = ' + g2(seg('D', 'E')) + ' و DF = ' + g2(seg('D', 'F'))
+                    + ' و EF = ' + g2(seg('E', 'F')) + '.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'],
+                           ['D', 'E'], ['E', 'F'], ['F', 'D']],
+                marques: [['A', 'D', 1], ['D', 'B', 1], ['A', 'E', 2], ['E', 'C', 2],
+                          ['B', 'F', 3], ['F', 'C', 3]] },
+      indice: 'كلّ قطعة رابطة بين منتصفَي ضلعين تساوي نصف الضّلع الثالث : فاقلب العلاقة'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },

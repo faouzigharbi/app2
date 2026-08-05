@@ -50,7 +50,7 @@
       para: [], perp: [], milieu: [], lg2: new Map(), rect: [],
       rapport: [], aligne: [], cercle: [], prop: [],
       pgram: [], rect4: [], losange: [], gravite: [], ortho: [], sym: [],
-      relation: [], angles: []
+      relation: [], angles: [], perimetre: []
     };
     for (const f of faits) {
       if (f[0] === 'lg2') t.lg2.set(f[1], f[2]);
@@ -326,6 +326,15 @@
             out.push({ but: ['lg2', seg(t.M, t.N), F.qDiv(bc, F.q(4))],
                        depuis: dep.concat([['lg2', seg(t.B, t.C), bc]]),
                        calcul: [seg(t.B, t.C), seg(t.M, t.N), 'moitie'] });
+          }
+          // ET DANS L'AUTRE SENS. « أحسب محيط المثلّث ABC » donne les trois
+          // segments des milieux et demande les côtés : la règle ne savait
+          // que descendre du côté vers le segment, jamais remonter.
+          const mn = f.lg2.get(seg(t.M, t.N));
+          if (mn && !f.lg2.has(seg(t.B, t.C))) {
+            out.push({ but: ['lg2', seg(t.B, t.C), F.qMul(mn, F.q(4))],
+                       depuis: dep.concat([['lg2', seg(t.M, t.N), mn]]),
+                       calcul: [seg(t.M, t.N), seg(t.B, t.C), 'double'] });
           }
         }
         return out;
@@ -943,6 +952,56 @@
           const p = ['para', dr(a.p, a.s1), dr(a.q, a.s2)];
           if (f.para.some(x => cleFait(x) === cleFait(p))) continue;
           out.push({ but: p, depuis: [eg] });
+        }
+        return out;
+      }
+    },
+    // ── LE PÉRIMÈTRE ─────────────────────────────────────────────────────
+    //
+    // Thales 2020 : « أحسب محيط المثلث ABC مع تعليل الجواب ». Le moteur
+    // calculait des longueurs et ne les additionnait jamais. Un périmètre
+    // n'est pas une longueur de plus : c'est une SOMME, et elle n'a de valeur
+    // exacte que si chaque côté en a une — sinon la règle se tait, comme
+    // partout ailleurs dans ce chapitre.
+    {
+      cle: 'perimetre',
+      nom: 'محيط مضلّع هو مجموع أطوال أضلاعه',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const P of ctx.perimetres || []) {
+          if (f.perimetre.some(x => x[1] === P)) continue;
+          const s = P.split('');
+          let somme = F.Q0, bon = true;
+          const dep = [];
+          for (let i = 0; i < s.length; i++) {
+            const k = seg(s[i], s[(i + 1) % s.length]);
+            const v = f.lg2.get(k);
+            const L = v ? F.racQ(v) : null;
+            if (!L) { bon = false; break; }
+            somme = F.qAdd(somme, L);
+            dep.push(['lg2', k, v]);
+          }
+          if (!bon || F.qNul(somme)) continue;
+          out.push({ but: ['perimetre', P, F.qMul(somme, somme)], depuis: dep });
+        }
+        return out;
+      }
+    },
+    // L'INVERSE DE « زاويتان متبادلتان داخليا » : si les droites SONT
+    // parallèles, les angles alternes-internes SONT égaux. Le moteur savait
+    // conclure le parallélisme des angles ; il ne savait pas conclure les
+    // angles du parallélisme, et c'est ce que demande Thales 2020.
+    {
+      cle: 'angles-par-para',
+      nom: 'إذا كان مستقيمان متوازيين فالزاويتان المتبادلتان داخليا متقايستان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of ctx.alternes || []) {
+          const p = ['para', dr(a.p, a.s1), dr(a.q, a.s2)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          const but = ['angles', a.p + a.s1 + a.s2, a.q + a.s2 + a.s1];
+          if (f.angles.some(x => cleFait(x) === cleFait(but))) continue;
+          out.push({ but, depuis: [p] });
         }
         return out;
       }
