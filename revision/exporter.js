@@ -1,6 +1,8 @@
-// FIGE UNE FICHE ENGENDRÉE EN BIBLIOTHÈQUE D'EXERCICES.
+// FIGE LES FICHES ENGENDRÉES EN BIBLIOTHÈQUES D'EXERCICES.
 //
-//   node exporter.js puiss9 "القوى" 9 [par-case]
+//   node exporter.js --tout                    toutes les fiches exportables
+//   node exporter.js puiss9                    une seule
+//   node exporter.js puiss9 "القوى" 9 30       en forçant nom, niveau, quantité
 //
 // Les pages de chaîne engendrent leurs questions à chaque ouverture : deux
 // élèves n'ont jamais la même. C'est ce qu'on veut sur écran, et c'est
@@ -9,87 +11,228 @@
 //
 // On tire donc un LOT, on le dédoublonne, et on l'écrit une fois pour toutes.
 // Ce que la bibliothèque gagne au passage, aucune bibliothèque écrite à la
-// main ne l'a : ces corrigés sortent du générateur vérifié — chaque relation y
-// a été recalculée, et le validateur n'a rien laissé passer.
+// main ne l'a : ces corrigés sortent des générateurs vérifiés — chaque
+// relation y a été recalculée, et les validateurs n'ont rien laissé passer.
 //
 // L'énoncé devient la question, la chaîne d'étapes devient le corrigé.
+//
+// LES VINGT-ET-UNE FICHES NE SE RESSEMBLENT PAS. Elles ont été écrites sur
+// deux ans, et leur charpente a bougé : le registre s'appelle PROBLEMES ici,
+// PREUVES là, EXERCICES ailleurs ; il vit dans noyau.js, ou dans arith.js ;
+// il est VIDE au chargement et se remplit ensuite. On ne les réécrit pas —
+// on les relit, et l'on prend ce qui répond.
 const fs = require('fs');
 const path = require('path');
 
-const dossier = process.argv[2];
-const nomChapitre = process.argv[3];
-const niveau = Number(process.argv[4] || 9);
-const PAR_CASE = Number(process.argv[5] || 30);
+const CHAINES = path.resolve(__dirname, '..', 'chaines');
+const ICI = __dirname;
+const PAR_CASE_DEFAUT = 20;
 
-if (!dossier || !nomChapitre) {
-  console.error('usage: node exporter.js <dossier> "<nom arabe>" [niveau] [par-case]');
-  process.exit(1);
+// ── Charger une fiche ────────────────────────────────────────────────────
+//
+// L'ordre de chargement est celui que la fiche s'impose à elle-même, et il est
+// écrit dans son validateur : on le lui emprunte plutôt que de le deviner. On
+// s'arrête avant erreurs.js et juge.js — ils servent aux pages « أين الخطأ؟ »,
+// pas aux chaînes.
+function modulesDe(dossier) {
+  const v = path.join(CHAINES, dossier, 'verifier.js');
+  if (!fs.existsSync(v)) return null;
+  const mods = [];
+  for (const m of fs.readFileSync(v, 'utf8').match(/require\('\.\/[\w.-]+'\)/g) || []) {
+    const f = m.slice(11, -2);
+    if (f === 'erreurs.js' || f === 'juge.js' || f === 'pont.js') break;
+    mods.push(f);
+  }
+  // Certaines fiches chargent leurs générateurs dans une boucle —
+  // « require('./gen' + n + '.js') » — que la lecture du texte ne voit pas.
+  for (const g of fs.readdirSync(path.join(CHAINES, dossier))
+                    .filter(x => /^gen\d+\.js$/.test(x)).sort()) {
+    if (mods.indexOf(g) < 0) mods.push(g);
+  }
+  return mods;
 }
 
-const racine = path.resolve(__dirname, '..', 'chaines', dossier);
-const F = require(path.join(racine, 'noyau.js'));
-require(path.join(racine, 'gens.js'));
+function charger(dossier) {
+  const mods = modulesDe(dossier);
+  if (!mods) return null;
+  const charges = [];
+  for (const m of mods) {
+    try { charges.push(require(path.join(CHAINES, dossier, m))); }
+    catch (e) { return { erreur: m + ' : ' + e.message }; }
+  }
+  // Le registre est vide à l'instant du chargement — ce sont les générateurs,
+  // chargés après, qui le remplissent. On ne peut donc le reconnaître qu'APRÈS
+  // coup, et l'on garde celui qui s'est rempli.
+  for (const nom of ['PROBLEMES', 'PREUVES', 'EXERCICES']) {
+    const M = charges.find(r => r && r[nom] && Object.keys(r[nom]).length);
+    if (M) {
+      const bati = charges.find(r => r && typeof r.construire === 'function');
+      if (!bati) return { erreur: 'aucun construire()' };
+      return { registre: M[nom], construire: bati.construire.bind(bati) };
+    }
+  }
+  return { erreur: 'aucun registre' };
+}
 
-// On tire jusqu'à ce que la case cesse de se remplir : les familles pauvres
+// ── Une question rendue ──────────────────────────────────────────────────
+//
+// Toutes les fiches savent RENDRE une page : construire(n) donne des questions
+// { operation, steps, hint } déjà mises en HTML — c'est ce que la page affiche.
+// On part de là : c'est le seul point sur lequel elles s'accordent toutes.
+//
+// Une étape est « libellé: mathématique ». Le libellé est ce qui précède le
+// PREMIER deux-points ; ce qui suit peut en contenir d'autres — « 6 : 3 = 2 »
+// est une division, pas une seconde étiquette.
+// Les fiches les plus anciennes portent leur mise en forme EN LIGNE, sur
+// chaque expression — « style="display:inline-block;white-space:nowrap" », une
+// cinquantaine de caractères répétés des dizaines de milliers de fois. La
+// classe .expr dit la même chose, et la feuille de style de la page la
+// définit déjà. On normalise : même rendu, un mégaoctet et demi de moins.
+const normaliser = s => String(s)
+  .replace(/\s*style="display:inline-block;\s*white-space:nowrap"/g, ' class="expr"')
+  .replace(/dir="ltr" class="expr" class="expr"/g, 'dir="ltr" class="expr"');
+
+function couper(etape) {
+  const s = String(etape);
+  const k = s.indexOf(':');
+  if (k < 0) return { quoi: '', math: normaliser(s).trim() };
+  return { quoi: s.slice(0, k).trim(), math: normaliser(s.slice(k + 1)).trim() };
+}
+
+// ── Moissonner ───────────────────────────────────────────────────────────
+//
+// On tire jusqu'à ce que la page cesse de se renouveler : les familles pauvres
 // s'épuisent vite, les riches méritent qu'on insiste. Sans ce garde-fou, une
 // case de six énoncés ferait tourner la boucle mille fois pour rien.
-function moissonner(n) {
+function moissonner(construire, n, parCase) {
   const vus = new Map();
   let sec = 0;
-  for (let tour = 0; tour < 60 && sec < 8 && vus.size < PAR_CASE; tour++) {
+  for (let tour = 0; tour < 60 && sec < 8 && vus.size < parCase; tour++) {
     const avant = vus.size;
-    let lot = [];
-    try { lot = F.tirer(n); } catch (e) { break; }
-    for (const q of lot) {
-      const cle = q.enonce.join(' | ');
-      if (!vus.has(cle)) vus.set(cle, q);
+    let page;
+    try { page = construire(n); } catch (e) { break; }
+    for (const q of (page && page.questions) || []) {
+      if (!q || !q.operation || !q.steps || !q.steps.length) continue;
+      if (!vus.has(q.operation)) vus.set(q.operation, q);
     }
     sec = (vus.size === avant) ? sec + 1 : 0;
   }
-  return [...vus.values()].slice(0, PAR_CASE);
+  return [...vus.values()].slice(0, parCase);
 }
 
-const echapper = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")
-                               .replace(/\n/g, ' ');
+// ── Le niveau et le nom, lus sur la fiche ────────────────────────────────
+// Une fiche dont les pages ne sont pas encore bâties n'a pas de <title> à
+// lire. On la nomme ici, en attendant qu'elle le fasse elle-même.
+const NOMS = { puiss9: 'القوى' };
 
-const sortie = [];
-let total = 0;
-const compte = {};
-
-for (const n of Object.keys(F.PROBLEMES).map(Number).sort((a, b) => a - b)) {
-  const def = F.PROBLEMES[n];
-  // Le titre porte « famille — difficulté », mais la famille peut elle-même
-  // contenir un tiret : « نفس الأسّ — أساسان ». On coupe donc au niveau, pas
-  // au premier tiret venu, sinon la rubrique perd la moitié de son nom.
-  const rubriqueNom = String(def.titre).split(' — مستوى')[0].trim();
-  const lot = moissonner(n);
-  compte[rubriqueNom] = (compte[rubriqueNom] || 0) + lot.length;
-  lot.forEach((q, i) => {
-    total++;
-    sortie.push('  { id: ' + JSON.stringify(dossier + '-' + n + '-' + i)
-      + ', chapitre: ' + JSON.stringify(dossier)
-      + ', chapitreNom: ' + JSON.stringify(nomChapitre)
-      + ', niveau: ' + niveau
-      + ',\n    rubrique: ' + JSON.stringify(def.famille)
-      + ', rubriqueNom: ' + JSON.stringify(rubriqueNom)
-      + ', difficulte: ' + JSON.stringify(def.difficulte)
-      + ',\n    enonce: ' + JSON.stringify(q.enonce.map(F.rendreMath).join('<br>'))
-      + ',\n    correction: ' + JSON.stringify(
-          q.etapes.map(e => ({ quoi: F.rendreMath(e[0]), math: F.rendreMath(e[1]) })))
-      + ',\n    indice: ' + JSON.stringify(q.indice || '')
-      + ', source: ' + JSON.stringify(q.source || '') + ' }');
-  });
+function titreDe(dossier) {
+  if (NOMS[dossier]) return NOMS[dossier];
+  const i = path.join(CHAINES, dossier, 'index.html');
+  if (fs.existsSync(i)) {
+    const m = /<title>([^<]*)<\/title>/.exec(fs.readFileSync(i, 'utf8'));
+    if (m) return m[1].split('—')[0].trim() || m[1].trim();
+  }
+  return dossier;
+}
+function niveauDe(dossier) {
+  const m = /([789])$/.exec(dossier);
+  if (m) return Number(m[1]);
+  const t = titreDe(dossier) + ' ' + (fs.existsSync(path.join(CHAINES, dossier, 'index.html'))
+    ? fs.readFileSync(path.join(CHAINES, dossier, 'index.html'), 'utf8').slice(0, 2000) : '');
+  const n = /([789])\s*أساسي/.exec(t);
+  return n ? Number(n[1]) : 9;
 }
 
-const fichier = path.join(__dirname, 'biblio-' + dossier + '.js');
-fs.writeFileSync(fichier,
-  '// ENGENDRÉ PAR exporter.js — NE PAS MODIFIER À LA MAIN.\n'
-  + '//   node exporter.js ' + dossier + ' "' + nomChapitre + '" ' + niveau + '\n'
-  + '// Chaque corrigé sort du générateur vérifié de la fiche « ' + dossier + ' ».\n'
-  + 'window.BIBLIO = (window.BIBLIO || []).concat([\n'
-  + sortie.join(',\n') + '\n]);\n');
+// ── Écrire une bibliothèque ──────────────────────────────────────────────
+function exporter(dossier, nom, niveau, parCase) {
+  const f = charger(dossier);
+  if (!f) return { dossier, erreur: 'pas de verifier.js' };
+  if (f.erreur) return { dossier, erreur: f.erreur };
 
-console.log(fichier.replace(process.cwd() + '/', '') + ' — ' + total + ' exercices');
-for (const r of Object.keys(compte)) {
-  console.log('   ' + String(compte[r]).padStart(4) + '  ' + r);
+  const lignes = [];
+  let total = 0;
+  for (const n of Object.keys(f.registre).map(Number).sort((a, b) => a - b)) {
+    const def = f.registre[n];
+    // « famille — مستوى صعب » : on coupe au niveau, pas au premier tiret venu,
+    // sinon « نفس الأسّ — أساسان » perd la moitié de son nom.
+    const rubriqueNom = String(def.titre || ('التمرين ' + n)).split(' — مستوى')[0].trim();
+    for (const [i, q] of moissonner(f.construire, n, parCase).entries()) {
+      total++;
+      lignes.push('  { id: ' + JSON.stringify(dossier + '-' + n + '-' + i)
+        + ', chapitre: ' + JSON.stringify(dossier)
+        + ', chapitreNom: ' + JSON.stringify(nom)
+        + ', niveau: ' + niveau
+        + ',\n    rubrique: ' + JSON.stringify(def.famille || ('ex' + n))
+        + ', rubriqueNom: ' + JSON.stringify(rubriqueNom)
+        // La difficulté n'est déclarée que par les fiches qui la connaissent.
+        // Ailleurs elle est VIDE, et une case vide se tire à tous les niveaux :
+        // mieux vaut ne rien dire que d'inventer un niveau.
+        + ', difficulte: ' + JSON.stringify(def.difficulte || '')
+        + ',\n    enonce: ' + JSON.stringify(normaliser(q.operation))
+        + ',\n    correction: ' + JSON.stringify(q.steps.map(couper))
+        + ',\n    indice: ' + JSON.stringify(q.hint || '') + ' }');
+    }
+  }
+  if (!total) return { dossier, erreur: 'aucune question' };
+
+  const fichier = path.join(ICI, 'biblio-' + dossier + '.js');
+  fs.writeFileSync(fichier,
+    '// ENGENDRÉ PAR exporter.js — NE PAS MODIFIER À LA MAIN.\n'
+    + '//   node exporter.js ' + dossier + ' ' + JSON.stringify(nom) + ' ' + niveau + '\n'
+    + '// Corrigés issus du générateur vérifié de la fiche « ' + dossier + ' ».\n'
+    + 'window.BIBLIO = (window.BIBLIO || []).concat([\n'
+    + lignes.join(',\n') + '\n]);\n');
+  return { dossier, nom, niveau, total, octets: fs.statSync(fichier).size };
 }
+
+// ── La liste des <script> dans index.html, tenue à jour toute seule ──────
+function recoudre() {
+  const p = path.join(ICI, 'index.html');
+  const fichiers = fs.readdirSync(ICI).filter(x => /^biblio-.*\.js$/.test(x)).sort();
+  const bloc = fichiers.map(f => '<script src="' + f + '"></script>').join('\n');
+  const html = fs.readFileSync(p, 'utf8');
+  const REPERES = /<!-- BIBLIOS -->[\s\S]*?<!-- \/BIBLIOS -->/;
+  // On vérifie que les repères EXISTENT — et non que le texte a changé.
+  // Recoudre un bloc déjà juste ne le change pas, et ce n'est pas une panne.
+  if (!REPERES.test(html)) {
+    console.log('⚠  les repères <!-- BIBLIOS --> sont absents d’index.html :');
+    console.log(bloc);
+    return;
+  }
+  fs.writeFileSync(p, html.replace(REPERES,
+    '<!-- BIBLIOS -->\n' + bloc + '\n<!-- /BIBLIOS -->'));
+  console.log('index.html recousu — ' + fichiers.length + ' bibliothèques.');
+}
+
+// ── Entrée ───────────────────────────────────────────────────────────────
+const arg = process.argv[2];
+if (!arg) {
+  console.error('usage: node exporter.js --tout | <dossier> ["<nom>"] [niveau] [par-case]');
+  process.exit(1);
+}
+
+const faits = [], rates = [];
+if (arg === '--tout') {
+  const parCase = Number(process.argv[3] || PAR_CASE_DEFAUT);
+  for (const d of fs.readdirSync(CHAINES).sort()) {
+    if (d[0] === '_' || !fs.statSync(path.join(CHAINES, d)).isDirectory()) continue;
+    const r = exporter(d, titreDe(d), niveauDe(d), parCase);
+    (r.erreur ? rates : faits).push(r);
+  }
+} else {
+  const r = exporter(arg, process.argv[3] || titreDe(arg),
+                     Number(process.argv[4] || niveauDe(arg)),
+                     Number(process.argv[5] || PAR_CASE_DEFAUT));
+  (r.erreur ? rates : faits).push(r);
+}
+
+let n = 0, o = 0;
+for (const r of faits) {
+  n += r.total; o += r.octets;
+  console.log('  ' + String(r.total).padStart(5) + '  ' + String(r.niveau) + 'ème  '
+    + r.dossier.padEnd(15) + r.nom);
+}
+console.log('\n' + faits.length + ' bibliothèques, ' + n + ' exercices, '
+  + Math.round(o / 1024) + ' Ko.');
+for (const r of rates) console.log('  ✗ ' + r.dossier.padEnd(15) + r.erreur);
+if (faits.length) recoudre();

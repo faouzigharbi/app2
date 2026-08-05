@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>مولّد أوراق المراجعة — devoirati</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- LA POLICE N'EST PAS LIÉE ICI, ET C'EST VOULU. Une feuille de style
+     déclarée avant un <script> retarde son exécution jusqu'à ce qu'elle
+     réponde. Hors ligne — et cette page est faite pour l'être — la requête
+     vers Google met TREIZE SECONDES à échouer, et l'écran reste blanc tout ce
+     temps. Mesuré : 12 808 ms avec le lien, 274 ms sans. On l'ajoute donc
+     depuis le script, une fois la page bâtie : en ligne la police arrive et
+     remplace la précédente sans qu'on l'ait attendue, hors ligne la police du
+     système fait l'affaire et personne ne s'en aperçoit. -->
 <style>
   :root {
     --accent:#6c63ff; --texte:#2c3e50; --muet:#8798ab;
@@ -24,8 +31,25 @@
            padding:16px 18px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,.04) }
   .carte h2 { font-size:1.05em; color:var(--accent); margin-bottom:10px }
 
+  h3.niveau { font-size:.9em; color:var(--muet); margin:16px 0 7px;
+              letter-spacing:.04em }
+  h3.niveau:first-child { margin-top:2px }
+  details { border:1px solid var(--bord); border-radius:11px; margin-bottom:7px;
+            background:#fcfdff; overflow:hidden }
+  details[open] { background:#fff; border-color:#cfd8e4 }
+  summary { padding:10px 13px; cursor:pointer; font-weight:600; font-size:.96em;
+            display:flex; align-items:center; gap:10px; list-style:none }
+  summary::-webkit-details-marker { display:none }
+  summary::before { content:'▸'; color:var(--muet); font-size:.9em }
+  details[open] summary::before { content:'▾' }
+  summary .n { margin-inline-start:auto; color:var(--muet); font-size:.82em;
+               font-weight:400 }
+  summary .tout { font-size:.78em; font-weight:400; color:var(--accent);
+                  border:1px solid var(--accent); border-radius:12px;
+                  padding:1px 9px }
+  summary .tout:hover { background:var(--accent); color:#fff }
   .rubriques { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-               gap:8px }
+               gap:8px; padding:2px 13px 13px }
   label.rub { display:flex; align-items:center; gap:9px; padding:9px 11px;
               border:1.5px solid var(--bord); border-radius:10px; cursor:pointer;
               background:#fcfdff; transition:.12s; font-size:.95em }
@@ -154,8 +178,31 @@
 
 <div class="feuille" id="feuille"></div>
 
-<script src="biblio-puiss9.js"></script>
+<!-- BIBLIOS -->
+<script src="biblio-addz8.js"></script>
+<script src="biblio-arith9.js"></script>
+<script src="biblio-diviseurs7.js"></script>
+<script src="biblio-divisibilite8.js"></script>
+<script src="biblio-encadrement.js"></script>
+<script src="biblio-expr7.js"></script>
+<script src="biblio-factq8.js"></script>
 <script src="biblio-geometrie.js"></script>
+<script src="biblio-gradue8.js"></script>
+<script src="biblio-naturels7.js"></script>
+<script src="biblio-pgcd7.js"></script>
+<script src="biblio-premiers7.js"></script>
+<script src="biblio-produitq8.js"></script>
+<script src="biblio-puiss9.js"></script>
+<script src="biblio-radic9.js"></script>
+<script src="biblio-rationnels8.js"></script>
+<script src="biblio-reel9.js"></script>
+<script src="biblio-reels.js"></script>
+<script src="biblio-revision2.js"></script>
+<script src="biblio-serie1.js"></script>
+<script src="biblio-serie2.js"></script>
+<script src="biblio-serie3.js"></script>
+<script src="biblio-sommeq8.js"></script>
+<!-- /BIBLIOS -->
 <script>
 (function () {
   'use strict';
@@ -168,10 +215,11 @@
   const chapitres = [];
   for (const x of TOUT) {
     let c = chapitres.find(k => k.cle === x.chapitre);
-    if (!c) { c = { cle:x.chapitre, nom:x.chapitreNom, rubriques:[] }; chapitres.push(c); }
+    if (!c) { c = { cle:x.chapitre, nom:x.chapitreNom, niveau:x.niveau,
+                    rubriques:[], n:0 }; chapitres.push(c); }
     let r = c.rubriques.find(k => k.cle === x.rubrique);
     if (!r) { r = { cle:x.rubrique, nom:x.rubriqueNom, n:0 }; c.rubriques.push(r); }
-    r.n++;
+    r.n++; c.n++;
   }
 
   const el = s => document.querySelector(s);
@@ -179,14 +227,41 @@
   if (!chapitres.length) {
     zone.innerHTML = '<p style="color:#8798ab">المكتبة فارغة.</p>';
   }
-  chapitres.forEach(c => {
-    const bloc = document.createElement('div');
-    bloc.innerHTML = '<h2 style="margin:14px 0 8px;font-size:1em">' + c.nom + '</h2>'
-      + '<div class="rubriques">' + c.rubriques.map(r =>
-        '<label class="rub"><input type="checkbox" data-c="' + c.cle + '" data-r="'
-        + r.cle + '"><span>' + r.nom + '</span><span class="n">' + r.n + '</span></label>'
-      ).join('') + '</div>';
-    zone.appendChild(bloc);
+
+  // VINGT-TROIS CHAPITRES ET CENT QUATRE-VINGT-DOUZE RUBRIQUES ne se posent pas
+  // à plat sur un écran : on n'y trouve plus rien. On range donc par NIVEAU, et
+  // chaque chapitre se déplie quand on le demande — fermé, il tient sur une
+  // ligne et annonce ce qu'il contient.
+  [7, 8, 9].forEach(niv => {
+    const dedans = chapitres.filter(c => c.niveau === niv);
+    if (!dedans.length) return;
+    const sec = document.createElement('div');
+    sec.innerHTML = '<h3 class="niveau">' + niv + ' أساسي</h3>';
+    dedans.forEach(c => {
+      const d = document.createElement('details');
+      d.innerHTML = '<summary>' + c.nom
+        + '<span class="tout" data-c="' + c.cle + '">الكلّ</span>'
+        + '<span class="n">' + c.n + '</span></summary>'
+        + '<div class="rubriques">' + c.rubriques.map(r =>
+          '<label class="rub"><input type="checkbox" data-c="' + c.cle + '" data-r="'
+          + r.cle + '"><span>' + r.nom + '</span><span class="n">' + r.n + '</span></label>'
+        ).join('') + '</div>';
+      sec.appendChild(d);
+    });
+    zone.appendChild(sec);
+  });
+
+  // « الكلّ » coche ou décoche tout un chapitre d'un geste — et n'ouvre ni ne
+  // ferme le dépliant au passage.
+  zone.addEventListener('click', e => {
+    const t = e.target.closest('.tout');
+    if (!t) return;
+    e.preventDefault(); e.stopPropagation();
+    const boites = [...zone.querySelectorAll('.rub input[data-c="' + t.dataset.c + '"]')];
+    const cocher = boites.some(b => !b.checked);
+    boites.forEach(b => { b.checked = cocher;
+                          b.closest('.rub').classList.toggle('coche', cocher); });
+    etat();
   });
 
   // ── Les puces : une seule choisie pour le nombre et le corrigé, plusieurs
@@ -226,7 +301,7 @@
     const maigres = [];
     sels.forEach(sel => {
       const dispo = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
-                        && difficultes.indexOf(x.difficulte) >= 0).length;
+                        && eligible(x, difficultes)).length;
       total += Math.min(dispo, n);
       if (dispo < n) {
         const c = chapitres.find(k => k.cle === sel.c);
@@ -247,9 +322,15 @@
   const noter = s => { try { localStorage.setItem(VU, JSON.stringify([...s].slice(-4000))); }
                        catch (e) {} };
 
+  // Une fiche qui ne DÉCLARE pas de difficulté n'en a pas : ses exercices se
+  // tirent à tous les niveaux. Les écarter parce qu'ils ne portent pas
+  // d'étiquette reviendrait à vider dix-neuf chapitres sur vingt-deux.
+  const eligible = (x, difficultes) =>
+    !x.difficulte || difficultes.indexOf(x.difficulte) >= 0;
+
   function tirer(sel, n, difficultes, vus) {
     const pool = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
-                                  && difficultes.indexOf(x.difficulte) >= 0);
+                                  && eligible(x, difficultes));
     if (!pool.length) return [];
     let neufs = pool.filter(x => !vus.has(x.id));
     if (neufs.length < n) { pool.forEach(x => vus.delete(x.id)); neufs = pool.slice(); }
@@ -282,9 +363,15 @@
   function rendre(exos) {
     const d = new Date();
     const date = d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear();
-    const chapitresLus = [...new Set(exos.map(x => x.chapitreNom))].join(' — ');
+    // Cinq chapitres nommés bout à bout font un titre de trois lignes que
+    // personne ne lit. Au-delà de deux, on nomme le NIVEAU : c'est ce qui
+    // distingue vraiment une feuille d'une autre sur un bureau.
+    const noms = [...new Set(exos.map(x => x.chapitreNom))];
+    const nivs = [...new Set(exos.map(x => x.niveau))].sort();
+    const sujet = noms.length <= 2 ? noms.join(' — ')
+                : nivs.map(n => n + ' أساسي').join(' و ');
 
-    let h = '<div class="entete"><h2>ورقة مراجعة — ' + chapitresLus + '</h2>'
+    let h = '<div class="entete"><h2>ورقة مراجعة — ' + sujet + '</h2>'
       + '<div class="lignes"><span>الاسم:</span><span>القسم:</span>'
       + '<span>التاريخ: ' + date + '</span></div></div>';
 
@@ -294,7 +381,8 @@
       const lignes = Math.max(3, x.correction.length);
       h += '<div class="exo"><div class="tete">'
         + '<span class="num">التمرين ' + (i + 1) + '</span>'
-        + '<span class="rub">' + x.rubriqueNom + ' · ' + (DIFF[x.difficulte] || '') + '</span>'
+        + '<span class="rub">' + x.rubriqueNom
+        + (x.difficulte ? ' · ' + (DIFF[x.difficulte] || '') : '') + '</span>'
         + '</div><div class="enonce">' + x.enonce + '</div>'
         + '<div class="espace" style="height:' + (lignes * 1.7) + 'em"></div></div>';
     });
@@ -310,6 +398,12 @@
     }
     el('#feuille').innerHTML = h;
   }
+
+  // La police, tout à la fin : plus rien ne l'attend.
+  const police = document.createElement('link');
+  police.rel = 'stylesheet';
+  police.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap';
+  document.head.appendChild(police);
 })();
 </script>
 </body>
