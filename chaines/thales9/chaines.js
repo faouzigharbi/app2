@@ -312,6 +312,8 @@
         + ' و الفرق ' + e(c[2]);
       if (c[3] === 'plus') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' + ' + e(c[1]);
       if (c[3] === 'moins') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' − ' + e(c[1]);
+      if (c[2] === 'partageRapport') return '  ، لأنّ النّسبة '
+        + F.ecrireRapport(...c[0].split('|')) + '  و المجموع ' + e(c[1]);
       if (c[2] === 'parRapport') {
         const v = String(c[3]).split('/');
         return '  ، لأنّ ' + F.ecrireRapport(...c[0].split('|')) + ' = '

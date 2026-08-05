@@ -634,36 +634,8 @@
   // vient de poser. Cinq maillons, et chacun est refait par le validateur.
   // ═══════════════════════════════════════════════════════════════════════
 
-  item('THALES0 2014 ex4', 'cascade', 'difficile', () => {
-    const [b, c] = F.choix([[3, 4], [4, 3], [6, 8], [8, 6], [5, 12], [12, 5], [8, 15]]);
-    const d = F.ent(1, b - 1);
-    const A = F.pt(0, 0), B = F.pt(b, 0), C = F.pt(F.Q0, F.q(c));
-    const D = F.pt(F.q(d), F.Q0);
-    const E = F.pt(F.Q0, F.q(c * d, b));                 // (DE) // (BC)
-    const Fp = F.pt(F.q(b - d), F.q(c * d, b));          // (EF) // (AB)
-    return {
-      K: 1, points: { A, B, C, D, E, F: Fp },
-      thales: [{ S: 'A', B: 'B', C: 'C', M: 'D', N: 'E' },
-               { S: 'C', B: 'A', C: 'B', M: 'E', N: 'F' }],
-      para: [[dr('D', 'E'), dr('B', 'C')], [dr('E', 'F'), dr('A', 'B')]],
-      entre: [['A', 'E', 'C'], ['B', 'F', 'C']],
-      donne: [seg('A', 'B'), seg('A', 'D'), seg('A', 'C'), seg('B', 'C')],
-      // LES QUATRE QUESTIONS DE LA FEUILLE, dans son ordre. Le maître ne
-      // demande pas BF d'un coup : il fait passer par AE, puis CE, puis CF.
-      // N'en garder que la dernière, c'était couper son exercice.
-      buts: [{ but: ['lg2', seg('A', 'E'), null], question: 'أحسب AE.' },
-             { but: ['lg2', seg('C', 'E'), null], question: 'استنتج CE.' },
-             { but: ['lg2', seg('C', 'F'), null], question: 'أحسب CF.' },
-             { but: ['lg2', seg('B', 'F'), null], question: 'استنتج BF.' }],
-      texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
-                   + g(seg('A', 'C')) + ' و BC = ' + g(seg('B', 'C')) + '.',
-                   'D نقطة من [AB] بحيث AD = ' + g(seg('A', 'D')) + '.',
-                   'الموازي لـ (BC) المارّ من D يقطع (AC) في E،',
-                   'و الموازي لـ (AB) المارّ من E يقطع (BC) في F.'],
-      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'E'], ['E', 'F']] },
-      indice: 'طالس مرّتين : أوّلا في ABC، ثمّ في CAB ؛ و CE = CA − AE'
-    };
-  });
+  // MÊME RAISON POUR L'ex4 : quatre questions sur huit, et le maître n'y
+  // donne que AB et AD. L'exercice entier vit dans « مسائل ».
 
   // ═══════════════════════════════════════════════════════════════════════
   // LA PROJECTION PARALLÈLE — THALES0 2014 ex1
@@ -678,29 +650,10 @@
   // n'y avait pas de règle à ajouter, seulement une CONSTRUCTION.
   // ═══════════════════════════════════════════════════════════════════════
 
-  item('THALES0 2014 ex1', 'projection-parallele', 'difficile', () => {
-    const b = F.ent(2, 9), d = F.ent(1, 5), c = d + F.ent(1, 6);
-    // (DA) portée par l'axe des ordonnées, (AB) par celui des abscisses :
-    // le projeté selon (AB) est alors le point de (DB) à la hauteur de C.
-    const A = F.pt(0, 0), B = F.pt(b, 0), C = F.pt(F.Q0, F.q(c)), D = F.pt(F.Q0, F.q(d));
-    const I2 = F.intersection(D, B, C, F.translate(C, A, B));
-    return {
-      K: 1, points: { A, B, C, D, I: I2 },
-      thales: [{ S: 'D', B: 'B', C: 'A', M: 'I', N: 'C' }],
-      para: [[dr('I', 'C'), dr('A', 'B')]],
-      donne: [seg('A', 'B'), seg('D', 'A'), seg('D', 'C'), seg('B', 'D')],
-      buts: [{ but: ['lg2', seg('I', 'C'), null], question: 'أحسب IC.' },
-             { but: ['lg2', seg('D', 'I'), null], question: 'أحسب DI.' }],
-      texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
-                   + g(seg('A', 'C')) + '، و D نقطة من [AC] بحيث AD = '
-                   + g(seg('A', 'D')) + '.',
-                   'I هي مسقط C على (BD) وفقا لمنحى (AB).'],
-      question: 'أحسب المسافة IC.',
-      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'B'], ['I', 'C']],
-                droites: [['D', 'B']] },
-      indice: 'المسقط وفقا لمنحى (AB) يعني (IC) // (AB) : طالس في المثلّث DAB'
-    };
-  });
+  // CET EXERCICE N'EST PLUS ICI, ET C'EST VOULU. Il n'en restait que deux
+  // questions sur sept — « أحسب IC » et « أحسب DI ». Le maître en pose sept,
+  // et elles sont maintenant toutes dans « مسألة » (THALES0 2014 ex1 — سبع
+  // مراحل). Garder en plus la version courte, c'était garder la troncature.
 
   // ═══════════════════════════════════════════════════════════════════════
   // LE TRAPÈZE ET SES DIAGONALES — THALES0 2014 ex3 et ex5
@@ -712,34 +665,72 @@
   // le chapitre n'avait pas.
   // ═══════════════════════════════════════════════════════════════════════
 
-  item('THALES0 2014 ex3', 'trapeze', 'difficile', () => {
-    const [w, h] = F.choix([[3, 4], [6, 8], [5, 12], [8, 15], [20, 21]]);
+  item('THALES0 2014 ex3 — ثماني مراحل', 'trapeze', 'difficile', () => {
     // I à l'origine ; la grande base en bas, la petite en haut, obtenue par
-    // une homothétie négative de rapport t — d'où le papillon.
-    const num = F.ent(1, 3), den = num + F.ent(1, 3);
-    const t = F.q(num, den);
+    // une homothétie négative de rapport t — d'où le papillon. G, sommet des
+    // deux côtés, est alors au-dessus de la petite base.
+    // QUATRE DONNÉES RATIONNELLES À LA FOIS. Le maître donne MN, PQ, NQ et
+    // MQ — une base, l'autre, une diagonale et un côté. Une pose au hasard
+    // rendait le côté irrationnel : « MQ = √505 », exact et introuvable sur
+    // une feuille. On prend donc deux triplets pythagoriciens de même côté w,
+    // avec h < H < 2h : la petite base, la grande, la diagonale et le côté
+    // tombent alors tous justes ensemble.
+    //
+    //   [w, h, H] : PQ = w, h la hauteur, H = h(1 + t) — d'où t = H/h − 1.
+    const [w, h, haut] = F.choix([[15, 20, 36], [20, 15, 21], [30, 40, 72],
+                               [33, 44, 56], [36, 27, 48], [39, 52, 80],
+                               [40, 30, 42], [60, 25, 45], [60, 45, 63]]);
+    const t = F.qSub(F.q(haut, h), F.Q1);
     const I2 = F.pt(0, 0), P = F.pt(0, -h), Q = F.pt(w, -h);
     const Mp = F.pt(F.Q0, F.qMul(t, F.q(h)));
     const N = F.pt(F.qMul(t, F.q(-w)), F.qMul(t, F.q(h)));
+    // E sur [MQ] et F sur [NP], sur la parallèle aux bases menée par I.
+    const E = F.intersection(I2, F.pt(F.Q1, F.Q0), Mp, Q);
+    const Fp = F.intersection(I2, F.pt(F.Q1, F.Q0), N, P);
+    const G = F.intersection(Mp, Q, N, P);          // sommet des deux côtés
+    const J = F.intersection(G, I2, P, Q);          // (GI) coupe la grande base
+    const H = F.intersection(G, I2, Mp, N);         // et la petite
+    if (!E || !Fp || !G || !J || !H) throw new Error('pose dégénérée');
     return {
-      K: 1, points: { I: I2, M: Mp, N, P, Q },
-      thales: [{ S: 'I', B: 'P', C: 'Q', M: 'M', N: 'N' }],
-      para: [[dr('M', 'N'), dr('P', 'Q')]],
-      entre: [['N', 'I', 'Q'], ['M', 'I', 'P']],
-      donne: [seg('M', 'N'), seg('P', 'Q'), seg('N', 'Q'), seg('M', 'P')],
-      // LES QUESTIONS DE LA FEUILLE, dans son ordre : « أحسب IN و IQ », puis
-      // le partage de l'autre diagonale. On ne donnait IQ que parce que le
-      // moteur ne savait pas partager un segment ; il le sait maintenant, et
-      // l'énoncé retrouve les données du maître — les deux diagonales.
-      buts: [{ but: ['lg2', seg('I', 'N'), null], question: 'أحسب IN.' },
-             { but: ['lg2', seg('I', 'Q'), null], question: 'أحسب IQ.' },
-             { but: ['lg2', seg('M', 'I'), null], question: 'أحسب MI.' }],
+      K: 1, points: { I: I2, M: Mp, N, P, Q, E, F: Fp, G, J, H },
+      thales: [{ S: 'I', B: 'P', C: 'Q', M: 'M', N: 'N' },
+               { S: 'M', B: 'P', C: 'Q', M: 'I', N: 'E' },
+               { S: 'N', B: 'Q', C: 'P', M: 'I', N: 'F' },
+               { S: 'G', B: 'J', C: 'Q', M: 'I', N: 'E' },
+               { S: 'G', B: 'J', C: 'P', M: 'I', N: 'F' },
+               { S: 'G', B: 'H', C: 'M', M: 'I', N: 'E' },
+               { S: 'G', B: 'H', C: 'N', M: 'I', N: 'F' }],
+      para: [[dr('M', 'N'), dr('P', 'Q')], [dr('I', 'E'), dr('P', 'Q')],
+             [dr('I', 'F'), dr('P', 'Q')], [dr('I', 'E'), dr('J', 'Q')],
+             [dr('I', 'F'), dr('J', 'P')], [dr('I', 'E'), dr('H', 'M')],
+             [dr('I', 'F'), dr('H', 'N')]],
+      entre: [['N', 'I', 'Q'], ['M', 'I', 'P'], ['E', 'I', 'F'],
+              ['P', 'J', 'Q'], ['M', 'H', 'N']],
+      donne: [seg('M', 'N'), seg('P', 'Q'), seg('N', 'Q'), seg('M', 'Q')],
+      buts: [
+        { but: ['lg2', seg('I', 'N'), null], question: 'أحسب IN.' },
+        { but: ['lg2', seg('I', 'Q'), null], question: 'أحسب IQ.' },
+        { but: ['rapport', 'MI|MP', null], question: 'بيّن أنّ MI/MP = MN/(MN + PQ).' },
+        { but: ['lg2', seg('I', 'E'), null], question: 'أحسب IE.' },
+        { but: ['lg2', seg('I', 'F'), null], question: 'أحسب IF.' },
+        { but: ['milieu', 'I', 'E', 'F'], question: 'استنتج أنّ I منتصف [EF].' },
+        { but: ['lg2', seg('E', 'F'), null], question: 'أحسب EF.' },
+        { but: ['lg2', seg('M', 'E'), null], question: 'أحسب ME.' },
+        { but: ['prop', 'GI|GJ', 'GE|GQ', 'IE|JQ'],
+          question: 'بيّن أنّ GI/GJ = GE/GQ = IE/JQ.' },
+        { but: ['prop', 'GI|GJ', 'GF|GP', 'IF|JP'],
+          question: 'بيّن أنّ GI/GJ = GF/GP = IF/JP.' },
+        { but: ['milieu', 'J', 'P', 'Q'], question: 'استنتج أنّ J منتصف [PQ].' },
+        { but: ['milieu', 'H', 'M', 'N'], question: 'بيّن أنّ H منتصف [MN].' }
+      ],
       texte: g => ['MNPQ شبه منحرف قاعدتاه [MN] و [PQ]، و I نقطة تقاطع قطريه.',
                    'MN = ' + g(seg('M', 'N')) + ' و PQ = ' + g(seg('P', 'Q'))
-                   + ' و NQ = ' + g(seg('N', 'Q')) + ' و MP = ' + g(seg('M', 'P')) + '.'],
-      figure: { segments: [['M', 'N'], ['P', 'Q'], ['M', 'P'], ['N', 'Q'],
-                           ['M', 'Q'], ['N', 'P']] },
-      indice: 'القطران يتقاطعان في I : طبّق طالس في وضعية الفراشة'
+                   + ' و NQ = ' + g(seg('N', 'Q')) + ' و MQ = ' + g(seg('M', 'Q')) + '.',
+                   'الموازي لـ (MN) المارّ من I يقطع [MQ] في E و [NP] في F.',
+                   'G نقطة تقاطع (MQ) و (NP)، و (GI) يقطع (PQ) في J و (MN) في H.'],
+      figure: { segments: [['M', 'N'], ['P', 'Q'], ['G', 'P'], ['G', 'Q'],
+                           ['M', 'Q'], ['N', 'P'], ['E', 'F'], ['G', 'J']] },
+      indice: 'الفراشة في I، ثمّ المثلّثات ذات الرّأس G : كلّ النّسب واحدة'
     };
   });
 

@@ -585,6 +585,121 @@
       }
     },
 
+    // DEUX PROPORTIONS QUI SE TOUCHENT N'EN FONT QU'UNE. « GI/GJ = IE/JQ » et
+    // « GI/GJ = IF/JP » partagent un rapport : on en tire GI/GJ = IE/JQ =
+    // IF/JP, la sixième question de THALES0 2014 ex3, et c'est de là que
+    // sortent les deux milieux de sa fin.
+    {
+      cle: 'prop-transitive',
+      nom: 'نسبتان تساويان نفس النّسبة فهما متساويتان',
+      chercher: (ctx, f) => {
+        const out = [];
+        // UNE PROPORTION NE DÉPEND PAS DE L'ORDRE OÙ ON L'ÉCRIT. Sans cette
+        // remarque, chaque permutation des trois rapports devenait un fait
+        // neuf, et la recherche s'étouffait dans ses propres doublons.
+        const ens = z => [z[1], z[2], z[3]].map(w => cleR(...w.split('|')))
+          .filter(Boolean).sort().join(';');
+        const deja = new Set(f.prop.map(ens));
+        for (let i = 0; i < f.prop.length; i++) {
+          for (let j = i + 1; j < f.prop.length; j++) {
+            const A = [f.prop[i][1], f.prop[i][2], f.prop[i][3]];
+            const B2 = [f.prop[j][1], f.prop[j][2], f.prop[j][3]];
+            const ca = A.map(x => cleR(...x.split('|')));
+            const cb = B2.map(x => cleR(...x.split('|')));
+            const partage = ca.find(x => x && cb.includes(x));
+            if (!partage) continue;
+            const commun = A[ca.indexOf(partage)];
+            // TOUTES LES COMBINAISONS, pas la première. Ne garder que le
+            // premier rapport de chaque proportion fabriquait « GE/GQ = GI/GJ
+            // = GF/GP » là où l'exercice demandait « IE/JQ = GI/GJ = IF/JP » :
+            // vrai, et inutile. La conclusion utile était la seule écartée.
+            for (let x = 0; x < 3; x++) for (let y = 0; y < 3; y++) {
+              if (ca[x] === partage || cb[y] === partage) continue;
+              if (!ca[x] || !cb[y] || ca[x] === cb[y]) continue;
+              const but = ['prop', A[x], commun, B2[y]];
+              if (deja.has(ens(but))) continue;
+              deja.add(ens(but));
+              out.push({ but, depuis: [f.prop[i], f.prop[j]] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    // Le rapport des deux MORCEAUX donne le rapport d'un morceau au TOUT.
+    // THALES0 2014 ex3 : « بيّن أنّ MI/MP = 3/8 » quand MI/IP = 3/5. C'est un
+    // pas d'écriture, et le maître en fait une question à part entière.
+    {
+      cle: 'rapport-partie-tout',
+      nom: 'إذا كانت X بين A و B فإنّ AX/AB = (XA/XB) : (1 + XA/XB)',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, X, B] of ctx.entre || []) {
+          for (const [P, Q] of [[A, B], [B, A]]) {
+            const su = f.rapport.find(x => x[1] === cleR(X + P, X + Q));
+            if (!su) continue;
+            const k = cleR(P + X, P + Q);
+            if (!k || f.rapport.some(x => x[1] === k)) continue;
+            out.push({ but: ['rapport', k, F.qDiv(su[2], F.qAdd(F.Q1, su[2]))],
+                       depuis: [su] });
+          }
+        }
+        return out;
+      }
+    },
+    // Deux rapports d'une même proportion dont les NUMÉRATEURS sont connus et
+    // égaux : leurs dénominateurs le sont aussi. « بما أنّ IE = IF فإنّ
+    // JQ = JP » — et l'on n'a jamais eu besoin de connaître ni JQ ni JP.
+    {
+      cle: 'denominateurs-egaux',
+      nom: 'في تناسب، إذا تقايس البسطان تقايس المقامان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const p of f.prop) {
+          const rs = [p[1], p[2], p[3]].map(x => x.split('|'));
+          for (let i = 0; i < rs.length; i++) for (let j = 0; j < rs.length; j++) {
+            if (i === j) continue;
+            const [a, b] = rs[i], [c, d] = rs[j];
+            const va = f.lg2.get(seg(a[0], a[1])), vc = f.lg2.get(seg(c[0], c[1]));
+            if (!va || !vc || !F.qEgaux(va, vc)) continue;
+            const k = cleR(b, d);
+            if (!k || f.rapport.some(x => x[1] === k)) continue;
+            out.push({ but: ['rapport', k, F.Q1],
+                       depuis: [p, ['lg2', seg(a[0], a[1]), va],
+                                ['lg2', seg(c[0], c[1]), vc]] });
+          }
+        }
+        return out;
+      }
+    },
+    // Le rapport des deux morceaux, plus la longueur du tout : chaque morceau
+    // se calcule. C'est le partage de « partage-rapport », mais à partir d'un
+    // rapport DÉJÀ ÉTABLI, d'où qu'il vienne.
+    {
+      cle: 'partage-par-rapport',
+      nom: 'إذا عُلمت نسبة جزأي قطعة و عُلم طولها، حُسب كلّ جزء',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, X, B] of ctx.entre || []) {
+          const su = f.rapport.find(x => x[1] === cleR(X + A, X + B));
+          if (!su) continue;
+          const tot = f.lg2.get(seg(A, B));
+          if (!tot) continue;
+          const L = F.racQ(tot);
+          if (!L) continue;
+          const un = F.qDiv(F.qMul(L, su[2]), F.qAdd(F.Q1, su[2]));
+          const deux = F.qSub(L, un);
+          for (const [k, v] of [[seg(X, A), un], [seg(X, B), deux]]) {
+            if (f.lg2.has(k)) continue;
+            out.push({ but: ['lg2', k, F.qMul(v, v)],
+                       depuis: [su, ['lg2', seg(A, B), tot]],
+                       calcul: [su[1], seg(A, B), 'partageRapport'] });
+          }
+        }
+        return out;
+      }
+    },
+
     // ── B ter bis. LA SOMME DE DEUX RAPPORTS QUI VAUT UN ──────────────────
     //
     // THALES0 2014 ex5 : on démontre d'abord EF/AB + EF/CD = 1, puis le
