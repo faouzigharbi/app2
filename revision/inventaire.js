@@ -188,7 +188,10 @@
     // ═══════════════════════════════════════════════════════════════════
     {
       fichier: 'Revision_9eme_2025_3.pdf', pages: 47, texte: 'lisible',
-      etat: 'squelette', exercices: 65,
+      // COMPTÉ, pas estimé : le plus grand numéro d'exercice atteint dans chaque
+      // séance, lu sur la couche de texte. La séance 2 en donne 5, et la lecture
+      // l'a confirmé exactement.
+      etat: 'en cours', exercices: 72,
       titre: 'امتحان شهادة ختم التعليم الأساسي — مراجعة (جوان 2025)',
       chapitres: ['arith9', 'divisibilite8', 'diviseurs7', 'premiers7', 'thales9', 'reel9', 'radic9'],
       // Le livre est organisé en TREIZE SÉANCES. Le squelette ci-dessous sort
@@ -198,17 +201,17 @@
         { seance: 2, pages: '7-9', exercices: 5, vu: true,
           sujet: 'radicaux et expressions inverses · une expression A = x²−x−12 déclinée '
                + 'huit fois · deux exercices de repère · une pyramide' },
-        { seance: 3, pages: '10-13', exercices: 7, sujet: 'non lu' },
-        { seance: 4, pages: '14-16', exercices: 2, sujet: 'non lu' },
-        { seance: 5, pages: '17-20', exercices: 8, sujet: 'non lu' },
-        { seance: 6, pages: '21-23', exercices: 5, sujet: 'non lu' },
-        { seance: 7, pages: '24-26', exercices: 4, sujet: 'non lu' },
-        { seance: 8, pages: '27-29', exercices: 5, sujet: 'non lu' },
-        { seance: 9, pages: '30-32', exercices: 4, sujet: 'non lu' },
-        { seance: 10, pages: '33-36', exercices: 2, sujet: 'non lu' },
-        { seance: 11, pages: '37-39', exercices: 6, sujet: 'non lu' },
-        { seance: 12, pages: '40-43', exercices: 6, sujet: 'non lu' },
-        { seance: 13, pages: '44-47', exercices: 6, sujet: 'non lu' }
+        { seance: 3, pages: '10-13', exercices: 7, sujet: 'géométrie et repère — Thalès et relations métriques' },
+        { seance: 4, pages: '14-16', exercices: 2, sujet: 'géométrie pure — Thalès et métrique, une entrée dans l’espace' },
+        { seance: 5, pages: '17-20', exercices: 8, sujet: 'géométrie — Thalès et métrique, quelques radicaux' },
+        { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
+        { seance: 7, pages: '24-26', exercices: 4, sujet: 'géométrie — Thalès seul, la séance la plus homogène' },
+        { seance: 8, pages: '27-29', exercices: 5, sujet: 'géométrie et ESPACE — la plus chargée en solides' },
+        { seance: 9, pages: '30-32', exercices: 4, sujet: 'géométrie — Thalès et relations métriques' },
+        { seance: 10, pages: '33-36', exercices: 2, sujet: 'géométrie — deux longs exercices seulement' },
+        { seance: 11, pages: '37-39', exercices: 6, sujet: 'mixte — arithmétique, algèbre et géométrie' },
+        { seance: 12, pages: '40-43', exercices: 6, sujet: 'géométrie, espace et STATISTIQUES — la plus longue' },
+        { seance: 13, pages: '44-47', exercices: 6, sujet: 'géométrie, repère et statistiques — la séance de clôture' }
       ],
       contenu: [
         { n: '1.1', questions: 3, notions: ['divisibilité par 12', 'reste d\'une puissance', 'arbre de choix'], sort: 'à faire' },
