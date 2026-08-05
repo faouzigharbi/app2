@@ -146,6 +146,24 @@ function verifierBrut(brut) {
 
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  // LE CHOIX DE L'ITINÉRAIRE EST UNE AFFIRMATION, DONC IL SE VÉRIFIE. « Pas
+  // la somme des angles du triangle, parce qu'il n'y a pas de triangle » :
+  // s'il y en a un, la phrase enseigne le faux.
+  {
+    const MANQUE = {
+      complementaires: (h, ctx) => !h.some(x => x[0] === 'comp'),
+      supplementaires: (h, ctx) => !h.some(x => x[0] === 'supp'),
+      'opposees-sommet': (h, ctx) => !h.some(x => x[0] === 'oppose'),
+      bissectrice: (h, ctx) => !h.some(x => x[0] === 'bis'),
+      'somme-triangle': (h, ctx) => !(ctx.triangles || []).length,
+      chasles: (h, ctx) => !(ctx.adjacences || []).length
+    };
+    const it = c.itineraire;
+    if (it && it.ecartee && MANQUE[it.ecartee]
+        && !MANQUE[it.ecartee](c.hyp || [], c.ctx || {})) {
+      probs.push('سبب الاستبعاد غير صحيح : ' + it.ecartee);
+    }
+  }
   if (t.length < 4) probs.push('السلسلة قصيرة جدا');
   if (!brut.indice) probs.push('بلا مساعدة');
   const svg = (brut.enonce || []).find(x => x && typeof x === 'object' && x.svg);
@@ -221,6 +239,13 @@ if (process.env.CONTRE_EXEMPLES) {
     cas.push([nom + ' — AUCUNE FALSIFICATION POSSIBLE', null]);
   };
 
+  // Une raison d'écarter qui n'est pas vraie enseigne le faux : on la
+  // fabrique, et l'on exige le refus.
+  pousse('une raison d’écarter qui est fausse', c => {
+    if (!c.controle.itineraire) throw new Error('pas d’itinéraire');
+    c.controle.itineraire.ecartee = 'complementaires';
+    if (!c.controle.hyp.some(x => x[0] === 'comp')) throw new Error('rien à contredire');
+  });
   pousse('une mesure faussée d’un degré', c => {
     const p = c.controle.etapesCalcul[0];
     if (p) p.mesure = (BigInt(p.mesure.split('/')[0]) + 1n) + '/' + p.mesure.split('/')[1];

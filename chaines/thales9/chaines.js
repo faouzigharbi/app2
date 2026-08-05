@@ -13,6 +13,10 @@
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.Thales;
   const R = M ? require('./regles.js') : racine.Regles;
+  // Le choix de l'itinéraire est écrit une fois pour les trois chapitres qui
+  // ont un moteur de règles. Si la page ne l'a pas chargé, la fiche marche
+  // quand même — elle perd l'explication, pas la démonstration.
+  const It = M ? require('../_regles/itineraire.js') : racine.Itineraire;
 
   const seg = R.seg, dr = R.dr;
 
@@ -306,25 +310,25 @@
   // DEUX milieux et l'on n'en connaît qu'un. Chacune de ces phrases se lit
   // sur les faits acquis à cet instant — on ne l'invente pas, on la constate.
   const MANQUE = {
-    pythagore: (ctx, f) => f.rect.length ? null
+    pythagore: (acquis, ctx, f) => f.rect.length ? null
       : 'لأنّها تحتاج مثلّثا قائم الزاوية، و لا نعرف زاوية قائمة في هذا الشّكل',
-    'pythagore-reciproque': (ctx, f) => (ctx.triangles || []).length ? null
+    'pythagore-reciproque': (acquis, ctx, f) => (ctx.triangles || []).length ? null
       : 'لأنّها تحتاج الأطوال الثلاثة لمثلّث واحد',
-    'relation-metrique': (ctx, f) => Object.keys(ctx.pieds || {}).length ? null
+    'relation-metrique': (acquis, ctx, f) => Object.keys(ctx.pieds || {}).length ? null
       : 'لأنّها تحتاج ارتفاعا نازلا من الزاوية القائمة، و لا ارتفاع هنا',
-    thales: (ctx, f) => f.para.length ? null
+    thales: (acquis, ctx, f) => f.para.length ? null
       : 'لأنّها تحتاج مستقيمين متوازيين، و التوازي غير معطى',
-    'thales-reciproque': (ctx, f) => (ctx.thales || []).length ? null
+    'thales-reciproque': (acquis, ctx, f) => (ctx.thales || []).length ? null
       : 'لأنّها تحتاج وضعية طالس',
-    milieux: (ctx, f) => f.milieu.length >= 2 ? null
+    milieux: (acquis, ctx, f) => f.milieu.length >= 2 ? null
       : 'لأنّها تحتاج منتصفَي ضلعين، و لا نعرف إلا منتصفا واحدا على الأكثر',
-    'circonscrit-milieu': (ctx, f) => f.rect.length ? null
+    'circonscrit-milieu': (acquis, ctx, f) => f.rect.length ? null
       : 'لأنّها تحتاج مثلّثا قائم الزاوية',
-    'rayons-egaux': (ctx, f) => f.cercle.length ? null
+    'rayons-egaux': (acquis, ctx, f) => f.cercle.length ? null
       : 'لأنّها تحتاج دائرة، و لا دائرة في المعطيات',
-    'centre-gravite': (ctx, f) => (ctx.gravites || []).length ? null
+    'centre-gravite': (acquis, ctx, f) => (ctx.gravites || []).length ? null
       : 'لأنّها تحتاج متوسّطين في مثلّث',
-    'para-alternes': (ctx, f) => f.angles.length ? null
+    'para-alternes': (acquis, ctx, f) => f.angles.length ? null
       : 'لأنّها تحتاج زاويتين متقايستين، و لا زوايا في المعطيات'
   };
   // Les règles qu'un élève essaie d'abord : ce sont celles qu'il faut savoir
@@ -333,72 +337,11 @@
                       'circonscrit-milieu', 'rayons-egaux', 'centre-gravite',
                       'para-alternes', 'pythagore-reciproque'];
 
-  function itineraire(bloc, acquis, ctx, avant) {
-    const premier = bloc.suite[0];
-    if (!premier || !premier.regle) return null;
-    const dansLaChaine = new Set(bloc.suite.map(n => R.cleFait(n.fait)));
-    const connus = new Set(acquis.map(R.cleFait));
-    let table;
-    try { table = R.tables(acquis); } catch (e) { return null; }
-    // Ce que les AUTRES règles proposaient au même instant.
-    // UNE RIVALE DOIT ÊTRE UNE AUTRE IDÉE, pas le même théorème sous un autre
-    // nom. « Pourquoi pas Thalès ? » quand on vient de choisir Thalès n'est
-    // pas une question — c'est un bruit, et l'élève cesse de lire.
-    const nomChoisi = court(premier.regle);
-    const rivales = [];
-    for (const r of R.REGLES) {
-      if (r.cle === premier.regle.cle) continue;
-      if (court(r) === nomChoisi) continue;
-      let sort = [];
-      try { sort = r.chercher(ctx, table); } catch (e) { sort = []; }
-      for (const p of sort) {
-        const k = R.cleFait(p.but);
-        if (connus.has(k) || dansLaChaine.has(k)) continue;
-        if (p.depuis.some(d => !connus.has(R.cleFait(d)))) continue;
-        rivales.push({ regle: r, but: p.but });
-        break;
-      }
-    }
-    // Une longueur ou une propriété fausse route parle plus qu'une réécriture
-    // de proportion : on met celles-là devant.
-    rivales.sort((a, b2) => (a.but[0] === 'prop' ? 1 : 0) - (b2.but[0] === 'prop' ? 1 : 0));
-    // Ce que la règle choisie a EFFECTIVEMENT utilisé : c'est la réponse à
-    // « pourquoi celle-là », et elle est sous les yeux.
-    const dep = premier.depuis.map(f => ecrire(f)).join('  و  ');
-    const t = ['المطلوب : ' + nommerBut(bloc.but || premier.fait) + '.',
-               'نختار ' + nomChoisi + ' لأنّ معطياتها متوفّرة : ' + dep + '.'];
-    // Une règle célèbre qui NE PEUT PAS s'appliquer, avec la raison : c'est
-    // l'explication la plus utile, et on la met en premier.
-    let ecartee = null;
-    for (const cle of CANDIDATES) {
-      if (cle === premier.regle.cle || !MANQUE[cle]) continue;
-      const r = R.REGLES.find(x => x.cle === cle);
-      if (!r || court(r) === nomChoisi) continue;
-      const raison = MANQUE[cle](ctx, table);
-      if (raison) { ecartee = { regle: r, raison }; break; }
-    }
-    if (ecartee) {
-      t.push('و لماذا لا ' + court(ecartee.regle) + ' ؟ ' + ecartee.raison + '.');
-    } else if (rivales.length) {
-      const v = rivales[0];
-      t.push('و لماذا لا ' + court(v.regle) + ' ؟ تنطبق فعلا، لكنّها تعطي '
-             + nommerBut(v.but) + ' : نتيجة صحيحة لا تظهر فيها المطلوب.');
-    } else {
-      t.push('لا تنطبق قاعدة أخرى على هذه المعطيات : الطريق واحد.');
-    }
-    return {
-      texte: t.join(' '),
-      controle: { but: sec(bloc.but || premier.fait), choisie: premier.regle.cle,
-                  // Ce que le validateur devra refaire : la règle écartée l'a
-                  // bien été pour la raison dite, et la rivale ne sert
-                  // vraiment à rien dans cette chaîne.
-                  avant,
-                  ecartee: ecartee ? ecartee.regle.cle : null,
-                  rivale: (!ecartee && rivales.length)
-                    ? { regle: rivales[0].regle.cle, fait: sec(rivales[0].but) }
-                    : null }
-    };
-  }
+  const itinerairePour = It ? It.creer({
+    R, ecrire: f => ecrire(f), nommerBut, court, MANQUE, CANDIDATES, sec
+  }) : null;
+  const itineraire = (bloc, acquis, ctx, avant) => (itinerairePour
+    ? itinerairePour(bloc.suite, bloc.but, acquis, ctx, avant) : null);
 
   // ── LE GABARIT DE THALÈS ─────────────────────────────────────────────────
   // Les trois rapports, lus depuis le sommet, comme sur la feuille.

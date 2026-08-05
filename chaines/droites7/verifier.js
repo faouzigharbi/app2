@@ -166,6 +166,24 @@ function verifierBrut(brut) {
 
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  // LE CHOIX DE L'ITINÉRAIRE SE VÉRIFIE. « Pas les deux perpendiculaires,
+  // parce qu'on n'en connaît qu'une » : s'il y en a deux, la phrase est
+  // fausse et elle enseigne le faux.
+  {
+    const MANQUE = {
+      'perp-perp-para': h => h.filter(x => x[0] === 'perp').length < 2,
+      'para-para-para': h => h.filter(x => x[0] === 'para').length < 2,
+      'med-perp': h => !h.some(x => x[0] === 'med'),
+      'tangente-perp': h => !h.some(x => x[0] === 'tang'),
+      'milieu-equidistance': h => !h.some(x => x[0] === 'mil'),
+      'equidistant-mediatrice': h => !h.some(x => x[0] === 'egal')
+    };
+    const it = c.itineraire;
+    if (it && it.ecartee && MANQUE[it.ecartee]
+        && !MANQUE[it.ecartee](c.hypBrutes || [])) {
+      probs.push('سبب الاستبعاد غير صحيح : ' + it.ecartee);
+    }
+  }
   const maths = brut.etapes.map(e => String(e[1]).trim())
     .filter(m => /[⊥/=∈]/.test(m) && !/إذن/.test(m));
   if (new Set(maths).size !== maths.length) probs.push('علاقة مكرّرة في مرحلتين');
@@ -229,6 +247,15 @@ if (process.env.CONTRE_EXEMPLES) {
     cas.push([nom + ' — AUCUNE FALSIFICATION POSSIBLE', null]);
   };
 
+  // Une raison d'écarter qui n'est pas vraie enseigne le faux.
+  pousse('une raison d’écarter qui est fausse', c => {
+    const it = c.controle.itineraire;
+    if (!it) throw new Error('pas d’itinéraire');
+    if ((c.controle.hypBrutes || []).filter(x => x[0] === 'perp').length < 2) {
+      throw new Error('rien à contredire');
+    }
+    it.ecartee = 'perp-perp-para';
+  });
   pousse('un point déplacé', c => {
     const n = Object.keys(c.controle.pts)[0];
     const p = c.controle.pts[n];

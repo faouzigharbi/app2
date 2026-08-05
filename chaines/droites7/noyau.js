@@ -374,7 +374,7 @@
       // l'étiquette même — « نفس الأساس », « نجمع الأسّة ». On prend donc l'une
       // ou l'autre, et l'on écarte ce qui n'est qu'ossature.
       difficulte: (() => {
-        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|^[0-9]+\)$/;
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|الاختيار|نفس المستقيم|^[0-9]+\)$/;
         const notions = new Set();
         for (const e of (brut.etapes || [])) {
           if (CADRE.test(e[0])) continue;

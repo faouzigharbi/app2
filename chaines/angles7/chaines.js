@@ -9,6 +9,7 @@
   const M = (typeof module !== 'undefined' && module.exports);
   const F = M ? require('./noyau.js') : racine.Angles;
   const R = M ? require('./regles.js') : racine.Regles;
+  const It = M ? require('../_regles/itineraire.js') : racine.Itineraire;
 
   const A = F.ecrireAngle;
   const dit = {
@@ -22,6 +23,45 @@
     tri: t => 'في المثلّث ' + t
   };
   const ecrire = f => (f[0] === 'tri' ? dit.tri(f[1]) : dit[f[0]](f[1], f[2]));
+
+  // ── LE CHOIX DE L'ITINÉRAIRE ─────────────────────────────────────────────
+  //
+  // Le chapitre des angles a sept règles, et l'élève de 7ᵉ hésite entre elles
+  // exactement comme celui de 9ᵉ hésite entre Thalès et Pythagore : « deux
+  // angles complémentaires ou supplémentaires ? », « la somme du triangle ou
+  // les angles opposés par le sommet ? ». La réponse est dans la figure, et
+  // le moteur peut la dire — il sait ce que chaque règle exige.
+  const COURT = {
+    complementaires: 'الزاويتان المتتامّتان',
+    supplementaires: 'الزاويتان المتكاملتان',
+    'opposees-sommet': 'الزاويتان المتقابلتان بالرأس',
+    egales: 'الزاويتان المتقايستان',
+    bissectrice: 'المنصّف',
+    chasles: 'علاقة شال للزوايا',
+    'somme-triangle': 'مجموع زوايا المثلّث'
+  };
+  const court = r => COURT[r.cle] || r.nom.split(' : ')[0];
+  const nommerBut = b => 'حساب قيس الزاوية ' + A(b[1]);
+  // Ce qui manque à une règle pour s'appliquer — lu sur les faits acquis.
+  const MANQUE = {
+    complementaires: acquis => acquis.some(x => x[0] === 'comp') ? null
+      : 'لأنّها تحتاج زاويتين متتامّتين، و لا تتام في المعطيات',
+    supplementaires: acquis => acquis.some(x => x[0] === 'supp') ? null
+      : 'لأنّها تحتاج زاويتين متكاملتين، و لا تكامل في المعطيات',
+    'opposees-sommet': acquis => acquis.some(x => x[0] === 'oppose') ? null
+      : 'لأنّها تحتاج زاويتين متقابلتين بالرأس، و لا وجود لهما هنا',
+    bissectrice: acquis => acquis.some(x => x[0] === 'bis') ? null
+      : 'لأنّها تحتاج منصّفا، و لا منصّف في الشّكل',
+    'somme-triangle': (acquis, ctx) => (ctx.triangles || []).length ? null
+      : 'لأنّها تحتاج مثلّثا، و لا مثلّث في هذا الشّكل',
+    chasles: (acquis, ctx) => (ctx.adjacences || []).length ? null
+      : 'لأنّها تحتاج زاويتين متجاورتين'
+  };
+  const CANDIDATES = ['somme-triangle', 'bissectrice', 'opposees-sommet',
+                      'complementaires', 'supplementaires', 'chasles'];
+  const sec = f => f.map(x => (x && x.n !== undefined ? x.n + '/' + x.d : x));
+  const itineraire = It ? It.creer({ R, ecrire, nommerBut, court, MANQUE,
+                                     CANDIDATES, sec }) : null;
 
   // ── La scène ─────────────────────────────────────────────────────────────
   function scene(item) {
@@ -87,6 +127,10 @@
 
     const etapes = [];
     etapes.push(['المعطيات', hyp.map(ecrire).join('  و  ')]);
+    // POURQUOI CETTE RÈGLE, ET NON UNE AUTRE — la question que l'élève doit
+    // se poser avant d'écrire quoi que ce soit.
+    const choix = itineraire ? itineraire(suite, but, hyp, S.ctx, 0) : null;
+    if (choix) etapes.push(['الاختيار', choix.texte]);
     const dites = new Set();
     for (const n of suite) {
       if (!dites.has(n.regle.cle)) {
@@ -124,6 +168,11 @@
       controle: {
         type: 'angles',
         hyp, but: S.s.but, reponse: F.qDeg(reponse),
+        // Ce que le validateur devra refaire : la règle écartée l'a bien été
+        // pour la raison dite.
+        itineraire: choix ? choix.controle : null,
+        ctx: { triangles: S.ctx.triangles || [],
+               adjacences: S.ctx.adjacences || [] },
         etapesCalcul: suite.map(n => ({
           regle: n.regle.cle, angle: n.fait[1],
           mesure: n.fait[2].n + '/' + n.fait[2].d,

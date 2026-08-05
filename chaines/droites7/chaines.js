@@ -15,6 +15,8 @@
   const R = M ? require('./regles.js') : racine.Regles;
 
   // ── L'écriture des objets ────────────────────────────────────────────────
+  const It = M ? require('../_regles/itineraire.js') : racine.Itineraire;
+
   const dit = {
     perp: (a, b) => a + ' ⊥ ' + b,
     para: (a, b) => a + ' // ' + b,
@@ -39,6 +41,57 @@
     const n = x => noms[x] || x;
     return dit[fait[0]](n(fait[1]), n(fait[2]));
   }
+
+  // ── LE CHOIX DE L'ITINÉRAIRE ─────────────────────────────────────────────
+  //
+  // Le chapitre des droites est celui où l'élève de 7ᵉ se trompe le plus de
+  // porte : il connaît trois règles sur le perpendiculaire et le parallèle,
+  // et elles se ressemblent. Dire laquelle et POURQUOI vaut mieux que la
+  // démonstration elle-même.
+  const COURT = {
+    'perp-perp-para': 'عموديان على نفس المستقيم',
+    'perp-para-perp': 'عمودي على أحد متوازيين',
+    'para-para-para': 'متوازيان لنفس المستقيم',
+    'med-perp': 'الموسط العمودي عمودي على القطعة',
+    'perp-milieu-med': 'العمودي المارّ من المنتصف',
+    'tangente-perp': 'المماس عمودي على الشعاع',
+    'milieu-equidistance': 'المنتصف متساوي البعد',
+    'egalite-transitive': 'تعدّي التساوي',
+    'equidistant-mediatrice': 'النقطة المتساوية البعد',
+    'deux-points-mediatrice': 'نقطتان متساويتا البعد',
+    'para-para-parallelogramme': 'متوازي الأضلاع',
+    'parallelogramme-angle-rectangle': 'المستطيل',
+    'med-equidistance': 'نقطة من الموسط العمودي'
+  };
+  const court = r => COURT[r.cle] || r.nom.split(' : ')[0];
+  const NOMBUT = {
+    perp: (b, n) => 'إثبات ' + (n[b[1]] || b[1]) + ' ⊥ ' + (n[b[2]] || b[2]),
+    para: (b, n) => 'إثبات ' + (n[b[1]] || b[1]) + ' // ' + (n[b[2]] || b[2]),
+    med: (b, n) => 'إثبات أنّ ' + (n[b[1]] || b[1]) + ' هو الموسط العمودي',
+    egal: (b, n) => 'إثبات تساوي الطولين',
+    mil: (b, n) => 'إثبات أنّ ' + (n[b[1]] || b[1]) + ' هو المنتصف',
+    passe: (b, n) => 'إثبات الانتماء',
+    nature: (b, n) => 'تعيين طبيعة الرباعي ' + b[1],
+    tang: (b, n) => 'إثبات المماسة'
+  };
+  // Ce qui manque à une règle pour s'appliquer, lu sur les faits acquis.
+  const MANQUE = {
+    'perp-perp-para': h => h.filter(x => x[0] === 'perp').length >= 2 ? null
+      : 'لأنّها تحتاج مستقيمين عموديين على نفس المستقيم، و لا نملك إلّا تعامدا واحدا على الأكثر',
+    'para-para-para': h => h.filter(x => x[0] === 'para').length >= 2 ? null
+      : 'لأنّها تحتاج توازيين، و التوازي غير معطى مرّتين',
+    'med-perp': h => h.some(x => x[0] === 'med') ? null
+      : 'لأنّها تحتاج موسطا عموديا، و لا موسط في المعطيات',
+    'tangente-perp': h => h.some(x => x[0] === 'tang') ? null
+      : 'لأنّها تحتاج مماسّا لدائرة، و لا دائرة هنا',
+    'milieu-equidistance': h => h.some(x => x[0] === 'mil') ? null
+      : 'لأنّها تحتاج منتصف قطعة، و لا منتصف في المعطيات',
+    'equidistant-mediatrice': h => h.some(x => x[0] === 'egal') ? null
+      : 'لأنّها تحتاج تساوي طولين، و لا تساوي في المعطيات'
+  };
+  const CANDIDATES = ['perp-perp-para', 'para-para-para', 'med-perp',
+                      'tangente-perp', 'milieu-equidistance',
+                      'equidistant-mediatrice'];
 
   // ── Monter la scène ──────────────────────────────────────────────────────
   function scene(item) {
@@ -356,6 +409,15 @@
     // qu'elle sert. C'est ainsi que la feuille du maître est écrite : les
     // « التوضيحات » rappellent la propriété, et l'élève l'applique ensuite.
     // La redire à chaque emploi ferait deux étapes interchangeables.
+    // POURQUOI CETTE RÈGLE, ET NON UNE AUTRE.
+    const faireIt = It ? It.creer({
+      R, ecrire: f => ecrire(f, S.noms), court, sec: f => f,
+      nommerBut: b => (NOMBUT[b[0]] ? NOMBUT[b[0]](b, S.noms) : 'المطلوب'),
+      MANQUE, CANDIDATES
+    }) : null;
+    const choix = faireIt
+      ? faireIt(suite, S.but, S.hyp.concat(lues), S.ctx, 0) : null;
+    if (choix) etapes.push(['الاختيار', choix.texte]);
     const dites = new Set();
     const cleBut = R.cleFait(S.but);
     for (const n of suite) {
@@ -424,6 +486,10 @@
       controle: { type: 'geometrie', pts: S.s.pts,
                   cercles: S.s.cercles || [],
                   verifs: affirme.map(enPoints).concat(lgs),
+                  // La raison d'écarter est une affirmation : le validateur
+                  // la refait sur les faits réellement acquis.
+                  itineraire: choix ? choix.controle : null,
+                  hypBrutes: S.hyp.concat(lues).map(f => f.slice()),
                   regles: suite.map(n => n.regle.cle) }
     };
   }
