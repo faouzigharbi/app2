@@ -387,6 +387,41 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LE TRAPÈZE ET SES DIAGONALES — THALES0 2014 ex3 et ex5
+  //
+  // « MNPQ شبه منحرف قاعدتاه [MN] و [PQ] و I نقطة تقاطع قطريه ». Les deux
+  // diagonales se croisent, et Thalès y joue en PAPILLON : le sommet est le
+  // point de croisement, et les deux bases sont de part et d'autre. C'est la
+  // configuration la plus fréquente des feuilles de concours, et la seule que
+  // le chapitre n'avait pas.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex3', 'trapeze', 'difficile', () => {
+    const [w, h] = F.choix([[3, 4], [6, 8], [5, 12], [8, 15], [20, 21]]);
+    // I à l'origine ; la grande base en bas, la petite en haut, obtenue par
+    // une homothétie négative de rapport t — d'où le papillon.
+    const num = F.ent(1, 3), den = num + F.ent(1, 3);
+    const t = F.q(num, den);
+    const I2 = F.pt(0, 0), P = F.pt(0, -h), Q = F.pt(w, -h);
+    const Mp = F.pt(F.Q0, F.qMul(t, F.q(h)));
+    const N = F.pt(F.qMul(t, F.q(-w)), F.qMul(t, F.q(h)));
+    return {
+      K: 1, points: { I: I2, M: Mp, N, P, Q },
+      thales: [{ S: 'I', B: 'P', C: 'Q', M: 'M', N: 'N' }],
+      para: [[dr('M', 'N'), dr('P', 'Q')]],
+      donne: [seg('M', 'N'), seg('P', 'Q'), seg('I', 'Q')],
+      but: ['lg2', seg('I', 'N'), null],
+      texte: g => ['MNPQ شبه منحرف قاعدتاه [MN] و [PQ]، و I نقطة تقاطع قطريه.',
+                   'MN = ' + g(seg('M', 'N')) + ' و PQ = ' + g(seg('P', 'Q'))
+                   + ' و IQ = ' + g(seg('I', 'Q')) + '.'],
+      question: 'أحسب المسافة IN.',
+      figure: { segments: [['M', 'N'], ['P', 'Q'], ['M', 'P'], ['N', 'Q'],
+                           ['M', 'Q'], ['N', 'P']] },
+      indice: 'القطران يتقاطعان في I : طبّق طالس في وضعية الفراشة'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // LES QUADRILATÈRES — règles 16 à 19
   //
   // TRIANGLES9_23 ex1 « بيّن أنّ OIJA متوازي أضلاع », ex7 « أثبت أنّ الرّباعي
