@@ -201,7 +201,8 @@
         { seance: 2, pages: '7-9', exercices: 5, vu: true,
           sujet: 'radicaux et expressions inverses · une expression A = x²−x−12 déclinée '
                + 'huit fois · deux exercices de repère · une pyramide' },
-        { seance: 3, pages: '10-13', exercices: 7, sujet: 'géométrie et repère — Thalès et relations métriques' },
+        { seance: 3, pages: '10-13', exercices: 7, vu: true,
+          sujet: 'Thalès quatre fois sur une figure · un losange dans un repère · deux exercices de radicaux négatifs · arithmétique et arbre de choix · le plus long repère du livre · un prisme' },
         { seance: 4, pages: '14-16', exercices: 2, sujet: 'géométrie pure — Thalès et métrique, une entrée dans l’espace' },
         { seance: 5, pages: '17-20', exercices: 8, sujet: 'géométrie — Thalès et métrique, quelques radicaux' },
         { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
@@ -256,6 +257,50 @@
                   + 'THALÈS posé dans un repère ; A y est le centre de gravité de EFC' },
         { n: '2.5', questions: 8,
           notions: ['pyramide', 'droite ⊥ plan', 'plans parallèles', 'Thalès dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+
+        // ── SÉANCE 3 — quatre exercices sur sept portés ───────────────────
+        { n: '3.1', questions: 6,
+          notions: ['Thalès quatre fois', 'une seule direction de parallèles',
+                    'rapport de deux segments', 'milieu', 'ligne des milieux d\'un trapèze'],
+          sort: 'bibliothèque', ou: 'brevet ex31 — six volets',
+          pourquoi: 'les segments portés par les parallèles grandissent régulièrement : '
+                  + 'RJ = 1, AB = 3, MP = 5, CD = 15' },
+        { n: '3.2', questions: 6,
+          notions: ['repère', 'perpendicularité aux axes', 'intersection',
+                    'symétrique', 'losange par les diagonales', 'aire d\'un losange',
+                    'ensemble de points'],
+          sort: 'bibliothèque', ou: 'brevet ex32 — six volets',
+          pourquoi: 'les deux diagonales se coupent en K(2;0), leur milieu commun, '
+                  + 'et elles sont perpendiculaires : aucune longueur de côté n\'est utile' },
+        { n: '3.3', questions: 5,
+          notions: ['rationaliser', 'comparer par les carrés', 'deux nombres négatifs',
+                    'quotients et renversement', 'distance sur une droite graduée'],
+          sort: 'bibliothèque', ou: 'brevet ex33 — cinq volets',
+          pourquoi: 'a et b sont tous deux négatifs — 24 < 25 et 18 < 49 — donc '
+                  + 'b < a < 0 donne b/a > 1, et non l\'inverse' },
+        { n: '3.4', questions: 6,
+          notions: ['identités remarquables', 'simplifier par le facteur du numérateur',
+                    'signe', 'comparer des carrés', 'produit de deux négatifs',
+                    '(a−b)² = ab et l\'inverse'],
+          sort: 'bibliothèque', ou: 'brevet ex34 — six volets',
+          pourquoi: 'la dernière question est le sommet : (a−b)² = ab donne d\'un coup '
+                  + 'que 1/b − 1/a = 1/(a−b)' },
+        { n: '3.5', questions: 6,
+          notions: ['somme de trois impairs consécutifs', 'divisibilité par 6 et 12',
+                    'arbre de choix', 'chiffres et divisibilité'],
+          sort: 'à faire',
+          pourquoi: 'sa partie I est de l\'arithmétique que arith9 sait faire ; sa '
+                  + 'partie II demande l\'ARBRE DE CHOIX, qui n\'a aucun chapitre' },
+        { n: '3.6', questions: 25,
+          notions: ['repère', 'partage d\'un segment', 'médiatrice', 'triangle isocèle rectangle',
+                    'aire et périmètre', 'rectangle', 'parallélogramme', 'symétrique',
+                    'alignement', 'ensembles de points', 'changement de repère'],
+          sort: 'à faire',
+          pourquoi: 'le plus long exercice du livre — huit questions et une trentaine de '
+                  + 'sous-questions dans un repère. Toute sa machinerie existe désormais' },
+        { n: '3.7', questions: 10,
+          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès dans l\'espace'],
           sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
 
         // ── SÉANCE 7 — LUE ET PORTÉE EN ENTIER, les quatre exercices ──────

@@ -24,6 +24,21 @@ métrique. La ranger sous « العمليات في ℝ » la rendrait introuvabl
 Seul l'exercice 5 manque : c'est de la **géométrie de l'espace** (pyramide
 `SABC`), qui n'a aucun chapitre.
 
+## Séance 3 — quatre exercices sur sept
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex31.html` | التمرين 1 | 6 | Thalès **quatre fois** sur une seule figure — toutes les parallèles ont la même direction, et les segments qu'elles portent grandissent régulièrement : `RJ = 1`, `AB = 3`, `MP = 5`, `CD = 15` |
+| `ex32.html` | التمرين 2 | 6 | un losange dans un repère, **trahi par ses diagonales** : elles se coupent en `K(2 ; 0)`, leur milieu commun, et sont perpendiculaires — aucune longueur de côté n'est nécessaire |
+| `ex33.html` | التمرين 3 | 5 | `a` et `b` sont tous deux **négatifs** (24 < 25 et 18 < 49), donc `b < a < 0` donne `b/a > 1` — et non l'inverse |
+| `ex34.html` | التمرين 4 | 6 | une identité qui ferme tout : `(a − b)² = ab`, d'où `1/b − 1/a = 1/(a − b)` sans rien calculer |
+
+Trois exercices restent : le **5** (sa partie I est de l'arithmétique, sa
+partie II demande l'**arbre de choix**, qui n'a aucun chapitre), le **6** — le
+plus long du livre, huit questions et une trentaine de sous-questions dans un
+repère, dont toute la machinerie existe maintenant — et le **7**, un prisme
+droit, donc de l'espace.
+
 ## Séance 7 — entière, les quatre exercices
 
 | page | exercice | volets | ce qui s'y joue |
@@ -106,8 +121,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 4 240 questions, 62 160 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 166/166
+    node verifier.js 40             # 5 160 questions, 67 000 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 211/211
     node _build.js .                # régénérer les pages
 
 ## Six coquilles du livre, relevées par le calcul

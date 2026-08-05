@@ -301,6 +301,102 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("EFBL declare trapeze isocele dans le mauvais ordre", parQuestion(24, 11),
     c => { c.controle.faits[0] = ['trapeze-isocele', 'E', 'B', 'F', 'L']; });
 
+  // ══ LA SÉANCE 3 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — une seule direction, vue quatre fois ───────────────────
+  pousse("A deplace : AB ne vaut plus 3", parQuestion(31, 0),
+    c => { c.controle.points.A = ['point', '2', '2√14/3']; });
+  pousse("MN annonce 3", parQuestion(31, 0),
+    c => { c.controle.faits[0][3] = '3'; });
+  pousse("M pris au milieu de [BC]", parQuestion(31, 0),
+    c => { c.controle.points.M = ['milieu', 'B', 'C']; });
+  pousse("le rapport NA/NC inverse", parQuestion(31, 1),
+    c => { c.controle.faits[2][5] = '5'; });
+  pousse("NC annonce 5/6", parQuestion(31, 1),
+    c => { c.controle.faits[0][3] = '5/6'; });
+  pousse("AN pris egal a NC", parQuestion(31, 2),
+    c => { c.controle.faits[0][3] = '25/6'; });
+  pousse("le rapport DP/DA pris a 1/6", parQuestion(31, 3),
+    c => { c.controle.faits[1][5] = '1/6'; });
+  pousse("D construit sur la parallele a (AC)", parQuestion(31, 3),
+    c => { c.controle.points.Zc = ['translate', 'C', 'A', 'C']; });
+  pousse("MP annonce 5/2", parQuestion(31, 4),
+    c => { c.controle.faits[1][3] = '5/2'; });
+  pousse("CD annonce 6", parQuestion(31, 4),
+    c => { c.controle.faits[2][3] = '6'; });
+  pousse("R pris symetrique de B par rapport a M", parQuestion(31, 5),
+    c => { c.controle.points.R = ['sym', 'B', 'M']; });
+  pousse("RJ annonce 2", parQuestion(31, 5),
+    c => { c.controle.faits[0][3] = '2'; });
+
+  // ── التمرين 2 — le losange que les diagonales trahissent ───────────────
+  pousse("A deplace : (AC) n est plus verticale", parQuestion(32, 0),
+    c => { c.controle.points.A = ['point', '3', '√2']; });
+  pousse("perpendicularite annoncee avec le mauvais axe", parQuestion(32, 0),
+    c => { c.controle.faits[0] = ['perpendiculaires', 'O', 'Z', 'A', 'C']; });
+  pousse("l ordonnee de K annoncee non nulle", parQuestion(32, 1),
+    c => { c.controle.faits[1][2] = '1'; });
+  pousse("K pris sur (OJ)", parQuestion(32, 1),
+    c => { c.controle.points.K = ['inter', 'A', 'C', 'O', 'Z']; });
+  pousse("L pris symetrique de A par rapport a O", parQuestion(32, 2),
+    c => { c.controle.points.L = ['sym', 'A', 'O']; });
+  pousse("AOLB declare losange dans le mauvais ordre", parQuestion(32, 2),
+    c => { c.controle.faits[0] = ['losange', 'A', 'L', 'O', 'B']; });
+  pousse("l aire du losange calculee sans le demi", parQuestion(32, 3),
+    c => { c.controle.faits[0][5] = '8√2'; });
+  pousse("la diagonale AL annoncee 2", parQuestion(32, 3),
+    c => { c.controle.faits[1][3] = '2'; });
+  pousse("T pris sur la parallele a (OI)", parQuestion(32, 4),
+    c => { c.controle.points.Zb = ['translate', 'B', 'O', 'I']; });
+  pousse("l abscisse de T annoncee 2", parQuestion(32, 4),
+    c => { c.controle.faits[0][2] = '2'; });
+  pousse("la longueur du segment [FT] annoncee 2", parQuestion(32, 5),
+    c => { c.controle.faits[0][3] = '2'; });
+
+  // ── التمرين 3 — deux négatifs, et des comparaisons qui se renversent ────
+  pousse("a decale", parQuestion(33, 0), c => { c.controle.claims[0][1] = '2√6 + 5'; });
+  pousse("√24 sorti en 4√6", parQuestion(33, 0),
+    c => { c.etapes[1][1] = '√24 = 4√6'; });
+  pousse("b mal developpe", parQuestion(33, 0),
+    c => { c.controle.claims[1][1] = '3√2 + 7'; });
+  pousse("la difference a - b faussee", parQuestion(33, 1),
+    c => { c.controle.claims[0][1] = '2√6 - 3√2 - 2'; });
+  pousse("les carres 24 et 18 intervertis", parQuestion(33, 1),
+    c => { c.etapes[4][1] = '2√6 < 3√2'; });
+  pousse("le denominateur 2 - 3a mal calcule", parQuestion(33, 2),
+    c => { c.controle.claims[0][1] = '17 + 6√6'; });
+  pousse("le signe du second quotient non retourne", parQuestion(33, 2),
+    c => { c.controle.claims[2][1] = '5/(3b - 4)'; });
+  pousse("b/a annonce plus petit que 1", parQuestion(33, 3),
+    c => { c.etapes[3][1] = 'a < b'; });
+  pousse("b/a mal rationalise", parQuestion(33, 3),
+    c => { c.controle.claims[4][1] = '35 + 14√6 - 15√2 + 12√3'; });
+  pousse("MN pris comme la somme au lieu de la difference", parQuestion(33, 4),
+    c => { c.controle.env.MN = 'b^2/a^2 + b/a'; });
+  pousse("la factorisation de MN fausse", parQuestion(33, 4),
+    c => { c.controle.claims[0][1] = '(b/a)(b/a + 1)'; });
+
+  // ── التمرين 4 — l'identité (a - b)² = ab ───────────────────────────────
+  pousse("a decale", parQuestion(34, 0), c => { c.controle.claims[0][1] = '4 + 2√5'; });
+  pousse("le produit des conjugues faux", parQuestion(34, 0),
+    c => { c.etapes[2][1] = '(3 - √5)(3 + √5) = 9 + 5'; });
+  pousse("le numerateur de b mal factorise", parQuestion(34, 1),
+    c => { c.controle.claims[0][1] = '7 + 3√5'; });
+  pousse("b decale", parQuestion(34, 1), c => { c.controle.claims[1][1] = '1 + √5'; });
+  pousse("le carre de 2√5 faux", parQuestion(34, 2),
+    c => { c.controle.claims[0][1] = '10'; });
+  pousse("la difference a - b faussee", parQuestion(34, 3),
+    c => { c.controle.claims[0][1] = '3 + √5'; });
+  pousse("le carre de a faux", parQuestion(34, 3),
+    c => { c.controle.claims[1][1] = '36 + 16√5'; });
+  pousse("le produit ab mal developpe", parQuestion(34, 4),
+    c => { c.controle.claims[0][1] = '14 + 6√5'; });
+  pousse("l identite (a - b)^2 = ab faussee", parQuestion(34, 5),
+    c => { c.controle.claims[0][1] = 'a + b'; });
+  pousse("l inverse annonce sur a + b", parQuestion(34, 5),
+    c => { c.controle.claims[1][1] = '1/(a + b)'; });
+  pousse("le produit avec l inverse ne vaut plus 1", parQuestion(34, 5),
+    c => { c.controle.claims[2][1] = '-1'; });
+
   // ══ LA SÉANCE 7 ════════════════════════════════════════════════════════
   // ── التمرين 1 — réduire pour COMPARER : on vise le sens des inégalités ──
   pousse("le levier 6√(3/2) rendu egal a 6√6", parQuestion(71, 0),
