@@ -56,7 +56,12 @@
   label.rub:hover { border-color:#c3cfdd }
   label.rub input { accent-color:var(--accent); width:17px; height:17px; cursor:pointer }
   label.rub.coche { border-color:var(--accent); background:#f5f4ff }
-  label.rub .n { margin-inline-start:auto; color:var(--muet); font-size:.82em }
+  label.rub .n { margin-inline-start:auto; color:var(--muet); font-size:.82em;
+                 flex:none }
+  /* Le nom occupe la place qui reste et se coupe en lignes ; sans cela,
+     l'étiquette « مراجعة » poussait le compteur hors de la case. */
+  label.rub input + span { flex:1; min-width:0 }
+  label.rub input, label.rub .n { flex:none }
 
   .puces { display:flex; flex-wrap:wrap; gap:8px }
   .puce { padding:8px 15px; border:1.5px solid var(--bord); border-radius:20px;
@@ -120,6 +125,13 @@
   .expr.pt { font-family:'Times New Roman',serif; font-style:italic;
              font-size:1.06em }
   sup { font-size:.72em }
+  /* L'étiquette qui dit d'où vient l'exercice : discrète, mais lisible. */
+  .rev { font-size:.72em; color:#6c63ff; border:1px solid currentColor;
+         border-radius:3px; padding:0 .3em; margin-inline-start:.4em;
+         vertical-align:middle }
+  /* L'étiquette se coupe en lignes comme le reste : « nowrap » la faisait
+     déborder de sa colonne et passer sous le compteur. */
+  label.rub .rev { display:inline-block; max-width:100% }
 
   /* ─────────── L'IMPRESSION ─────────── */
   @page { size:A4; margin:14mm }
@@ -203,8 +215,10 @@
 
   // ── L'inventaire : quels chapitres, quelles rubriques, combien dans chacune.
   const chapitres = INV.map(c => ({
-    cle: c.cle, nom: c.nom, niveau: c.niveau, fichier: c.fichier,
-    rubriques: c.rubriques.map(r => ({ cle:r.cle, nom:r.nom, n:r.n, diff:r.diff })),
+    cle: c.cle, nom: c.nom, niveau: c.niveau, fichiers: c.fichiers,
+    rubriques: c.rubriques.map(r => ({ cle:r.cle, source:r.source, nom:r.nom,
+                                       revision:r.revision, origine:r.origine,
+                                       n:r.n, diff:r.diff })),
     n: c.rubriques.reduce((t, r) => t + r.n, 0)
   }));
 
@@ -247,8 +261,11 @@
         + '<span class="tout" data-c="' + c.cle + '">الكلّ</span>'
         + '<span class="n">' + c.n + '</span></summary>'
         + '<div class="rubriques">' + c.rubriques.map(r =>
-          '<label class="rub"><input type="checkbox" data-c="' + c.cle + '" data-r="'
-          + r.cle + '"><span>' + r.nom + '</span><span class="n">' + r.n + '</span></label>'
+          '<label class="rub"><input type="checkbox" data-c="' + c.cle
+          + '" data-s="' + r.source + '" data-r="' + r.cle + '"><span>' + r.nom
+          + (r.revision ? ' <span class="rev">مراجعة' + (r.origine ? ' · ' + r.origine : '')
+             + '</span>' : '')
+          + '</span><span class="n">' + r.n + '</span></label>'
         ).join('') + '</div>';
       sec.appendChild(d);
     });
@@ -288,8 +305,10 @@
     }
   });
 
+  // On retient la fiche D'ORIGINE : le regroupement est un classement pour
+  // l'œil, mais les exercices, eux, portent toujours leur ancien chapitre.
   const choisies = () => [...document.querySelectorAll('.rub input:checked')]
-    .map(i => ({ c:i.dataset.c, r:i.dataset.r }));
+    .map(i => ({ c:i.dataset.c, s:i.dataset.s, r:i.dataset.r }));
   const niveaux = () => [...document.querySelectorAll('#niv .puce.on')].map(p => p.dataset.d);
   const parRub  = () => Number(el('#nb .puce.on').dataset.n);
   const avecCor = () => el('#cor .puce.on').dataset.c === '1';
@@ -306,7 +325,7 @@
     sels.forEach(sel => {
       // Le compte vient du manifeste : les exercices ne sont pas encore là.
       const ch = chapitres.find(k => k.cle === sel.c);
-      const ru = ch && ch.rubriques.find(k => k.cle === sel.r);
+      const ru = ch && ch.rubriques.find(k => k.cle === sel.r && k.source === sel.s);
       let dispo = 0;
       if (ru) for (const d of Object.keys(ru.diff)) {
         // Une fiche sans difficulté déclarée se tire à tous les niveaux.
@@ -339,7 +358,7 @@
     !x.difficulte || difficultes.indexOf(x.difficulte) >= 0;
 
   function tirer(sel, n, difficultes, vus) {
-    const pool = TOUT().filter(x => x.chapitre === sel.c && x.rubrique === sel.r
+    const pool = TOUT().filter(x => x.chapitre === sel.s && x.rubrique === sel.r
                                   && eligible(x, difficultes));
     if (!pool.length) return [];
     let neufs = pool.filter(x => !vus.has(x.id));
@@ -355,10 +374,10 @@
 
   el('#creer').addEventListener('click', () => {
     const sels = choisies();
-    const besoin = [...new Set(sels.map(sel => {
+    const besoin = [...new Set([].concat(...sels.map(sel => {
       const c = chapitres.find(k => k.cle === sel.c);
-      return c && c.fichier;
-    }))];
+      return (c && c.fichiers) || [];
+    })))];
     el('#creer').disabled = true;
     const avant = el('#avis').textContent;
     el('#avis').textContent = 'جارٍ التحميل…';

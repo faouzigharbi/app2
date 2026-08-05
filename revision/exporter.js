@@ -204,6 +204,16 @@ function recoudre() {
   // rubriques, effectifs par difficulté —, quelques dizaines de kilo-octets ;
   // les exercices eux-mêmes ne sont chargés qu'au moment du tirage, et
   // seulement ceux des chapitres choisis.
+  // Le classement, s'il existe : il dit quelle fiche rejoint quel chapitre.
+  let CL = {};
+  try {
+    const bacCL = {};
+    new Function('window', fs.readFileSync(path.join(ICI, 'classement.js'), 'utf8'))
+      .call(bacCL, bacCL);
+    CL = bacCL.CLASSEMENT || {};
+  } catch (e) { /* pas de classement : chaque fiche reste où elle est */ }
+
+  const parCle = {};
   const inventaire = [];
   for (const f of fichiers) {
     const bac = {};
@@ -213,22 +223,35 @@ function recoudre() {
       new Function('window', fs.readFileSync(path.join(ICI, f), 'utf8')).call(bac, bac);
     } catch (e) { console.log('⚠  ' + f + ' illisible : ' + e.message); continue; }
     const ex = bac.BIBLIO || [];
-    const chap = {};
     for (const x of ex) {
-      const c = chap[x.chapitre] || (chap[x.chapitre] = {
-        fichier: f, cle: x.chapitre, nom: x.chapitreNom, niveau: x.niveau,
-        rubriques: {} });
-      const r = c.rubriques[x.rubrique] || (c.rubriques[x.rubrique] = {
-        cle: x.rubrique, nom: x.rubriqueNom, n: 0, diff: {} });
+      const cl = CL[x.chapitre] || {};
+      const cle = cl.vers || x.chapitre;
+      let c = parCle[cle];
+      if (!c) {
+        c = parCle[cle] = { cle, nom: cl.nom || x.chapitreNom, niveau: x.niveau,
+                            fichiers: [], rubriques: {} };
+        inventaire.push(c);
+      }
+      // Une fiche accueillie garde le nom du chapitre d'accueil, jamais le
+      // sien — sans quoi le regroupement ne servirait à rien.
+      if (!cl.vers && !cl.nom) c.nom = x.chapitreNom;
+      if (cl.nom && !cl.vers) c.nom = cl.nom;
+      if (c.fichiers.indexOf(f) < 0) c.fichiers.push(f);
+      // L'ÉTIQUETTE. Une rubrique venue d'une série de révision le dit, et
+      // porte le nom de sa fiche d'origine : l'élève doit pouvoir revenir à
+      // la feuille dont l'exercice sort.
+      const rk = x.chapitre + '|' + x.rubrique;
+      const r = c.rubriques[rk] || (c.rubriques[rk] = {
+        cle: x.rubrique, source: x.chapitre, nom: x.rubriqueNom,
+        revision: !!cl.revision, origine: cl.revision ? x.chapitreNom : '',
+        n: 0, diff: {} });
       r.n++;
       const d = x.difficulte || '';
       r.diff[d] = (r.diff[d] || 0) + 1;
     }
-    for (const k of Object.keys(chap)) {
-      chap[k].rubriques = Object.values(chap[k].rubriques);
-      inventaire.push(chap[k]);
-    }
   }
+  for (const c of inventaire) c.rubriques = Object.values(c.rubriques);
+  inventaire.sort((a, b) => (a.niveau - b.niveau) || a.cle.localeCompare(b.cle));
   fs.writeFileSync(path.join(ICI, 'index-biblio.js'),
     '// ENGENDRÉ PAR exporter.js — l’inventaire seul, sans les exercices.\n'
     + '// Il sert à bâtir le sélecteur ; les bibliothèques ne sont chargées\n'
