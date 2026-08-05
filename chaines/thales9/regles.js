@@ -376,11 +376,17 @@
                          calcul: [seg(A, C), seg(I, X), 'moitie'] });
             }
           }
-          const d = f.lg2.get(seg(I, A));
-          if (d && !f.lg2.has(seg(A, C))) {
-            out.push({ but: ['lg2', seg(A, C), F.qMul(d, F.q(4))],
-                       depuis: [m, ['lg2', seg(I, A), d]],
-                       calcul: [seg(I, A), seg(A, C), 'double'] });
+          // ET LE RETOUR, DEPUIS L'UNE OU L'AUTRE MOITIÉ. Le fait « milieu »
+          // range ses extrémités dans l'ordre alphabétique ; la moitié connue
+          // pouvait donc être celle que la règle ne regardait pas, et elle se
+          // taisait sur un segment dont elle tenait la moitié.
+          for (const X of [A, C]) {
+            const d = f.lg2.get(seg(I, X));
+            if (d && !f.lg2.has(seg(A, C))) {
+              out.push({ but: ['lg2', seg(A, C), F.qMul(d, F.q(4))],
+                         depuis: [m, ['lg2', seg(I, X), d]],
+                         calcul: [seg(I, X), seg(A, C), 'double'] });
+            }
           }
         }
         return out;

@@ -2042,6 +2042,64 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex7 — LE RECTANGLE, LA SÉCANTE ET LE SYMÉTRIQUE
+  //
+  // « ABCD مستطيل بحيث AB = 9 و AD = 4، و M من [AB] بحيث AM = 6. (DM) و (BC)
+  // يتقاطعان في O. I صورة O بالتناظر المركزي بالنسبة إلى B. »
+  //
+  //   1) أحسب OB ثمّ استنتج أنّ I هي منتصف [BC]
+  //   2) J مسقط I على (OD) وفقا لمنحى (AB) : أحسب IJ
+  //
+  // O tombe HORS du rectangle — sous B —, et c'est ce qui rend l'exercice
+  // instructif : la configuration de Thalès a son sommet en M, et le segment
+  // [BO] qu'elle mesure sort de la figure. Puis la symétrie ramène I dedans,
+  // au milieu de [BC], et une seconde configuration de sommet O donne IJ.
+  //
+  // Ses nombres ne sont pas libres : I n'est le milieu de [BC] que si
+  // AM = (2/3)AB. Le maître écrit 6 sur 9.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex7', 'probleme', 'difficile', () => {
+    const p = F.ent(2, 6), h = 2 * F.ent(2, 6);
+    const A = F.pt(0, 0), B = F.pt(3 * p, 0), C = F.pt(F.q(3 * p), F.q(h)),
+          D = F.pt(F.Q0, F.q(h));
+    const Mp = F.pt(F.q(2 * p), F.Q0);           // AM = (2/3) AB
+    const O = F.intersection(D, Mp, B, C);
+    if (!O) throw new Error('pose dégénérée');
+    const Ip = F.symetriqueCentre(O, B);
+    const J = F.intersection(O, D, Ip, F.translate(Ip, A, B));
+    if (!J) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B, C, D, M: Mp, O, I: Ip, J },
+      pgrams: ['ABCD'],
+      milieux: [['B', 'O', 'I']],                // la symétrie de centre B
+      para: [[dr('B', 'O'), dr('A', 'D')], [dr('I', 'J'), dr('D', 'C')]],
+      thales: [{ S: 'M', B: 'A', C: 'D', M: 'B', N: 'O' },
+               { S: 'O', B: 'D', C: 'C', M: 'J', N: 'I' }],
+      entre: [['A', 'M', 'B'], ['B', 'I', 'C'], ['O', 'B', 'I'], ['O', 'B', 'C']],
+      donne: [seg('A', 'B'), seg('A', 'D'), seg('A', 'M')],
+      buts: [
+        { but: ['lg2', seg('B', 'M'), null], question: 'أحسب MB.' },
+        { but: ['lg2', seg('B', 'O'), null], question: 'أحسب OB.' },
+        { but: ['lg2', seg('B', 'I'), null], question: 'أحسب BI.' },
+        { but: ['milieu', 'I', 'B', 'C'], question: 'استنتج أنّ I هي منتصف [BC].' },
+        { but: ['lg2', seg('C', 'O'), null], question: 'أحسب OC.' },
+        { but: ['lg2', seg('I', 'J'), null], question: 'أحسب IJ.' }
+      ],
+      texte: g => ['ABCD مستطيل حيث AB = ' + g(seg('A', 'B')) + ' و AD = '
+                   + g(seg('A', 'D')) + '، و M نقطة من [AB] بحيث AM = '
+                   + g(seg('A', 'M')) + '.',
+                   '(DM) و (BC) يتقاطعان في O، و I هي صورة O بالتناظر المركزي الذي مركزه B.',
+                   'J هي مسقط I على (OD) وفقا لمنحى (AB).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['D', 'O'], ['B', 'O'], ['I', 'J']],
+                angles: [['D', 'A', 'B'], ['A', 'B', 'C']],
+                marques: [['O', 'B', 1], ['B', 'I', 1]] },
+      indice: 'طالس رأسه M يعطي OB ؛ ثمّ التناظر، ثمّ طالس رأسه O'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
