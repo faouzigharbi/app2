@@ -125,7 +125,8 @@ function moissonner(construire, n, parCase) {
 // lire. On la nomme ici, en attendant qu'elle le fasse elle-même.
 const NOMS = { puiss9: 'القوى', droites7: 'التعامد و التوازي',
                angles7: 'الزوايا',
-               thales9: 'طالس و بيتاغور' };
+               thales9: 'طالس و بيتاغور',
+               proport9: 'التناسب — أكمل الكسور' };
 
 function titreDe(dossier) {
   if (NOMS[dossier]) return NOMS[dossier];
