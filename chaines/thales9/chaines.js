@@ -117,6 +117,7 @@
       rapports: s.rapports || [],
       perimetres: s.perimetres || [], correspondants: s.correspondants || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
+      alignements: s.alignements || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
     return { s, P, pts, ctx, hyp, val, de };
@@ -250,7 +251,8 @@
                // évidemment rien : 32 refus, tous justes.
                diametres: S.ctx.diametres, rapports: S.ctx.rapports,
                perimetres: S.ctx.perimetres,
-               correspondants: S.ctx.correspondants }
+               correspondants: S.ctx.correspondants,
+               alignements: S.ctx.alignements }
       }
     };
   }

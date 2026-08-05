@@ -1059,6 +1059,43 @@
     // premier est un parallélogramme quand [AC] et [BD] se coupent en leur
     // milieu, le second quand ce sont [AD] et [BC]. Les sommets se lisent en
     // tournant, et l'on ne peut pas les permuter sans changer la figure.
+    // TROIS POINTS ALIGNÉS NE FONT QU'UNE DROITE.
+    //
+    // « (AN) et (AB) sont la même droite, puisque B est le milieu de [AN] » :
+    // évident pour l'élève, invisible pour le moteur, qui les prenait pour
+    // deux objets et cherchait l'un en tenant l'autre. Trois fois le contour a
+    // dû être écrit à la main — THALES0 2014 ex1, Série 9B ex1, Thales 2021
+    // ex1 —, et trois fois c'était la même chose : un parallélisme ou un angle
+    // droit déclaré DEUX fois pour la même droite.
+    //
+    // L'alignement se lit sur la figure, comme un milieu ; ce qui en découle
+    // est un PAS, et il porte un nom.
+    {
+      cle: 'meme-droite',
+      nom: 'ثلاث نقط على استقامة واحدة تعيّن نفس المستقيم',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.alignements || []) {
+          const noms = [dr(t[0], t[1]), dr(t[0], t[2]), dr(t[1], t[2])];
+          for (const [type, table] of [['para', f.para], ['perp', f.perp]]) {
+            for (const fait of table) {
+              for (const i of [1, 2]) {
+                if (!noms.includes(fait[i])) continue;
+                for (const d of noms) {
+                  if (d === fait[i]) continue;
+                  const but = fait.slice();
+                  but[i] = d;
+                  if (but[1] === but[2]) continue;
+                  if (table.some(x => cleFait(x) === cleFait(but))) continue;
+                  out.push({ but, depuis: [fait, ['aligne', ...t]] });
+                }
+              }
+            }
+          }
+        }
+        return out;
+      }
+    },
     // LES DEUX RÈGLES DU PERPENDICULAIRE, venues de 7ᵉ et longtemps inutiles
     // ici : ce chapitre calcule des longueurs, et l'angle droit y arrivait
     // toujours par l'énoncé. Thales 2021 ex1 le fait VOYAGER — (AB) ⊥ (BC) et

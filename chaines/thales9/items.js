@@ -2011,12 +2011,12 @@
     return {
       K: 1, points: { A, B: Bp, C, M: Mp, N, P },
       milieux: [['B', 'A', 'N'], ['C', 'A', 'M']],
-      // (AN) EST LA DROITE (AB) — B est le milieu de [AN], donc A, B, N sont
-      // alignés. Le moteur ne sait pas encore qu'une droite peut porter deux
-      // noms ; on lui donne donc l'angle droit sous les deux, ce que la figure
-      // montre et que l'énoncé dit en posant N sur (AB).
-      perps: [[dr('A', 'B'), dr('B', 'C')], [dr('A', 'N'), dr('B', 'C')],
-              [dr('A', 'P'), dr('A', 'B')]],
+      // UN SEUL ANGLE DROIT DÉCLARÉ, celui de l'énoncé : (AN) est la droite
+      // (AB), et c'est maintenant un PAS de la démonstration — « ثلاث نقط على
+      // استقامة واحدة تعيّن نفس المستقيم » — et non plus une déclaration
+      // doublée qu'il fallait écrire à la main.
+      perps: [[dr('A', 'B'), dr('B', 'C')], [dr('A', 'P'), dr('A', 'B')]],
+      alignements: [['A', 'B', 'N']],
       triangles: [['A', 'N', 'M']],
       thales: [{ S: 'A', B: 'N', C: 'M', M: 'B', N: 'C' },
                { S: 'N', B: 'A', C: 'P', M: 'B', N: 'C' }],

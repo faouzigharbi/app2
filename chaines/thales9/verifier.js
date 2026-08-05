@@ -207,7 +207,18 @@ function verifierBrut(brut) {
 
   // 2. CHAQUE PAS. Sa conclusion doit être vraie, et ses prémisses doivent
   //    déjà être acquises — sinon la démonstration tourne en rond.
-  const acquis = new Set(c.hyp.map(R.cleFait));
+  // CE QUE LA FIGURE DONNE EST ACQUIS, ET SE VÉRIFIE QUAND MÊME. Les
+  // alignements ne sont pas des hypothèses écrites : ils se lisent sur le
+  // dessin, comme les milieux. Le moteur les tient pour acquis ; le validateur
+  // fait de même, MAIS il les recalcule sur les coordonnées — trois points
+  // déclarés alignés qui ne le sont pas seraient refusés ici.
+  const lus = (c.ctx && c.ctx.alignements ? c.ctx.alignements : [])
+    .map(t => ['aligne', ...t]);
+  for (const a of lus) {
+    let m; try { m = verifierFait(a, S); } catch (e) { m = 'exception: ' + e.message; }
+    if (m) probs.push('ما يُقرأ على الرّسم غير صحيح : ' + m);
+  }
+  const acquis = new Set(c.hyp.concat(lus).map(R.cleFait));
   for (const pas of c.etapesCalcul) {
     relations++;
     const regle = R.REGLES.find(r => r.cle === pas.regle);
