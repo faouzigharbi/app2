@@ -123,7 +123,7 @@ function moissonner(construire, n, parCase) {
 // ── Le niveau et le nom, lus sur la fiche ────────────────────────────────
 // Une fiche dont les pages ne sont pas encore bâties n'a pas de <title> à
 // lire. On la nomme ici, en attendant qu'elle le fasse elle-même.
-const NOMS = { puiss9: 'القوى' };
+const NOMS = { puiss9: 'القوى', droites7: 'التعامد و التوازي' };
 
 function titreDe(dossier) {
   if (NOMS[dossier]) return NOMS[dossier];
@@ -188,7 +188,11 @@ function exporter(dossier, nom, niveau, parCase) {
 // ── La liste des <script> dans index.html, tenue à jour toute seule ──────
 function recoudre() {
   const p = path.join(ICI, 'index.html');
-  const fichiers = fs.readdirSync(ICI).filter(x => /^biblio-.*\.js$/.test(x)).sort();
+  // biblio-perso.js n'est pas engendré : il est écrit à la main, et il passe
+  // en DERNIER pour que ce que le maître ajoute prime à l'affichage.
+  const tous = fs.readdirSync(ICI).filter(x => /^biblio-.*\.js$/.test(x)).sort();
+  const fichiers = tous.filter(x => x !== 'biblio-perso.js')
+    .concat(tous.includes('biblio-perso.js') ? ['biblio-perso.js'] : []);
   const bloc = fichiers.map(f => '<script src="' + f + '"></script>').join('\n');
   const html = fs.readFileSync(p, 'utf8');
   const REPERES = /<!-- BIBLIOS -->[\s\S]*?<!-- \/BIBLIOS -->/;
