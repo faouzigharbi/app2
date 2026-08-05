@@ -47,6 +47,25 @@ Deux exercices restent : le **5** (sa partie I est de l'arithmétique, sa
 partie II demande l'**arbre de choix**, qui n'a aucun chapitre) et le **7**, un
 prisme droit, donc de l'espace.
 
+## Séance 5 — sept exercices sur huit
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex51.html` | التمرين 1 | 7 | `a = 17 − 12√2` est **l'inverse de `b²`** — et il vaut à peine 0,03, d'où `1/a` énorme : c'est là que le rangement des inverses se joue |
+| `ex52.html` | التمرين 2 | 6 | rectangle où **aucune longueur n'est donnée** : `BI² = IA × IC` avec `IA = 2 IC` donne `IC = 2`, et tout en découle |
+| `ex53.html` | التمرين 3 | 8 | **les mêmes deux nombres** que la séance 7 — découpés en huit questions au lieu de quatre, avec une comparaison de plus |
+| `ex54.html` | التمرين 4 | 5 | `(2x−1)² = 4(x²−x)+1` : encadrer le **carré** encadre `x²−x` sans jamais multiplier deux encadrements l'un par l'autre |
+| `ex55.html` | التمرين 5 | 3 | sur `]0 ; 1[`, `3x−5` et `x−4` sont **tous deux négatifs** : les deux valeurs absolues se lèvent de la même façon |
+| `ex57.html` | التمرين 7 | 5 | la partie II **refabrique** l'équation de la partie I : `S₁ = √3 S₂` donne `5+2x = 3x²`, c'est-à-dire `M = 0` |
+| `ex58.html` | التمرين 8 | 7 | `x² + (4−x)² = 2(x−2)² + 8` : le minimum 8 est atteint au milieu |
+
+L'exercice 6 est un **prisme droit** — de l'espace, sans chapitre.
+
+L'exercice 3 mérite un mot : ce sont **littéralement les mêmes deux nombres**
+que la séance 7, exercice 1, partie 2, où ils s'appellent `s` et `t`. On garde
+les deux pages, parce que le découpage diffère — quatre questions là-bas, huit
+ici — et que **le découpage est la leçon**.
+
 ## Séance 7 — entière, les quatre exercices
 
 | page | exercice | volets | ce qui s'y joue |
@@ -129,14 +148,14 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 5 960 questions, 70 600 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 247/247
+    node verifier.js 40             # 7 600 questions, 108 360 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 307/307
     node _build.js .                # régénérer les pages
 
-## Six coquilles du livre, relevées par le calcul
+## Sept coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Six énoncés ne se
-referment pas sur eux-mêmes, et **six falsifications le prouvent** — chacune
+Le validateur ne lit pas une intention : il recalcule. Sept énoncés ne se
+referment pas sur eux-mêmes, et **sept falsifications le prouvent** — chacune
 remet le nombre du livre et se fait rejeter.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -178,7 +197,15 @@ remet le nombre du livre et se fait rejeter.
    est le centre de gravité du triangle `BDC`, donc `BM` en vaut les deux
    tiers : **`BM = 16/3`**. Le `8` du dénominateur est un `3`.
 
-Ces six corrections sont écrites dans `seances.js` et signalées au maître ;
+7. **الحصّة 5، التمرين 8، 3** — « جد x لكي يصبح الرباعي HCEA معيّنا ». Le
+   quadrilatère `HCEA` n'est un losange pour **aucune** valeur de `x` :
+   `HC = CE` donne `x = 8/3`, et à cette valeur `AH = 8√2/3` alors que
+   `HC = 4√5/3`. Ce que `x = 8/3` donne, c'est `AH = EA` **et** `HC = CE` —
+   un **cerf-volant** d'axe `(CA)`, dont les diagonales sont perpendiculaires.
+   (À `x = 2` on obtient l'autre cerf-volant, d'axe `(HE)`.) La page conclut
+   ainsi, et laisse le maître arbitrer.
+
+Ces sept corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris

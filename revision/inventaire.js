@@ -204,7 +204,8 @@
         { seance: 3, pages: '10-13', exercices: 7, vu: true,
           sujet: 'Thalès quatre fois sur une figure · un losange dans un repère · deux exercices de radicaux négatifs · arithmétique et arbre de choix · le plus long repère du livre · un prisme' },
         { seance: 4, pages: '14-16', exercices: 2, sujet: 'géométrie pure — Thalès et métrique, une entrée dans l’espace' },
-        { seance: 5, pages: '17-20', exercices: 8, sujet: 'géométrie — Thalès et métrique, quelques radicaux' },
+        { seance: 5, pages: '17-20', exercices: 8, vu: true,
+          sujet: 'un nombre minuscule et son inverse énorme · un rectangle où la relation métrique donne tout · deux exercices d\'encadrement · un prisme · une aire qui refabrique une équation · un carré qui glisse' },
         { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
         { seance: 7, pages: '24-26', exercices: 4, vu: true,
           sujet: 'radicaux et ORDRE · deux cercles emboîtés jusqu\'à l\'orthocentre · intervalles et aire d\'un carré découpé · relation métrique et triangle équilatéral' },
@@ -305,6 +306,52 @@
           notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès dans l\'espace'],
           sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
 
+        // ── SÉANCE 5 — sept exercices sur huit ────────────────────────────
+        { n: '5.1', questions: 7,
+          notions: ['réduire des radicaux', 'carré parfait irrationnel', 'nombres inverses',
+                    'signe d\'une différence', 'ranger des inverses'],
+          sort: 'bibliothèque', ou: 'brevet ex51 — sept volets',
+          pourquoi: 'a = 17−12√2 est l\'INVERSE de b² : (17−12√2)(17+12√2) = 1. '
+                  + 'a vaut à peine 0,03, d\'où 1/a énorme — c\'est là que le rangement se joue' },
+        { n: '5.2', questions: 6,
+          notions: ['rectangle', 'relation métrique', 'droite des milieux', 'Pythagore',
+                    'losange par les diagonales', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex52 — six volets',
+          pourquoi: 'BI² = IA × IC avec IA = 2 IC donne IC = 2 ; aucune longueur '
+                  + 'n\'est donnée directement, tout sort de là' },
+        { n: '5.3', questions: 8,
+          notions: ['comparer par les carrés', 'produit de deux négatifs', 'factoriser',
+                    'renversement par un facteur négatif', 'somme d\'inégalités'],
+          sort: 'bibliothèque', ou: 'brevet ex53 — huit volets',
+          pourquoi: 'CE SONT LES MÊMES DEUX NOMBRES que la séance 7 tmr 1 partie 2 '
+                  + '(ils s\'y appellent s et t), mais découpés en huit questions au lieu '
+                  + 'de quatre, avec une comparaison de plus. Le découpage est la leçon' },
+        { n: '5.4', questions: 5,
+          notions: ['somme et différence d\'encadrements', 'encadrer un carré',
+                    'forme canonique', 'intersection d\'intervalles', 'entiers naturels'],
+          sort: 'bibliothèque', ou: 'brevet ex54 — cinq volets',
+          pourquoi: '(2x−1)² = 4(x²−x)+1 : encadrer le CARRÉ encadre x²−x sans jamais '
+                  + 'multiplier deux encadrements l\'un par l\'autre, ce qui serait faux' },
+        { n: '5.5', questions: 3,
+          notions: ['encadrement', 'valeur absolue et signe', 'majorer une valeur absolue'],
+          sort: 'bibliothèque', ou: 'brevet ex55 — trois volets',
+          pourquoi: 'sur ]0;1[ les deux quantités 3x−5 et x−4 sont négatives : '
+                  + 'les deux valeurs absolues se lèvent de la même façon' },
+        { n: '5.6', questions: 7,
+          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'triangle isocèle dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+        { n: '5.7', questions: 5,
+          notions: ['valeur d\'une expression', 'factoriser par un facteur commun',
+                    'produit nul', 'aire d\'un trapèze', 'aire d\'un triangle équilatéral'],
+          sort: 'bibliothèque', ou: 'brevet ex57 — cinq volets',
+          pourquoi: 'la partie II REFABRIQUE l\'équation de la partie I : S1 = √3 S2 '
+                  + 'donne 5+2x = 3x², c\'est-à-dire M = 0, donc x = 5/3' },
+        { n: '5.8', questions: 7,
+          notions: ['Thalès', 'aire d\'un carré', 'forme canonique', 'minimum',
+                    'inéquation du second degré', 'changement de repère', 'cerf-volant'],
+          sort: 'bibliothèque', ou: 'brevet ex58 — sept volets',
+          pourquoi: 'x² + (4−x)² = 2(x−2)² + 8 : le minimum 8 est atteint au milieu' },
+
         // ── SÉANCE 7 — LUE ET PORTÉE EN ENTIER, les quatre exercices ──────
         { n: '7.1', questions: 9,
           notions: ['rationaliser sous le radical', 'réduire pour comparer',
@@ -395,7 +442,12 @@
         + 'l\'alignement donne x² + 2x = 1, donc x = √2 − 1 et S = 9/2. '
         + '(Contrôle : S = 23/2 donne bien x = 3, et c\'est E = 0.)',
         '9.2 q5 : « BM = 16/8 ». Or BN = 8 et M est le centre de gravité, donc '
-        + 'BM en vaut les deux tiers : BM = 16/3. Le 8 du dénominateur est un 3.'
+        + 'BM en vaut les deux tiers : BM = 16/3. Le 8 du dénominateur est un 3.',
+        '5.8 q3 : « جد x لكي يصبح الرباعي HCEA معيّنا ». HCEA n\'est un losange '
+        + 'pour AUCUNE valeur de x : HC = CE donne x = 8/3, et à cette valeur '
+        + 'AH = 8√2/3 tandis que HC = 4√5/3. Ce que x = 8/3 donne, c\'est '
+        + 'AH = EA et HC = CE — un CERF-VOLANT d\'axe (CA). (À x = 2 on obtient '
+        + 'l\'autre cerf-volant, d\'axe (HE).) À arbitrer par le maître.'
       ]
     },
 

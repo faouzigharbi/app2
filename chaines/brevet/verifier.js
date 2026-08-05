@@ -476,6 +476,131 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("les coordonnees de J dans (D,B,E) faussees", parQuestion(36, 19),
     c => { c.controle.faits[7][6] = '√2 + 1'; });
 
+  // ══ LA SÉANCE 5 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — a est l'inverse de b², et a vaut à peine 0,03 ──────────
+  pousse("a decale", parQuestion(51, 0), c => { c.controle.claims[0][1] = '17 + 12√2'; });
+  pousse("b decale", parQuestion(51, 0), c => { c.controle.claims[1][1] = '3 - 2√2'; });
+  pousse("le carre parfait de a faux", parQuestion(51, 1),
+    c => { c.controle.claims[0][1] = '(3 + 2√2)^2'; });
+  pousse("a declare inverse de b et non de b^2", parQuestion(51, 2),
+    c => { c.controle.claims[2][1] = '1/b'; });
+  pousse("le produit a b^2 annonce 2", parQuestion(51, 2),
+    c => { c.controle.claims[1][1] = '2'; });
+  pousse("le signe de c inverse", parQuestion(51, 3),
+    c => { c.controle.claims[1][1] = '14(√2 - 1)'; });
+  pousse("c pris comme somme au lieu de difference", parQuestion(51, 3),
+    c => { c.controle.claims[2][0] = 'a + b'; });
+  pousse("l inverse de a faux", parQuestion(51, 4),
+    c => { c.controle.claims[0][1] = '17 - 12√2'; });
+  pousse("a^2 + a mal calcule", parQuestion(51, 5),
+    c => { c.controle.claims[0][1] = '594 + 420√2'; });
+  pousse("l entier final n est plus nul", parQuestion(51, 6),
+    c => { c.controle.claims[0][1] = '1'; });
+  pousse("1/a^2 pris egal a b^2", parQuestion(51, 6),
+    c => { c.controle.claims[1][1] = 'b^2'; });
+
+  // ── التمرين 2 — la relation métrique donne tout ────────────────────────
+  pousse("IC annonce 4", parQuestion(52, 0), c => { c.controle.faits[0][3] = '4'; });
+  pousse("I pris projete sur (BD)", parQuestion(52, 0),
+    c => { c.controle.points.I = ['proj', 'B', 'B', 'D']; });
+  pousse("BC annonce 2√6", parQuestion(52, 1), c => { c.controle.faits[0][3] = '2√6'; });
+  pousse("l hypotenuse AC annoncee 4", parQuestion(52, 1),
+    c => { c.controle.faits[1][3] = '4'; });
+  pousse("C declare milieu de [BD]", parQuestion(52, 2),
+    c => { c.controle.faits[0] = ['milieu', 'C', 'B', 'D']; });
+  pousse("E construit sur la parallele a (AB)", parQuestion(52, 2),
+    c => { c.controle.points.Zd = ['translate', 'D', 'A', 'B']; });
+  pousse("BF annonce 3√6", parQuestion(52, 3), c => { c.controle.faits[0][3] = '3√6'; });
+  pousse("F declare milieu de [AB]", parQuestion(52, 4),
+    c => { c.controle.faits[0] = ['milieu', 'F', 'A', 'B']; });
+  pousse("OF annonce 2√3", parQuestion(52, 4), c => { c.controle.faits[1][3] = '2√3'; });
+  pousse("CODJ declare losange dans le mauvais ordre", parQuestion(52, 5),
+    c => { c.controle.faits[0] = ['losange', 'C', 'D', 'O', 'J']; });
+  pousse("l aire du losange calculee sans le demi", parQuestion(52, 5),
+    c => { c.controle.faits[1][6] = '12√2'; });
+
+  // ── التمرين 3 — les mêmes deux nombres, huit degrés ────────────────────
+  pousse("les carres 147 et 121 intervertis", parQuestion(53, 0),
+    c => { c.etapes[3][1] = '147 < 121'; });
+  pousse("le carre de 7√3 faux", parQuestion(53, 0),
+    c => { c.controle.claims[0][1] = '21'; });
+  pousse("le carre de √11 faux", parQuestion(53, 1),
+    c => { c.controle.claims[0][1] = '121'; });
+  pousse("b mal developpe", parQuestion(53, 2),
+    c => { c.controle.claims[0][1] = '√11 - 5 + √33 - 5√3'; });
+  pousse("a mal factorise", parQuestion(53, 3),
+    c => { c.controle.claims[0][1] = '(2√3 + 5)(1 - √3)'; });
+  pousse("la comparaison 11 et 12 inversee", parQuestion(53, 4),
+    c => { c.etapes[2][1] = '12 < 11'; });
+  pousse("la multiplication par le negatif ne retourne pas", parQuestion(53, 5),
+    c => { c.etapes[2][1] = '(√11 - 5)(1 - √3) < (2√3 - 5)(1 - √3)'; });
+  pousse("a^2 mal calcule", parQuestion(53, 6), c => { c.controle.claims[0][1] = '268 + 154√3'; });
+  pousse("a redecale dans le rangement", parQuestion(53, 7),
+    c => { c.controle.claims[0][1] = '7√3 + 11'; });
+
+  // ── التمرين 4 — le carré qui encadre ───────────────────────────────────
+  pousse("la borne inferieure de x + y fausse", parQuestion(54, 0),
+    c => { c.controle.claims[0][1] = '-9/4'; });
+  pousse("le retournement oublie dans y - x", parQuestion(54, 0),
+    c => { c.controle.claims[1][1] = '-1/2'; });
+  pousse("le carre de -5 faux", parQuestion(54, 1), c => { c.controle.claims[0][1] = '-25'; });
+  pousse("la borne 2x - 1 mal calculee", parQuestion(54, 1),
+    c => { c.controle.claims[1][1] = '6'; });
+  pousse("le developpement de (2x - 1)^2 faux", parQuestion(54, 2),
+    c => { c.controle.claims[0][1] = '4(x^2 - x) + 2'; });
+  pousse("le facteur 4 oublie", parQuestion(54, 2),
+    c => { c.controle.claims[1][1] = '4x^2 - 2x + 1'; });
+  pousse("le carre de √7/2 faux", parQuestion(54, 4), c => { c.controle.claims[0][1] = '7/2'; });
+
+  // ── التمرين 5 — deux valeurs absolues ──────────────────────────────────
+  pousse("la borne superieure de x fausse", parQuestion(55, 0),
+    c => { c.controle.claims[1][1] = '3'; });
+  pousse("la premiere valeur absolue levee sans changer de signe", parQuestion(55, 1),
+    c => { c.controle.claims[0][1] = '2x - 1'; });
+  pousse("la reduction de A faussee", parQuestion(55, 1),
+    c => { c.controle.claims[1][1] = '1 + 2x'; });
+  pousse("la valeur de A faussee", parQuestion(55, 2),
+    c => { c.controle.claims[2][1] = '1'; });
+
+  // ── التمرين 7 — l'aire qui refabrique l'équation ───────────────────────
+  pousse("M en 5/3 annonce non nul", parQuestion(57, 0),
+    c => { c.controle.claims[0][1] = '1'; });
+  pousse("l ecriture 3(x^2 - 1) - 2(x + 1) faussee", parQuestion(57, 1),
+    c => { c.controle.claims[0][1] = '3(x^2 - 1) - 2(x - 1)'; });
+  pousse("la factorisation de M fausse", parQuestion(57, 2),
+    c => { c.controle.claims[0][1] = '(x - 1)(3x + 5)'; });
+  pousse("la racine -1 mal verifiee", parQuestion(57, 3),
+    c => { c.controle.claims[0][1] = '1'; });
+  pousse("l aire du trapeze calculee sans le demi", parQuestion(57, 4),
+    c => { c.controle.claims[1][1] = '50/3'; });
+  pousse("l aire du triangle equilateral fausse", parQuestion(57, 4),
+    c => { c.controle.claims[3][1] = 'x^2 √3/2'; });
+  pousse("la condition S1 = √3 S2 remplacee par S1 = S2", parQuestion(57, 4),
+    c => { c.controle.claims[0][1] = 'SB'; });
+
+  // ── التمرين 8 — le carré qui glisse ────────────────────────────────────
+  pousse("TE annonce 4 - x", parQuestion(58, 0), c => { c.controle.faits[0][3] = '4/3'; });
+  pousse("le carre MATH pris a droite de A", parQuestion(58, 0),
+    c => { c.controle.points.M = ['point', '4/3', '0']; });
+  pousse("l aire du carre annoncee 4/3", parQuestion(58, 1),
+    c => { c.controle.faits[0][6] = '4/3'; });
+  pousse("la condition S = S'/4 remplacee par S = S'", parQuestion(58, 1),
+    c => { c.controle.claims[0][1] = 'SP'; });
+  pousse("les coordonnees de T dans (A;C;M) faussees", parQuestion(58, 2),
+    c => { c.controle.faits[0][5] = '1'; });
+  pousse("les coordonnees de H dans (A;C;M) faussees", parQuestion(58, 2),
+    c => { c.controle.faits[1][6] = '0'; });
+  pousse("la forme canonique de Sb faussee", parQuestion(58, 3),
+    c => { c.controle.claims[0][1] = '2(x - 2)^2 + 4'; });
+  pousse("le minimum annonce 4", parQuestion(58, 4),
+    c => { c.controle.claims[0][1] = '4'; });
+  pousse("la borne de l intervalle faussee", parQuestion(58, 5),
+    c => { c.controle.claims[0][1] = '10'; });
+  pousse("HCEA declare losange : les quatre cotes egaux", parQuestion(58, 6),
+    c => { c.controle.faits[2][3] = '8√2/3'; });
+  pousse("le cerf-volant declare sur le mauvais axe", parQuestion(58, 6),
+    c => { c.controle.faits[4] = ['perpendiculaires', 'H', 'C', 'E', 'A']; });
+
   // ══ LA SÉANCE 7 ════════════════════════════════════════════════════════
   // ── التمرين 1 — réduire pour COMPARER : on vise le sens des inégalités ──
   pousse("le levier 6√(3/2) rendu egal a 6√6", parQuestion(71, 0),
