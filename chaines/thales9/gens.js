@@ -21,6 +21,7 @@
     ['trapeze', 'شبه المنحرف و قطراه'],
     ['projection-parallele', 'المسقط وفقا لمنحى'],
     ['cascade', 'تتالي المتوازيات'],
+    ['relation-rapports', 'علاقة بين نسب'],
     ['quadrilatere', 'طبيعة رباعي'],
     ['centre-gravite', 'مركز ثقل مثلّث'],
     ['orthocentre', 'المركز القائم لمثلّث'],

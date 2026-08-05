@@ -136,6 +136,22 @@ function verifierFait(f, S) {
     case 'sym':
       return P.estMilieu ? (F.memesPoints(F.milieu(p(f[1]), p(f[2])), p(f[3])) ? null
         : f[1] + ' n’est pas le symétrique de ' + f[2] + ' par rapport à ' + f[3]) : null;
+    // UNE RELATION ENTRE RAPPORTS, RECALCULÉE. Chaque rapport se lit sur les
+    // coordonnées : (AB/CD)² = AB²/CD², et l'on n'accepte que si la racine en
+    // est rationnelle — sinon la somme ou le produit annoncés n'auraient pas
+    // de sens exact, et l'on refuse plutôt que d'approcher.
+    case 'relation': {
+      const parts = f[2].split(';').map(x => x.split('|'));
+      let acc = (f[1] === 'produit') ? F.Q1 : F.Q0;
+      for (const [A, B2, C, D] of parts) {
+        const r = F.racQ(F.qDiv(P.carre(p(A), p(B2)), P.carre(p(C), p(D))));
+        if (r === null) return 'le rapport ' + A + B2 + '/' + C + D + ' n’est pas rationnel';
+        acc = (f[1] === 'produit') ? F.qMul(acc, r) : F.qAdd(acc, r);
+      }
+      const v = lireQ(f[3]);
+      return F.qEgaux(acc, v) ? null
+        : 'la relation vaut ' + acc.n + '/' + acc.d + ' et non ' + f[3];
+    }
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
         : f[1] + ', ' + f[2] + ', ' + f[3] + ' ne sont pas alignés';
@@ -421,6 +437,12 @@ if (process.env.CONTRE_EXEMPLES) {
     const p2 = c.controle.etapesCalcul.find(x => x.fait[0] === 'gravite');
     if (!p2) throw new Error('rien à fausser');
     p2.fait[1] = p2.fait[2][0];
+  });
+  // Une relation entre rapports doit se refuser dès qu'un seul rapport bouge.
+  pousse('la relation faussée', c => {
+    const p2 = c.controle.etapesCalcul.find(x => x.fait[0] === 'relation');
+    if (!p2) throw new Error('pas de relation');
+    p2.fait[3] = '2/1';
   });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });

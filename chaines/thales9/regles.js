@@ -31,7 +31,8 @@
     const t = {
       para: [], perp: [], milieu: [], lg2: new Map(), rect: [],
       rapport: [], aligne: [], cercle: [], prop: [],
-      pgram: [], rect4: [], losange: [], gravite: [], ortho: [], sym: []
+      pgram: [], rect4: [], losange: [], gravite: [], ortho: [], sym: [],
+      relation: []
     };
     for (const f of faits) {
       if (f[0] === 'lg2') t.lg2.set(f[1], f[2]);
@@ -372,6 +373,35 @@
                        depuis: [['lg2', seg(A, C), ac], ['lg2', seg(Bp, C), bc]],
                        calcul: [seg(A, C), seg(Bp, C), seg(A, Bp), 'moins'] });
           }
+        }
+        return out;
+      }
+    },
+
+    // ── B ter. UNE RELATION ENTRE PLUSIEURS RAPPORTS ──────────────────────
+    //
+    // Le moteur savait comparer DEUX rapports ; il ne savait ni en additionner
+    // ni en multiplier trois. Or les feuilles le demandent :
+    //
+    //   THALES0 ex2  (MC/MB)·(ND/NC)·(PB/PA) = 1, à la manière de Ménélaüs
+    //   THALES0 ex5  EF/AB + EF/CD = 1, dans le trapèze rectangle
+    //
+    // La règle propose la relation à partir des parallèles qui la fondent ;
+    // ce sont les COORDONNÉES qui disent si elle est vraie, comme partout
+    // ailleurs. L'item déclare laquelle est en jeu — c'est l'énoncé du maître,
+    // pas une invention du moteur.
+    {
+      cle: 'relation-rapports',
+      nom: 'بتطبيق نظرية طالس على كلّ متوازيين، نحصل على العلاقة بين النّسب',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const r of ctx.relations || []) {
+          const dep = (r.depuis || []).map(p => ['para', p[0], p[1]]);
+          if (dep.some(d => !f.para.some(x => cleFait(x) === cleFait(d)))) continue;
+          const but = ['relation', r.op, r.rapports.map(x => x.join('|')).join(';'),
+                       r.valeur.n + '/' + r.valeur.d];
+          if (f.relation.some(x => cleFait(x) === cleFait(but))) continue;
+          out.push({ but, depuis: dep });
         }
         return out;
       }

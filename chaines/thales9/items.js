@@ -387,6 +387,48 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LA RELATION HARMONIQUE — THALES0 2014 ex5
+  //
+  // « ABCD شبه منحرف قاعدتاه (AB) و (CD) و قائم في A و D » ; E est le point de
+  // rencontre des diagonales, F son projeté sur (AD). Alors
+  //
+  //     EF/AB + EF/CD = 1
+  //
+  // et ce, quelles que soient les longueurs. C'est la plus jolie de la feuille,
+  // et elle attendait qu'on sache ADDITIONNER deux rapports.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex5', 'relation-rapports', 'difficile', () => {
+    const ab = F.ent(2, 9), cd = F.ent(2, 9), ad = F.ent(3, 9);
+    const A = F.pt(0, 0), B = F.pt(ab, 0);
+    const D = F.pt(F.Q0, F.q(-ad)), C = F.pt(F.q(cd), F.q(-ad));
+    const E = F.intersection(A, C, B, D);
+    const Fp = F.pt(F.Q0, E.y);                  // le projeté de E sur (AD)
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp },
+      para: [[dr('A', 'B'), dr('D', 'C')], [dr('E', 'F'), dr('A', 'B')]],
+      relations: [{ op: 'somme',
+                    rapports: [['E', 'F', 'A', 'B'], ['E', 'F', 'C', 'D']],
+                    valeur: F.Q1,
+                    depuis: [[dr('A', 'B'), dr('D', 'C')]] }],
+      donne: [seg('A', 'B'), seg('C', 'D'), seg('A', 'D')],
+      // Le rapport s'écrit en QUATRE morceaux — E|F|A|B —, comme la règle le
+      // produit : deux points au numérateur, deux au dénominateur. Écrit en
+      // deux (« EF|AB »), le but ne rejoignait jamais la conclusion.
+      but: ['relation', 'somme', 'E|F|A|B;E|F|C|D', '1/1'],
+      texte: g => ['ABCD شبه منحرف قاعدتاه (AB) و (CD)، قائم في A و في D،',
+                   'حيث AB = ' + g(seg('A', 'B')) + ' و CD = ' + g(seg('C', 'D'))
+                   + ' و AD = ' + g(seg('A', 'D')) + '.',
+                   'E نقطة تقاطع القطرين (AC) و (BD)، و F المسقط العمودي لـ E على (AD).'],
+      question: 'بيّن أنّ EF/AB + EF/CD = 1.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['A', 'C'], ['B', 'D'], ['E', 'F']],
+                angles: [['B', 'A', 'D'], ['A', 'D', 'C']] },
+      indice: 'طالس مرّتين : EF/AB dans le triangle DAB، و EF/CD dans CDA'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // LA CASCADE DE PARALLÈLES — THALES0 2014 ex4
   //
   // Une parallèle, puis une autre menée du point qu'elle vient de créer, puis

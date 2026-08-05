@@ -35,7 +35,13 @@
     losange: Q => 'الرّباعي ' + Q + ' معيّن',
     gravite: (G, t) => G + ' هو مركز ثقل المثلّث ' + t,
     ortho: (H, t) => H + ' هو المركز القائم للمثلّث ' + t,
-    sym: (A2, A, O) => A2 + ' هي نظيرة ' + A + ' بالتناظر المركزي الذي مركزه ' + O
+    sym: (A2, A, O) => A2 + ' هي نظيرة ' + A + ' بالتناظر المركزي الذي مركزه ' + O,
+    // « AB/CD × EF/GH = 1 » ou « AB/CD + EF/GH = 1 », en fractions empilées.
+    relation: (op, liste, val) => liste.split(';')
+      .map(x => { const p = x.split('|');
+                  return F.ecrireRapport(p[0] + p[1], p[2] + p[3]); })
+      .join(op === 'produit' ? ' × ' : ' + ')
+      + ' = ' + (String(val).endsWith('/1') ? String(val).slice(0, -2) : String(val))
   };
   const ecrire = (f, m) => dit[f[0]](f[1], f[2], f[0] === 'lg2' ? m : f[3]);
   // (prop) prend ses trois rapports en f[1], f[2], f[3] — cf. dit.prop
@@ -66,7 +72,7 @@
     const ctx = {
       thales: s.thales || [], triangles: s.triangles || [],
       quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
-      orthos: s.orthos || [], entre: s.entre || [],
+      orthos: s.orthos || [], entre: s.entre || [], relations: s.relations || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -122,6 +128,7 @@
         ctx: { thales: S.ctx.thales, triangles: S.ctx.triangles,
                quadrilateres: S.ctx.quadrilateres, gravites: S.ctx.gravites,
                orthos: S.ctx.orthos, entre: S.ctx.entre,
+               relations: S.ctx.relations,
                milieux: S.ctx.milieux, pieds: S.ctx.pieds }
       }
     };
