@@ -157,7 +157,9 @@
       const [n1, , n2] = arc;
       const d1 = fig.rayons.find(r => r.nom === n1).deg;
       const d2 = fig.rayons.find(r => r.nom === n2).deg;
-      const rr = 30 + i * 20;
+      // 26 et non 20 : l'étiquette est posée à +11 et haute d'une vingtaine de
+      // pixels ; à 20 d'écart, le trait de l'arc suivant lui passait dedans.
+      const rr = 30 + i * 26;
       // L'ARC PREND LE CHEMIN COURT, et dans le bon sens. L'axe des y descend
       // en SVG : un parcours qui monte en géométrie tourne dans l'autre sens à
       // l'écran, et le drapeau de balayage doit le dire — sinon l'arc de 60°

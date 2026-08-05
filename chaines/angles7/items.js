@@ -190,6 +190,86 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LES DEUX MANCHES D'UN ANGLE PLAT — « منصّفا زاويتين متجاورتين متكاملتين »
+  // ═══════════════════════════════════════════════════════════════════════
+  //
+  // La feuille du pilote est bâtie sur ce seul théorème : il y revient QUATRE
+  // fois, sous quatre lettrages (ex1-2ج « BĈz = 90° », ex2-2ب « (ou) ⊥ (ot) »,
+  // ex3-4 « kĈH = 90° », ex4-2 « xB̂u و xB̂t متتامّتان »). Quand un maître pose
+  // la même chose quatre fois sur une feuille, ce n'est pas une répétition.
+  //
+  // Aucune règle nouvelle : le moteur y arrive avec celles qu'il a déjà — la
+  // supplémentaire donne le second angle, chaque منصّف donne ses deux moitiés,
+  // et Chasles recolle les deux moitiés du milieu. Cinq maillons, et la
+  // réponse ne dépend pas de la mesure de départ : c'est là tout le sel, et
+  // c'est pourquoi la mesure change à chaque tirage.
+
+  // ANGLES7_pilote ex2 — xÔy = 120°, les منصّفات de part et d'autre
+  item('ANGLES7_pilote ex2', 'bissectrices-plat', 'difficile', () => {
+    const p = pose(), xoy = 2 * F.ent(50, 70);
+    return {
+      sommet: 'O',
+      rayons: [{ nom: 'x', deg: p }, { nom: 'u', deg: p + xoy / 2 },
+               { nom: 'y', deg: p + xoy },
+               { nom: 't', deg: p + xoy + (180 - xoy) / 2 },
+               { nom: 'z', deg: p + 180 }],
+      arcs: [['x', 'O', 'y', xoy + '°'], ['u', 'O', 't', '']],
+      hyp: [['supp', cle('x', 'O', 'y'), cle('y', 'O', 'z')],
+            ['mes', cle('x', 'O', 'y'), F.q(xoy)],
+            ['bis', 'Ou', cle('x', 'O', 'y')],
+            ['bis', 'Ot', cle('y', 'O', 'z')]],
+      but: cle('u', 'O', 't'),
+      donnees: ['xÔy و zÔy زاويتان متجاورتان و متكاملتان بحيث xÔy = '
+                + xoy + '°.',
+                '[Ou) هو منصّف الزاوية xÔy، و [Ot) هو منصّف الزاوية zÔy.'],
+      indice: 'احسب zÔy، ثمّ نصفي كلّ زاوية، ثمّ اجمع النصفين المتجاورين'
+    };
+  });
+
+  // ANGLES7_pilote ex4-2 — A, B, y alignés ; x sous la droite
+  item('ANGLES7_pilote ex4', 'bissectrices-plat', 'difficile', () => {
+    const p = pose(), xby = 2 * F.ent(15, 35);
+    return {
+      sommet: 'B',
+      rayons: [{ nom: 'A', deg: p }, { nom: 'y', deg: p + 180 },
+               { nom: 't', deg: p + 180 + xby / 2 },
+               { nom: 'x', deg: p + 180 + xby },
+               { nom: 'u', deg: p + 180 + xby + (180 - xby) / 2 }],
+      arcs: [['x', 'B', 'y', xby + '°'], ['t', 'B', 'u', '']],
+      hyp: [['supp', cle('x', 'B', 'y'), cle('x', 'B', 'A')],
+            ['mes', cle('x', 'B', 'y'), F.q(xby)],
+            ['bis', 'Bt', cle('x', 'B', 'y')],
+            ['bis', 'Bu', cle('x', 'B', 'A')]],
+      but: cle('t', 'B', 'u'),
+      donnees: ['A و B و y ثلاث نقاط على استقامة واحدة، و xB̂y = ' + xby + '°.',
+                '[Bt) هو منصّف الزاوية xB̂y، و [Bu) هو منصّف الزاوية xB̂A.'],
+      indice: 'الزاويتان xB̂y و xB̂A متكاملتان لأنّ A و B و y على استقامة واحدة'
+    };
+  });
+
+  // ANGLES7_pilote ex3-4 — Z, C, T alignés, les منصّفات de AĈZ et AĈT
+  item('ANGLES7_pilote ex3', 'bissectrices-plat', 'difficile', () => {
+    const p = pose(), acz = 2 * F.ent(20, 70);
+    return {
+      sommet: 'C',
+      rayons: [{ nom: 'Z', deg: p }, { nom: 'K', deg: p + acz / 2 },
+               { nom: 'A', deg: p + acz },
+               { nom: 'H', deg: p + acz + (180 - acz) / 2 },
+               { nom: 'T', deg: p + 180 }],
+      arcs: [['A', 'C', 'Z', acz + '°'], ['K', 'C', 'H', '']],
+      hyp: [['supp', cle('A', 'C', 'Z'), cle('A', 'C', 'T')],
+            ['mes', cle('A', 'C', 'Z'), F.q(acz)],
+            ['bis', 'CK', cle('A', 'C', 'Z')],
+            ['bis', 'CH', cle('A', 'C', 'T')]],
+      but: cle('K', 'C', 'H'),
+      donnees: ['AĈT و AĈZ زاويتان متجاورتان و متكاملتان، و AĈZ = '
+                + acz + '°.',
+                '[CK) هو منصّف الزاوية AĈZ، و [CH) هو منصّف الزاوية AĈT.'],
+      indice: 'كلّ منصّف يقسم زاويته إلى نصفين متقايسين'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // OPPOSÉES PAR LE SOMMET — « متقابلتان بالرأس » (ANGLES7_1 ex13)
   // ═══════════════════════════════════════════════════════════════════════
 

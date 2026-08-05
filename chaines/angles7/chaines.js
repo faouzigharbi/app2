@@ -31,10 +31,28 @@
     // une fois, le moteur s'en sert autant qu'il veut.
     const adjacences = [];
     if (s.rayons) {
-      const tri = s.rayons.slice().sort((x, y) => x.deg - y.deg);
+      // L'ORDRE SE LIT SUR L'ÉVENTAIL, PAS SUR LES NOMBRES. Trier les rayons
+      // par leur degré brut suppose que l'item les a numérotés en partant du
+      // bon bout. Quand ce n'est pas le cas — A à 0°, puis y, t, x, u de 180°
+      // à 290° —, le tri met A en tête et Chasles recolle « AB̂t = 180 + 20 =
+      // 200° », un angle qui n'existe pas. On repart donc du rayon qui suit le
+      // plus grand vide : c'est là que l'éventail commence, vraiment.
+      const degs = s.rayons.map(r => ((r.deg % 360) + 360) % 360).sort((a, b) => a - b);
+      let vide = 360 - (degs[degs.length - 1] - degs[0]), base = degs[0];
+      for (let i = 1; i < degs.length; i++) {
+        if (degs[i] - degs[i - 1] > vide) { vide = degs[i] - degs[i - 1]; base = degs[i]; }
+      }
+      const rang = r => ((((r.deg % 360) + 360) % 360) - base + 360) % 360;
+      const tri = s.rayons.slice().sort((x, y) => rang(x) - rang(y));
+      // CHASLES NE TRAVERSE PAS LE DEMI-TOUR. Le premier et le dernier rayon
+      // d'un triplet doivent faire un angle saillant : au-delà, xÔz n'est plus
+      // la somme mais son rentrant, et l'égalité est fausse. Deux droites
+      // sécantes, elles, ouvrent bel et bien un éventail de plus de 180° — ce
+      // n'est donc pas la scène qu'il faut refuser, mais le triplet.
       for (let i = 0; i < tri.length; i++) {
         for (let j = i + 1; j < tri.length; j++) {
           for (let k = j + 1; k < tri.length; k++) {
+            if (rang(tri[k]) - rang(tri[i]) > 180.0001) continue;
             adjacences.push([F.cleAngle(tri[i].nom, s.sommet, tri[j].nom),
                              F.cleAngle(tri[j].nom, s.sommet, tri[k].nom),
                              F.cleAngle(tri[i].nom, s.sommet, tri[k].nom)]);
