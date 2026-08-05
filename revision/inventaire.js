@@ -124,9 +124,22 @@
         { n: 1, questions: 3, notions: ['rectangle', 'Thalès'], sort: 'à faire' },
         { n: 5, questions: 2, notions: ['milieux'], sort: 'bibliothèque' },
         { n: 7, questions: 2, notions: ['symétrie'], sort: 'à faire' },
-        { n: 8, questions: 2, notions: ['Thalès', 'Chasles'], sort: 'bibliothèque' }
+        { n: 8, questions: 2, notions: ['Thalès', 'Chasles'], sort: 'bibliothèque' },
+        { n: 9, questions: 3, notions: ['partage d\'un segment', 'rapports égaux', 'perpendiculaires'],
+          sort: 'à faire' },
+        { n: 10, questions: 3, notions: ['placer un point à un rapport donné', 'abscisses'],
+          sort: 'hors machinerie', pourquoi: 'construction et repère' },
+        { n: 11, questions: 3, notions: ['milieux emboîtés', 'symétrie'],
+          sort: 'à faire', pourquoi: 'sa question 2 — (PQ)//(MN) — demande une relecture de la figure : P et Q symétriques de C donnent (PQ)//(AB), et non //(MN)' },
+        { n: 12, questions: 2, notions: ['Varignon', 'transitivité du parallélisme'],
+          sort: 'bibliothèque',
+          ou: 'trois questions ; sa seconde — IJKL losange quand ABCD est un rectangle — attend « قطرا المستطيل متقايسان »' },
+        { n: 13, questions: 2, notions: ['milieux', 'symétrie'], sort: 'à faire' },
+        { n: 14, questions: 2, notions: ['parallélogramme', 'Thalès', 'milieu'], sort: 'à faire' },
+        { n: 15, questions: 3, notions: ['trapèze', 'projection selon une direction'], sort: 'à faire' }
       ],
-      machine: ['douze exercices sur seize ne sont pas encore ouverts']
+      machine: ['« قطرا المستطيل متقايسان » — les diagonales d\'un rectangle sont égales (ex12 q2)',
+                'sept exercices sur seize restent à poser']
     },
 
     {

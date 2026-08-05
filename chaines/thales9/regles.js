@@ -1059,6 +1059,50 @@
     // premier est un parallélogramme quand [AC] et [BD] se coupent en leur
     // milieu, le second quand ce sont [AD] et [BC]. Les sommets se lisent en
     // tournant, et l'on ne peut pas les permuter sans changer la figure.
+    // DEUX DROITES PARALLÈLES À UNE MÊME TROISIÈME SONT PARALLÈLES. Règle de
+    // 7ᵉ, absente ici parce qu'aucun exercice ne l'avait encore demandée :
+    // Varignon la réclame deux fois — (IJ)//(AC) et (LK)//(AC) donnent
+    // (IJ)//(LK), et c'est de là que sort le parallélogramme.
+    {
+      cle: 'para-transitive',
+      nom: 'مستقيمان متوازيان لنفس المستقيم متوازيان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of f.para) for (const b of f.para) {
+          if (a === b) continue;
+          for (const [x, y] of [[a[1], a[2]], [a[2], a[1]]]) {
+            for (const [u, v] of [[b[1], b[2]], [b[2], b[1]]]) {
+              if (y !== u || x === v) continue;
+              const but = ['para', dr(x[0], x[1]), dr(v[0], v[1])];
+              if (dr(x[0], x[1]) === dr(v[0], v[1])) continue;
+              if (f.para.some(z => cleFait(z) === cleFait(but))) continue;
+              out.push({ but, depuis: [a, b] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    // UN QUADRILATÈRE DONT LES CÔTÉS SONT PARALLÈLES DEUX À DEUX. Le chapitre
+    // ne savait reconnaître un parallélogramme que par ses diagonales ou par
+    // un côté mesuré ; Varignon n'a ni l'un ni l'autre — il n'a que des
+    // parallèles, et c'est assez.
+    {
+      cle: 'pgram-para',
+      nom: 'الرّباعي الذي أضلاعه متوازية مثنى مثنى هو متوازي أضلاع',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const Q of ctx.quadrilateres || []) {
+          const [A, B, C, D] = Q.split('');
+          const p1 = ['para', dr(A, B), dr(D, C)], p2 = ['para', dr(A, D), dr(B, C)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p1))) continue;
+          if (!f.para.some(x => cleFait(x) === cleFait(p2))) continue;
+          if (f.pgram.some(x => x[1] === Q)) continue;
+          out.push({ but: ['pgram', Q], depuis: [p1, p2] });
+        }
+        return out;
+      }
+    },
     {
       cle: 'pgram-diagonales',
       nom: 'الرّباعي الذي قطراه لهما نفس المنتصف هو متوازي أضلاع',

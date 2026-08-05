@@ -1731,6 +1731,58 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex12 — VARIGNON, SANS UN SEUL NOMBRE
+  //
+  // « ABCD رباعي محدّب و I ; J ; K ; L منتصفات أضلاعه : برهن أنّ الرّباعي
+  // IJKL متوازي أضلاع. »
+  //
+  // Aucune longueur, aucune donnée : rien que quatre milieux. Le théorème des
+  // milieux donne (IJ)//(AC) dans ABC et (LK)//(AC) dans ACD ; la transitivité
+  // les joint ; l'autre paire suit avec (BD) ; et un quadrilatère dont les
+  // côtés sont parallèles deux à deux est un parallélogramme.
+  //
+  // C'est l'exercice le plus dépouillé du chapitre, et il a demandé les deux
+  // règles les plus élémentaires — celles qu'aucun exercice chiffré n'avait
+  // eu besoin de nommer.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex12 — فارينيون', 'quadrilatere', 'difficile', () => {
+    // Un quadrilatère convexe quelconque : les milieux ne demandent rien.
+    const a = F.ent(3, 9), b = F.ent(3, 9), c = F.ent(3, 9), d = F.ent(2, 7);
+    const A = F.pt(0, 0), B = F.pt(4 * a, F.q(-d));
+    const C = F.pt(F.q(4 * a + b), F.q(3 * c));
+    const D = F.pt(F.q(-b), F.q(2 * c));
+    const Ip = F.milieu(A, B), J = F.milieu(B, C),
+          K = F.milieu(C, D), L = F.milieu(D, A);
+    return {
+      K: 1, points: { A, B, C, D, I: Ip, J, K, L },
+      milieux: [['I', 'A', 'B'], ['J', 'B', 'C'], ['K', 'C', 'D'], ['L', 'D', 'A']],
+      // Quatre configurations de milieux : deux sur chaque diagonale.
+      thales: [{ S: 'B', B: 'A', C: 'C', M: 'I', N: 'J' },
+               { S: 'D', B: 'A', C: 'C', M: 'L', N: 'K' },
+               { S: 'A', B: 'B', C: 'D', M: 'I', N: 'L' },
+               { S: 'C', B: 'B', C: 'D', M: 'J', N: 'K' }],
+      quadrilateres: ['IJKL'],
+      donne: [],
+      buts: [
+        { but: ['para', dr('I', 'J'), dr('L', 'K')],
+          question: 'بيّن أنّ (IJ) // (LK).' },
+        { but: ['para', dr('I', 'L'), dr('J', 'K')],
+          question: 'بيّن أنّ (IL) // (JK).' },
+        { but: ['pgram', 'IJKL'],
+          question: 'استنتج أنّ الرّباعي IJKL متوازي أضلاع.' }
+      ],
+      texte: () => ['ABCD رباعي محدّب، و I و J و K و L منتصفات أضلاعه',
+                    '[AB] و [BC] و [CD] و [DA] على التّوالي.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['I', 'J'], ['J', 'K'], ['K', 'L'], ['L', 'I'],
+                           ['A', 'C'], ['B', 'D']],
+                marques: [['A', 'I', 1], ['I', 'B', 1], ['B', 'J', 2], ['J', 'C', 2]] },
+      indice: 'مبرهنة المنتصفين على كلّ قطر، ثمّ التوازي ينتقل'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
