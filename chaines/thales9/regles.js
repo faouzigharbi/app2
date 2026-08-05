@@ -26,6 +26,24 @@
 
   const cleFait = f => f.map(x => (x && x.n !== undefined ? x.n + '/' + x.d : x)).join('|');
 
+  // LA CLÉ D'UN RAPPORT. « AD/AB » et « DA/BA » sont le même rapport ; sans
+  // une écriture unique, la chaîne les prendrait pour deux faits distincts et
+  // tournerait en rond. Le sommet partagé passe en tête — c'est ainsi que le
+  // maître écrit ses proportions —, et à défaut de sommet commun on retombe
+  // sur l'ordre alphabétique.
+  function cleR(h, b) {
+    const A = String(h).split(''), B = String(b).split('');
+    if (A.length !== 2 || B.length !== 2) return null;
+    if (seg(A[0], A[1]) === seg(B[0], B[1])) return null;      // rapport égal à 1
+    const v = A.find(z => B.includes(z));
+    if (v) {
+      const x = A.find(z => z !== v), y = B.find(z => z !== v);
+      if (!x || !y) return null;
+      return v + x + '|' + v + y;
+    }
+    return seg(A[0], A[1]) + '|' + seg(B[0], B[1]);
+  }
+
   // ── Les tables, refaites à chaque tour ───────────────────────────────────
   function tables(faits) {
     const t = {
@@ -434,6 +452,134 @@
                        r.valeur.n + '/' + r.valeur.d];
           if (f.relation.some(x => cleFait(x) === cleFait(but))) continue;
           out.push({ but, depuis: dep });
+        }
+        return out;
+      }
+    },
+
+    // ── B bis bis. L'ALGÈBRE DES RAPPORTS ─────────────────────────────────
+    //
+    // THALES0 2014 ex4 ne donne que deux longueurs — AB = 5 et AD = 2 — et
+    // pose huit questions. Tout le reste y est RAPPORT : « بيّن أنّ
+    // AE/AC = BF/BC », « استنتج أنّ AD/AB = BF/BC », « استنتج BG = 2 »,
+    // « بيّن أنّ AE = CH ». On ne peut pas y répondre en calculant des
+    // longueurs : AC et BC ne sont jamais donnés, et ne le seront pas.
+    //
+    // Le moteur savait comparer des longueurs ; il ne savait rien faire d'un
+    // rapport. Quatre règles suffisent, et ce sont celles que l'élève emploie :
+    //
+    //   · deux longueurs connues donnent la valeur d'un rapport ;
+    //   · dans une proportion, la valeur passe d'un rapport aux deux autres ;
+    //   · si X est entre A et B, AX/AB et XB/AB se complètent à 1 ;
+    //   · un rapport connu et une longueur connue donnent l'autre longueur.
+    //
+    // Et une cinquième, pour « AE = CH » : deux rapports de même dénominateur
+    // et de même valeur ont des numérateurs égaux — SANS que le dénominateur
+    // soit connu. C'est exactement ce que le maître fait dire à l'élève.
+    //
+    // UN RAPPORT SE NOMME DEPUIS SON SOMMET, comme les proportions : AD/AB et
+    // non DA/BA. Deux écritures du même rapport doivent avoir la même clé,
+    // sans quoi la chaîne les prendrait pour deux faits différents.
+    {
+      cle: 'rapport-par-longueurs',
+      nom: 'نسبة طولين معلومين تُحسب مباشرة',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.thales || []) {
+          for (const [h, b] of [[t.S + t.M, t.S + t.B], [t.S + t.N, t.S + t.C],
+                                [t.M + t.N, t.B + t.C]]) {
+            const k = cleR(h, b);
+            if (!k || f.rapport.some(x => x[1] === k)) continue;
+            const a = f.lg2.get(seg(h[0], h[1])), c = f.lg2.get(seg(b[0], b[1]));
+            if (!a || !c) continue;
+            const r = F.racQ(F.qDiv(a, c));
+            if (!r || F.qNul(r)) continue;
+            out.push({ but: ['rapport', k, r],
+                       depuis: [['lg2', seg(h[0], h[1]), a], ['lg2', seg(b[0], b[1]), c]] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'rapport-transitif',
+      nom: 'في تناسب، كلّ النّسب لها نفس القيمة',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const p of f.prop) {                       // ['prop', r1, r2, r3]
+          const rs = [p[1], p[2], p[3]].map(x => cleR(...x.split('|')));
+          const su = f.rapport.find(x => rs.includes(x[1]));
+          if (!su) continue;
+          for (const k of rs) {
+            if (!k || k === su[1] || f.rapport.some(x => x[1] === k)) continue;
+            out.push({ but: ['rapport', k, su[2]], depuis: [p, su] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'rapport-complement',
+      nom: 'إذا كانت X بين A و B فإنّ AX/AB + XB/AB = 1',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, X, B] of ctx.entre || []) {
+          for (const [P, Q] of [[A, B], [B, A]]) {
+            const su = f.rapport.find(x => x[1] === cleR(P + X, P + Q));
+            if (!su) continue;
+            const k = cleR(Q + X, Q + P);
+            if (!k || f.rapport.some(x => x[1] === k)) continue;
+            const v = F.qSub(F.Q1, su[2]);
+            if (!F.qPos(v)) continue;
+            out.push({ but: ['rapport', k, v], depuis: [su] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'longueur-par-rapport',
+      nom: 'إذا عُلمت نسبة طولين و عُلم أحدهما، حُسب الآخر',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const r of f.rapport) {
+          const [H, B2] = r[1].split('|');
+          const kh = seg(H[0], H[1]), kb = seg(B2[0], B2[1]);
+          const a = f.lg2.get(kh), c = f.lg2.get(kb);
+          if (c && !a) {
+            const L = F.racQ(c);
+            if (!L) continue;
+            const x = F.qMul(L, r[2]);
+            out.push({ but: ['lg2', kh, F.qMul(x, x)],
+                       depuis: [r, ['lg2', kb, c]],
+                       calcul: [r[1], kb, 'parRapport', r[2].n + '/' + r[2].d] });
+          }
+          if (a && !c) {
+            const L = F.racQ(a);
+            if (!L || F.qNul(r[2])) continue;
+            const x = F.qDiv(L, r[2]);
+            out.push({ but: ['lg2', kb, F.qMul(x, x)],
+                       depuis: [r, ['lg2', kh, a]],
+                       calcul: [r[1], kh, 'parRapport', r[2].n + '/' + r[2].d] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'rapports-egaux',
+      nom: 'نسبتان لهما نفس المقام و نفس القيمة، فبَسطاهما متقايسان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of f.rapport) for (const b of f.rapport) {
+          if (a === b) continue;
+          const [ha, ba] = a[1].split('|'), [hb, bb] = b[1].split('|');
+          if (seg(ba[0], ba[1]) !== seg(bb[0], bb[1])) continue;
+          if (!F.qEgaux(a[2], b[2]) || F.qNul(a[2])) continue;
+          if (seg(ha[0], ha[1]) === seg(hb[0], hb[1])) continue;
+          const k = cleR(ha, hb);
+          if (!k || f.rapport.some(x => x[1] === k)) continue;
+          out.push({ but: ['rapport', k, F.Q1], depuis: [a, b] });
         }
         return out;
       }

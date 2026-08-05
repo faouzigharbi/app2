@@ -31,6 +31,10 @@
     aligne: (A, B, C) => A + ' و ' + B + ' و ' + C + ' على استقامة واحدة',
     // Le sommet porte le chapeau, comme au tableau : ETO s'écrit ET̂O.
     angles: (a, b) => 'الزاويتان ' + chapeau(a) + ' و ' + chapeau(b) + ' متقايستان',
+    // Un rapport et sa valeur : « AD/AB = 2/5 ».
+    rapport: (k, v) => F.ecrireRapport(...k.split('|')) + ' = '
+      + (String(v.d) === '1' ? String(v.n)
+         : F.ecrireRapport(String(v.n), String(v.d))),
     // Trois rapports empilés, reliés par des égalités — comme au tableau.
     prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = '),
     pgram: Q => 'الرّباعي ' + Q + ' متوازي أضلاع',
@@ -308,6 +312,11 @@
         + ' و الفرق ' + e(c[2]);
       if (c[3] === 'plus') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' + ' + e(c[1]);
       if (c[3] === 'moins') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' − ' + e(c[1]);
+      if (c[2] === 'parRapport') {
+        const v = String(c[3]).split('/');
+        return '  ، لأنّ ' + F.ecrireRapport(...c[0].split('|')) + ' = '
+          + (v[1] === '1' ? v[0] : F.ecrireRapport(v[0], v[1])) + '  و  ' + e(c[1]);
+      }
       if (c[3] === 'metrique') return '  ، لأنّ ' + n.fait[1] + ' × ' + e(c[2])
         + ' = ' + e(c[0]) + ' × ' + e(c[1]);
     } catch (x) { return ''; }

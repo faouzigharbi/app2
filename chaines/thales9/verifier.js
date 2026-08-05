@@ -21,8 +21,8 @@ const lireQ = t => { const [n, d] = String(t).split('/'); return F.q(BigInt(n), 
 const seg = R.seg;
 // Un fait sérialisé, rendu au moteur : seule une valeur de longueur redevient
 // un rationnel — les autres champs sont des noms de points.
-const desec = f => f.map((x, i) => (f[0] === 'lg2' && i === 2 && x !== null)
-  ? lireQ(x) : x);
+const desec = f => f.map((x, i) =>
+  ((f[0] === 'lg2' || f[0] === 'rapport') && i === 2 && x !== null) ? lireQ(x) : x);
 
 // RELIRE UNE LONGUEUR ÉCRITE, et rendre son CARRÉ. Trois formes possibles —
 // « 7,5 », « 1892/395 » empilé, « 4√2 » — et l'on refuse tout ce qui n'entre
@@ -158,6 +158,17 @@ function verifierFait(f, S) {
       const [A, S1, B2] = f[1].split(''), [C, T, D] = f[2].split('');
       return P.memeAngle(p(A), p(S1), p(B2), p(C), p(T), p(D)) ? null
         : 'les angles ' + f[1] + ' et ' + f[2] + ' ne sont pas de même mesure';
+    }
+    // UN RAPPORT ANNONCÉ SE RECALCULE. « AD/AB = 2/5 » se lit sur les
+    // coordonnées : AD²/AB² doit valoir (2/5)², et sa racine être ce rapport.
+    case 'rapport': {
+      const [H, B2] = f[1].split('|');
+      const vrai = F.racQ(F.qDiv(P.carre(p(H[0]), p(H[1])), P.carre(p(B2[0]), p(B2[1]))));
+      if (vrai === null) return 'le rapport ' + f[1] + ' n’est pas rationnel';
+      const dit2 = lireQ(f[2]);
+      return F.qEgaux(vrai, dit2) ? null
+        : 'le rapport ' + f[1] + ' vaut ' + vrai.n + '/' + vrai.d
+          + ' et non ' + f[2];
     }
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
@@ -362,18 +373,26 @@ if (process.env.CONTRE_EXEMPLES) {
   const cas = [];
   const NUMS = Object.keys(F.PROBLEMES).map(Number);
   // Une falsification qui ne change rien, ou qui reste vraie, ne prouve rien.
+  // ON CHERCHE DANS TOUTE LA PAGE, PAS DANS UNE QUESTION SUR QUATRE. Une
+  // falsification qui ne vise qu'un type de pas rare — un rapport, un partage
+  // — ne le rencontrait qu'avec de la chance, et le harnais concluait
+  // « AUCUNE FALSIFICATION POSSIBLE » pour un défaut d'échantillonnage. Un
+  // contrôle qui dit « je n'ai pas su » quand il voulait dire « je n'ai pas
+  // cherché » est pire que pas de contrôle.
   const pousse = (nom, f) => {
     for (let essai = 0; essai < 120; essai++) {
       const n = NUMS[essai % NUMS.length];
       const tir = F.tirer(n);
       if (!tir.length) continue;
-      const avant = copie(tir[essai % tir.length]);
-      const c = copie(avant);
-      try { f(c); } catch (e) { continue; }
-      if (empreinte(c) === empreinte(avant)) continue;
-      let probs;
-      try { probs = verifierBrut(c); } catch (e) { probs = ['exception']; }
-      if (probs.length) return cas.push([nom, c]);
+      for (const brut of tir) {
+        const avant = copie(brut);
+        const c = copie(avant);
+        try { f(c); } catch (e) { continue; }
+        if (empreinte(c) === empreinte(avant)) continue;
+        let probs;
+        try { probs = verifierBrut(c); } catch (e) { probs = ['exception']; }
+        if (probs.length) return cas.push([nom, c]);
+      }
     }
     cas.push([nom + ' — AUCUNE FALSIFICATION POSSIBLE', null]);
   };
@@ -426,6 +445,15 @@ if (process.env.CONTRE_EXEMPLES) {
     const p = c.controle.etapesCalcul.find(x => x.regle === 'partage-externe');
     if (!p) throw new Error('pas de partage extérieur');
     const [n, d] = p.fait[2].split('/');
+    p.fait[2] = (BigInt(n) + BigInt(d)) + '/' + d;
+  });
+  // L'ALGÈBRE DES RAPPORTS DOIT SE RECALCULER COMME LE RESTE : une valeur
+  // fausse glissée dans « AD/AB = 2/5 » se propagerait à tout l'exercice, car
+  // c'est d'elle que sortent ensuite les longueurs.
+  pousse('un rapport faussé', c => {
+    const p = c.controle.etapesCalcul.find(x => x.fait[0] === 'rapport');
+    if (!p) throw new Error('pas de rapport');
+    const [n, d] = String(p.fait[2]).split('/');
     p.fait[2] = (BigInt(n) + BigInt(d)) + '/' + d;
   });
   pousse('la réponse annoncée changée', c => {

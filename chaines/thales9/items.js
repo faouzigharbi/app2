@@ -39,9 +39,9 @@
                  [4, 0, 3], [9, 0, 12], [8, 0, 6], [5, 0, 12], [16, 0, 12]];
   const ECHELLES = [[1, 1], [1, 2], [3, 2], [7, 10], [4, 5], [1, 5], [2, 1],
                     [5, 2], [3, 10], [9, 10], [1, 4]];
-  function triangle() {
+  function triangle(entier) {
     const [b, cx, cy] = F.choix(HERON);
-    const [n, d] = F.choix(ECHELLES);
+    const [n, d] = entier ? [F.ent(1, 3), 1] : F.choix(ECHELLES);
     const s = F.q(n, d);
     return { A: F.pt(0, 0),
              B: F.pt(F.qMul(F.q(b), s), F.Q0),
@@ -1410,6 +1410,87 @@
                            ['M', 'O'], ['B', 'I']],
                 marques: [['A', 'O', 1], ['O', 'B', 1], ['A', 'I', 2], ['I', 'M', 2]] },
       indice: 'الزاوية القائمة تأتي من القطر، ثمّ مبرهنة المنتصفين، ثمّ مركز الثقل'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES0 2014 ex4 — LA CASCADE QUI REVIENT À SON POINT DE DÉPART
+  //
+  // « AB = 5 و AD = 2 » : deux longueurs, et huit questions. On mène la
+  // parallèle à (BC) par D, puis celle à (AB) par le point obtenu, puis celle
+  // à (AC), et ainsi de suite — six parallèles, et la sixième ramène en D.
+  //
+  //   1) (DE)//(BC)  : بيّن أنّ AE/AC = AD/AB
+  //   2) (EF)//(AB)  : بيّن أنّ AE/AC = BF/BC ثمّ استنتج AD/AB = BF/BC
+  //   3) (FG)//(AC)  : بيّن أنّ BG/BA = BF/BC
+  //   4) استنتج BG
+  //   5) (GH)//(BC)  : بيّن أنّ CH/CA = AD/AB
+  //   6) استنتج AE = CH
+  //   7) (HI)//(AB)  : بيّن أنّ CI = BF
+  //   8) (IJ)//(AC)  : بيّن أنّ AJ = AD، أي أنّ J هي D
+  //
+  // LA HUITIÈME N'Y EST PAS, et je le dis plutôt que de la maquiller : elle
+  // affirme que DEUX POINTS SONT CONFONDUS, et le moteur n'a pas de fait pour
+  // cela — il sait dire que deux longueurs sont égales, non que J est D. La
+  // poser en ajoutant un point J superposé à D donnerait une figure où deux
+  // lettres se chevauchent. Elle attend un fait « نقطتان متطابقتان ».
+  //
+  // AC et BC ne sont JAMAIS donnés, et ne le seront pas : tout se joue sur
+  // les rapports. C'est pour cela que l'exercice attendait l'algèbre des
+  // rapports — sans elle, le moteur ne pouvait répondre qu'à la première
+  // question, et l'on aurait cru l'exercice court.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex4 — ثماني مراحل', 'probleme', 'difficile', () => {
+    // Des entiers : le maître écrit AB = 5 et AD = 2, et l'échelle ordinaire
+    // des figures donnait « AB = 0,8 » — exact, et sans rapport avec sa page.
+    const g = triangle(1);
+    const A = g.A, B = g.B, C = g.C;
+    const t = rapport();                                   // AD/AB
+    const un = F.qSub(F.Q1, t);
+    const D = F.surDroite(A, B, t);
+    const E = F.surDroite(A, C, t);                         // (DE)//(BC)
+    const Fp = F.surDroite(C, B, un);                       // (EF)//(AB)
+    const G = F.surDroite(B, A, t);                         // (FG)//(AC)
+    const H = F.surDroite(C, A, t);                         // (GH)//(BC)
+    const Ip = F.surDroite(C, B, t);                        // (HI)//(AB)
+    const J = F.surDroite(A, B, t);                         // (IJ)//(AC) : J = D
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp, G, H, I: Ip },
+      thales: [{ S: 'A', B: 'B', C: 'C', M: 'D', N: 'E' },
+               { S: 'C', B: 'A', C: 'B', M: 'E', N: 'F' },
+               { S: 'B', B: 'A', C: 'C', M: 'G', N: 'F' },
+               { S: 'A', B: 'B', C: 'C', M: 'G', N: 'H' },
+               { S: 'C', B: 'A', C: 'B', M: 'H', N: 'I' }],
+      para: [[dr('D', 'E'), dr('B', 'C')], [dr('E', 'F'), dr('A', 'B')],
+             [dr('F', 'G'), dr('A', 'C')], [dr('G', 'H'), dr('B', 'C')],
+             [dr('H', 'I'), dr('A', 'B')]],
+      entre: [['A', 'D', 'B'], ['A', 'E', 'C'], ['B', 'F', 'C'], ['A', 'G', 'B'],
+              ['A', 'H', 'C'], ['B', 'I', 'C']],
+      donne: [seg('A', 'B'), seg('A', 'D')],
+      buts: [
+        { but: ['prop', 'AD|AB', 'AE|AC', 'DE|BC'],
+          question: 'بيّن أنّ AD/AB = AE/AC = DE/BC.' },
+        { but: ['rapport', 'BF|BC', t.n + '/' + t.d],
+          question: 'بيّن أنّ BF/BC = AD/AB.' },
+        { but: ['rapport', 'BG|BA', t.n + '/' + t.d],
+          question: 'بيّن أنّ BG/BA = BF/BC.' },
+        { but: ['lg2', seg('B', 'G'), null], question: 'استنتج BG.' },
+        { but: ['rapport', 'CH|CA', t.n + '/' + t.d],
+          question: 'بيّن أنّ CH/CA = AD/AB.' },
+        { but: ['rapport', 'AE|CH', '1/1'], question: 'استنتج أنّ AE = CH.' },
+        { but: ['rapport', 'CI|BF', '1/1'], question: 'بيّن أنّ CI = BF.' }
+      ],
+      texte: g2 => ['ABC مثلّث حيث AB = ' + g2(seg('A', 'B')) + ' و D نقطة من [AB] بحيث AD = '
+                    + g2(seg('A', 'D')) + '.',
+                    'الموازي لـ (BC) المارّ من D يقطع (AC) في E،',
+                    'و الموازي لـ (AB) المارّ من E يقطع (BC) في F،',
+                    'و الموازي لـ (AC) المارّ من F يقطع (AB) في G،',
+                    'و الموازي لـ (BC) المارّ من G يقطع (AC) في H،',
+                    'و الموازي لـ (AB) المارّ من H يقطع (BC) في I.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'E'],
+                           ['E', 'F'], ['F', 'G'], ['G', 'H'], ['H', 'I']] },
+      indice: 'لا تحسب الأطوال : اشتغل على النّسب، و انتقل من واحدة إلى أخرى'
     };
   });
 
