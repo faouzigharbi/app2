@@ -208,7 +208,8 @@
         { seance: 7, pages: '24-26', exercices: 4, vu: true,
           sujet: 'radicaux et ORDRE · deux cercles emboîtés jusqu\'à l\'orthocentre · intervalles et aire d\'un carré découpé · relation métrique et triangle équilatéral' },
         { seance: 8, pages: '27-29', exercices: 5, sujet: 'géométrie et ESPACE — la plus chargée en solides' },
-        { seance: 9, pages: '30-32', exercices: 4, sujet: 'géométrie — Thalès et relations métriques' },
+        { seance: 9, pages: '30-32', exercices: 4, vu: true,
+          sujet: 'radicaux, encadrements et une inéquation · trapèze rectangle et deux médianes · UN DOUBLON de la séance 7 · trapèze où l\'angle droit se propage' },
         { seance: 10, pages: '33-36', exercices: 2, sujet: 'géométrie — deux longs exercices seulement' },
         { seance: 11, pages: '37-39', exercices: 6, sujet: 'mixte — arithmétique, algèbre et géométrie' },
         { seance: 12, pages: '40-43', exercices: 6, sujet: 'géométrie, espace et STATISTIQUES — la plus longue' },
@@ -286,7 +287,35 @@
                     'droite des milieux'],
           sort: 'bibliothèque', ou: 'brevet ex74 — huit volets',
           pourquoi: 'BH = 3√3 par deux chemins — la relation métrique puis l\'aire — '
-                  + 'et le 3 de AH n\'était pas choisi au hasard : AH = HI = AI = 3' }
+                  + 'et le 3 de AH n\'était pas choisi au hasard : AH = HI = AI = 3' },
+
+        // ── SÉANCE 9 — LUE EN ENTIER ; son exercice 3 EST celui de la 7 ────
+        { n: '9.1', questions: 9,
+          notions: ['√(u²) = |u|', 'rationaliser par le conjugué',
+                    'encadrement d\'amplitude 10⁻¹', 'produit de deux encadrements',
+                    'inéquation dont le coefficient est négatif'],
+          sort: 'bibliothèque', ou: 'brevet ex91 — neuf volets',
+          pourquoi: 'deux pièges dans le même exercice : √2 < √3 donne √3−√2 et non '
+                  + 'l\'inverse, puis a+b = −√3 est négatif et retourne l\'inéquation' },
+        { n: '9.2', questions: 8,
+          notions: ['trapèze rectangle', 'segment des milieux', 'Thalès',
+                    'cercle de diamètre ⇒ angle droit', 'triangle isocèle',
+                    'médianes et centre de gravité', 'orthocentre',
+                    'médiane de l\'hypoténuse'],
+          sort: 'bibliothèque', ou: 'brevet ex92 — huit volets',
+          pourquoi: 'BD = BC fait de BDC un isocèle : le pied de la hauteur issue de B '
+                  + 'est donc le milieu N de [DC], et [DI] et [BN] deviennent deux médianes' },
+        { n: '9.3', questions: 8, notions: ['relation métrique', 'triangle équilatéral', 'losange'],
+          sort: 'bibliothèque', ou: 'brevet ex74 — c\'est EXACTEMENT l\'exercice 4 de la séance 7',
+          pourquoi: 'mêmes données, mêmes questions, numérotation simplement continuée '
+                  + '(IV, V, VI). Le livre se répète : on ne double pas la page' },
+        { n: '9.4', questions: 8,
+          notions: ['trapèze rectangle', 'segment des milieux', 'Pythagore réciproque',
+                    'médiane de l\'hypoténuse', 'centre de gravité', 'projection orthogonale',
+                    'orthocentre', 'cercle de diamètre'],
+          sort: 'bibliothèque', ou: 'brevet ex94 — huit volets',
+          pourquoi: 'BI = BJ n\'est pas une donnée libre : dès que I et J sont les milieux, '
+                  + 'les deux longueurs sont égales. Le « = 4 » ne fixe que AN = 4√2' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
@@ -314,7 +343,9 @@
         + 'exactement leur condition d\'alignement, donc elle, elle est juste.',
         '7.3 q5)ب : S = 11/2 correspond à F = 0, c\'est-à-dire x = 1. Or '
         + 'l\'alignement donne x² + 2x = 1, donc x = √2 − 1 et S = 9/2. '
-        + '(Contrôle : S = 23/2 donne bien x = 3, et c\'est E = 0.)'
+        + '(Contrôle : S = 23/2 donne bien x = 3, et c\'est E = 0.)',
+        '9.2 q5 : « BM = 16/8 ». Or BN = 8 et M est le centre de gravité, donc '
+        + 'BM en vaut les deux tiers : BM = 16/3. Le 8 du dénominateur est un 3.'
       ]
     },
 

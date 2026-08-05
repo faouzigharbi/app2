@@ -198,6 +198,13 @@
         }
         // Le translaté : ABCD parallélogramme donne D = A + BC→.
         case 'translate': P[nom] = somme(P[d[1]], vect(P[d[2]], P[d[3]])); break;
+        // Un second point de la PERPENDICULAIRE à (AB) menée par M — le quart
+        // de tour du vecteur directeur. Il sert quand le point d'appui est
+        // DÉJÀ sur la droite, cas où la projection ne dirait rien.
+        case 'normale': {
+          const u = vect(P[d[2]], P[d[3]]);
+          P[nom] = somme(P[d[1]], pt(F.sNeg(u.y), u.x)); break;
+        }
         // Le projeté ORTHOGONAL de M sur (AB) — le pied de la hauteur, le pied
         // de la perpendiculaire. Il se calcule par le produit scalaire, et le
         // repère est orthonormé, donc la formule est exacte.

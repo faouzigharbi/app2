@@ -31,4 +31,14 @@
        S.seance7ex3, 12);
   page(74, 'الحصّة 7 — التمرين 4 — ', 'العلاقة المترية، ثمّ مثلّث متقايس الأضلاع',
        S.seance7ex4, 8);
+
+  // La séance 9 ne compte que trois pages : son exercice 3 est le MÊME que
+  // celui de la séance 7 — mêmes données, mêmes questions, numérotation
+  // continuée (IV, V, VI). On ne le double pas ; ex74 le porte déjà.
+  page(91, 'الحصّة 9 — التمرين 1 — ', 'قيمة مطلقة تحت جذر، و حصر يُضرب في عدد سالب',
+       S.seance9ex1, 9);
+  page(92, 'الحصّة 9 — التمرين 2 — ', 'شبه منحرف قائم، و متوسّطان يتقاطعان',
+       S.seance9ex2, 8);
+  page(94, 'الحصّة 9 — التمرين 4 — ', 'زاوية قائمة في B تنتشر في كلّ الشكل',
+       S.seance9ex4, 8);
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -51,6 +51,28 @@ Trois choses que ces exercices disent et que l'énoncé tait :
   grise aux deux expressions : `2S = x² + 2x + 8`, donc `S = E + 23/2` et
   `S = (F + 11)/2`. D'où les deux valeurs demandées — `S = 23/2 ⟺ E = 0 ⟺ x = 3`.
 
+## Séance 9 — lue en entier, trois pages
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex91.html` | التمرين 1 | 9 | `√(u²) = |u|` et `√2 < √3` · encadrements à 10⁻¹ jusqu'au produit `ab` · une inéquation dont le coefficient `a + b = −√3` est **négatif** |
+| `ex92.html` | التمرين 2 | 8 | trapèze rectangle · segment des milieux · Thalès · `BD = BC` ⇒ isocèle ⇒ **deux médianes** · centre de gravité · orthocentre |
+| — | التمرين 3 | — | **doublon exact de la séance 7, exercice 4** — mêmes données, mêmes questions, numérotation simplement continuée (IV, V, VI). `ex74` le porte déjà ; on ne double pas la page. |
+| `ex94.html` | التمرين 4 | 8 | trapèze rectangle où **un seul angle droit se propage** : BIJ, puis BIM, puis l'orthocentre, puis le cercle de diamètre [BM] |
+
+Deux choses que ces exercices cachent :
+
+- **ex92** — `BD = BC` n'est pas un ornement : il fait de `BDC` un **isocèle**,
+  donc le pied de la hauteur issue de `B` est le milieu `N` de `[DC]`. Dès lors
+  `[DI]` et `[BN]` sont deux **médianes**, leur intersection est le centre de
+  gravité, et le `MI/MD = 1/2` de l'énoncé n'est que la propriété des deux
+  tiers écrite à l'envers.
+- **ex94** — `BI = BJ` n'est **pas une donnée libre** : dès que `I` et `J` sont
+  les milieux, les deux longueurs sont égales quelle que soit la hauteur du
+  trapèze. Le « = 4 » ne fixe donc qu'une chose, `AN = 4√2`. L'angle droit en
+  `B` qui en résulte se propage ensuite dans toute la figure, parce que `J` est
+  sur `[BM]` : l'angle `IBM` est le même que l'angle `IBJ`.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
@@ -84,14 +106,14 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 3 240 questions, 57 800 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 117/117
+    node verifier.js 40             # 4 240 questions, 62 160 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 166/166
     node _build.js .                # régénérer les pages
 
-## Cinq coquilles du livre, relevées par le calcul
+## Six coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Cinq énoncés ne se
-referment pas sur eux-mêmes, et **cinq falsifications le prouvent** — chacune
+Le validateur ne lit pas une intention : il recalcule. Six énoncés ne se
+referment pas sur eux-mêmes, et **six falsifications le prouvent** — chacune
 remet le nombre du livre et se fait rejeter.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -129,7 +151,11 @@ remet le nombre du livre et se fait rejeter.
    `x = 3` — et c'est exactement `E = 0`. La formule `S = (x² + 2x + 8)/2` est
    donc bien la bonne, et **`11/2` est un `9/2`**.
 
-Ces cinq corrections sont écrites dans `seances.js` et signalées au maître ;
+6. **الحصّة 9، التمرين 2، 5** — le livre écrit `BM = 16/8`. Or `BN = 8` et `M`
+   est le centre de gravité du triangle `BDC`, donc `BM` en vaut les deux
+   tiers : **`BM = 16/3`**. Le `8` du dénominateur est un `3`.
+
+Ces six corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris
@@ -142,6 +168,10 @@ qui porte vraiment. C'est le principe : une falsification qui passe est un
 renseignement, jamais un succès.
 
 ## Ce que la séance a demandé
+
+La séance 9 n'a demandé qu'une pièce : la construction `normale` — un second
+point de la perpendiculaire à une droite menée par un point qui est **déjà
+dessus**, cas où la projection ne dirait rien (le `J` milieu de `[BM]`).
 
 La séance 7 a demandé trois faits de plus à `repere.js` — la **projection
 orthogonale** (le pied d'une hauteur), le **centre de gravité** et

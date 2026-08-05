@@ -435,6 +435,112 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("IJ pris egal a AE", parQuestion(74, 7),
     c => { c.controle.faits[4][3] = '3'; });
 
+  // ══ LA SÉANCE 9 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — la valeur absolue sous le radical, et les sens d'inégalité ──
+  pousse("la valeur absolue levee a l envers", parQuestion(91, 0),
+    c => { c.controle.claims[1][1] = '√2 - √3'; });
+  pousse("a decale", parQuestion(91, 0),
+    c => { c.controle.claims[0][1] = '2√3 + √2'; });
+  pousse("le conjugue mal choisi", parQuestion(91, 1),
+    c => { c.controle.claims[0][1] = '√3 + √2'; });
+  pousse("√48 sorti en 3√3", parQuestion(91, 2),
+    c => { c.etapes[2][1] = '√48 = 3√3'; });
+  pousse("b decale", parQuestion(91, 2),
+    c => { c.controle.claims[0][1] = '√2 + 3√3'; });
+  pousse("l encadrement de √3 pris a 1,6 et 1,7", parQuestion(91, 3),
+    c => { c.etapes[7][1] = '9/5 < √3'; });
+  pousse("le carre de 1,5 mal calcule", parQuestion(91, 3),
+    c => { c.controle.claims[1][1] = '9/2'; });
+  pousse("la borne inferieure de a fausse", parQuestion(91, 4),
+    c => { c.controle.claims[0][1] = '2'; });
+  pousse("le retournement oublie sur -√2", parQuestion(91, 4),
+    c => { c.etapes[3][1] = '-7/5 < -√2'; });
+  pousse("la multiplication par -3 ne retourne pas", parQuestion(91, 5),
+    c => { c.etapes[1][1] = '-3√3 < -27/5'; });
+  pousse("la borne superieure de b fausse", parQuestion(91, 5),
+    c => { c.controle.claims[1][1] = '-18/25'; });
+  pousse("les bornes du produit prises du meme cote", parQuestion(91, 6),
+    c => { c.controle.claims[0][0] = '19/10 × (-4)'; });
+  pousse("le produit ab mal developpe", parQuestion(91, 6),
+    c => { c.controle.claims[2][1] = '5√6 + 20'; });
+  pousse("a + b annonce +√3", parQuestion(91, 7),
+    c => { c.controle.claims[0][1] = '√3'; });
+  pousse("l oppose de a mal ecrit", parQuestion(91, 7),
+    c => { c.controle.claims[1][1] = '2√3 - √2'; });
+  pousse("le carre de 2√3 - √2 faux", parQuestion(91, 8),
+    c => { c.controle.claims[0][1] = '14 + 4√6'; });
+  pousse("la borne comparee a -3 dans le mauvais sens", parQuestion(91, 8),
+    c => { c.etapes[5][1] = '√2 - 2√3 < -3'; });
+
+  // ── التمرين 2 — le trapèze, et les deux médianes ───────────────────────
+  pousse("B deplace : le triangle BDC n est plus isocele", parQuestion(92, 0),
+    c => { c.controle.points.B = ['point', '5', '8']; });
+  pousse("IK pris egal a la demi-somme mal faite", parQuestion(92, 0),
+    c => { c.controle.faits[0][3] = '18'; });
+  pousse("K annonce milieu de [AB]", parQuestion(92, 0),
+    c => { c.controle.faits[1] = ['milieu', 'K', 'A', 'B']; });
+  pousse("AL annonce 4", parQuestion(92, 1),
+    c => { c.controle.faits[0][3] = '4'; });
+  pousse("le rapport de Thales inverse", parQuestion(92, 1),
+    c => { c.controle.faits[3][5] = '2'; });
+  pousse("N pris ailleurs sur (DC)", parQuestion(92, 2),
+    c => { c.controle.points.N = ['point', '5', '0']; });
+  pousse("le rayon du cercle annonce 6", parQuestion(92, 2),
+    c => { c.controle.faits[4][3] = '6'; });
+  pousse("M place au milieu de [ID]", parQuestion(92, 3),
+    c => { c.controle.points.M = ['milieu', 'I', 'D']; });
+  pousse("le rapport MI/MD annonce 2", parQuestion(92, 3),
+    c => { c.controle.faits[2][5] = '2'; });
+  pousse("B, M, N declares alignes apres deplacement de M", parQuestion(92, 4),
+    c => { c.controle.points.M = ['point', '5', '8/3']; });
+  // LA COQUILLE DU LIVRE : BM = 16/8, alors que BN = 8 et BM en vaut les deux tiers.
+  pousse("BM = 16/8, le nombre du livre", parQuestion(92, 5),
+    c => { c.controle.faits[0][3] = '16/8'; });
+  pousse("BM pris egal au tiers de BN", parQuestion(92, 5),
+    c => { c.controle.faits[2][5] = '1/3'; });
+  pousse("P pris ailleurs sur (BD)", parQuestion(92, 6),
+    c => { c.controle.points.P = ['point', '3', '4']; });
+  pousse("O declare orthocentre du mauvais triangle", parQuestion(92, 6),
+    c => { c.controle.faits[0] = ['orthocentre', 'O', 'A', 'B', 'C']; });
+  pousse("NS annonce 12", parQuestion(92, 7),
+    c => { c.controle.faits[0][3] = '12'; });
+  pousse("S pris sur (BD) au lieu de (BC)", parQuestion(92, 7),
+    c => { c.controle.points.S = ['inter', 'O', 'D', 'B', 'D']; });
+
+  // ── التمرين 4 — l'angle droit en B qui se propage ──────────────────────
+  pousse("AN change : BI et BJ ne valent plus 4", parQuestion(94, 0),
+    c => { c.controle.points.N = ['point', '0', '-3√2']; });
+  pousse("IJ pris egal a la demi-difference des bases", parQuestion(94, 0),
+    c => { c.controle.faits[1][3] = '2√2'; });
+  pousse("le triangle BIJ declare rectangle en I", parQuestion(94, 0),
+    c => { c.controle.faits[0] = ['rectangle-en', 'I', 'B', 'J']; });
+  pousse("DI annonce 6", parQuestion(94, 1),
+    c => { c.controle.faits[0][3] = '6'; });
+  pousse("C place a JC = 4", parQuestion(94, 1),
+    c => { c.controle.points.C = ['point', '6√2', '-4√2']; });
+  pousse("G pris au milieu de [IJ]", parQuestion(94, 2),
+    c => { c.controle.points.G = ['milieu', 'I', 'J']; });
+  pousse("le rapport IG/JG annonce 1/2", parQuestion(94, 2),
+    c => { c.controle.faits[2][5] = '1/2'; });
+  pousse("KG pris egal a BK", parQuestion(94, 3),
+    c => { c.controle.faits[0][3] = '2√5'; });
+  pousse("IM annonce 4√2", parQuestion(94, 3),
+    c => { c.controle.faits[2][3] = '4√2'; });
+  pousse("BH calcule sans rationaliser correctement", parQuestion(94, 4),
+    c => { c.controle.faits[0][3] = '8√5'; });
+  pousse("H pris projete sur (BM)", parQuestion(94, 4),
+    c => { c.controle.points.H = ['proj', 'B', 'B', 'M']; });
+  pousse("KJ annonce 4", parQuestion(94, 5),
+    c => { c.controle.faits[4][3] = '4'; });
+  pousse("F pris sur la perpendiculaire a (IM) par J", parQuestion(94, 5),
+    c => { c.controle.points.W = ['normale', 'J', 'I', 'M']; });
+  pousse("K declare orthocentre de BMJ", parQuestion(94, 6),
+    c => { c.controle.faits[0] = ['orthocentre', 'K', 'B', 'M', 'J']; });
+  pousse("L declare sur le cercle apres changement de rayon", parQuestion(94, 7),
+    c => { c.controle.faits[2][3] = '5'; });
+  pousse("L pris sur (MK) au lieu de (MF)", parQuestion(94, 7),
+    c => { c.controle.points.L = ['inter', 'B', 'K', 'M', 'K']; });
+
   // ── les garde-fous du contrat « figure » ───────────────────────────────
   pousse("figure sans aucune fait a controler", parQuestion(23, 0),
     c => { c.controle.faits = []; });
