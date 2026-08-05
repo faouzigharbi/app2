@@ -123,7 +123,8 @@ function moissonner(construire, n, parCase) {
 // ── Le niveau et le nom, lus sur la fiche ────────────────────────────────
 // Une fiche dont les pages ne sont pas encore bâties n'a pas de <title> à
 // lire. On la nomme ici, en attendant qu'elle le fasse elle-même.
-const NOMS = { puiss9: 'القوى', droites7: 'التعامد و التوازي' };
+const NOMS = { puiss9: 'القوى', droites7: 'التعامد و التوازي',
+               angles7: 'الزوايا' };
 
 function titreDe(dossier) {
   if (NOMS[dossier]) return NOMS[dossier];
