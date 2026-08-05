@@ -339,9 +339,33 @@ if (process.env.ERREURS) {
   process.exit(0);
 }
 
+// UNE REMARQUE SANS SON GESTE EST UNE REMARQUE INVENTÉE.
+//
+// « Attention, il faut réduire au même dénominateur » n'a de sens que dans un
+// exercice qui le fait vraiment. Le validateur refait donc le test du banc
+// commun : toute remarque posée sur la fiche rendue doit avoir son
+// déclencheur dans les étapes, sans quoi elle est refusée.
+const T = require('../_regles/tenbih.js');
+function verifierRemarques(brut) {
+  const rendu = F.rendre(brut);
+  const permises = [...T.declencheurs(brut.etapes || [])];
+  const out = [];
+  for (const st of rendu.steps || []) {
+    const nu = String(st).replace(/<[^>]*>/g, '');
+    const m = /^تنبيه: (.*)$/.exec(nu);
+    if (!m) continue;
+    const texte = m[1].trim();
+    if (!permises.some(x => texte.indexOf(x.slice(0, 20)) >= 0)) {
+      out.push('تنبيه بلا سبب : ' + texte.slice(0, 40));
+    }
+  }
+  return out;
+}
+
 function verifierBrut(brut) {
   const probs = [];
   const c = brut.controle;
+  for (const p of verifierRemarques(brut)) probs.push(p);
   const envs = environnements(c);
   let verifiees = 0;
 
@@ -441,9 +465,22 @@ if (process.env.CONTRE_EXEMPLES) {
   a7.etapes[0][1] = a7.etapes[0][1].replace(/- /, '+ ');
   cas.push(['parenthèse mal levée', a7]);
 
+  // UNE REMARQUE POSÉE SANS SON GESTE. « La division par une fraction est la
+  // multiplication par son inverse » dans un exercice où l'on ne divise pas :
+  // c'est une phrase juste au mauvais endroit, et elle doit être refusée.
+  {
+    const a8 = copie(l7[0]);
+    const vrai = T.poser;
+    T.poser = e => e.concat([['تنبيه', 'القسمة على كسر هي الضّرب في مقلوبه']]);
+    let probs; try { probs = verifierBrut(a8); } catch (e) { probs = ['exception']; }
+    T.poser = vrai;
+    cas.push(['une remarque posée sans son geste', probs.length ? { __deja: probs } : null]);
+  }
+
   let bon = 0;
   for (const [nom, q] of cas) {
-    const probs = verifierBrut(q);
+    if (!q) { console.log('\u26a0 NON ÉPROUVÉ ' + nom); continue; }
+    const probs = q.__deja || verifierBrut(q);
     console.log((probs.length ? '✗ rejeté  ' : '⚠ ACCEPTÉ ') + nom
       + (probs.length ? ' — ' + probs[0] : ''));
     if (probs.length) bon++;

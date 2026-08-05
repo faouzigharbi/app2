@@ -180,10 +180,18 @@
 
   const rendreMath = s => (ARABE.test(String(s)) ? isoMixte(s) : bloc(s));
 
+  // LES REMARQUES DE CLASSE. « Attention, il faut réduire au même
+  // dénominateur » ; « il faut simplifier ». Elles ne sont pas rédigées ici :
+  // elles viennent d'un banc commun, et chacune n'apparaît que si son geste a
+  // vraiment eu lieu dans la correction. Le validateur refait le test.
+  const T = (typeof module !== 'undefined' && module.exports)
+    ? require('../_regles/tenbih.js') : racine.Tenbih;
+
   function rendre(brut) {
+    const etapes = T ? T.poser(brut.etapes || [], 2) : (brut.etapes || []);
     return {
       operation: brut.enonce.map(rendreMath).join(' '),
-      steps: brut.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
+      steps: etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
       hint: brut.indice,
       // LA PROVENANCE VOYAGE AVEC L'EXERCICE — voir ci-dessus.
       source: brut.source || '',
@@ -201,7 +209,7 @@
       // l'étiquette même — « نفس الأساس », « نجمع الأسّة ». On prend donc l'une
       // ou l'autre, et l'on écarte ce qui n'est qu'ossature.
       difficulte: (() => {
-        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|^[0-9]+\)$/;
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|تنبيه|^[0-9]+\)$/;
         const notions = new Set();
         for (const e of (brut.etapes || [])) {
           if (CADRE.test(e[0])) continue;
