@@ -94,6 +94,56 @@
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // LES ÉQUATIONS DU PREMIER DEGRÉ — Thales 2008 ex1
+  //
+  // Trente-quatre équations sur la seule première page : « 4x = 12 »,
+  // « x − 4 = 2x − 1 », « 3(z − 1) = 2 », « (MN − 5)/3 = 8 »,
+  // « (QR − 6)/QR = 5/7 », « x/(4 + x) = 6/14 ».
+  //
+  // La dernière forme est celle qui manquait à la bibliothèque : l'inconnue
+  // des DEUX côtés d'une proportion. Le produit en croix la ramène au premier
+  // degré — et l'on vérifie que le terme en x² s'annule vraiment, sinon
+  // l'équation n'est pas de ce chapitre et l'item est refusé.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  const Q = F.q;
+  const nonNul = (a, b) => { let v = 0; while (v === 0) v = F.ent(a, b); return Q(v); };
+
+  // ax + b = cx + d
+  // ON RETIRE, ON N'ABANDONNE PAS. Rendre null quand le tirage dégénère —
+  // ici a = c, qui donne « 0·x = b » — faisait disparaître l'exercice et
+  // sortait une page incomplète. Le générateur retire jusqu'à tomber juste.
+  item('Thales 2008 ex1-2', 'equation', 'facile', () => {
+    let a = nonNul(-6, 9), c = nonNul(-6, 9);
+    while (F.qEgaux(a, c)) c = nonNul(-6, 9);
+    return { equation: [[a, Q(F.ent(-9, 9))], [c, Q(F.ent(-9, 9))]] };
+  });
+
+  // a(x − b) = c — la parenthèse d'abord
+  item('Thales 2008 ex1-2f', 'equation', 'moyen', () => {
+    const a = nonNul(2, 7), b = Q(F.ent(-6, 6)), c = Q(F.ent(-9, 9));
+    // a(x − b) = ax − ab
+    return { equation: [[a, F.qMul(F.qNeg(a), b)], [Q(0), c]],
+             gauche: F.ecrire(a) + '(' + F.ecrireForme([Q(1), F.qNeg(b)]) + ')' };
+  });
+
+  // A/B = C/D, l'inconnue dans un seul membre — « (MN − 5)/3 = 8 »
+  item('Thales 2008 ex1-4', 'proportion', 'moyen', () => {
+    const b = nonNul(2, 12), c = Q(F.ent(2, 15)), d = nonNul(2, 12);
+    return { proportion: [[[Q(1), Q(F.ent(-8, 8))], [Q(0), b]],
+                          [[Q(0), c], [Q(0), d]]] };
+  });
+
+  // A/B = C/D avec l'inconnue DES DEUX CÔTÉS — « x/(4 + x) = 6/14 »
+  item('Thales 2008 ex1-4 — المجهول في الطرفين', 'proportion', 'difficile', () => {
+    const k = nonNul(1, 8), c = nonNul(2, 12);
+    let d = nonNul(2, 12);
+    while (F.qEgaux(c, d)) d = nonNul(2, 12);
+    return { proportion: [[[Q(1), Q(0)], [Q(1), k]],
+                          [[Q(0), c], [Q(0), d]]] };
+  });
+
   const API = { ITEMS };
   if (M) module.exports = API; else racine.Items = API;
 })(typeof window !== 'undefined' ? window : globalThis);

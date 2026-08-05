@@ -9,7 +9,9 @@
   const FAMILLES = [
     ['deux-fractions', 'كسران متساويان — أكمل'],
     ['trois-fractions', 'ثلاثة كسور متساوية — أكمل'],
-    ['sans-ecriture-decimale', 'جواب في شكل كسر غير قابل للاختزال']
+    ['sans-ecriture-decimale', 'جواب في شكل كسر غير قابل للاختزال'],
+    ['equation', 'معادلة من الدرجة الأولى'],
+    ['proportion', 'تناسب فيه مجهول']
   ];
 
   function puiser(famille, n) {

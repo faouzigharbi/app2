@@ -33,10 +33,35 @@
     return { n: n / g, d: d / g };
   }
   const qAdd = (a, b) => q(a.n * b.d + b.n * a.d, a.d * b.d);
+  const qSub = (a, b) => q(a.n * b.d - b.n * a.d, a.d * b.d);
+  const qNeg = a => ({ n: -a.n, d: a.d });
   const qMul = (a, b) => q(a.n * b.n, a.d * b.d);
   const qDiv = (a, b) => { if (b.n === 0n) throw new Error('division par zéro'); return q(a.n * b.d, a.d * b.n); };
   const qEgaux = (a, b) => a.n === b.n && a.d === b.d;
   const qNul = a => a.n === 0n;
+
+  // ── LES FORMES DU PREMIER DEGRÉ ──────────────────────────────────────────
+  //
+  // « x/(4+x) = 6/14 » : l'inconnue est des deux côtés d'une proportion. On
+  // représente chaque membre par [a, b], la forme a·x + b, et le produit en
+  // croix donne A·D − B·C. Ce produit est du SECOND degré en général ; on
+  // exige donc que son terme en x² soit nul, sinon l'item est mal posé et
+  // l'on refuse — une équation du second degré n'est pas de ce chapitre.
+  const formeMul = (A, C) => [
+    qMul(A[0], C[0]),                                   // x²
+    qAdd(qMul(A[0], C[1]), qMul(A[1], C[0])),           // x
+    qMul(A[1], C[1])                                    // 1
+  ];
+  const formeSub = (U, V) => U.map((u, i) => qSub(u, V[i]));
+  // a·x + b, écrit comme au tableau : ni « 1x », ni « + −3 ».
+  function ecrireForme(A, mode) {
+    const [a, b] = A;
+    if (qNul(a)) return ecrire(b, mode);
+    const t = qEgaux(a, q(1)) ? 'x' : (qEgaux(a, q(-1)) ? '−x' : ecrire(a, mode) + 'x');
+    if (qNul(b)) return t;
+    return t + (b.n < 0n ? ' − ' : ' + ') + ecrire({ n: babs(b.n), d: b.d }, mode);
+  }
+  const evalForme = (A, x) => qAdd(qMul(A[0], x), A[1]);
 
   // ── Écrire un nombre ─────────────────────────────────────────────────────
   const frac = (n, d) => '<span class="frac" dir="ltr"><span class="num">' + n
@@ -46,7 +71,7 @@
   // est finie, et c'est celle de la feuille.
   const DIX = n => { let d = n; while (d % 2n === 0n) d /= 2n; while (d % 5n === 0n) d /= 5n; return d === 1n; };
   function enDecimal(a) {
-    if (a.d === 1n) return String(a.n);
+    if (a.d === 1n) return (a.n < 0n ? '−' : '') + String(babs(a.n));
     if (!DIX(a.d)) return null;
     let n = a.n, d = a.d, dec = 0;
     while (d % 2n === 0n) { d /= 2n; n *= 5n; dec++; }
@@ -58,12 +83,29 @@
   }
   // LE RÔLE DÉCIDE. Une DONNÉE se lit comme sur la feuille — 7,5 et non 15/2.
   // Un RÉSULTAT s'écrit en fraction irréductible, sauf s'il est entier.
+  // LE SIGNE MOINS EST « − », PAS UN TRAIT D'UNION. String(-4n) rend « -4 » :
+  // un trait d'imprimerie, plus court, plus haut, qui ne se lit pas comme un
+  // signe dans une page arabe. Même défaut, même correction qu'ailleurs.
   function ecrire(a, mode) {
     if (mode === 'donnee') { const s = enDecimal(a); if (s !== null) return s; }
-    return a.d === 1n ? String(a.n) : frac(String(a.n), String(a.d));
+    const signe = a.n < 0n ? '−' : '';
+    const n = babs(a.n);
+    return signe + (a.d === 1n ? String(n) : frac(String(n), String(a.d)));
   }
+  // Une forme entre parenthèses dès qu'elle a deux termes : « x − 3 × 8 » ne
+  // veut pas dire « (x − 3) × 8 », et c'est pourtant ce qu'on écrivait.
+  const entreParentheses = A =>
+    (qNul(A[0]) || qNul(A[1])) ? ecrireForme(A) : '(' + ecrireForme(A) + ')';
   // Une fraction du sujet : numérateur et dénominateur écrits comme donnés.
-  const ecrireFrac = (n, d, mode) => frac(ecrire(n, mode), ecrire(d, mode));
+  // LE SIGNE SORT DE LA FRACTION. « 8/(−6) » n'est pas une écriture : on
+  // remonte le signe devant le quotient, et le dénominateur reste positif.
+  const ecrireFrac = (n, d, mode) => {
+    const neg = (d.n < 0n) !== (n.n < 0n);
+    const N = { n: babs(n.n), d: n.d }, D = { n: babs(d.n), d: d.d };
+    return (neg ? '−' : '') + frac(ecrire(N, mode), ecrire(D, mode));
+  };
+  // Une fraction dont les deux termes sont des FORMES du premier degré.
+  const ecrireFrac2 = (A, B) => frac(ecrireForme(A), ecrireForme(B));
 
   // ── Écriture mêlée ───────────────────────────────────────────────────────
   const ARABE = /[؀-ۿ]/;
@@ -133,7 +175,8 @@
     questions: tirer(n).map(rendre)
   });
 
-  const API = { ent, choix, melanger, q, qAdd, qMul, qDiv, qEgaux, qNul,
+  const API = { ent, choix, melanger, q, qAdd, qSub, qMul, qDiv, qEgaux, qNul, qNeg,
+                formeMul, formeSub, ecrireForme, evalForme, ecrireFrac2, entreParentheses,
                 frac, ecrire, ecrireFrac, enDecimal, rendreMath, rendre,
                 isoMixte, bloc, echapper, ARABE, PROBLEMES, enregistrer,
                 tirer, construire };

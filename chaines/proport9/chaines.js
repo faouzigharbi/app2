@@ -11,9 +11,57 @@
 
   const REGLE = 'في تناسب، جداء الطرفين يساوي جداء الوسطين';
 
+  // ── L'ÉQUATION DU PREMIER DEGRÉ ──────────────────────────────────────────
+  function chaineEquation(it, s) {
+    // Une proportion se ramène à une équation par le produit en croix.
+    let G, D, croix = null;
+    if (s.proportion) {
+      const [[A, B], [C, E]] = s.proportion;
+      const r = F.formeSub(F.formeMul(A, E), F.formeMul(B, C));
+      // LE TERME EN x² DOIT S'ANNULER : sinon ce n'est plus une équation du
+      // premier degré, et ce chapitre n'en traite pas. On refuse l'item.
+      if (!F.qNul(r[0])) return null;
+      G = [r[1], r[2]]; D = [F.q(0), F.q(0)];
+      croix = F.entreParentheses(A) + ' × ' + F.entreParentheses(E) + ' = '
+            + F.entreParentheses(B) + ' × ' + F.entreParentheses(C);
+      s.texteEq = F.ecrireFrac2(A, B) + ' = ' + F.ecrireFrac2(C, E);
+    } else {
+      [G, D] = s.equation;
+      s.texteEq = (s.gauche || F.ecrireForme(G)) + ' = ' + F.ecrireForme(D);
+    }
+    const a = F.qSub(G[0], D[0]), b = F.qSub(D[1], G[1]);
+    if (F.qNul(a)) return null;                    // 0·x = b : hors sujet ici
+    const x = F.qDiv(b, a);
+    const etapes = [
+      ['المعطيات', s.texteEq],
+      ['القاعدة', croix ? 'في تناسب، جداء الطرفين يساوي جداء الوسطين'
+                        : 'ننقل المجهول إلى طرف و الأعداد إلى الطرف الآخر'],
+    ];
+    if (croix) etapes.push(['نطبّق', croix]);
+    etapes.push(['نجمّع', F.ecrireForme([a, F.q(0)]) + ' = ' + F.ecrire(b)]);
+    etapes.push(['نحسب', 'x = ' + F.ecrireFrac(b, a, 'donnee') + ' = ' + F.ecrire(x)]);
+    etapes.push(['النتيجة', 'S = { ' + F.ecrire(x) + ' }']);
+    return {
+      enonce: ['حلّ في ℝ المعادلة التالية :', s.texteEq],
+      etapes,
+      indice: s.indice || (croix ? 'اضرب في تقاطع، ثمّ اجمع المجهول في طرف'
+                                 : 'اجمع المجهول في طرف و الأعداد في الآخر'),
+      source: it.src,
+      controle: { type: 'equation',
+                  gauche: G.map(z => z.n + '/' + z.d),
+                  droite: D.map(z => z.n + '/' + z.d),
+                  proportion: s.proportion
+                    ? s.proportion.map(m => m.map(f => f.map(z => z.n + '/' + z.d)))
+                    : null,
+                  x: x.n + '/' + x.d, ecritX: F.ecrire(x) }
+    };
+  }
+
   function chaine(it) {
     let s;
     try { s = it.monter(F); } catch (e) { return null; }
+    if (!s) return null;
+    if (s.equation || s.proportion) return chaineEquation(it, s);
     const { fr, trou } = s;           // fr : [[n,d], …] ; trou : [i, 'n'|'d']
     const [i, ou] = trou;
     // La fraction de référence : la première entièrement connue.

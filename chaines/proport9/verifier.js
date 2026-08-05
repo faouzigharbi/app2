@@ -15,19 +15,76 @@ const lireQ = t => { const [n, d] = String(t).split('/'); return F.q(BigInt(n), 
 // ce qui n'entre dans aucune des deux formes est refusé, car une lecture
 // indulgente laisserait passer précisément ce qu'on veut interdire.
 function relire(t) {
+  // Le signe sort de la fraction : « −(4/3) ». On le retire d'abord, on relit
+  // la valeur absolue, puis on le remet — sinon la lecture échoue sur tous
+  // les résultats négatifs, et le contrôle croit à une écriture illisible.
+  let signe = 1n;
+  if (String(t).charAt(0) === '−') { signe = -1n; t = String(t).slice(1); }
+  const rendre = v => (v === null ? null
+    : (signe < 0n ? { n: -v.n, d: v.d } : v));
   const f = /^<span class="frac" dir="ltr"><span class="num">(-?[\d,]+)<\/span><span class="den">(-?[\d,]+)<\/span><\/span>$/.exec(t);
   const nu = x => {
     const d = /^(-?\d+),(\d+)$/.exec(x);
     if (d) return F.q(BigInt(d[1] + d[2]), 10n ** BigInt(d[2].length));
     return /^-?\d+$/.test(x) ? F.q(BigInt(x)) : null;
   };
-  if (f) { const a = nu(f[1]), b = nu(f[2]); return (a && b) ? F.qDiv(a, b) : null; }
-  return nu(t);
+  if (f) { const a = nu(f[1]), b = nu(f[2]); return rendre((a && b) ? F.qDiv(a, b) : null); }
+  return rendre(nu(t));
+}
+
+// L'ÉQUATION SE VÉRIFIE PAR SUBSTITUTION, comme l'élève le ferait.
+//
+// On ne recalcule pas la solution avec la même formule que la chaîne — ce
+// serait refaire la même erreur deux fois. On REMET la valeur trouvée dans
+// l'équation de départ, et l'on exige que les deux membres tombent égaux.
+function verifierEquation(brut) {
+  const probs = [];
+  const c = brut.controle;
+  const forme = t => t.map(lireQ);
+  const x = lireQ(c.x);
+  relations++;
+
+  if (c.proportion) {
+    const [[A, B], [C, D]] = c.proportion.map(m => m.map(forme));
+    const bas1 = F.evalForme(B, x), bas2 = F.evalForme(D, x);
+    if (F.qNul(bas1) || F.qNul(bas2)) probs.push('مقام منعدم عند الحلّ');
+    else {
+      // A/B = C/D  ⟺  A·D = B·C, testé sur la VALEUR trouvée.
+      const g = F.qMul(F.evalForme(A, x), bas2);
+      const d = F.qMul(bas1, F.evalForme(C, x));
+      if (!F.qEgaux(g, d)) probs.push('الحلّ لا يحقّق التناسب');
+    }
+  } else {
+    const G = forme(c.gauche), D = forme(c.droite);
+    if (!F.qEgaux(F.evalForme(G, x), F.evalForme(D, x))) {
+      probs.push('الحلّ لا يحقّق المعادلة');
+    }
+  }
+
+  // La réponse écrite doit valoir exactement la réponse calculée.
+  const relu = relire(c.ecritX);
+  if (relu === null) probs.push('كتابة غير قابلة للقراءة : ' + c.ecritX);
+  else if (!F.qEgaux(relu, x)) probs.push('قيمة تقريبية في الجواب');
+
+  for (const b of [...brut.enonce, ...brut.etapes.map(e => e[1])]) {
+    if (String(b).indexOf('-') >= 0) probs.push('شرطة بدل علامة الطرح');
+    const nu = String(F.rendreMath(b))
+      .replace(/<span class="frac" dir="ltr">[\s\S]*?<\/span><\/span>/g, '')
+      .replace(/<span dir="ltr"[^>]*>[\s\S]*?<\/span>/g, '');
+    if (/\d/.test(nu)) probs.push('رقم خارج جزيرة لاتينية');
+  }
+  const t = brut.etapes.map(e => e.join(': '));
+  if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
+  if (t.length < 4) probs.push('السلسلة قصيرة جدا');
+  if (!brut.indice) probs.push('بلا مساعدة');
+  controles++;
+  return probs;
 }
 
 function verifierBrut(brut) {
   const probs = [];
   const c = brut.controle;
+  if (c && c.type === 'equation') return verifierEquation(brut);
   if (!c || c.type !== 'proport') { probs.push('نوع غير معروف'); return probs; }
   const fr = c.fractions.map(x => [lireQ(x[0]), lireQ(x[1])]);
   const [i, ou] = c.trou;
@@ -122,6 +179,12 @@ if (process.env.CONTRE_EXEMPLES) {
   });
   pousse('un second trou', c => {
     c.enonce[1] = String(c.enonce[1]) + ' = <span class="frac" dir="ltr"><span class="num">…</span><span class="den">2</span></span>';
+  });
+  // La solution d'une équation doit être refusée dès qu'elle bouge d'une unité.
+  pousse('la solution décalée d’une unité', c => {
+    if (c.controle.type !== 'equation') throw new Error('pas une équation');
+    const [n, d] = c.controle.x.split('/');
+    c.controle.x = (BigInt(n) + BigInt(d)) + '/' + d;
   });
   pousse('aide absente', c => { c.indice = ''; });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });
