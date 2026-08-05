@@ -121,8 +121,9 @@
       fichier: 'Thales 2021 modifié.pdf', pages: 8, texte: 'lisible', etat: 'partiel',
       chapitres: ['thales9'], exercices: 16,
       contenu: [
-        { n: 1, questions: 3, notions: ['symétrie centrale', 'triangle rectangle', 'rectangle'],
-          sort: 'à faire', pourquoi: 'sa q2a demande la même chose PAR DEUX CHEMINS — le moteur n\'en donne qu\'un, le plus court' },
+        { n: 1, questions: 3, notions: ['symétrie centrale', 'ligne des milieux', 'transport de l\'angle droit', 'rectangle'],
+          sort: 'bibliothèque',
+          ou: 'cinq questions ; sa q2a demande la même chose PAR DEUX CHEMINS — le moteur n\'en donne qu\'un, le plus court' },
         { n: 2, questions: 4, notions: ['cercle de diamètre [AB]', 'isocèle', 'milieux', 'rapport d\'aires'],
           sort: 'à faire', pourquoi: 'ses trois premières questions entrent ; la quatrième est un rapport d\'AIRES' },
         { n: 3, questions: 3, notions: ['parallélogramme', 'deux configurations de même sommet', 'EB² = EF × EG'],

@@ -1984,6 +1984,64 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex1 — L'ANGLE DROIT QUI VOYAGE
+  //
+  // « ABC مثلّث قائم في B، M مناظرة A بالنسبة إلى C، و N مناظرة A بالنسبة
+  // إلى B. »
+  //
+  //   1) بيّن أنّ AMN مثلّث قائم الزاوية
+  //   2) العمودي على (AB) في A يقطع (CN) في P :
+  //      أ) C منتصف [NP]      ب) استنتج أنّ ANMP مستطيل
+  //
+  // B et C sont les milieux de [AN] et [AM] : (BC) est la ligne des milieux du
+  // triangle ANM, donc (BC)//(NM). Et comme (AB) ⊥ (BC), l'angle droit se
+  // TRANSPORTE : (AN) ⊥ (NM). C'est le seul exercice du chapitre où l'angle
+  // droit n'est pas donné là où il sert.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex1', 'probleme', 'difficile', () => {
+    const [x, y] = F.choix(TRIPLETS);
+    const k = F.ent(1, 3);
+    // L'angle droit en B : on pose B à l'origine, A et C sur les axes.
+    const Bp = F.pt(0, 0), A = F.pt(0, F.q(y * k)), C = F.pt(F.q(x * k), F.Q0);
+    const Mp = F.symetriqueCentre(A, C), N = F.symetriqueCentre(A, Bp);
+    const P = F.intersection(C, N, A, F.translate(A, Bp, C));
+    if (!P) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B: Bp, C, M: Mp, N, P },
+      milieux: [['B', 'A', 'N'], ['C', 'A', 'M']],
+      // (AN) EST LA DROITE (AB) — B est le milieu de [AN], donc A, B, N sont
+      // alignés. Le moteur ne sait pas encore qu'une droite peut porter deux
+      // noms ; on lui donne donc l'angle droit sous les deux, ce que la figure
+      // montre et que l'énoncé dit en posant N sur (AB).
+      perps: [[dr('A', 'B'), dr('B', 'C')], [dr('A', 'N'), dr('B', 'C')],
+              [dr('A', 'P'), dr('A', 'B')]],
+      triangles: [['A', 'N', 'M']],
+      thales: [{ S: 'A', B: 'N', C: 'M', M: 'B', N: 'C' },
+               { S: 'N', B: 'A', C: 'P', M: 'B', N: 'C' }],
+      quadrilateres: ['ANMP'],
+      donne: [seg('A', 'B'), seg('B', 'C')],
+      buts: [
+        { but: ['para', dr('B', 'C'), dr('N', 'M')], question: 'بيّن أنّ (BC) // (NM).' },
+        { but: ['perp', dr('A', 'N'), dr('N', 'M')], question: 'بيّن أنّ (AN) ⊥ (NM).' },
+        { but: ['rect', 'A', 'N', 'M'],
+          question: 'استنتج أنّ المثلّث ANM قائم الزاوية في N.' },
+        { but: ['milieu', 'C', 'N', 'P'], question: 'بيّن أنّ C هي منتصف [NP].' },
+        { but: ['rect4', 'ANMP'], question: 'استنتج أنّ الرّباعي ANMP مستطيل.' }
+      ],
+      texte: g => ['ABC مثلّث قائم الزاوية في B حيث AB = ' + g(seg('A', 'B'))
+                   + ' و BC = ' + g(seg('B', 'C')) + '.',
+                   'M هي نظيرة A بالنسبة إلى C، و N هي نظيرة A بالنسبة إلى B.',
+                   'العمودي على (AB) في A يقطع (CN) في P.'],
+      figure: { segments: [['A', 'N'], ['A', 'M'], ['N', 'M'], ['B', 'C'],
+                           ['A', 'P'], ['P', 'M'], ['N', 'P']],
+                angles: [['A', 'B', 'C'], ['B', 'A', 'P']],
+                marques: [['A', 'B', 1], ['B', 'N', 1], ['A', 'C', 2], ['C', 'M', 2]] },
+      indice: '(BC) هي القطعة الرابطة بين منتصفَي [AN] و [AM] : الزاوية القائمة تنتقل'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },

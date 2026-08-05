@@ -1059,6 +1059,67 @@
     // premier est un parallélogramme quand [AC] et [BD] se coupent en leur
     // milieu, le second quand ce sont [AD] et [BC]. Les sommets se lisent en
     // tournant, et l'on ne peut pas les permuter sans changer la figure.
+    // LES DEUX RÈGLES DU PERPENDICULAIRE, venues de 7ᵉ et longtemps inutiles
+    // ici : ce chapitre calcule des longueurs, et l'angle droit y arrivait
+    // toujours par l'énoncé. Thales 2021 ex1 le fait VOYAGER — (AB) ⊥ (BC) et
+    // (BC)//(NM) donnent (AB) ⊥ (NM), et c'est là qu'est le triangle rectangle.
+    {
+      cle: 'perp-para-perp',
+      nom: 'إذا كان مستقيم عموديا على أحد مستقيمين متوازيين فهو عمودي على الآخر',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const q of f.perp) for (const p of f.para) {
+          for (const [a, b] of [[q[1], q[2]], [q[2], q[1]]]) {
+            for (const [u, v] of [[p[1], p[2]], [p[2], p[1]]]) {
+              if (b !== u) continue;
+              const but = ['perp', dr(a[0], a[1]), dr(v[0], v[1])];
+              if (dr(a[0], a[1]) === dr(v[0], v[1])) continue;
+              if (f.perp.some(z => cleFait(z) === cleFait(but))) continue;
+              out.push({ but, depuis: [q, p] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'perp-perp-para',
+      nom: 'مستقيمان عموديان على نفس المستقيم متوازيان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of f.perp) for (const b of f.perp) {
+          if (a === b) continue;
+          for (const [x, y] of [[a[1], a[2]], [a[2], a[1]]]) {
+            for (const [u, v] of [[b[1], b[2]], [b[2], b[1]]]) {
+              if (y !== u || x === v) continue;
+              const but = ['para', dr(x[0], x[1]), dr(v[0], v[1])];
+              if (dr(x[0], x[1]) === dr(v[0], v[1])) continue;
+              if (f.para.some(z => cleFait(z) === cleFait(but))) continue;
+              out.push({ but, depuis: [a, b] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    // Un triangle dont deux côtés sont perpendiculaires est rectangle : le
+    // fait « perp » et le fait « rect » disent la même chose, et le second
+    // seul ouvre Pythagore, le cercle et le reste.
+    {
+      cle: 'rect-par-perp',
+      nom: 'المثلّث الذي فيه ضلعان عموديان هو مثلّث قائم الزاوية',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.triangles || []) {
+          const [A, S, C] = t;
+          const q = ['perp', dr(S, A), dr(S, C)];
+          if (!f.perp.some(x => cleFait(x) === cleFait(q))) continue;
+          if (f.rect.some(r => r[2] === S && seg(r[1], r[3]) === seg(A, C))) continue;
+          out.push({ but: ['rect', A, S, C], depuis: [q] });
+        }
+        return out;
+      }
+    },
     // DEUX DROITES PARALLÈLES À UNE MÊME TROISIÈME SONT PARALLÈLES. Règle de
     // 7ᵉ, absente ici parce qu'aucun exercice ne l'avait encore demandée :
     // Varignon la réclame deux fois — (IJ)//(AC) et (LK)//(AC) donnent
