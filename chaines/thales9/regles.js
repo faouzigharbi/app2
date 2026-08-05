@@ -1379,14 +1379,25 @@
         for (const s of f.sym) par[s[2]] = { image: s[1], centre: s[3] };
         for (const a of Object.keys(par)) for (const b of Object.keys(par)) {
           if (a >= b || par[a].centre !== par[b].centre) continue;
-          const v = f.lg2.get(seg(a, b));
-          const cible = seg(par[a].image, par[b].image);
-          if (!v || f.lg2.has(cible)) continue;
-          out.push({ but: ['lg2', cible, v],
-                     depuis: [['sym', par[a].image, a, par[a].centre],
-                              ['sym', par[b].image, b, par[b].centre],
-                              ['lg2', seg(a, b), v]],
-                     calcul: [seg(a, b), cible, 'symetrie'] });
+          // DANS LES DEUX SENS. « Le symétrique conserve les distances » se
+          // lisait de l'original vers l'image, jamais de l'image vers
+          // l'original : devant « CD = 7, calcule AB », la règle se taisait.
+          // C'est le quatrième théorème symétrique trouvé à sens unique — le
+          // motif est constant, et l'audit du catalogue l'a cherché exprès.
+          const cible = seg(par[a].image, par[b].image), source = seg(a, b);
+          const dep = [['sym', par[a].image, a, par[a].centre],
+                       ['sym', par[b].image, b, par[b].centre]];
+          const v = f.lg2.get(source), w = f.lg2.get(cible);
+          if (v && !w) {
+            out.push({ but: ['lg2', cible, v],
+                       depuis: dep.concat([['lg2', source, v]]),
+                       calcul: [source, cible, 'symetrie'] });
+          }
+          if (w && !v) {
+            out.push({ but: ['lg2', source, w],
+                       depuis: dep.concat([['lg2', cible, w]]),
+                       calcul: [cible, source, 'symetrie'] });
+          }
         }
         return out;
       }
