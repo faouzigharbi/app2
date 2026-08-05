@@ -33,7 +33,16 @@
   const POSES = [[1, 0], [4, 3], [3, 4], [-3, 4], [4, -3], [-4, 3], [5, 12], [12, 5]];
   // Une demie reste exacte en rationnels : « ab/2 » n'a pas besoin qu'on
   // double tout le reste pour rester un nombre.
-  const nb = x => (Number.isInteger(x) ? F.q(x) : F.q(Math.round(x * 2), 2));
+  // UN QUART N'EST PAS UNE DEMIE. La conversion n'acceptait que les entiers et
+  // les moitiés, et arrondissait le reste en silence : 3,75 devenait 3,5, et le
+  // point censé être sur (UT) tombait à côté. Les coordonnées qui ne sont ni
+  // l'un ni l'autre se passent donc en RATIONNEL, exactement.
+  const nb = x => {
+    if (x && typeof x === 'object') return x;              // déjà un rationnel
+    if (Number.isInteger(x)) return F.q(x);
+    if (Number.isInteger(x * 2)) return F.q(x * 2, 2);
+    throw new Error('coordonnée inexacte: ' + x);
+  };
   function repere() {
     const [a, b] = F.choix(POSES);
     const h = Math.hypot(a, b);
@@ -433,6 +442,138 @@
       longueurs: [['A', 'B', ab], ['A', 'I', ab / 2], ['I', 'B', ab / 2]],
       fig: { cercles: [['A', 'I'], ['B', 'I']], segments: [['A', 'B']],
              marques: [['A', 'I'], ['I', 'B']] }
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — LA NATURE D'UN RÉBAEI, déduite des perpendiculaires et des
+  // parallèles. « ما نوع الرباعي BAIE ؟ علّل جوابك » revient dans presque
+  // tous les exercices des feuilles, et c'est toujours le même geste : deux
+  // parallélismes font un parallélogramme, un angle droit en fait un rectangle.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // droite PC 2 ex2-4 — BAIE, bâti sur le triangle rectangle BUT
+  item('droite PC 2 ex2', 'nature-quadrilatere', 'difficile', () => {
+    const P = repere();
+    // BAIE DOIT ÊTRE UN RECTANGLE, PAS UN CARRÉ. Si BA venait à valoir BE, la
+    // réponse « مستطيل » serait incomplète — l'élève qui répondrait « مربّع »
+    // aurait plus raison que le corrigé. On écarte donc le cas.
+    let bt, bu, ua, ba;
+    do {
+      bt = F.ent(3, 6); bu = F.ent(5, 9); ua = F.ent(2, bu - 2); ba = bu - ua;
+    } while (ba === bt);
+    // I EST SUR (UT), l'énoncé le dit. Posé au petit bonheur en face de A, il
+    // n'y était pas, et rien ne s'en apercevait : la démonstration restait
+    // vraie sur une figure fausse. On le calcule donc là où (UT) le met —
+    // x/bt + y/bu = 1 — et l'on DÉCLARE l'alignement pour qu'il soit vérifié.
+    const ix = F.q(bt * (bu - ba), bu);
+    const pts = { B: P(0, 0), T: P(bt, 0), U: P(0, bu),
+                  A: P(0, ba), I: P(ix, ba), E: P(ix, 0) };
+    return {
+      pts,
+      // Les côtés du quadrilatère sont nommés EN PREMIER : quand deux noms
+      // désignent la même droite, c'est celui-là qu'on veut lire dans la
+      // démonstration, pas le nom du triangle qui l'a fait naître.
+      lignes: [{ nom: '(BA)', A: 'B', B: 'A' }, { nom: '(AI)', A: 'A', B: 'I' },
+               { nom: '(IE)', A: 'I', B: 'E' }, { nom: '(EB)', A: 'E', B: 'B' },
+               { nom: '(BU)', A: 'B', B: 'U' }, { nom: '(BT)', A: 'B', B: 'T' }],
+      quads: [{ nom: 'BAIE', sommets: ['B', 'A', 'I', 'E'] }],
+      hyp: [['para', '(BA)', '(IE)'], ['para', '(AI)', '(EB)'],
+            ['perp', '(BA)', '(EB)']],
+      but: ['nature', 'BAIE', 'rectangle'],
+      donnees: ['BUT مثلّث قائم الزاوية في B حيث BT = ' + bt + ' و BU = ' + bu + '.',
+                'A نقطة من [BU] حيث BA = ' + ba + '، و I نقطة حيث (AI) ⊥ (BU).',
+                'E هي نقطة تقاطع العمودي على (BT) المارّ من I مع (BT).'],
+      longueurs: [['B', 'T', bt], ['B', 'U', bu], ['B', 'A', ba]],
+      alignements: [['U', 'T', 'I'], ['B', 'T', 'E']],
+      indice: 'ابدأ بالتوازيين، ثمّ انظر إلى الزاوية',
+      fig: { segments: [['B', 'T'], ['B', 'U'], ['U', 'T'],
+                        ['B', 'A'], ['A', 'I'], ['I', 'E'], ['E', 'B']],
+             angles: [['A', 'B', 'E'], ['B', 'A', 'I'], ['A', 'I', 'E']] }
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — LE MOSSATT ET LE CERCLE CIRCONSCRIT (Droites_70 ex28 à 31)
+  //
+  // Trois points non alignés, deux médiatrices, et un point à égale distance
+  // des trois. C'est le cercle circonscrit, et il se démontre en trois lignes
+  // avec la seule propriété d'équidistance.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ex28-1 — pourquoi MA = MC
+  item('Droites_70 ex28', 'cercle-circonscrit', 'difficile', () => {
+    const P = repere();
+    const [a, b] = F.choix([[6, 8], [8, 6], [12, 10], [10, 12]]);
+    const pts = { A: P(0, 0), B: P(a, 0), C: P(0, b),
+                  I: P(a / 2, 0), J: P(a / 2, 3), K: P(0, b / 2), L: P(3, b / 2),
+                  M: P(a / 2, b / 2) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }, { nom: '(AC)', A: 'A', B: 'C' },
+               { nom: '(d1)', A: 'I', B: 'J' }, { nom: '(d2)', A: 'K', B: 'L' }],
+      segments: [{ nom: '[AB]', A: 'A', B: 'B', milieu: 'I' },
+                 { nom: '[AC]', A: 'A', B: 'C', milieu: 'K' }],
+      hyp: [['med', '(d1)', '[AB]'], ['med', '(d2)', '[AC]']],
+      but: ['egal', 'MB', 'MC'],
+      donnees: ['A و B و C ثلاث نقاط ليست على استقامة واحدة.',
+                '(d1) هو الموسط العمودي للقطعة [AB]، و (d2) هو الموسط العمودي للقطعة [AC].',
+                'M هي نقطة تقاطع (d1) و (d2).'],
+      longueurs: [['A', 'B', a], ['A', 'C', b]],
+      indice: 'كلّ موسط عمودي يعطي تساوي بعد، ثمّ اجمع النتيجتين',
+      fig: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C'],
+                        ['M', 'A'], ['M', 'B'], ['M', 'C']],
+             droites: [['I', 'J'], ['K', 'L']],
+             marques: [['A', 'I'], ['I', 'B']],
+             caches: ['J', 'L'] }
+    };
+  });
+
+  // ex28-2 — et alors le moussat de [BC] passe par M
+  item('Droites_70 ex28', 'cercle-circonscrit', 'difficile', () => {
+    const P = repere();
+    const [a, b] = F.choix([[6, 8], [8, 6], [12, 10], [10, 12]]);
+    const pts = { A: P(0, 0), B: P(a, 0), C: P(0, b), M: P(a / 2, b / 2) };
+    // le milieu de [BC], et la médiatrice qui en part
+    pts.O = F.milieu(pts.B, pts.C);
+    pts.Q = F.perpDepuis(pts.O, pts.B, pts.C, F.q(1, 3));
+    return {
+      pts,
+      lignes: [{ nom: '(BC)', A: 'B', B: 'C' }, { nom: '(d3)', A: 'O', B: 'Q' }],
+      segments: [{ nom: '[BC]', A: 'B', B: 'C', milieu: 'O' }],
+      hyp: [['med', '(d3)', '[BC]'],
+            ['egal', 'MA', 'MB'], ['egal', 'MA', 'MC']],
+      but: ['passe', '(d3)', 'M'],
+      donnees: ['A و B و C ثلاث نقاط ليست على استقامة واحدة.',
+                'M نقطة حيث MA = MB و MA = MC.',
+                '(d3) هو الموسط العمودي للقطعة [BC]، و O منتصفها.'],
+      longueurs: [['A', 'B', a], ['A', 'C', b]],
+      indice: 'استعمل عكس خاصية الموسط العمودي',
+      fig: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C'],
+                        ['M', 'A'], ['M', 'B'], ['M', 'C']],
+             droites: [['O', 'Q']], marques: [['B', 'O'], ['O', 'C']],
+             caches: ['Q'] }
+    };
+  });
+
+  // ex30 / ex31 — le triangle isocèle : (AI) est le moussat de [BC]
+  item('Droites_70 ex30', 'cercle-circonscrit', 'moyen', () => {
+    const P = repere();
+    const [c, h] = F.choix([[6, 4], [8, 3], [10, 12], [6, 8]]);
+    const pts = { B: P(0, 0), C: P(c, 0), I: P(c / 2, 0), A: P(c / 2, h) };
+    return {
+      pts,
+      lignes: [{ nom: '(BC)', A: 'B', B: 'C' }, { nom: '(AI)', A: 'A', B: 'I' }],
+      segments: [{ nom: '[BC]', A: 'B', B: 'C', milieu: 'I' }],
+      hyp: [['egal', 'AB', 'AC'], ['mil', 'I', '[BC]']],
+      but: ['med', '(AI)', '[BC]'],
+      donnees: ['ABC مثلّث متقايس الضلعين قمته الرئيسية A، حيث BC = ' + c + '.',
+                'I منتصف القطعة [BC].'],
+      longueurs: [['B', 'C', c], ['B', 'I', c / 2]],
+      indice: 'نقطتان متساويتا البعد عن B و C تكفيان لتحديد الموسط العمودي',
+      fig: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C'], ['A', 'I']],
+             marques: [['B', 'I'], ['I', 'C']],
+             angles: [['B', 'I', 'A']] }
     };
   });
 

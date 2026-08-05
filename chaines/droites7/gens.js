@@ -26,7 +26,9 @@
     ['distance', 'المسقط العمودي و البعد عن مستقيم'],
     ['tangente-para', 'المماس و التوازي'],
     ['position-droite-cercle', 'الوضعية النسبية لدائرة و مستقيم'],
-    ['position-deux-cercles', 'الوضعية النسبية لدائرتين']
+    ['position-deux-cercles', 'الوضعية النسبية لدائرتين'],
+    ['nature-quadrilatere', 'طبيعة الرباعي'],
+    ['cercle-circonscrit', 'الموسط العمودي و الدائرة المحيطة']
   ];
 
   // Une famille peut compter moins d'items que la page n'en montre : on la

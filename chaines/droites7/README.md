@@ -63,7 +63,7 @@ chaîne, mais la même exigence — ce qui est écrit est recalculé, verdict
 compris. « المستقيم مماس للدائرة » n'est pas une opinion : c'est
 d(O, (D)) = r, et rien d'autre.
 
-## Les sept règles
+## Les treize règles
 
 1. `مستقيمان عموديان على نفس المستقيم متوازيان`
 2. `إذا كان مستقيم عموديا على أحد مستقيمين متوازيين فهو عمودي على الآخر`
@@ -72,8 +72,14 @@ d(O, (D)) = r, et rien d'autre.
 5. `المستقيم العمودي على قطعة و المارّ من منتصفها هو موسطها العمودي`
 6. `كلّ نقطة من الموسط العمودي لقطعة متساوية البعد عن طرفيها`
 7. `المماس لدائرة في نقطة عمودي على الشعاع في تلك النقطة`
+8. `منتصف قطعة متساوي البعد عن طرفيها`
+9. `إذا كان طولان يساويان طولا ثالثا فهما متساويان`
+10. `كلّ نقطة متساوية البعد عن طرفي قطعة تنتمي إلى موسطها العمودي`
+11. `المستقيم المارّ من نقطتين متساويتي البعد عن طرفي قطعة هو موسطها العمودي`
+12. `الرباعي الذي أضلاعه متوازية مثنى مثنى هو متوازي أضلاع`
+13. `متوازي أضلاع له زاوية قائمة هو مستطيل`
 
-Sept et pas une de plus : un élève de 7ème qui n'a pas vu les angles
+Treize et pas une de plus : un élève de 7ème qui n'a pas vu les angles
 alternes-internes ne doit pas lire une démonstration qui s'en sert.
 
 ## Ce qui a été écarté, et pourquoi
@@ -90,16 +96,38 @@ node verifier.js 60
 CONTRE_EXEMPLES=1 node verifier.js
 ```
 
-Dix falsifications sont tentées à chaque fois — un point déplacé d'une unité,
+Onze falsifications sont tentées à chaque fois — un point déplacé d'une unité,
 une perpendiculaire changée en parallèle, une droite réduite à un point, un
 verdict retourné, une distance changée, **le rayon donné pour tangente** (un
 point commun ne suffit pas), une étape dupliquée, une chaîne tronquée, l'aide
-retirée, la figure retirée. Le validateur doit les refuser toutes.
+retirée, la figure retirée, **un quadrilatère promu** (un rectangle donné pour
+un carré). Le validateur doit les refuser toutes.
 
-## Les longueurs annoncées sont des affirmations
+Une falsification peut échouer de deux façons, et les deux se voient : ne
+RIEN changer — chercher un verdict dans une chaîne qui n'en a pas —, ou
+changer quelque chose qui reste VRAI — promouvoir en carré un rectangle qui
+se trouve en être un. On retire dans les deux cas, et si l'on n'y arrive
+jamais, on le dit.
 
-« AB = 6 » écrit dans l'énoncé est aussi vérifiable que « (D) // (D') », et
-l'oublier a coûté : un repère qui doublait les coordonnées donnait une figure
-où AB valait 18 quand le texte annonçait 9, et rien ne le voyait — jusqu'à ce
-que la famille des distances calcule la réponse et la trahisse. Chaque item
-déclare donc les longueurs qu'il écrit, et le validateur les recalcule.
+## Tout ce que l'énoncé écrit est une affirmation
+
+Deux fois le même défaut, trouvé deux fois de la même façon — en imprimant.
+
+**Les longueurs.** « AB = 6 » écrit dans l'énoncé est aussi vérifiable que
+« (D) // (D') », et l'oublier a coûté : un repère qui doublait les
+coordonnées donnait une figure où AB valait 18 quand le texte annonçait 9, et
+rien ne le voyait — jusqu'à ce que la famille des distances calcule la réponse
+et la trahisse.
+
+**Les alignements.** « I est le point d'intersection avec (UT) » aussi. Posé
+au petit bonheur en face de A, I n'était pas sur (UT), et la démonstration
+restait vraie… sur une figure fausse. Les items déclarent donc `alignements`,
+et le validateur les recalcule. Il a mordu dans la minute.
+
+Sous ce dernier se cachait un troisième défaut : la conversion des coordonnées
+n'acceptait que les entiers et les moitiés, et **arrondissait le reste en
+silence** — 3,75 devenait 3,5. Elle refuse désormais ce qu'elle ne sait pas
+rendre exactement, et les coordonnées qui ne sont ni entières ni demies se
+passent en rationnel.
+
+

@@ -24,7 +24,14 @@
     mil: (p, s) => p + ' هو منتصف القطعة ' + s,
     // « (Δ) مماس للدائرة (C) في A » — le point de contact fait partie de
     // l'énoncé : une tangente sans son point n'apprend rien.
-    tang: (d, t) => d + ' مماس للدائرة ' + t.split('@')[1] + ' في ' + t.split('@')[0]
+    tang: (d, t) => d + ' مماس للدائرة ' + t.split('@')[1] + ' في ' + t.split('@')[0],
+    nature: (q, v) => 'الرباعي ' + q + ' هو ' + NATURES[v]
+  };
+  const NATURES = {
+    parallelogramme: 'متوازي أضلاع',
+    rectangle: 'مستطيل',
+    losange: 'معيّن',
+    carre: 'مربّع'
   };
 
   // Un fait s'écrit avec les NOMS de l'énoncé, jamais avec les clés.
@@ -57,6 +64,11 @@
       cle[g.nom] = k;
     }
 
+    // UN QUADRILATÈRE EST QUATRE CÔTÉS PRIS DANS L'ORDRE. On les nomme une
+    // fois pour toutes : les règles qui décident de sa nature ne parlent que
+    // de ces quatre-là, et l'ordre des sommets n'est pas décoratif.
+    const quads = new Map();
+
     const cercles = s.cercles || [];
     // Le rayon d'un cercle est une droite comme une autre : elle porte un nom,
     // et c'est par elle que la tangente devient une perpendiculaire.
@@ -85,6 +97,16 @@
     for (const l of s.lignes) if (!ptsDe[cle[l.nom]]) ptsDe[cle[l.nom]] = [l.A, l.B];
     for (const g of s.segments || []) ptsDe['seg:' + g.nom] = [g.A, g.B];
 
+    for (const g of s.quads || []) {
+      const [A1, B1, C1, D1] = g.sommets;
+      quads.set(g.nom, {
+        AB: R.cleDroite(s.pts[A1], s.pts[B1]), BC: R.cleDroite(s.pts[B1], s.pts[C1]),
+        CD: R.cleDroite(s.pts[C1], s.pts[D1]), DA: R.cleDroite(s.pts[D1], s.pts[A1]),
+        sommets: g.sommets
+      });
+      noms[g.nom] = g.nom;
+    }
+
     const enCle = f => [f[0], cle[f[1]] || f[1], cle[f[2]] || f[2]];
     return {
       s, noms, cle, memes, segments, milieux, bouts, passe, ptsDe,
@@ -92,7 +114,7 @@
       but: enCle(s.but),
       cercles,
       ctx: {
-        segments,
+        segments, quads,
         ligneDe: k => segments.get(k),
         milieuDe: k => milieux[k],
         boutsDe: k => bouts[k],
@@ -273,6 +295,8 @@
     if (etapes.length < 4) return null;
     verifs = verifs.concat((s.longueurs || []).map(([a1, b1, v]) => ({
       type: 'lg', a: [a1, b1], valeur: String(v), texte: a1 + b1 + ' = ' + v
+    })), (s.alignements || []).map(([a1, b1, p1]) => ({
+      type: 'passe', a: [a1, b1], b: p1, texte: p1 + ' ∈ (' + a1 + b1 + ')'
     })));
     const enonce = (s.donnees || []).slice();
     if (s.fig) {
@@ -308,7 +332,13 @@
   function chaineRegles(item) {
     let S;
     try { S = scene(item); } catch (e) { return null; }
-    const suite = R.chercher(S.hyp.concat(S.passe), S.but, S.ctx);
+    // CE QU'IL FAUT DÉMONTRER NE SE LIT PAS SUR LA FIGURE. Les appartenances
+    // sont relevées sur les coordonnées — c'est légitime, cela se voit — mais
+    // si le but EST une appartenance, la relever reviendrait à le poser comme
+    // acquis, et la démonstration disparaîtrait au lieu de s'écrire.
+    const cleBut0 = R.cleFait(S.but);
+    const lues = S.passe.filter(f => R.cleFait(f) !== cleBut0);
+    const suite = R.chercher(S.hyp.concat(lues), S.but, S.ctx);
     if (!suite || !suite.length) return null;
 
     const etapes = [];
@@ -365,6 +395,11 @@
     // dans le catalogue produirait ici un fait faux, et il serait vu.
     const enPoints = f => {
       const g = x => S.ptsDe[x] || x;
+      if (f[0] === 'nature') {
+        const q = S.ctx.quads.get(f[1]);
+        return { type: 'nature', a: q ? q.sommets : [], b: f[2],
+                 texte: ecrire(f, S.noms) };
+      }
       return { type: f[0], a: g(f[1]), b: g(f[2]), texte: ecrire(f, S.noms) };
     };
     const affirme = S.hyp.concat(suite.map(n => n.fait)).concat([S.but]);
@@ -374,7 +409,14 @@
     // que rien ne reliait l'énoncé au dessin.
     const lgs = (S.s.longueurs || []).map(([a1, b1, v]) => ({
       type: 'lg', a: [a1, b1], valeur: String(v), texte: a1 + b1 + ' = ' + v
-    }));
+    })).concat(
+    // « I est le point d'intersection avec (UT) » est une affirmation de plus,
+    // et elle se vérifie. Posé ailleurs, le point laissait la démonstration
+    // vraie sur une figure fausse — et personne ne s'en apercevait.
+      (S.s.alignements || []).map(([a1, b1, p1]) => ({
+        type: 'passe', a: [a1, b1], b: p1,
+        texte: p1 + ' ∈ (' + a1 + b1 + ')'
+      })));
     return {
       enonce, etapes,
       indice: S.s.indice || 'ابدأ من المعطيات، و طبّق قاعدة واحدة في كلّ مرحلة',

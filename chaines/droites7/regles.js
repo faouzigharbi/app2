@@ -130,6 +130,109 @@
         return out;
       }
     },
+    // ── L'ÉGALITÉ DES LONGUEURS ─────────────────────────────────────────
+    {
+      cle: 'milieu-equidistance',
+      nom: 'منتصف قطعة متساوي البعد عن طرفيها',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [m, segs] of f.mil) for (const s of segs) {
+          const [a, b] = ctx.boutsDe(s) || [];
+          if (a && b) out.push({ but: ['egal', m + a, m + b], depuis: [['mil', m, s]] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'egalite-transitive',
+      nom: 'إذا كان طولان يساويان طولا ثالثا فهما متساويان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [x, ys] of f.egal) for (const y of ys) {
+          for (const z of f.egal.get(y) || []) {
+            if (z === x) continue;
+            out.push({ but: ['egal', x, z], depuis: [['egal', x, y], ['egal', y, z]] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'equidistant-mediatrice',
+      nom: 'كلّ نقطة متساوية البعد عن طرفي قطعة تنتمي إلى موسطها العمودي',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [d, segs] of f.med) for (const s of segs) {
+          const [a, b] = ctx.boutsDe(s) || [];
+          if (!a) continue;
+          for (const [x, ys] of f.egal) {
+            if (x.length !== 2 || x[1] !== a) continue;
+            const p = x[0];
+            if (!ys.includes(p + b)) continue;
+            out.push({ but: ['passe', d, p],
+                       depuis: [['egal', p + a, p + b], ['med', d, s]] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'deux-points-mediatrice',
+      nom: 'المستقيم المارّ من نقطتين متساويتي البعد عن طرفي قطعة هو موسطها العمودي',
+      // C'est la règle qui démontre « (AI) est la médiatrice de [BC] » dans le
+      // triangle isocèle : A est à égale distance de B et C, I aussi puisqu'il
+      // en est le milieu, et deux points suffisent à tenir une droite.
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [s, l] of ctx.segments) {
+          const [a, b] = ctx.boutsDe(s) || [];
+          if (!a) continue;
+          const bons = [];
+          for (const [x, ys] of f.egal) {
+            if (x.length === 2 && x[1] === a && ys.includes(x[0] + b)) bons.push(x[0]);
+          }
+          for (const d of f.passe.keys()) {
+            if (d === l) continue;
+            const dessus = bons.filter(p => (f.passe.get(d) || []).includes(p));
+            if (dessus.length < 2) continue;
+            const [p, q2] = dessus;
+            out.push({ but: ['med', d, s],
+                       depuis: [['egal', p + a, p + b], ['passe', d, p],
+                                ['egal', q2 + a, q2 + b], ['passe', d, q2]] });
+          }
+        }
+        return out;
+      }
+    },
+    // ── LA NATURE D'UN QUADRILATÈRE ─────────────────────────────────────
+    {
+      cle: 'para-para-parallelogramme',
+      nom: 'الرباعي الذي أضلاعه متوازية مثنى مثنى هو متوازي أضلاع',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [q, c] of ctx.quads) {
+          if (!(f.para.get(c.AB) || []).includes(c.CD)) continue;
+          if (!(f.para.get(c.BC) || []).includes(c.DA)) continue;
+          out.push({ but: ['nature', q, 'parallelogramme'],
+                     depuis: [['para', c.AB, c.CD], ['para', c.BC, c.DA]] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'parallelogramme-angle-rectangle',
+      nom: 'متوازي أضلاع له زاوية قائمة هو مستطيل',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [q, c] of ctx.quads) {
+          if (!(f.nature.get(q) || []).includes('parallelogramme')) continue;
+          if (!(f.perp.get(c.AB) || []).includes(c.DA)) continue;
+          out.push({ but: ['nature', q, 'rectangle'],
+                     depuis: [['nature', q, 'parallelogramme'], ['perp', c.AB, c.DA]] });
+        }
+        return out;
+      }
+    },
     {
       cle: 'med-equidistance',
       nom: 'كلّ نقطة من الموسط العمودي لقطعة متساوية البعد عن طرفيها',
@@ -158,7 +261,7 @@
   function tables(liste) {
     const t = { perp: new Map(), para: new Map(), med: new Map(),
                 passe: new Map(), egal: new Map(), mil: new Map(),
-                tang: new Map() };
+                tang: new Map(), nature: new Map() };
     const pose = (m, a, b) => {
       if (!m.has(a)) m.set(a, []);
       if (m.get(a).indexOf(b) < 0) m.get(a).push(b);

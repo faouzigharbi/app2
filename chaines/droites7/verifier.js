@@ -118,6 +118,22 @@ function verifierFait(v, pts) {
       else vu = 'secants';
       return vu === v.valeur;
     }
+    // LA NATURE D'UN QUADRILATÈRE SE RECALCULE, sommet par sommet et dans
+    // l'ordre. « ABCD est un parallélogramme » veut dire AB⃗ = DC⃗ , et rien
+    // d'autre ; un rectangle y ajoute un angle droit, un losange deux côtés
+    // consécutifs égaux, un carré les deux.
+    case 'nature': {
+      const [A1, B1, C1, D1] = (v.a || []).map(p);
+      if (!A1 || !B1 || !C1 || !D1) return null;
+      const u = F.vec(A1, B1), w = F.vec(D1, C1);
+      const parall = F.qEgaux(u.x, w.x) && F.qEgaux(u.y, w.y);
+      const droit = F.perp(A1, B1, A1, D1);
+      const cotes = F.memeLongueur(A1, B1, A1, D1);
+      return { parallelogramme: parall,
+               rectangle: parall && droit,
+               losange: parall && cotes,
+               carre: parall && droit && cotes }[v.b] === true;
+    }
     default: return null;                       // type inconnu : on le dira
   }
 }
@@ -139,7 +155,7 @@ function verifierBrut(brut) {
 
   // Une droite dégénérée passe tous les tests et n'en est pas une.
   for (const v of c.verifs) {
-    if (v.type === 'pos-dc' || v.type === 'pos-cc' || v.type === 'lg') continue;
+    if (['pos-dc', 'pos-cc', 'lg', 'nature'].indexOf(v.type) >= 0) continue;
     for (const cote of [v.a, v.b]) {
       if (!Array.isArray(cote)) continue;
       if (F.memesPoints(c.pts[cote[0]], c.pts[cote[1]])) {
@@ -193,15 +209,24 @@ if (process.env.CONTRE_EXEMPLES) {
   const NUMS = Object.keys(F.PROBLEMES).map(Number);
   // Une falsification qui ne falsifie rien n'est pas un test : on retire
   // jusqu'à ce que la mutation change vraiment quelque chose.
+  // Deux façons pour une falsification de ne rien prouver, et toutes deux
+  // doivent se voir : la mutation peut ne RIEN CHANGER — chercher un verdict
+  // dans une chaîne qui n'en a pas —, ou changer quelque chose qui reste VRAI
+  // — promouvoir en carré un rectangle qui se trouve en être un. On retire
+  // dans les deux cas, et si l'on n'y arrive jamais, on le dit : un
+  // contre-exemple qui n'en est pas un mesure la chance, pas le validateur.
   const pousse = (nom, f) => {
-    for (let essai = 0; essai < 60; essai++) {
+    for (let essai = 0; essai < 80; essai++) {
       const n = NUMS[essai % NUMS.length];
       const avant = copie(F.tirer(n)[0]);
       const c = copie(avant);
       f(c);
-      if (empreinte(c) !== empreinte(avant)) return cas.push([nom, c]);
+      if (empreinte(c) === empreinte(avant)) continue;
+      let probs;
+      try { probs = verifierBrut(c); } catch (e) { probs = ['exception']; }
+      if (probs.length) return cas.push([nom, c]);
     }
-    cas.push([nom + ' — AUCUNE MUTATION POSSIBLE', null]);
+    cas.push([nom + ' — AUCUNE FALSIFICATION POSSIBLE', null]);
   };
 
   pousse('un point déplacé', c => {
@@ -233,6 +258,10 @@ if (process.env.CONTRE_EXEMPLES) {
     const [contact, nom] = String(v.b).split('@');
     const cc = (c.controle.cercles || []).find(x => x.nom === nom);
     if (cc) v.a = [cc.centre, contact];
+  });
+  pousse('un quadrilatère promu', c => {
+    const v = c.controle.verifs.find(x => x.type === 'nature');
+    if (v) v.b = (v.b === 'carre') ? 'rectangle' : 'carre';
   });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });
