@@ -2100,6 +2100,61 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex6 — LA PARALLÈLE AUX BASES QUI PASSE PAR LE CROISEMENT
+  //
+  // « ABCD شبه منحرف قاعدتاه [AB] و [CD] حيث AB = 6 و CD = 9، و القطران
+  // يتقاطعان في O. المستقيم المارّ من O و الموازي لـ(AB) يقطع (BC) في N. »
+  //
+  //   1) بيّن أنّ 6OC = 9OA   —   c'est OA/OC = AB/CD
+  //   2) M من [AD] حيث AM = (2/5)AD : حقّق أنّ M ∈ (ON)
+  //   3) بيّن أنّ BN/BC = 2/5      4) أحسب OM و ON
+  //
+  // Le 2/5 de l'énoncé n'est pas un nombre choisi : c'est AB/(AB + CD), et
+  // c'est exactement ce qui met M sur la parallèle menée de O. Et OM = ON —
+  // le point O partage ce segment en deux moitiés égales, chacune valant
+  // AB×CD/(AB + CD), la même moyenne harmonique que le trapèze de THALES0.
+  //
+  // C'est ici que « trois points alignés ne font qu'une droite » sert enfin
+  // toute seule : (OM) est la droite (ON), et c'est de là que vient (OM)//(AB).
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex6', 'probleme', 'difficile', () => {
+    const a = F.ent(2, 8), c = a + F.ent(1, 8), h = F.ent(3, 9);
+    const A = F.pt(0, 0), B = F.pt(a, 0);
+    const D = F.pt(F.q(-1), F.q(-h)), C = F.pt(F.q(c - 1), F.q(-h));
+    const O = F.intersection(A, C, B, D);
+    if (!O) throw new Error('pose dégénérée');
+    const t = F.q(a, a + c);
+    const Mp = F.surDroite(A, D, t), N = F.surDroite(B, C, t);
+    return {
+      K: 1, points: { A, B, C, D, O, M: Mp, N },
+      para: [[dr('A', 'B'), dr('D', 'C')], [dr('O', 'N'), dr('A', 'B')],
+             [dr('O', 'N'), dr('D', 'C')]],
+      alignements: [['O', 'M', 'N']],
+      thales: [{ S: 'O', B: 'C', C: 'D', M: 'A', N: 'B' },
+               { S: 'B', B: 'D', C: 'C', M: 'O', N: 'N' },
+               { S: 'C', B: 'A', C: 'B', M: 'O', N: 'N' },
+               { S: 'D', B: 'A', C: 'B', M: 'M', N: 'O' }],
+      entre: [['B', 'O', 'D'], ['A', 'O', 'C']],
+      donne: [seg('A', 'B'), seg('C', 'D')],
+      buts: [
+        { but: ['rapport', 'OA|OC', null], question: 'بيّن أنّ OA/OC = AB/CD.' },
+        { but: ['rapport', 'BO|BD', null], question: 'استنتج BO/BD.' },
+        { but: ['rapport', 'BN|BC', null], question: 'بيّن أنّ BN/BC = BO/BD.' },
+        { but: ['lg2', seg('N', 'O'), null], question: 'أحسب ON.' },
+        { but: ['lg2', seg('M', 'O'), null], question: 'أحسب OM.' }
+      ],
+      texte: g => ['ABCD شبه منحرف قاعدتاه [AB] و [CD] حيث AB = ' + g(seg('A', 'B'))
+                   + ' و CD = ' + g(seg('C', 'D')) + '، و القطران يتقاطعان في O.',
+                   'المستقيم المارّ من O و الموازي لـ (AB) يقطع (BC) في N،',
+                   'و M نقطة من [AD] تنتمي إلى (ON).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['A', 'C'], ['B', 'D'], ['M', 'N']] },
+      indice: 'الفراشة في O تعطي النّسبة، ثمّ التكملة إلى 1، ثمّ طالس مرّتين'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
