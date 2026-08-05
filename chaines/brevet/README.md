@@ -32,12 +32,20 @@ Seul l'exercice 5 manque : c'est de la **géométrie de l'espace** (pyramide
 | `ex32.html` | التمرين 2 | 6 | un losange dans un repère, **trahi par ses diagonales** : elles se coupent en `K(2 ; 0)`, leur milieu commun, et sont perpendiculaires — aucune longueur de côté n'est nécessaire |
 | `ex33.html` | التمرين 3 | 5 | `a` et `b` sont tous deux **négatifs** (24 < 25 et 18 < 49), donc `b < a < 0` donne `b/a > 1` — et non l'inverse |
 | `ex34.html` | التمرين 4 | 6 | une identité qui ferme tout : `(a − b)² = ab`, d'où `1/b − 1/a = 1/(a − b)` sans rien calculer |
+| `ex36.html` | التمرين 6 | **20** | « نموذجية مدنين » — le plus long exercice du livre, vingt volets sur **une seule figure** |
 
-Trois exercices restent : le **5** (sa partie I est de l'arithmétique, sa
-partie II demande l'**arbre de choix**, qui n'a aucun chapitre), le **6** — le
-plus long du livre, huit questions et une trentaine de sous-questions dans un
-repère, dont toute la machinerie existe maintenant — et le **7**, un prisme
-droit, donc de l'espace.
+**L'exercice 6** mérite qu'on s'y arrête. `B(3√2 + 1 ; 0)` n'est pas un nombre
+décoratif : il place `D` exactement en `2√2`, donc `E` sur `(AJ)` à la hauteur
+`√2 + 1` — et c'est ce qui fait de `BCE` un triangle **à la fois** isocèle et
+rectangle. Un autre `B` casserait la moitié de l'exercice, et c'est exactement
+ce que la première falsification vérifie. Tout y vit dans ℚ[√2], donc rien
+n'est approché : `AB = 3 + 3√2` se divise par 3 sans reste — d'où le `AC = AB/3`
+de l'énoncé —, et `1/(√2 + 1) = √2 − 1` rend lisible le changement de repère
+final, où huit points doivent être relus dans `(D, B, E)`.
+
+Deux exercices restent : le **5** (sa partie I est de l'arithmétique, sa
+partie II demande l'**arbre de choix**, qui n'a aucun chapitre) et le **7**, un
+prisme droit, donc de l'espace.
 
 ## Séance 7 — entière, les quatre exercices
 
@@ -121,8 +129,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 5 160 questions, 67 000 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 211/211
+    node verifier.js 40             # 5 960 questions, 70 600 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 247/247
     node _build.js .                # régénérer les pages
 
 ## Six coquilles du livre, relevées par le calcul

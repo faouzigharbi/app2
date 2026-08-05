@@ -397,6 +397,85 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("le produit avec l inverse ne vaut plus 1", parQuestion(34, 5),
     c => { c.controle.claims[2][1] = '-1'; });
 
+  // ── التمرين 6 — « نموذجية مدنين », vingt volets sur une seule figure ───
+  //
+  // Le point B(3√2 + 1 ; 0) n'est pas décoratif : il place D exactement en 2√2,
+  // donc E sur (AJ) à la hauteur √2 + 1, et c'est ce qui fait de BCE un triangle
+  // À LA FOIS isocèle et rectangle. Le déplacer casse la moitié de l'exercice —
+  // et c'est exactement ce que la première falsification vérifie.
+  pousse("B deplace : BCE cesse d etre rectangle", parQuestion(36, 5),
+    c => { c.controle.points.B = ['point', '3√2 + 2', '0']; });
+  pousse("AB annonce 3√2 + 1", parQuestion(36, 0),
+    c => { c.controle.faits[0][3] = '3√2 + 1'; });
+  pousse("BI pris egal a AI", parQuestion(36, 0),
+    c => { c.controle.faits[2][3] = '3'; });
+  pousse("C place au tiers en partant de B", parQuestion(36, 1),
+    c => { c.controle.points.C = ['point', '3√2 + 1 - (√2 + 1)', '0']; });
+  pousse("le rapport AC/AB annonce 1/2", parQuestion(36, 1),
+    c => { c.controle.faits[4][5] = '1/2'; });
+  pousse("BC pris egal a AC", parQuestion(36, 2),
+    c => { c.controle.faits[0][3] = '√2 + 1'; });
+  pousse("D pris milieu de [AB]", parQuestion(36, 3),
+    c => { c.controle.points.D = ['milieu', 'A', 'B']; });
+  pousse("l abscisse de D annoncee 2√2 + 1", parQuestion(36, 3),
+    c => { c.controle.faits[1][2] = '2√2 + 1'; });
+  pousse("DE annonce √2", parQuestion(36, 4),
+    c => { c.controle.faits[0][3] = '√2'; });
+  pousse("E pris sur (AI) au lieu de (AJ)", parQuestion(36, 4),
+    c => { c.controle.points.E = ['inter', 'D', 'Zd', 'A', 'I']; });
+  pousse("l aire du triangle BCE annoncee 3 + √2", parQuestion(36, 5),
+    c => { c.controle.faits[2][5] = '3 + √2'; });
+  pousse("BCE declare isocele en B", parQuestion(36, 5),
+    c => { c.controle.faits[0] = ['isocele', 'B', 'C', 'E']; });
+  pousse("BE annonce 2 + 2√2", parQuestion(36, 6),
+    c => { c.controle.faits[0][3] = '2 + 2√2'; });
+  pousse("le carre de BC faux", parQuestion(36, 6),
+    c => { c.controle.faits[2][3] = '12 + 4√2'; });
+  pousse("le rapport JE/JA annonce 2", parQuestion(36, 7),
+    c => { c.controle.faits[2][5] = '2'; });
+  pousse("le carre de JE faux", parQuestion(36, 7),
+    c => { c.controle.faits[1][3] = '5'; });
+  pousse("ODEF declare rectangle dans le mauvais ordre", parQuestion(36, 8),
+    c => { c.controle.faits[0] = ['rectangle', 'O', 'E', 'D', 'F']; });
+  pousse("l aire du rectangle ODEF annoncee 4 + √2", parQuestion(36, 8),
+    c => { c.controle.faits[1][6] = '4 + √2'; });
+  pousse("l ordonnee de F prise nulle", parQuestion(36, 9),
+    c => { c.controle.faits[1][2] = '0'; });
+  pousse("EH annonce 2√2", parQuestion(36, 10),
+    c => { c.controle.faits[0][3] = '2√2'; });
+  pousse("H pris sur (OI) au lieu de (IJ)", parQuestion(36, 10),
+    c => { c.controle.points.H = ['inter', 'O', 'I', 'E', 'F']; });
+  pousse("BEHI declare parallelogramme dans le mauvais ordre", parQuestion(36, 11),
+    c => { c.controle.faits[0] = ['parallelogramme', 'B', 'H', 'E', 'I']; });
+  pousse("l aire de BEHI annoncee 6 + 6√2", parQuestion(36, 11),
+    c => { c.controle.faits[1][6] = '6 + 6√2'; });
+  pousse("HJ annonce √2", parQuestion(36, 12),
+    c => { c.controle.faits[0][3] = '√2'; });
+  pousse("l abscisse de H annoncee √2", parQuestion(36, 13),
+    c => { c.controle.faits[0][2] = '√2'; });
+  pousse("la perpendicularite annoncee entre (LH) et (EC)", parQuestion(36, 14),
+    c => { c.controle.faits[0] = ['perpendiculaires', 'L', 'H', 'E', 'C']; });
+  pousse("L pris sur (OI)", parQuestion(36, 14),
+    c => { c.controle.points.L = ['inter', 'E', 'C', 'O', 'I']; });
+  pousse("K pris symetrique de A par rapport a H", parQuestion(36, 15),
+    c => { c.controle.points.K = ['sym', 'A', 'H']; });
+  pousse("l ordonnee de K annoncee positive", parQuestion(36, 15),
+    c => { c.controle.faits[3][2] = '√2 + 1'; });
+  pousse("M pris milieu de [BH]", parQuestion(36, 16),
+    c => { c.controle.points.M = ['milieu', 'B', 'H']; });
+  pousse("l alignement annonce sur M, A et H", parQuestion(36, 16),
+    c => { c.controle.faits[0] = ['alignes', 'M', 'A', 'H']; });
+  pousse("l ensemble N annonce sur la mauvaise abscisse", parQuestion(36, 17),
+    c => { c.controle.faits[0][2] = '√2'; });
+  pousse("l ensemble P annonce sur la mauvaise ordonnee", parQuestion(36, 18),
+    c => { c.controle.faits[0][2] = '√2'; });
+  pousse("les coordonnees de I dans (D,B,E) faussees", parQuestion(36, 19),
+    c => { c.controle.faits[0][5] = '3√2 - 4'; });
+  pousse("les coordonnees de C dans (D,B,E) faussees", parQuestion(36, 19),
+    c => { c.controle.faits[3][5] = '1'; });
+  pousse("les coordonnees de J dans (D,B,E) faussees", parQuestion(36, 19),
+    c => { c.controle.faits[7][6] = '√2 + 1'; });
+
   // ══ LA SÉANCE 7 ════════════════════════════════════════════════════════
   // ── التمرين 1 — réduire pour COMPARER : on vise le sens des inégalités ──
   pousse("le levier 6√(3/2) rendu egal a 6√6", parQuestion(71, 0),

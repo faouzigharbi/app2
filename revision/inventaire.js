@@ -292,13 +292,15 @@
           sort: 'à faire',
           pourquoi: 'sa partie I est de l\'arithmétique que arith9 sait faire ; sa '
                   + 'partie II demande l\'ARBRE DE CHOIX, qui n\'a aucun chapitre' },
-        { n: '3.6', questions: 25,
+        { n: '3.6', questions: 20,
           notions: ['repère', 'partage d\'un segment', 'médiatrice', 'triangle isocèle rectangle',
                     'aire et périmètre', 'rectangle', 'parallélogramme', 'symétrique',
                     'alignement', 'ensembles de points', 'changement de repère'],
-          sort: 'à faire',
-          pourquoi: 'le plus long exercice du livre — huit questions et une trentaine de '
-                  + 'sous-questions dans un repère. Toute sa machinerie existe désormais' },
+          sort: 'bibliothèque', ou: 'brevet ex36 — vingt volets, le plus long du chapitre',
+          pourquoi: 'B(3√2+1 ; 0) n\'est pas décoratif : il place D exactement en 2√2, '
+                  + 'donc E sur (AJ) à la hauteur √2+1, et c\'est ce qui fait de BCE un '
+                  + 'triangle À LA FOIS isocèle et rectangle. Tout est en √2, rien n\'est '
+                  + 'approché, et 1/(√2+1) = √2−1 rend le changement de repère lisible' },
         { n: '3.7', questions: 10,
           notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès dans l\'espace'],
           sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
