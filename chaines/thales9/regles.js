@@ -30,7 +30,8 @@
   function tables(faits) {
     const t = {
       para: [], perp: [], milieu: [], lg2: new Map(), rect: [],
-      rapport: [], aligne: [], cercle: [], prop: []
+      rapport: [], aligne: [], cercle: [], prop: [],
+      pgram: [], rect4: [], losange: [], gravite: [], ortho: [], sym: []
     };
     for (const f of faits) {
       if (f[0] === 'lg2') t.lg2.set(f[1], f[2]);
@@ -328,6 +329,209 @@
                        depuis: [m, ['lg2', seg(I, A), d]],
                        calcul: [seg(I, A), seg(A, C), 'double'] });
           }
+        }
+        return out;
+      }
+    },
+
+    // ── C. LES QUADRILATÈRES ──────────────────────────────────────────────
+    //
+    // UN QUADRILATÈRE SE NOMME DANS L'ORDRE. « ABCD » n'est pas « ABDC » : le
+    // premier est un parallélogramme quand [AC] et [BD] se coupent en leur
+    // milieu, le second quand ce sont [AD] et [BC]. Les sommets se lisent en
+    // tournant, et l'on ne peut pas les permuter sans changer la figure.
+    {
+      cle: 'pgram-diagonales',
+      nom: 'الرّباعي الذي قطراه لهما نفس المنتصف هو متوازي أضلاع',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const Q of ctx.quadrilateres || []) {
+          const [A, B, C, D] = Q.split('');
+          const m1 = f.milieu.find(x => seg(x[2], x[3]) === seg(A, C));
+          const m2 = f.milieu.find(x => seg(x[2], x[3]) === seg(B, D));
+          if (!m1 || !m2 || m1[1] !== m2[1]) continue;
+          if (f.pgram.some(x => x[1] === Q)) continue;
+          out.push({ but: ['pgram', Q], depuis: [m1, m2] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'pgram-cotes',
+      nom: 'الرّباعي الذي فيه ضلعان متقابلان متوازيان و متقايسان هو متوازي أضلاع',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const Q of ctx.quadrilateres || []) {
+          const [A, B, C, D] = Q.split('');
+          const p = ['para', dr(A, B), dr(C, D)];
+          const ab = f.lg2.get(seg(A, B)), cd = f.lg2.get(seg(C, D));
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          if (!ab || !cd || !F.qEgaux(ab, cd)) continue;
+          if (f.pgram.some(x => x[1] === Q)) continue;
+          out.push({ but: ['pgram', Q],
+                     depuis: [p, ['lg2', seg(A, B), ab], ['lg2', seg(C, D), cd]] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'pgram-donne-cotes',
+      nom: 'في متوازي الأضلاع كلّ ضلعين متقابلين متوازيان و متقايسان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const g of f.pgram) {
+          const [A, B, C, D] = g[1].split('');
+          for (const [x, y, u, v] of [[A, B, D, C], [A, D, B, C]]) {
+            const su = f.lg2.get(seg(u, v));
+            if (su && !f.lg2.has(seg(x, y))) {
+              out.push({ but: ['lg2', seg(x, y), su],
+                         depuis: [g, ['lg2', seg(u, v), su]],
+                         calcul: [seg(u, v), seg(x, y), 'oppose'] });
+            }
+            const p = ['para', dr(x, y), dr(u, v)];
+            if (!f.para.some(z => cleFait(z) === cleFait(p))) {
+              out.push({ but: p, depuis: [g] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'rectangle',
+      nom: 'متوازي أضلاع له زاوية قائمة هو مستطيل',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const g of f.pgram) {
+          const [A, B, C, D] = g[1].split('');
+          const r = f.rect.find(x => x[2] === B && seg(x[1], x[3]) === seg(A, C));
+          if (!r || f.rect4.some(x => x[1] === g[1])) continue;
+          out.push({ but: ['rect4', g[1]], depuis: [g, r] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'losange',
+      nom: 'متوازي أضلاع له ضلعان متتاليان متقايسان هو معيّن',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const g of f.pgram) {
+          const [A, B, C] = g[1].split('');
+          const ab = f.lg2.get(seg(A, B)), bc = f.lg2.get(seg(B, C));
+          if (!ab || !bc || !F.qEgaux(ab, bc)) continue;
+          if (f.losange.some(x => x[1] === g[1])) continue;
+          out.push({ but: ['losange', g[1]],
+                     depuis: [g, ['lg2', seg(A, B), ab], ['lg2', seg(B, C), bc]] });
+        }
+        return out;
+      }
+    },
+
+    // ── D. LES POINTS REMARQUABLES DU TRIANGLE ────────────────────────────
+    {
+      cle: 'centre-gravite',
+      nom: 'متوسّطات مثلّث تتقاطع في نقطة واحدة هي مركز ثقله',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const g of ctx.gravites || []) {          // {G, tri, I, J}
+          const m1 = f.milieu.find(x => x[1] === g.I);
+          const m2 = f.milieu.find(x => x[1] === g.J);
+          if (!m1 || !m2) continue;
+          if (f.gravite.some(x => x[1] === g.G && x[2] === g.tri)) continue;
+          out.push({ but: ['gravite', g.G, g.tri], depuis: [m1, m2] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'gravite-deux-tiers',
+      nom: 'مركز الثقل يقع على بعد ثلثَي المتوسّط من الرّأس',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const v of f.gravite) {
+          const g = (ctx.gravites || []).find(x => x.G === v[1] && x.tri === v[2]);
+          if (!g) continue;
+          const S = g.tri.split('').find(x => !seg(...g.tri.split('').filter(y => y !== x)).includes(x)
+            && g.I === (ctx.milieux || {})[seg(...g.tri.split('').filter(y => y !== x))]);
+          if (!S) continue;
+          const ai = f.lg2.get(seg(S, g.I));
+          if (ai && !f.lg2.has(seg(S, v[1]))) {
+            out.push({ but: ['lg2', seg(S, v[1]), F.qMul(ai, F.q(4, 9))],
+                       depuis: [v, ['lg2', seg(S, g.I), ai]],
+                       calcul: [seg(S, g.I), seg(S, v[1]), 'deux-tiers'] });
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'orthocentre',
+      nom: 'ارتفاعات مثلّث تتقاطع في نقطة واحدة هي مركزه القائم',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const o of ctx.orthos || []) {            // {H, tri, h1:[X,Y], h2:[…]}
+          const p1 = ['perp', dr(...o.h1), dr(...o.c1)];
+          const p2 = ['perp', dr(...o.h2), dr(...o.c2)];
+          if (!f.perp.some(x => cleFait(x) === cleFait(p1))) continue;
+          if (!f.perp.some(x => cleFait(x) === cleFait(p2))) continue;
+          if (f.ortho.some(x => x[1] === o.H && x[2] === o.tri)) continue;
+          out.push({ but: ['ortho', o.H, o.tri], depuis: [p1, p2] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'orthocentre-troisieme',
+      nom: 'الارتفاع الثالث يمرّ بدوره من المركز القائم',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const v of f.ortho) {
+          const o = (ctx.orthos || []).find(x => x.H === v[1] && x.tri === v[2]);
+          if (!o || !o.h3) continue;
+          const p = ['perp', dr(...o.h3), dr(...o.c3)];
+          if (f.perp.some(x => cleFait(x) === cleFait(p))) continue;
+          out.push({ but: p, depuis: [v] });
+        }
+        return out;
+      }
+    },
+
+    // ── E. LE TRANSPORT PAR SYMÉTRIE CENTRALE ─────────────────────────────
+    {
+      cle: 'symetrie-longueur',
+      nom: 'التناظر المركزي يحفظ المسافات',
+      chercher: (ctx, f) => {
+        const out = [];
+        const par = {};
+        for (const s of f.sym) par[s[2]] = { image: s[1], centre: s[3] };
+        for (const a of Object.keys(par)) for (const b of Object.keys(par)) {
+          if (a >= b || par[a].centre !== par[b].centre) continue;
+          const v = f.lg2.get(seg(a, b));
+          const cible = seg(par[a].image, par[b].image);
+          if (!v || f.lg2.has(cible)) continue;
+          out.push({ but: ['lg2', cible, v],
+                     depuis: [['sym', par[a].image, a, par[a].centre],
+                              ['sym', par[b].image, b, par[b].centre],
+                              ['lg2', seg(a, b), v]],
+                     calcul: [seg(a, b), cible, 'symetrie'] });
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'symetrie-parallele',
+      nom: 'صورة مستقيم بتناظر مركزي هي مستقيم يوازيه',
+      chercher: (ctx, f) => {
+        const out = [];
+        const par = {};
+        for (const s of f.sym) par[s[2]] = { image: s[1], centre: s[3] };
+        for (const a of Object.keys(par)) for (const b of Object.keys(par)) {
+          if (a >= b || par[a].centre !== par[b].centre) continue;
+          const p = ['para', dr(a, b), dr(par[a].image, par[b].image)];
+          if (f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          out.push({ but: p, depuis: [['sym', par[a].image, a, par[a].centre],
+                                      ['sym', par[b].image, b, par[b].centre]] });
         }
         return out;
       }

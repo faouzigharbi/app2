@@ -17,7 +17,11 @@
     ['thales-longueur', 'نظرية طالس — حساب طول'],
     ['thales-decimaux', 'نظرية طالس — نتيجة في شكل كسر'],
     ['thales-parallele', 'عكس طالس — إثبات التوازي'],
-    ['milieux', 'مبرهنة المنتصفين']
+    ['milieux', 'مبرهنة المنتصفين'],
+    ['quadrilatere', 'طبيعة رباعي'],
+    ['centre-gravite', 'مركز ثقل مثلّث'],
+    ['orthocentre', 'المركز القائم لمثلّث'],
+    ['symetrie', 'التناظر المركزي']
   ];
 
   function puiser(famille, n) {

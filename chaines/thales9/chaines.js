@@ -29,7 +29,13 @@
     cercle: (O, t) => 'النّقط ' + t.split('').join(' و ') + ' تنتمي إلى دائرة مركزها ' + O,
     aligne: (A, B, C) => A + ' و ' + B + ' و ' + C + ' على استقامة واحدة',
     // Trois rapports empilés, reliés par des égalités — comme au tableau.
-    prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = ')
+    prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = '),
+    pgram: Q => 'الرّباعي ' + Q + ' متوازي أضلاع',
+    rect4: Q => 'الرّباعي ' + Q + ' مستطيل',
+    losange: Q => 'الرّباعي ' + Q + ' معيّن',
+    gravite: (G, t) => G + ' هو مركز ثقل المثلّث ' + t,
+    ortho: (H, t) => H + ' هو المركز القائم للمثلّث ' + t,
+    sym: (A2, A, O) => A2 + ' هي نظيرة ' + A + ' بالتناظر المركزي الذي مركزه ' + O
   };
   const ecrire = (f, m) => dit[f[0]](f[1], f[2], f[0] === 'lg2' ? m : f[3]);
   // (prop) prend ses trois rapports en f[1], f[2], f[3] — cf. dit.prop
@@ -50,12 +56,17 @@
     for (const m of s.milieux || []) hyp.push(['milieu', m[0], ...seg(m[1], m[2]).split('')]);
     for (const p of s.para || []) hyp.push(['para', p[0], p[1]]);
     for (const r of s.rects || []) hyp.push(['rect', r[0], r[1], r[2]]);
+    for (const y of s.symetries || []) hyp.push(['sym', y[0], y[1], y[2]]);
+    for (const g of s.pgrams || []) hyp.push(['pgram', g]);
+    for (const q of s.perps || []) hyp.push(['perp', q[0], q[1]]);
 
     // Le contexte : ce que la FIGURE fournit, et qui n'est pas à démontrer.
     const milieux = {};
     for (const m of s.milieux || []) milieux[seg(m[1], m[2])] = m[0];
     const ctx = {
       thales: s.thales || [], triangles: s.triangles || [],
+      quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
+      orthos: s.orthos || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -109,6 +120,8 @@
           regle: n.regle.cle, fait: sec(n.fait), depuis: n.depuis.map(sec)
         })),
         ctx: { thales: S.ctx.thales, triangles: S.ctx.triangles,
+               quadrilateres: S.ctx.quadrilateres, gravites: S.ctx.gravites,
+               orthos: S.ctx.orthos,
                milieux: S.ctx.milieux, pieds: S.ctx.pieds }
       }
     };
@@ -132,6 +145,9 @@
       if (c[2] === 'moitie') return '  ، أي نصف ' + e(c[0]);
       if (c[2] === 'rayon') return '  ، لأنّهما نصفا قطر لنفس الدائرة';
       if (c[2] === 'double') return '  ، أي ضعف ' + e(c[0]);
+      if (c[2] === 'oppose') return '  ، لأنّهما ضلعان متقابلان';
+      if (c[2] === 'symetrie') return '  ، لأنّ التناظر يحفظ المسافات';
+      if (c[2] === 'deux-tiers') return '  ، أي ثلثا ' + e(c[0]);
       if (c[4] === 'thales') return '  ، لأنّ ' + F.ecrireRapport(c[0], c[1])
         + ' = ' + F.ecrireRapport(c[2], c[3]);
       if (c[4] === 'reciproque') return '  ، لأنّ ' + F.ecrireRapport(c[0], c[1])

@@ -100,6 +100,42 @@ function verifierFait(f, S) {
       }
       return null;
     }
+    // UN QUADRILATÈRE SE VÉRIFIE DANS SON ORDRE. ABCD parallélogramme, c'est
+    // [AC] et [BD] de même milieu — jamais [AB] et [CD]. Prendre les sommets
+    // dans le désordre en ferait un autre quadrilatère, souvent croisé.
+    case 'pgram': {
+      const [A, B, C, D] = f[1].split('');
+      return F.memesPoints(F.milieu(p(A), p(C)), F.milieu(p(B), p(D))) ? null
+        : f[1] + ' n’est pas un parallélogramme';
+    }
+    case 'rect4': {
+      const [A, B, C, D] = f[1].split('');
+      if (!F.memesPoints(F.milieu(p(A), p(C)), F.milieu(p(B), p(D))))
+        return f[1] + ' n’est pas un parallélogramme, donc pas un rectangle';
+      return P.perp(p(B), p(A), p(B), p(C)) ? null
+        : f[1] + ' n’a pas d’angle droit en ' + B;
+    }
+    case 'losange': {
+      const [A, B, C, D] = f[1].split('');
+      if (!F.memesPoints(F.milieu(p(A), p(C)), F.milieu(p(B), p(D))))
+        return f[1] + ' n’est pas un parallélogramme, donc pas un losange';
+      return F.qEgaux(P.carre(p(A), p(B)), P.carre(p(B), p(C))) ? null
+        : f[1] + ' n’a pas deux côtés consécutifs égaux';
+    }
+    case 'gravite': {
+      const [A, B, C] = f[2].split('');
+      return F.memesPoints(p(f[1]), P.centreGravite(p(A), p(B), p(C))) ? null
+        : f[1] + ' n’est pas le centre de gravité de ' + f[2];
+    }
+    case 'ortho': {
+      const [A, B, C] = f[2].split('');
+      const h = P.orthocentre(p(A), p(B), p(C));
+      return (h && F.memesPoints(p(f[1]), h)) ? null
+        : f[1] + ' n’est pas l’orthocentre de ' + f[2];
+    }
+    case 'sym':
+      return P.estMilieu ? (F.memesPoints(F.milieu(p(f[1]), p(f[2])), p(f[3])) ? null
+        : f[1] + ' n’est pas le symétrique de ' + f[2] + ' par rapport à ' + f[3]) : null;
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
         : f[1] + ', ' + f[2] + ', ' + f[3] + ' ne sont pas alignés';
@@ -372,6 +408,20 @@ if (process.env.CONTRE_EXEMPLES) {
     }
     cas.push(['une réponse arrondie à deux décimales', vu ? { __deja: vu } : null]);
   }
+  // L'ORDRE DES SOMMETS N'EST PAS DÉCORATIF. « ABCD » parallélogramme et
+  // « ABDC » parallélogramme ne disent pas la même chose : le second est
+  // croisé. Une permutation doit donc être refusée.
+  pousse('un quadrilatère nommé dans le désordre', c => {
+    const p2 = c.controle.etapesCalcul.find(x => /pgram|rect4|losange/.test(x.fait[0]));
+    if (!p2) throw new Error('rien à permuter');
+    const q = p2.fait[1];
+    p2.fait[1] = q[0] + q[1] + q[3] + q[2];
+  });
+  pousse('un centre de gravité déplacé', c => {
+    const p2 = c.controle.etapesCalcul.find(x => x.fait[0] === 'gravite');
+    if (!p2) throw new Error('rien à fausser');
+    p2.fait[1] = p2.fait[2][0];
+  });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });
   pousse('aide absente', c => { c.indice = ''; });

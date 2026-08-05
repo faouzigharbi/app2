@@ -386,6 +386,167 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // LES QUADRILATÈRES — règles 16 à 19
+  //
+  // TRIANGLES9_23 ex1 « بيّن أنّ OIJA متوازي أضلاع », ex7 « أثبت أنّ الرّباعي
+  // EFDI متوازي أضلاع » puis « أثبت أنّ EFIC مستطيل » ; Thales 2021 ex1
+  // « استنتج أنّ APMN مستطيل » ; Pythagore (3) مسألة1 « ما هي طبيعة الرّباعي
+  // AHCI ؟ ». La question est toujours la NATURE, jamais la construction.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Pythagore (3) مسألة1 — H est le symétrique de I par le centre O
+  item('Pythagore (3) مسألة1', 'quadrilatere', 'moyen', () => {
+    const a = F.ent(3, 8), b = F.ent(3, 8), c = F.ent(2, 7);
+    const A = F.pt(0, 0), C = F.pt(4 * a, F.q(c));
+    const O = F.milieu(A, C);
+    const Ip = F.pt(F.q(b), F.q(3 * b));
+    const H = F.symetriqueCentre(Ip, O);
+    return {
+      K: 1, points: { A, C, I: Ip, H, O },
+      quadrilateres: ['AICH'],
+      milieux: [['O', 'A', 'C'], ['O', 'I', 'H']],
+      donne: [],
+      but: ['pgram', 'AICH'],
+      texte: () => ['O منتصف [AC]، و H هي نظيرة I بالتناظر المركزي الذي مركزه O.'],
+      question: 'ما هي طبيعة الرّباعي AICH ؟ علّل جوابك.',
+      figure: { segments: [['A', 'I'], ['I', 'C'], ['C', 'H'], ['H', 'A'],
+                           ['A', 'C'], ['I', 'H']],
+                marques: [['A', 'O', 1], ['O', 'C', 1], ['I', 'O', 2], ['O', 'H', 2]] },
+      indice: 'قطرا الرّباعي لهما نفس المنتصف'
+    };
+  });
+
+  // TRIANGLES9_23 ex7 — d'abord parallélogramme, puis rectangle
+  item('TRIANGLES9_23 ex7', 'quadrilatere', 'difficile', () => {
+    const a = F.ent(3, 8), b = F.ent(3, 8);
+    // Un rectangle se pose par son sommet droit : E en bas à gauche.
+    const E = F.pt(0, 0), Fp = F.pt(4 * a, 0), C = F.pt(4 * a, F.q(3 * b));
+    const D = F.pt(0, F.q(3 * b));
+    const O = F.milieu(E, C);
+    return {
+      K: 1, points: { E, F: Fp, C, D, O },
+      quadrilateres: ['EFCD'],
+      milieux: [['O', 'E', 'C'], ['O', 'F', 'D']],
+      rects: [['E', 'F', 'C']],
+      donne: [],
+      but: ['rect4', 'EFCD'],
+      texte: () => ['O منتصف [EC] و منتصف [FD] في نفس الوقت،',
+                    'و المثلّث EFC قائم الزاوية في F.'],
+      question: 'أثبت أنّ الرّباعي EFCD مستطيل.',
+      figure: { segments: [['E', 'F'], ['F', 'C'], ['C', 'D'], ['D', 'E'],
+                           ['E', 'C'], ['F', 'D']],
+                angles: [['E', 'F', 'C']] },
+      indice: 'أثبت أوّلا أنّه متوازي أضلاع، ثمّ استعمل الزاوية القائمة'
+    };
+  });
+
+  // Le losange — TRIANGLES9_23 ex1 « ما نوع المثلّث ABI » et la مراجعة
+  item('TRIANGLES9_23 ex1 — معيّن', 'quadrilatere', 'difficile', () => {
+    const [x, y] = F.choix([[3, 4], [6, 8], [5, 12], [8, 15]]);
+    // Les diagonales d'un losange se coupent en leur milieu ET à angle droit.
+    const O = F.pt(0, 0);
+    const A = F.pt(-x, 0), C = F.pt(x, 0), B = F.pt(0, -y), D = F.pt(0, y);
+    return {
+      K: 1, points: { A, B, C, D, O },
+      quadrilateres: ['ABCD'],
+      milieux: [['O', 'A', 'C'], ['O', 'B', 'D']],
+      donne: [seg('A', 'B'), seg('B', 'C')],
+      but: ['losange', 'ABCD'],
+      texte: g => ['O منتصف [AC] و منتصف [BD]،',
+                   'و AB = ' + g(seg('A', 'B')) + ' و BC = ' + g(seg('B', 'C')) + '.'],
+      question: 'أثبت أنّ الرّباعي ABCD معيّن.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['A', 'C'], ['B', 'D']],
+                marques: [['A', 'B', 1], ['B', 'C', 1]] },
+      indice: 'متوازي أضلاع له ضلعان متتاليان متقايسان'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LE CENTRE DE GRAVITÉ — règle 14
+  // TRIANGLES9_23 ex1 « ما هو مركز ثقل المثلّث ABC ؟ », ex5 « ماذا تمثّل H
+  // بالنسبة للمثلّث ABC », Pythagore (3) ex4 « بيّن أنّ F هي مركز ثقل ABC »
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Pythagore (3) ex4', 'centre-gravite', 'difficile', () => {
+    const a = F.ent(3, 7), b = F.ent(3, 7);
+    const A = F.pt(0, 0), B = F.pt(6 * a, 0), C = F.pt(F.q(2 * b), F.q(3 * b));
+    const Ip = F.milieu(B, C), J = F.milieu(A, C);
+    const P = F.plan(1);
+    const G = P.centreGravite(A, B, C);
+    return {
+      K: 1, points: { A, B, C, I: Ip, J, G },
+      gravites: [{ G: 'G', tri: 'ABC', I: 'I', J: 'J' }],
+      milieux: [['I', 'B', 'C'], ['J', 'A', 'C']],
+      donne: [seg('A', 'I')],
+      but: ['lg2', seg('A', 'G'), null],
+      texte: g => ['I منتصف [BC] و J منتصف [AC]، و G نقطة تقاطع (AI) و (BJ).',
+                   'AI = ' + g(seg('A', 'I')) + '.'],
+      question: 'أحسب AG.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'I'], ['B', 'J']],
+                marques: [['B', 'I', 1], ['I', 'C', 1], ['A', 'J', 2], ['J', 'C', 2]] },
+      indice: 'G هو مركز الثقل : AG يساوي ثلثَي المتوسّط AI'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // L'ORTHOCENTRE — règle 15 (TRIANGLES9_23 ex1 ex5, ex6)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('TRIANGLES9_23 ex5', 'orthocentre', 'difficile', () => {
+    const a = F.ent(2, 6), b = F.ent(2, 6);
+    // SANS NOMBRES, RIEN NE VARIE. La démonstration de l'orthocentre ne
+    // contient pas un chiffre : à lettrage fixe, une page en montrait quatre
+    // fois la même. Les feuilles du maître changent de lettrage d'un exercice
+    // à l'autre pour la même raison — c'est ce qu'on fait ici.
+    const [A2, B2, C2, H2] = F.melanger(['A', 'B', 'C', 'D', 'E', 'F', 'H', 'M', 'N', 'K']);
+    const A = F.pt(0, 0), B = F.pt(4 * a, 0), C = F.pt(F.q(a), F.q(3 * b));
+    const P = F.plan(1);
+    const H = P.orthocentre(A, B, C);
+    const pts = {}; pts[A2] = A; pts[B2] = B; pts[C2] = C; pts[H2] = H;
+    return {
+      K: 1, points: pts,
+      orthos: [{ H: H2, tri: A2 + B2 + C2,
+                 h1: [A2, H2], c1: [B2, C2],
+                 h2: [B2, H2], c2: [A2, C2],
+                 h3: [C2, H2], c3: [A2, B2] }],
+      perps: [[dr(A2, H2), dr(B2, C2)], [dr(B2, H2), dr(A2, C2)]],
+      donne: [],
+      but: ['perp', dr(C2, H2), dr(A2, B2)],
+      texte: () => ['في المثلّث ' + A2 + B2 + C2 + '، النّقطة ' + H2 + ' تحقّق ('
+                    + A2 + H2 + ') ⊥ (' + B2 + C2 + ') و (' + B2 + H2 + ') ⊥ ('
+                    + A2 + C2 + ').'],
+      question: 'بيّن أنّ (' + C2 + H2 + ') ⊥ (' + A2 + B2 + ').',
+      figure: { segments: [[A2, B2], [B2, C2], [C2, A2]],
+                droites: [[A2, H2], [B2, H2], [C2, H2]] },
+      indice: H2 + ' هو المركز القائم : الارتفاع الثالث يمرّ منه بدوره'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LA SYMÉTRIE CENTRALE — règle 22 (THALES9 ex5 ; Thales 2021 ex7)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES9 ex5', 'symetrie', 'moyen', () => {
+    const a = F.ent(3, 9), b = F.ent(2, 8);
+    const O = F.pt(0, 0);
+    const A = F.pt(3 * a, F.q(b)), B = F.pt(F.q(b), F.q(3 * a));
+    const A2 = F.symetriqueCentre(A, O), B2 = F.symetriqueCentre(B, O);
+    return {
+      K: 1, points: { O, A, B, C: A2, D: B2 },
+      symetries: [['C', 'A', 'O'], ['D', 'B', 'O']],
+      donne: [seg('A', 'B')],
+      but: ['lg2', seg('C', 'D'), null],
+      texte: g => ['C هي نظيرة A و D هي نظيرة B بالتناظر المركزي الذي مركزه O.',
+                   'AB = ' + g(seg('A', 'B')) + '.'],
+      question: 'أحسب CD.',
+      figure: { segments: [['A', 'B'], ['C', 'D'], ['A', 'C'], ['B', 'D']],
+                marques: [['A', 'O', 1], ['O', 'C', 1], ['B', 'O', 2], ['O', 'D', 2]] },
+      indice: 'التناظر المركزي يحفظ المسافات'
+    };
+  });
+
   const API = { ITEMS, TRIPLETS };
   if (M) module.exports = API; else racine.Items = API;
 })(typeof window !== 'undefined' ? window : globalThis);
