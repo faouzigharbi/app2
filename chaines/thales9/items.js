@@ -1668,6 +1668,10 @@
       // dans la carte d'identité plutôt que maquillé ici. Deux règles fausses
       // valent moins qu'une absence déclarée.
       perimetres: ['ABC', 'DEF'],
+      // (DF)//(AC) coupées par (AB) : F et C sont du MÊME côté, et les seconds
+      // côtés pointent tous deux vers B — ce sont donc des angles
+      // CORRESPONDANTS, et c'est l'égalité que le maître fait démontrer.
+      correspondants: [{ p: 'F', s1: 'D', q: 'C', s2: 'A', vers: 'B' }],
       // L'ÉNONCÉ DONNE LES SEGMENTS, PAS LES CÔTÉS — c'est tout l'exercice.
       donne: [seg('D', 'E'), seg('D', 'F'), seg('E', 'F')],
       buts: [
@@ -1675,7 +1679,9 @@
         { but: ['lg2', seg('A', 'C'), null], question: 'أحسب AC.' },
         { but: ['lg2', seg('A', 'B'), null], question: 'أحسب AB.' },
         { but: ['perimetre', 'ABC', null], question: 'أحسب محيط المثلّث ABC.' },
-        { but: ['perimetre', 'DEF', null], question: 'أحسب محيط المثلّث DEF.' }
+        { but: ['perimetre', 'DEF', null], question: 'أحسب محيط المثلّث DEF.' },
+        { but: ['angles', 'FDB', 'CAB'],
+          question: 'بيّن أنّ الزاويتين FD̂B و CÂB متقايستان.' }
       ],
       texte: g2 => ['ABC مثلّث، D منتصف [AB] و E منتصف [AC] و F منتصف [BC].',
                     'DE = ' + g2(seg('D', 'E')) + ' و DF = ' + g2(seg('D', 'F'))

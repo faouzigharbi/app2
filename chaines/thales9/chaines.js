@@ -115,7 +115,7 @@
       orthos: s.orthos || [], entre: s.entre || [], relations: s.relations || [],
       alternes: (s.alternes || []).concat(s.anglesAdeduire || []),
       rapports: s.rapports || [],
-      perimetres: s.perimetres || [],
+      perimetres: s.perimetres || [], correspondants: s.correspondants || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -249,7 +249,8 @@
                // لها » sur une scène sans cercle, et la règle ne donnait
                // évidemment rien : 32 refus, tous justes.
                diametres: S.ctx.diametres, rapports: S.ctx.rapports,
-               perimetres: S.ctx.perimetres }
+               perimetres: S.ctx.perimetres,
+               correspondants: S.ctx.correspondants }
       }
     };
   }

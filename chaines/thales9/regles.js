@@ -1006,6 +1006,34 @@
         return out;
       }
     },
+    // ── LES ANGLES CORRESPONDANTS ────────────────────────────────────────
+    //
+    // Le validateur m'a refusé deux fois avant que je comprenne : dans le
+    // triangle médian, les angles égaux ne sont PAS alternes-internes. Deux
+    // parallèles coupées par une sécante donnent
+    //
+    //   · des angles ALTERNES-INTERNES quand les deux sommets sont de part et
+    //     d'autre de la sécante — c'est Thales 2008 ex7 ;
+    //   · des angles CORRESPONDANTS quand ils sont du MÊME côté et que les
+    //     seconds côtés pointent dans la même direction — c'est ici.
+    //
+    // D'où le troisième point de la configuration : « vers ». Sans lui, on ne
+    // sait pas de quel côté regarder, et l'on écrit une égalité fausse.
+    {
+      cle: 'angles-correspondants',
+      nom: 'إذا كان مستقيمان متوازيين فالزاويتان المتقابلتان (بالنسبة إلى قاطع) متقايستان',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of ctx.correspondants || []) {
+          const p = ['para', dr(a.p, a.s1), dr(a.q, a.s2)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          const but = ['angles', a.p + a.s1 + a.vers, a.q + a.s2 + a.vers];
+          if (f.angles.some(x => cleFait(x) === cleFait(but))) continue;
+          out.push({ but, depuis: [p] });
+        }
+        return out;
+      }
+    },
     {
       cle: 'milieu-par-egalite',
       nom: 'نقطة من قطعة متساوية البعد عن طرفيها هي منتصفها',
