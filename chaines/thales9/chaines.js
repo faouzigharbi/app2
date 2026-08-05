@@ -159,7 +159,7 @@
       // celles qu'il écarte AVEC son résultat — « Pythagore donnerait BC, et
       // BC ne rapproche pas de MN ». C'est vrai, c'est vérifiable, et c'est
       // exactement la question que l'élève doit se poser.
-      const choix = itineraire(bloc, vus, S.ctx, suite.indexOf(bloc.suite[0]));
+      const choix = itineraire(bloc, vus, S.ctx, suite.indexOf(bloc.suite[0]), suite);
       if (choix) {
         etapes.push(['الاختيار', choix.texte]);
         itineraires.push(choix.controle);
@@ -338,10 +338,14 @@
                       'para-alternes', 'pythagore-reciproque'];
 
   const itinerairePour = It ? It.creer({
-    R, ecrire: f => ecrire(f), nommerBut, court, MANQUE, CANDIDATES, sec
+    R, ecrire: f => ecrire(f), nommerBut, court, MANQUE, CANDIDATES, sec,
+    // PYTHAGORE ET LA RELATION MÉTRIQUE VIENNENT APRÈS THALÈS. On ne les
+    // nomme que dans les exercices qui s'en servent — ailleurs, ce serait
+    // écarter un théorème que l'élève n'a pas encore lu.
+    tardifs: ['pythagore', 'pythagore-reciproque', 'relation-metrique']
   }) : null;
-  const itineraire = (bloc, acquis, ctx, avant) => (itinerairePour
-    ? itinerairePour(bloc.suite, bloc.but, acquis, ctx, avant) : null);
+  const itineraire = (bloc, acquis, ctx, avant, toutes) => (itinerairePour
+    ? itinerairePour(bloc.suite, bloc.but, acquis, ctx, avant, toutes) : null);
 
   // ── LE GABARIT DE THALÈS ─────────────────────────────────────────────────
   // Les trois rapports, lus depuis le sommet, comme sur la feuille.

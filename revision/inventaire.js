@@ -190,9 +190,28 @@
                 'les onze autres séances restent à ouvrir']
     },
 
-    { fichier: 'Thales 2020.pdf', pages: 8, texte: 'lisible', etat: 'non lu',
+    {
+      fichier: 'Thales 2020.pdf', pages: 8, texte: 'lisible', etat: 'squelette',
       exercices: 19, chapitres: ['thales9'],
-      machine: ['dix-neuf exercices repérés, aucun ouvert'] },
+      // OUVERT ET RECONNU : sa première partie REPREND Thales 2008 — mêmes
+      // figures, mêmes nombres (ex5 a/b/c, ex6, le menhir, OD/OE). Rien à y
+      // reprendre : c'est déjà dans la bibliothèque. Sa valeur est ailleurs.
+      contenu: [
+        { n: '1-4', questions: 12, notions: ['QCM de configurations', 'RU', 'MN et AB'],
+          sort: 'à faire', pourquoi: 'QCM — même famille « erreurs » que Thales 2008 ex4' },
+        { n: 5, questions: 3, notions: ['Thalès'], sort: 'bibliothèque', ou: 'identique à Thales 2008 ex5' },
+        { n: 6, questions: 6, notions: ['Thalès', 'partage extérieur'],
+          sort: 'bibliothèque', ou: 'identique à Thales 2008 ex6, menhir et OD/OE compris' },
+        // LA PARTIE NEUVE : « الجزء الثاني — القطعة الرابطة بين منتصفي ضلعين ».
+        { n: 'II-1', questions: 2, notions: ['triangle médian', 'angles égaux'],
+          sort: 'hors machinerie', pourquoi: 'égalité d\'angles À DÉMONTRER : le moteur sait vérifier une égalité d\'angles donnée, non la conclure d\'un parallélisme' },
+        { n: 'II-2', questions: 1, notions: ['triangle médian', 'périmètre'],
+          sort: 'à faire', pourquoi: 'le périmètre est une somme de trois côtés — il manque un but « محيط »' },
+        { n: 'II-3', questions: 1, notions: ['milieux', 'périmètre d\'un quadrilatère'],
+          sort: 'à faire', pourquoi: 'même manque' }
+      ],
+      machine: ['un but « périmètre » (somme de côtés)',
+                'conclure une égalité d\'angles à partir d\'un parallélisme — l\'inverse de para-alternes'] },
 
     { fichier: 'revision_Concours_2019__TarTib.pdf', pages: 6, texte: 'lisible',
       etat: 'non lu', exercices: 8, chapitres: ['reel9', 'encadrement'],

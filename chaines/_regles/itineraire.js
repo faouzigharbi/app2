@@ -35,7 +35,23 @@
   function creer(cfg) {
     const { R, ecrire, nommerBut, court, MANQUE, CANDIDATES, sec } = cfg;
 
-    return function itineraire(suite, but, acquis, ctx, avant) {
+    // CE QUE L'ÉLÈVE N'A PAS ENCORE VU N'EXISTE PAS ENCORE.
+    //
+    // « Évite de parler de Pythagore dans les exercices de Thalès, même dans
+    // les remarques, puisqu'ils ne l'ont pas encore vu. » Une bonne question —
+    // « et pourquoi pas Pythagore ? » — devient une mauvaise question quand
+    // elle nomme un théorème inconnu : elle n'écarte plus une idée, elle en
+    // invente une, et l'élève note un mot qu'il ne peut pas relier.
+    //
+    // La règle est donc : un théorème ne peut être nommé comme écarté QUE si
+    // l'exercice s'en sert lui-même quelque part. Dans un exercice de Thalès
+    // pur, Pythagore ne sera jamais cité ; dans le problème qui l'emploie, il
+    // le sera — parce que là, l'élève vient de le lire.
+    const tard = new Set(cfg.tardifs || []);
+
+    return function itineraire(suite, but, acquis, ctx, avant, toutesLesRegles) {
+      const employees = new Set((toutesLesRegles || suite).map(n => n.regle && n.regle.cle));
+      const permise = r => !tard.has(r.cle) || employees.has(r.cle);
       const premier = suite[0];
       if (!premier || !premier.regle) return null;
       const dansLaChaine = new Set(suite.map(n => R.cleFait(n.fait)));
@@ -51,6 +67,7 @@
       const rivales = [];
       for (const r of R.REGLES) {
         if (r.cle === premier.regle.cle || court(r) === nomChoisi) continue;
+        if (!permise(r)) continue;
         let sort = [];
         try { sort = r.chercher(ctx, table); } catch (e) { sort = []; }
         for (const p of sort) {
@@ -72,7 +89,7 @@
       for (const cle of (CANDIDATES || [])) {
         if (cle === premier.regle.cle || !MANQUE[cle]) continue;
         const r = R.REGLES.find(x => x.cle === cle);
-        if (!r || court(r) === nomChoisi) continue;
+        if (!r || court(r) === nomChoisi || !permise(r)) continue;
         const raison = MANQUE[cle](acquis, ctx, table);
         if (raison) { ecartee = { regle: r, raison }; break; }
       }
