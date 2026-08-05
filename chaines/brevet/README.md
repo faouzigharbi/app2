@@ -18,11 +18,37 @@ métrique. La ranger sous « العمليات في ℝ » la rendrait introuvabl
 |---|---|---|---|
 | `ex21.html` | التمرين 1 | 7 | le levier · a · b · c · a et b inverses · 2a×c · le nombre صمّ |
 | `ex22.html` | التمرين 2 | 8 | A en √2−1 · A+49/4 · تفكيك A · deux équations · une inéquation · relation métrique · aire |
+| `ex23.html` | التمرين 3 | 13 | rectangle · symétrique · isocèle · projection · losange · Thalès · deux milieux · GN · repère (B;E;G) |
+| `ex24.html` | التمرين 4 | 12 | C · ABC rectangle · AC, BC, AB · CP · BC/OE · E · milieu · N≡P · aire · K deux fois · AF/AL · trapèze isocèle |
 
-Les exercices 3 et 4 de la séance sont dans un **repère** — coordonnées,
-symétrique, parallélogramme, cercle de diamètre. Ils ne sont pas ici : le
-moteur ne connaît pas encore le fait « coordonnées ». L'exercice 5 est de la
-**géométrie de l'espace** (pyramide `SABC`), qui n'a aucun chapitre.
+Seul l'exercice 5 manque : c'est de la **géométrie de l'espace** (pyramide
+`SABC`), qui n'a aucun chapitre.
+
+## Le repère — `repere.js`
+
+Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
+**coordonnées**. `repere.js` le donne, en arithmétique **exacte** sur ℚ[√d] —
+la même que les radicaux, donc `GN = 2√5` se démontre au lieu de se constater
+à 10⁻⁹ près. Les longueurs y vivent en **carrés** et ne passent sous le radical
+qu'au dernier moment, comme dans `thales9`.
+
+Il ne rédige RIEN. La démonstration reste écrite à la main, dans la langue du
+maître, et prend la route qu'il veut faire prendre — Thalès, la droite des
+milieux, le centre de gravité. `repere.js` sert à la **contredire** : la figure
+est construite point par point (`['sym','A','B']`, `['inter','G','E','O','J']`,
+`['translate','E','J','A']`), jamais recopiée, et chaque affirmation de
+l'énoncé est recalculée dessus — « OABJ est un rectangle », « E est le milieu
+de [GM] », « N et P sont confondues », « EFBL est un trapèze isocèle ».
+
+Vingt-quatre falsifications le mettent à l'épreuve, et la plus parlante ne
+touche aucune étape : elle **déplace un point**. Si la figure peut bouger sans
+que rien ne proteste, alors rien n'était vérifié.
+
+L'exercice 4 n'est d'ailleurs pas un exercice de coordonnées : c'est un
+exercice de **Thalès** posé dans un repère. Le diamètre donne l'angle droit,
+les parallèles donnent les rapports, et `A` se révèle être le **centre de
+gravité** du triangle `EFC` — `CA/CO = 2/3` le dit, et c'est ce qui donne `K`
+par une seconde méthode.
 
 ## Fidèle à l'original
 
@@ -31,8 +57,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 600 questions, 18 440 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 33/33
+    node verifier.js 40             # 1 600 questions, 23 240 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 58/58
     node _build.js .                # régénérer les pages
 
 ## Trois coquilles du livre, relevées par le calcul
@@ -70,5 +96,6 @@ elles ne sont pas glissées en silence.
 
 Rien de neuf au noyau : `ℚ[√d]` de `revision2` suffisait, y compris pour la
 division par conjugué de `(−34 + 13√3)/(4 − 5√3)` et pour les identités en `x`
-testées sur trente tirages. Ce qui manque est ailleurs — les **coordonnées**,
-et l'**espace**.
+testées sur trente tirages. Une seule pièce a dû être écrite — `repere.js` —,
+et elle sert déjà bien au-delà de cette séance : le livre pose un exercice de
+repère par séance. Il ne reste que l'**espace**.

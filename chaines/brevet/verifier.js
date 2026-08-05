@@ -17,6 +17,7 @@
 //      Une identité qui ne tiendrait que pour la valeur choisie par le
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
+const R = require('./repere.js');
 require('./seances.js');
 require('./gens.js');
 
@@ -38,7 +39,19 @@ function rnd() {
 //               est défini à partir de son écriture en radicaux, pas de sa
 //               valeur réduite, sinon on vérifierait la réponse par la réponse.
 //   c.libres  — des lettres tirées au hasard, et c.derives ce qu'on en déduit.
+//   c.points  — une FIGURE, construite point par point : chaque point posé ou
+//               calculé, jamais recopié. Les noms disponibles aux étapes en
+//               sortent tout seuls — xA, yA pour les coordonnées, AB pour les
+//               longueurs, dans les deux ordres. Une étape qui écrirait
+//               « GN = 2√5 » est donc recalculée sur la figure, pas crue.
 function environnements(c) {
+  if (c.points) {
+    const P = R.figure(c.points, {});
+    const e = R.nommer(P);
+    for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
+    e.__points = P;
+    return [e];
+  }
   if (c.libres) {
     return Array.from({ length: ECHANTILLONS }, () => {
       const e = {};
@@ -72,7 +85,7 @@ function controlerClaims(c, envs) {
       }
     }
   }
-  if (!(c.claims || []).length) p.push('بلا تأكيد يُراقَب');
+  if (!(c.claims || []).length && !(c.faits || []).length) p.push('بلا تأكيد يُراقَب');
   return p;
 }
 
@@ -119,6 +132,16 @@ function verifierBrut(brut) {
 
   if (verifiees < 2) probs.push('عدد المراحل القابلة للتحقق قليل جدا');
   probs.push(...controlerClaims(c, envs));
+  // LES FAITS DE LA FIGURE — « OABJ est un rectangle », « E est le milieu de
+  // [GM] », « N et P sont confondues » : recalculés sur les seules coordonnées.
+  // C'est ici que l'énoncé d'un exercice de repère se fait contredire.
+  if (c.points) {
+    const P = envs[0].__points;
+    if (!(c.faits || []).length) probs.push('شكل بلا واقعة تُراقَب');
+    const p = R.verifierFaits(c.faits, P, envs[0]);
+    controles += (c.faits || []).length;
+    probs.push(...p);
+  }
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
   // Deux étapes peuvent porter des libellés différents et LA MÊME relation :
@@ -135,10 +158,6 @@ function verifierBrut(brut) {
   return probs;
 }
 
-// -------------------------------------------------------------------------
-// Mode falsification : on abîme volontairement des exercices justes. Si le
-// validateur les accepte, c'est lui qui est faux — pas eux.
-// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 // Mode falsification : on abîme volontairement des exercices justes. Si le
 // validateur les accepte, c'est lui qui est faux — pas eux.
@@ -218,6 +237,66 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.claims[0][1] = "√6"; });
   pousse("base prise egale a CH", parQuestion(22, 7),
     c => { c.controle.claims[1][1] = "6"; });
+
+  // ── التمرين 3 — LA FIGURE ──────────────────────────────────────────────
+  //
+  // Ici on n'abîme pas une étape : on DÉPLACE UN POINT. C'est la seule
+  // falsification qui compte pour un exercice de repère — si la figure peut
+  // bouger sans que rien ne proteste, alors rien n'était vérifié.
+  pousse("B decale : OABJ n est plus un rectangle", parQuestion(23, 0),
+    c => { c.controle.points.B = ['point', '3', '1']; });
+  pousse("E pris comme symetrique de B par rapport a A", parQuestion(23, 1),
+    c => { c.controle.points.E = ['sym', 'B', 'A']; });
+  pousse("EA annonce 3", parQuestion(23, 1),
+    c => { c.controle.faits[3][3] = '3'; });
+  pousse("le triangle JEA declare isocele en A", parQuestion(23, 2),
+    c => { c.controle.faits[0] = ['isocele', 'A', 'J', 'E']; });
+  pousse("F pris sur la direction (AI) au lieu de (AJ)", parQuestion(23, 4),
+    c => { c.controle.points.D = ['translate', 'O', 'A', 'I']; });
+  pousse("G construit dans le mauvais sens", parQuestion(23, 5),
+    c => { c.controle.points.G = ['translate', 'E', 'A', 'J']; });
+  pousse("B annonce milieu de [JG] alors que G a bouge", parQuestion(23, 6),
+    c => { c.controle.points.G = ['point', '4', '2']; });
+  pousse("K place a 2 de M au lieu de 1", parQuestion(23, 7),
+    c => { c.controle.points.K = ['point', '0', '1']; });
+  pousse("PK annonce √5 au lieu de √5/2", parQuestion(23, 8),
+    c => { c.controle.faits[2][3] = '√5'; });
+  pousse("E annonce milieu de [GN] au lieu de [GM]", parQuestion(23, 9),
+    c => { c.controle.faits[0] = ['milieu', 'E', 'G', 'N']; });
+  pousse("GN annonce 2√6", parQuestion(23, 11),
+    c => { c.controle.faits[0][3] = '2√6'; });
+  pousse("les coordonnees de M dans (B;E;G) inversees", parQuestion(23, 12),
+    c => { c.controle.faits[0] = ['coordonnees-dans', 'M', 'B', 'E', 'G', '-1', '2']; });
+
+  // ── التمرين 4 — LA FIGURE ──────────────────────────────────────────────
+  pousse("C confondu avec A : le second point du cercle n en est plus un", parQuestion(24, 0),
+    c => { c.controle.points.C = ['point', '2', '0']; });
+  pousse("C hors du cercle de diametre [AB]", parQuestion(24, 0),
+    c => { c.controle.points.C = ['point', '7', '0']; });
+  pousse("AB annonce 2√14", parQuestion(24, 2),
+    c => { c.controle.faits[2][3] = '2√14'; });
+  pousse("CP annonce AB au lieu de AB/2", parQuestion(24, 3),
+    c => { c.controle.faits[0][3] = '2√13'; });
+  pousse("le rapport BC/OE annonce 3", parQuestion(24, 4),
+    c => { c.controle.faits[3][5] = '3'; });
+  pousse("F pris symetrique de E par rapport a J", parQuestion(24, 6),
+    c => { c.controle.points.F = ['sym', 'E', 'J']; });
+  pousse("N et P declarees confondues apres deplacement de B", parQuestion(24, 7),
+    c => { c.controle.points.B = ['point', '6', '7']; });
+  pousse("aire du trapeze ACMN annoncee 10", parQuestion(24, 8),
+    c => { c.controle.faits[1][5] = '10'; });
+  pousse("le rapport CA/CO du centre de gravite annonce 1/2", parQuestion(24, 9),
+    c => { c.controle.faits[5][5] = '1/2'; });
+  pousse("AF/AL annonce 1/3", parQuestion(24, 10),
+    c => { c.controle.faits[0][5] = '1/3'; });
+  pousse("EFBL declare trapeze isocele dans le mauvais ordre", parQuestion(24, 11),
+    c => { c.controle.faits[0] = ['trapeze-isocele', 'E', 'B', 'F', 'L']; });
+
+  // ── les garde-fous du contrat « figure » ───────────────────────────────
+  pousse("figure sans aucune fait a controler", parQuestion(23, 0),
+    c => { c.controle.faits = []; });
+  pousse("fait au nom inconnu", parQuestion(23, 0),
+    c => { c.controle.faits = [['quadrilatere-magique', 'O', 'A', 'B', 'J']]; });
 
   // ── les deux garde-fous de forme ───────────────────────────────────────
   pousse("étape dupliquée", parQuestion(21, 0),

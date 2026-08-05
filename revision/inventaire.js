@@ -235,27 +235,29 @@
           sort: 'bibliothèque', ou: 'brevet ex22 — huit volets',
           pourquoi: 'une seule expression A = x²−x−12 porte les huit questions ; '
                   + 'le 49/4 est exactement ce qu\'il faut pour fermer le carré' },
-        { n: '2.3', questions: 9,
-          notions: ['repère', 'rectangle', 'symétrique', 'projection', 'parallélogramme',
-                    'losange', 'milieux', 'coordonnées d\'un point dans un autre repère'],
-          sort: 'hors machinerie',
-          pourquoi: 'le fait « coordonnées » n\'existe dans aucun chapitre' },
-        { n: '2.4', questions: 6,
+        { n: '2.3', questions: 13,
+          notions: ['repère', 'rectangle', 'symétrique', 'projection selon une direction',
+                    'parallélogramme', 'losange', 'Thalès', 'droite des milieux',
+                    'coordonnées dans un autre repère'],
+          sort: 'bibliothèque', ou: 'brevet ex23 — treize volets',
+          pourquoi: 'B y est le centre du losange, et c\'est de là que sortent G '
+                  + 'puis M, N et tout le reste' },
+        { n: '2.4', questions: 12,
           notions: ['repère', 'cercle de diamètre ⇒ angle droit', 'longueurs',
-                    'Thalès', 'symétrique', 'milieux', 'aire d\'un quadrilatère',
-                    'trapèze'],
-          sort: 'hors machinerie',
-          pourquoi: 'sa géométrie est entièrement dans thales9 — c\'est le repère '
-                  + 'qui manque, et lui seul' },
+                    'Thalès', 'symétrique', 'droite des milieux', 'aire d\'un trapèze',
+                    'centre de gravité — les 2/3', 'trapèze isocèle'],
+          sort: 'bibliothèque', ou: 'brevet ex24 — douze volets',
+          pourquoi: 'ce n\'est pas un exercice de coordonnées mais un exercice de '
+                  + 'THALÈS posé dans un repère ; A y est le centre de gravité de EFC' },
         { n: '2.5', questions: 8,
           notions: ['pyramide', 'droite ⊥ plan', 'plans parallèles', 'Thalès dans l\'espace'],
           sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
-                'LE REPÈRE — c\'est le manque le plus rentable du livre : deux des '
-                + 'cinq exercices de la séance 2 n\'attendent que lui, et leur '
-                + 'géométrie (diamètre ⇒ angle droit, milieux, Thalès) est déjà là',
+                'LE REPÈRE EST FAIT — chaines/brevet/repere.js : points construits, '
+                + 'jamais recopiés, et chaque affirmation de l\'énoncé recalculée '
+                + 'dessus. Le livre pose un exercice de repère par séance : il resservira',
                 'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
                 'les onze autres séances restent à ouvrir'],
       // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
@@ -266,7 +268,11 @@
         '2.2 I-3)ب : A = 4(x+7) donne un discriminant 185 ; avec 4(x+3) le facteur '
         + 'commun saute aux yeux (x = −3 ou 8).',
         '2.2 II : « CH = x−3 » répète BH (la figure dit x+2), et AH = √7 ne se '
-        + 'factorise pas. AH = √6 donne x = 4, BH = 1, CH = 6, aire √6/2.'
+        + 'factorise pas. AH = √6 donne x = 4, BH = 1, CH = 6, aire √6/2.',
+        '2.4 q4 : « لتكن F مناظرة بالنسبة إلى O » ne dit pas de QUEL point F est '
+        + 'le symétrique. C\'est E : c\'est le seul choix pour lequel N et P sont '
+        + 'confondues (q4)ب) et M milieu de [BC] (q4)أ). Avec A on retombe sur '
+        + 'l\'axe (OI) lui-même, avec B on obtient M(6;−6).'
       ]
     },
 
