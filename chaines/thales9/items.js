@@ -1833,6 +1833,104 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex3 — LE PARALLÉLOGRAMME ET LES DEUX PAPILLONS
+  //
+  // « ABCD متوازي أضلاع، AC = 10، CB = 8، AB = 6، E من [AC] بحيث AE = 2.
+  // المستقيم (BE) يقطع (AD) في F و (CD) في G. »
+  //
+  //   1) أحسب AF و CG      2) بيّن أنّ EB² = EF × EG
+  //
+  // Deux configurations de sommet E sur la même droite (BE) : d'un côté
+  // (AF)//(CB), de l'autre (CG)//(AB) — les deux parallélismes du
+  // parallélogramme, chacun servant une fois. La relation EB² = EF × EG
+  // s'écrit (EB/EF) × (EB/EG) = 1, et se vérifie sans que EB, EF ni EG aient
+  // besoin d'être rationnels : ce sont leurs RAPPORTS qui le sont.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex3', 'probleme', 'difficile', () => {
+    const g = triangle(1);                       // A, B, C : trois côtés entiers
+    const A = g.A, B = g.B, C = g.C;
+    const D = F.translate(C, B, A);              // ABCD parallélogramme
+    const t = rapport();
+    const E = F.surDroite(A, C, t);
+    const Fp = F.intersection(B, E, A, D), G = F.intersection(B, E, C, D);
+    if (!Fp || !G) throw new Error('pose dégénérée');
+    const P = F.plan(1);
+    const r1 = F.racQ(F.qDiv(P.carre(E, C), P.carre(E, A)));
+    if (!r1) throw new Error('rapport irrationnel');
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp, G },
+      para: [[dr('A', 'F'), dr('C', 'B')], [dr('C', 'G'), dr('A', 'B')]],
+      thales: [{ S: 'E', B: 'C', C: 'B', M: 'A', N: 'F' },
+               { S: 'E', B: 'A', C: 'B', M: 'C', N: 'G' }],
+      entre: [['A', 'E', 'C']],
+      relations: [{ op: 'produit',
+                    rapports: [['E', 'B', 'E', 'F'], ['E', 'B', 'E', 'G']],
+                    valeur: F.Q1,
+                    depuis: [[dr('A', 'F'), dr('C', 'B')], [dr('C', 'G'), dr('A', 'B')]] }],
+      donne: [seg('A', 'C'), seg('B', 'C'), seg('A', 'B'), seg('A', 'E')],
+      buts: [
+        { but: ['lg2', seg('C', 'E'), null], question: 'أحسب EC.' },
+        { but: ['lg2', seg('A', 'F'), null], question: 'أحسب AF.' },
+        { but: ['lg2', seg('C', 'G'), null], question: 'أحسب CG.' },
+        { but: ['relation', 'produit', 'E|B|E|F;E|B|E|G', '1/1'],
+          question: 'بيّن أنّ EB² = EF × EG.' }
+      ],
+      texte: g2 => ['ABCD متوازي أضلاع حيث AC = ' + g2(seg('A', 'C')) + ' و CB = '
+                    + g2(seg('B', 'C')) + ' و AB = ' + g2(seg('A', 'B')) + '.',
+                    'E نقطة من [AC] بحيث AE = ' + g2(seg('A', 'E')) + '.',
+                    'المستقيم (BE) يقطع (AD) في F و (CD) في G.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['A', 'C'], ['F', 'G']],
+                droites: [['A', 'D'], ['C', 'D']] },
+      indice: 'وضعيتان لطالس رأسهما E : (AF)//(CB) ثمّ (CG)//(AB)'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex13 — LE SYMÉTRIQUE QUI CRÉE UN TRIANGLE
+  //
+  // « ABC مثلّث، M و N منتصفا [AB] و [AC]. P مناظرة M بالنسبة إلى B،
+  // و (NP) يقطع (BC) في Q : بيّن أنّ Q منتصف [PN]. »
+  //
+  // Le triangle où l'on travaille — PMN — n'existe qu'après la symétrie, et
+  // sa parallèle est (BC), qui vient du théorème des milieux dans ABC. Deux
+  // fois le même théorème, dans deux triangles dont l'un naît de l'autre.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex13', 'probleme', 'difficile', () => {
+    const g = triangle(1);
+    const A = g.A, B = g.B, C = g.C;
+    const Mp = F.milieu(A, B), N = F.milieu(A, C);
+    const P = F.symetriqueCentre(Mp, B);         // B est le milieu de [MP]
+    const Q = F.intersection(N, P, B, C);
+    if (!Q) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B, C, M: Mp, N, P, Q },
+      milieux: [['M', 'A', 'B'], ['N', 'A', 'C'], ['B', 'M', 'P']],
+      thales: [{ S: 'A', B: 'B', C: 'C', M: 'M', N: 'N' },
+               { S: 'P', B: 'M', C: 'N', M: 'B', N: 'Q' }],
+      // (BQ) est portée par (BC), et (MN)//(BC) : la figure le montre, et
+      // c'est ce qui fait de PMN une configuration des milieux.
+      para: [[dr('B', 'Q'), dr('M', 'N')]],
+      donne: [seg('B', 'C')],
+      buts: [
+        { but: ['para', dr('M', 'N'), dr('B', 'C')], question: 'بيّن أنّ (MN) // (BC).' },
+        { but: ['lg2', seg('M', 'N'), null], question: 'أحسب MN.' },
+        { but: ['milieu', 'Q', 'N', 'P'], question: 'بيّن أنّ Q هي منتصف [PN].' },
+        { but: ['lg2', seg('B', 'Q'), null], question: 'أحسب BQ.' }
+      ],
+      texte: g2 => ['ABC مثلّث حيث BC = ' + g2(seg('B', 'C'))
+                    + '، و M و N منتصفا [AB] و [AC] على التّوالي.',
+                    'P هي نظيرة M بالنسبة إلى B، و (NP) يقطع (BC) في Q.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['M', 'N'],
+                           ['N', 'P'], ['M', 'P']],
+                marques: [['A', 'M', 1], ['M', 'B', 1], ['M', 'B', 2], ['B', 'P', 2]] },
+      indice: 'مبرهنة المنتصفين في ABC، ثمّ عكسها في المثلّث PMN'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
