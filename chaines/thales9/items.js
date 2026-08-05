@@ -1316,6 +1316,63 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // LE TRIANGLE RECTANGLE PAR LE CERCLE — et non par Pythagore
+  //
+  // « [AB] قطر للدائرة (C) و M نقطة من (C) إذن المثلّث AMB قائم الزاوية في M ».
+  // C'est cela, le triangle rectangle du chapitre de Thalès : l'angle droit
+  // vient du DIAMÈTRE, pas d'un calcul de carrés. La réciproque suit — le
+  // milieu de l'hypoténuse est à égale distance des trois sommets —, et de là
+  // les médianes et les deux tiers.
+  //
+  // La règle « كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر لها فهو مثلّث
+  // قائم » était au catalogue depuis le premier jour et n'avait jamais servi :
+  // aucun énoncé ne lui donnait de cercle. Une règle que rien n'appelle est
+  // une règle qui n'existe pas.
+  //
+  // AUCUN PYTHAGORE ICI, et aucune relation métrique : tout se lit sur le
+  // cercle, sur les milieux et sur le centre de gravité.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('TRIANGLES9_23 — القطر و الزاوية القائمة', 'probleme', 'difficile', () => {
+    // M sur le cercle de diamètre [AB] : on le pose par un triplet, ce qui
+    // rend AM et BM rationnels sans jamais les calculer par Pythagore.
+    const [a, b, c] = F.choix(TRIPLETS);
+    const k = F.q(F.ent(2, 6));
+    const A = F.pt(0, 0), B = F.pt(F.qMul(F.q(c), k), F.Q0);
+    const Mp = F.pt(F.qMul(F.q(a * a, c), k), F.qMul(F.q(a * b, c), k));
+    const O = F.milieu(A, B), Ip = F.milieu(A, Mp);
+    const G = F.plan(1).centreGravite(A, B, Mp);
+    return {
+      K: 1, points: { A, B, M: Mp, O, I: Ip, G },
+      cercles: [['O', 'ABM']],
+      diametres: [{ O: 'O', A: 'A', C: 'B', sur: ['M'] }],
+      milieux: [['O', 'A', 'B'], ['I', 'A', 'M']],
+      // La droite des milieux : O milieu de [AB], I milieu de [AM].
+      thales: [{ S: 'A', B: 'B', C: 'M', M: 'O', N: 'I' }],
+      gravites: [{ G: 'G', tri: 'ABM', I: 'O', J: 'I' }],
+      entre: [['M', 'G', 'O']],
+      donne: [seg('A', 'B'), seg('B', 'M')],
+      buts: [
+        { but: ['rect', 'A', 'M', 'B'],
+          question: 'بيّن أنّ المثلّث AMB قائم الزاوية في M.' },
+        { but: ['lg2', seg('O', 'M'), null], question: 'أحسب OM.' },
+        { but: ['para', dr('O', 'I'), dr('B', 'M')],
+          question: 'بيّن أنّ (OI) // (BM).' },
+        { but: ['lg2', seg('O', 'I'), null], question: 'أحسب OI.' },
+        { but: ['lg2', seg('M', 'G'), null], question: 'أحسب MG.' },
+        { but: ['lg2', seg('G', 'O'), null], question: 'استنتج GO.' }
+      ],
+      texte: g2 => ['(C) دائرة قطرها [AB] و مركزها O، و M نقطة من (C).',
+                    'AB = ' + g2(seg('A', 'B')) + ' و BM = ' + g2(seg('B', 'M')) + '.',
+                    'I منتصف [AM]، و G هي نقطة تقاطع (MO) و (BI).'],
+      figure: { segments: [['A', 'B'], ['B', 'M'], ['M', 'A'], ['O', 'I'],
+                           ['M', 'O'], ['B', 'I']],
+                marques: [['A', 'O', 1], ['O', 'B', 1], ['A', 'I', 2], ['I', 'M', 2]] },
+      indice: 'الزاوية القائمة تأتي من القطر، ثمّ مبرهنة المنتصفين، ثمّ مركز الثقل'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },

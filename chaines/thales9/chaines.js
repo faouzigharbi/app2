@@ -72,6 +72,12 @@
     for (const y of s.symetries || []) hyp.push(['sym', y[0], y[1], y[2]]);
     for (const g of s.pgrams || []) hyp.push(['pgram', g]);
     for (const q of s.perps || []) hyp.push(['perp', q[0], q[1]]);
+    // UN CERCLE DONNÉ PAR L'ÉNONCÉ. « (C) دائرة قطرها [AB] و M نقطة منها » :
+    // l'appartenance au cercle est une donnée, et c'est d'elle que sort
+    // l'angle droit — non de Pythagore.
+    for (const c of s.cercles || []) {
+      hyp.push(['cercle', c[0], c[1].split('').sort().join('')]);
+    }
     // L'ÉGALITÉ DES ANGLES ET LA CONFIGURATION SORTENT DE LA MÊME DÉCLARATION.
     // L'item dit une fois « ces deux angles-là sont alternes-internes et de
     // même mesure » ; l'hypothèse et le contexte en découlent tous deux, et
@@ -194,7 +200,12 @@
                quadrilateres: S.ctx.quadrilateres, gravites: S.ctx.gravites,
                orthos: S.ctx.orthos, entre: S.ctx.entre,
                relations: S.ctx.relations,
-               milieux: S.ctx.milieux, pieds: S.ctx.pieds }
+               milieux: S.ctx.milieux, pieds: S.ctx.pieds,
+               // LE DIAMÈTRE VOYAGE AVEC LE CONTRÔLE. Sans lui, le validateur
+               // rejouait « كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر
+               // لها » sur une scène sans cercle, et la règle ne donnait
+               // évidemment rien : 32 refus, tous justes.
+               diametres: S.ctx.diametres }
       }
     };
   }

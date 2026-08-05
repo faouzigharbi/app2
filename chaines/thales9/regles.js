@@ -158,6 +158,29 @@
         return out;
       }
     },
+    // L'ORDRE DES DEUX FORMULATIONS N'EST PAS INDIFFÉRENT. Le maître les
+    // écrit toutes deux dans sa مراجعة, et elles ont les mêmes prémisses ;
+    // mais quand l'énoncé dit « [AB] قطر للدائرة », c'est le DIAMÈTRE qui
+    // justifie l'angle droit, et l'élève doit lire ce mot-là dans sa
+    // correction. On essaie donc le diamètre d'abord ; l'équidistance
+    // reprend la main dès qu'aucun diamètre n'est déclaré.
+    {
+      cle: 'demi-cercle-rect',
+      nom: 'كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر لها فهو مثلّث قائم',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const d of ctx.diametres || []) {          // {O, A, C, sur:[…]}
+          for (const S of d.sur) {
+            if (S === d.A || S === d.C) continue;
+            if (f.rect.some(r => r[2] === S && seg(r[1], r[3]) === seg(d.A, d.C))) continue;
+            out.push({ but: ['rect', d.A, S, d.C],
+                       depuis: [['cercle', d.O, [d.A, S, d.C].sort().join('')],
+                                ['milieu', d.O, d.A, d.C]] });
+          }
+        }
+        return out;
+      }
+    },
     {
       cle: 'milieu-equidistant-rect',
       nom: 'إذا كان منتصف أحد أضلاع مثلّث متساوي البعد عن رؤوسه فالمثلّث قائم',
@@ -171,23 +194,6 @@
           const [A, C] = tri.split('').filter(y => y !== S);
           if (!f.rect.some(r => r[2] === S)) {
             out.push({ but: ['rect', A, S, C], depuis: [c, ['milieu', I, A, C]] });
-          }
-        }
-        return out;
-      }
-    },
-    {
-      cle: 'demi-cercle-rect',
-      nom: 'كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر لها فهو مثلّث قائم',
-      chercher: (ctx, f) => {
-        const out = [];
-        for (const d of ctx.diametres || []) {          // {O, A, C, sur:[…]}
-          for (const S of d.sur) {
-            if (S === d.A || S === d.C) continue;
-            if (f.rect.some(r => r[2] === S && seg(r[1], r[3]) === seg(d.A, d.C))) continue;
-            out.push({ but: ['rect', d.A, S, d.C],
-                       depuis: [['cercle', d.O, [d.A, S, d.C].sort().join('')],
-                                ['milieu', d.O, d.A, d.C]] });
           }
         }
         return out;
