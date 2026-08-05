@@ -195,7 +195,9 @@
       // de la couche de texte, page par page — il n'a pas fallu l'ouvrir.
       structure: [
         { seance: 1, pages: '2-6', exercices: 12, sujet: 'arithmétique : divisibilité, arbre de choix, puissances et restes', vu: true },
-        { seance: 2, pages: '7-9', exercices: 5, sujet: 'non lu' },
+        { seance: 2, pages: '7-9', exercices: 5, vu: true,
+          sujet: 'radicaux et expressions inverses · une expression A = x²−x−12 déclinée '
+               + 'huit fois · deux exercices de repère · une pyramide' },
         { seance: 3, pages: '10-13', exercices: 7, sujet: 'non lu' },
         { seance: 4, pages: '14-16', exercices: 2, sujet: 'non lu' },
         { seance: 5, pages: '17-20', exercices: 8, sujet: 'non lu' },
@@ -215,11 +217,57 @@
         { n: '1.4', questions: 3, notions: ['code secret', 'divisibilité par 15 et 12'], sort: 'à faire' },
         { n: '1.5', questions: 2, notions: ['restes de la division par 4', 'arbre de choix'], sort: 'à faire' },
         { n: '1.6', questions: 3, notions: ['ensemble défini par des conditions sur les chiffres'], sort: 'à faire' },
-        { n: '1.7', questions: 2, notions: ['arbre de choix', 'divisibilité par 12'], sort: 'à faire' }
+        { n: '1.7', questions: 2, notions: ['arbre de choix', 'divisibilité par 12'], sort: 'à faire' },
+
+        // ── SÉANCE 2 — lue en entier, et portée pour ses deux premiers tiers ──
+        // Le chapitre d'accueil est « brevet » : une séance mêle radicaux,
+        // algèbre et géométrie, et n'est le chapitre de personne.
+        { n: '2.1', questions: 7,
+          notions: ['division par le conjugué', 'facteur commun au numérateur',
+                    'rationaliser 1/√3', 'extraire le carré parfait',
+                    'deux nombres inverses', 'nombre صمّ'],
+          sort: 'bibliothèque', ou: 'brevet ex21 — sept volets',
+          pourquoi: 'a = 2√3−3, b = (2√3+3)/3, c = 1+√3/2 ; a·b = 1 et 2a·c = √3' },
+        { n: '2.2', questions: 8,
+          notions: ['valeur d\'une expression en √2−1', 'forme canonique A+49/4',
+                    'différence de deux carrés', 'produit nul', 'facteur commun',
+                    'inéquation du premier degré', 'relation métrique', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex22 — huit volets',
+          pourquoi: 'une seule expression A = x²−x−12 porte les huit questions ; '
+                  + 'le 49/4 est exactement ce qu\'il faut pour fermer le carré' },
+        { n: '2.3', questions: 9,
+          notions: ['repère', 'rectangle', 'symétrique', 'projection', 'parallélogramme',
+                    'losange', 'milieux', 'coordonnées d\'un point dans un autre repère'],
+          sort: 'hors machinerie',
+          pourquoi: 'le fait « coordonnées » n\'existe dans aucun chapitre' },
+        { n: '2.4', questions: 6,
+          notions: ['repère', 'cercle de diamètre ⇒ angle droit', 'longueurs',
+                    'Thalès', 'symétrique', 'milieux', 'aire d\'un quadrilatère',
+                    'trapèze'],
+          sort: 'hors machinerie',
+          pourquoi: 'sa géométrie est entièrement dans thales9 — c\'est le repère '
+                  + 'qui manque, et lui seul' },
+        { n: '2.5', questions: 8,
+          notions: ['pyramide', 'droite ⊥ plan', 'plans parallèles', 'Thalès dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
-                'les onze autres séances restent à ouvrir']
+                'LE REPÈRE — c\'est le manque le plus rentable du livre : deux des '
+                + 'cinq exercices de la séance 2 n\'attendent que lui, et leur '
+                + 'géométrie (diamètre ⇒ angle droit, milieux, Thalès) est déjà là',
+                'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
+                'les onze autres séances restent à ouvrir'],
+      // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
+      // chaines/brevet/README.md, et trois falsifications les rejouent.
+      coquilles: [
+        '2.1 q1)أ : (3√3−1)(4−5√3) vaut 17√3−49 ; le facteur qui donne −34+13√3 '
+        + 'est (2√3−1). Le 3 est un 2.',
+        '2.2 I-3)ب : A = 4(x+7) donne un discriminant 185 ; avec 4(x+3) le facteur '
+        + 'commun saute aux yeux (x = −3 ou 8).',
+        '2.2 II : « CH = x−3 » répète BH (la figure dit x+2), et AH = √7 ne se '
+        + 'factorise pas. AH = √6 donne x = 4, BH = 1, CH = 6, aire √6/2.'
+      ]
     },
 
     {

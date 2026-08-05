@@ -26,6 +26,15 @@ window.CLASSEMENT = {
   serie2:    { vers: 'radic9', revision: true },
   serie3:    { vers: 'radic9', revision: true },
 
+  // ── 9ᵉ — LE BREVET, UNE PARTIE À PART ─────────────────────────────────
+  //
+  // Le livre de révision n'est pas un chapitre de plus : une seule de ses
+  // séances mêle radicaux, factorisation, équations, inéquations et relation
+  // métrique — la ranger sous « radic9 » la rendrait introuvable, et fausserait
+  // le chapitre d'accueil. C'est la PARTIE qu'on ouvre quand on révise pour la
+  // مناظرة, pas quand on apprend une leçon. Elle garde donc son nom.
+  brevet: { nom: 'البريفي — مراجعة المناظرة' },
+
   // ── 7ᵉ ────────────────────────────────────────────────────────────────
   // « سلاسل البرهان » ne dit pas de quoi il s'agit : carré parfait, cube,
   // multiple — c'est de l'arithmétique, et sa place est avec les diviseurs.
