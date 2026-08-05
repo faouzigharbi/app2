@@ -24,6 +24,33 @@ métrique. La ranger sous « العمليات في ℝ » la rendrait introuvabl
 Seul l'exercice 5 manque : c'est de la **géométrie de l'espace** (pyramide
 `SABC`), qui n'a aucun chapitre.
 
+## Séance 7 — entière, les quatre exercices
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex71.html` | التمرين 1 | 9 | réduire pour **comparer** : m = 4√6, n = 7√2, les carrés 96 et 98, puis √3 < 1,75 · et le piège du produit de deux facteurs négatifs |
+| `ex72.html` | التمرين 2 | 12 | deux cercles emboîtés : diamètre ⇒ angle droit, Pythagore, relation métrique, Thalès, médiane de l'hypoténuse, centre de gravité, rectangle, **orthocentre** |
+| `ex73.html` | التمرين 3 | 12 | intervalles et valeur absolue · **F = 2E + 12** · l'aire grise d'un carré découpé |
+| `ex74.html` | التمرين 4 | 8 | relation métrique par **deux chemins**, puis un triangle équilatéral et un losange |
+
+Trois choses que ces exercices disent et que l'énoncé tait :
+
+- **ex71** — tout le premier bloc n'existe que pour encadrer √3. On réduit deux
+  sommes de radicaux, on les compare *par leurs carrés* (96 et 98), et
+  l'inégalité `4√6 < 7√2` devient `√3 < 7/4`. Le second bloc est l'inverse :
+  deux facteurs **négatifs**, et multiplier par `(1 − √3)` retourne le sens.
+  C'est là qu'un élève perd l'exercice.
+- **ex72** — le triangle 6-8-10 est choisi pour que tout tombe juste :
+  `SK = 24/5`, `AK = 32/5`, `RI = 3/2`, `KJ = 4`. Seule `BG = 4√13/3` ne se
+  devine pas — elle se calcule. L'énoncé n'a **aucun repère** ; le validateur,
+  lui, en pose un, et `S` n'y est pas recopié : il est contraint par les deux
+  faits qui le définissent, « sur le cercle de diamètre [AB] » et « SB = 6 ».
+- **ex73** — tout tient dans une égalité que l'énoncé ne dit jamais :
+  **F = 2E + 12**. C'est elle qui fait passer de E à F sans recalculer, elle qui
+  donne la factorisation par `2E + 16 = (x+1)²`, et elle encore qui relie l'aire
+  grise aux deux expressions : `2S = x² + 2x + 8`, donc `S = E + 23/2` et
+  `S = (F + 11)/2`. D'où les deux valeurs demandées — `S = 23/2 ⟺ E = 0 ⟺ x = 3`.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
@@ -57,15 +84,15 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 1 600 questions, 23 240 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 58/58
+    node verifier.js 40             # 3 240 questions, 57 800 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 117/117
     node _build.js .                # régénérer les pages
 
-## Trois coquilles du livre, relevées par le calcul
+## Cinq coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Trois énoncés de cette
-séance ne se referment pas sur eux-mêmes, et **trois falsifications le
-prouvent** — chacune remet le nombre du livre et se fait rejeter.
+Le validateur ne lit pas une intention : il recalcule. Cinq énoncés ne se
+referment pas sur eux-mêmes, et **cinq falsifications le prouvent** — chacune
+remet le nombre du livre et se fait rejeter.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
    `17√3 − 49`. Or la question suivante demande d'en **déduire** `a`, dont le
@@ -89,10 +116,40 @@ prouvent** — chacune remet le nombre du livre et se fait rejeter.
    avec le `5` de la figure sur `x² − x − 31 = 0` : ni l'un ni l'autre ne se
    factorise. **`AH = √6`** donne `x = 4`, `BH = 1`, `CH = 6`, et l'aire `√6/2`.
 
-Ces trois corrections sont écrites dans `seances.js` et signalées au maître ;
+4. **الحصّة 7، التمرين 3، 5)أ** — le livre écrit « A و M و I على نفس
+   الاستقامة ». Ces trois points ne sont **jamais** alignés : `A` et `M` sont
+   tous deux sur `[AB]`, `I` est sur `[CD]`. Il s'agit de **A, N, I** — et la
+   relation imprimée, `x/(x+1/2) = 2/(x+4)`, est exactement leur condition
+   d'alignement. La relation est juste ; c'est la lettre qui a glissé.
+
+5. **الحصّة 7، التمرين 3، 5)ب** — le livre conclut `S = 11/2`. Or `S = 11/2`
+   équivaut à `F = 0`, donc à `x = 1`, alors que l'alignement donne
+   `x² + 2x = 1`, donc `x = √2 − 1`. Avec cette valeur, `S = 9/2`.
+   Contrôle croisé : la question précédente demande `S = 23/2`, ce qui donne
+   `x = 3` — et c'est exactement `E = 0`. La formule `S = (x² + 2x + 8)/2` est
+   donc bien la bonne, et **`11/2` est un `9/2`**.
+
+Ces cinq corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
+## Ce que les falsifications ont appris
+
+Deux d'entre elles ont d'abord **refusé de mordre**, et le défaut était dans la
+visée, pas dans le validateur : l'une déplaçait un point dont la question ne
+parlait pas, l'autre changeait le sens d'un vecteur directeur — ce qui donne
+la **même** droite parallèle, donc le même point. Elles ont été réarmées sur ce
+qui porte vraiment. C'est le principe : une falsification qui passe est un
+renseignement, jamais un succès.
+
 ## Ce que la séance a demandé
+
+La séance 7 a demandé trois faits de plus à `repere.js` — la **projection
+orthogonale** (le pied d'une hauteur), le **centre de gravité** et
+l'**orthocentre** — plus `sur-cercle` et `equilateral`. Et elle a montré la
+limite honnête du noyau : `s/t` avec `t = √11 − 5 − √33 + 5√3` a **quatre**
+termes, et la division par conjugué s'arrête à deux. Le noyau refuse, et il a
+raison — l'ordre des trois nombres se lit sur `s < t`, sans jamais poser la
+division.
 
 Rien de neuf au noyau : `ℚ[√d]` de `revision2` suffisait, y compris pour la
 division par conjugué de `(−34 + 13√3)/(4 − 5√3)` et pour les identités en `x`

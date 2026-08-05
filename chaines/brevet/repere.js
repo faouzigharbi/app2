@@ -132,6 +132,21 @@
     isocele:     (P, [s, x, y]) => isocele(P[s], P[x], P[y]),
     'rectangle-en': (P, [s, x, y]) => rectEn(P[s], P[x], P[y]),
     'sur-cercle-diametre': (P, [c, a, b]) => surCercleDiam(P[c], P[a], P[b]),
+    // « M est sur le cercle de centre O passant par A » — le cercle nommé.
+    'sur-cercle': (P, [m, o, a]) => sEgaux(dist2(P[o], P[m]), dist2(P[o], P[a])),
+    equilateral: (P, [a, b, c]) => sEgaux(dist2(P[a], P[b]), dist2(P[b], P[c]))
+                                && sEgaux(dist2(P[b], P[c]), dist2(P[c], P[a]))
+                                && !memePoint(P[a], P[b]),
+    // Le centre de gravité : à l'intersection des médianes, donc à la moyenne
+    // des trois sommets. On le recalcule, on ne le suppose pas.
+    'centre-gravite': (P, [g, a, b, c]) => memePoint(P[g],
+      pt(sEch(sAdd(sAdd(P[a].x, P[b].x), P[c].x), rat(1, 3)),
+         sEch(sAdd(sAdd(P[a].y, P[b].y), P[c].y), rat(1, 3)))),
+    // L'orthocentre : chaque hauteur y passe. Deux suffisent à le définir, la
+    // troisième est le théorème — on vérifie donc les trois.
+    orthocentre: (P, [h, a, b, c]) => perp(P[a], P[h], P[b], P[c])
+                                   && perp(P[b], P[h], P[a], P[c])
+                                   && perp(P[c], P[h], P[a], P[b]),
     // Une longueur, un rapport, une aire, une coordonnée : la valeur attendue
     // est écrite en toutes lettres et analysée, pas comparée à un flottant.
     longueur:    (P, [a, b, v], env) => {
@@ -183,6 +198,14 @@
         }
         // Le translaté : ABCD parallélogramme donne D = A + BC→.
         case 'translate': P[nom] = somme(P[d[1]], vect(P[d[2]], P[d[3]])); break;
+        // Le projeté ORTHOGONAL de M sur (AB) — le pied de la hauteur, le pied
+        // de la perpendiculaire. Il se calcule par le produit scalaire, et le
+        // repère est orthonormé, donc la formule est exacte.
+        case 'proj': {
+          const A0 = P[d[2]], u = vect(A0, P[d[3]]);
+          const k = sDiv(scal(vect(A0, P[d[1]]), u), scal(u, u));
+          P[nom] = somme(A0, mise(u, k)); break;
+        }
         default: throw new Error('construction inconnue « ' + d[0] +' » pour ' + nom);
       }
     }

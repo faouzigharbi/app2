@@ -205,7 +205,8 @@
         { seance: 4, pages: '14-16', exercices: 2, sujet: 'géométrie pure — Thalès et métrique, une entrée dans l’espace' },
         { seance: 5, pages: '17-20', exercices: 8, sujet: 'géométrie — Thalès et métrique, quelques radicaux' },
         { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
-        { seance: 7, pages: '24-26', exercices: 4, sujet: 'géométrie — Thalès seul, la séance la plus homogène' },
+        { seance: 7, pages: '24-26', exercices: 4, vu: true,
+          sujet: 'radicaux et ORDRE · deux cercles emboîtés jusqu\'à l\'orthocentre · intervalles et aire d\'un carré découpé · relation métrique et triangle équilatéral' },
         { seance: 8, pages: '27-29', exercices: 5, sujet: 'géométrie et ESPACE — la plus chargée en solides' },
         { seance: 9, pages: '30-32', exercices: 4, sujet: 'géométrie — Thalès et relations métriques' },
         { seance: 10, pages: '33-36', exercices: 2, sujet: 'géométrie — deux longs exercices seulement' },
@@ -254,7 +255,38 @@
                   + 'THALÈS posé dans un repère ; A y est le centre de gravité de EFC' },
         { n: '2.5', questions: 8,
           notions: ['pyramide', 'droite ⊥ plan', 'plans parallèles', 'Thalès dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' }
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+
+        // ── SÉANCE 7 — LUE ET PORTÉE EN ENTIER, les quatre exercices ──────
+        { n: '7.1', questions: 9,
+          notions: ['rationaliser sous le radical', 'réduire pour comparer',
+                    'encadrement de √3', 'ordre et inverses',
+                    'produit de deux facteurs négatifs', 'multiplier par un négatif retourne'],
+          sort: 'bibliothèque', ou: 'brevet ex71 — neuf volets',
+          pourquoi: 'm = 4√6 et n = 7√2 : la comparaison des carrés 96 et 98 '
+                  + 'donne √3 < 1,75. Puis s < t par le facteur négatif (1 − √3)' },
+        { n: '7.2', questions: 12,
+          notions: ['cercle de diamètre ⇒ angle droit', 'Pythagore', 'relation métrique',
+                    'Thalès', 'médiane de l\'hypoténuse', 'droite des milieux',
+                    'centre de gravité', 'rectangle', 'orthocentre'],
+          sort: 'bibliothèque', ou: 'brevet ex72 — douze volets',
+          pourquoi: 'le triangle 6-8-10 fait tout tomber juste ; seule BG = 4√13/3 '
+                  + 'ne se devine pas. Se termine sur l\'orthocentre de ASO' },
+        { n: '7.3', questions: 12,
+          notions: ['intervalles et valeur absolue', 'intersection', 'entiers d\'un intervalle',
+                    'forme canonique', 'différence de deux carrés', 'facteur commun',
+                    'aires d\'un carré découpé', 'équation du second degré factorisée',
+                    'Thalès et alignement'],
+          sort: 'bibliothèque', ou: 'brevet ex73 — douze volets',
+          pourquoi: 'tout tient dans une égalité que l\'énoncé ne dit pas : F = 2E + 12, '
+                  + 'et l\'aire grise vaut S = E + 23/2 = (F + 11)/2' },
+        { n: '7.4', questions: 8,
+          notions: ['relation métrique', 'aire d\'un triangle', 'Pythagore',
+                    'médiane de l\'hypoténuse', 'triangle équilatéral', 'losange',
+                    'droite des milieux'],
+          sort: 'bibliothèque', ou: 'brevet ex74 — huit volets',
+          pourquoi: 'BH = 3√3 par deux chemins — la relation métrique puis l\'aire — '
+                  + 'et le 3 de AH n\'était pas choisi au hasard : AH = HI = AI = 3' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
@@ -275,7 +307,14 @@
         '2.4 q4 : « لتكن F مناظرة بالنسبة إلى O » ne dit pas de QUEL point F est '
         + 'le symétrique. C\'est E : c\'est le seul choix pour lequel N et P sont '
         + 'confondues (q4)ب) et M milieu de [BC] (q4)أ). Avec A on retombe sur '
-        + 'l\'axe (OI) lui-même, avec B on obtient M(6;−6).'
+        + 'l\'axe (OI) lui-même, avec B on obtient M(6;−6).',
+        '7.3 q5)أ : « A و M و I على نفس الاستقامة » — ces trois points ne sont '
+        + 'JAMAIS alignés (A et M sont tous deux sur [AB], I est sur [CD]). '
+        + 'C\'est A, N, I : la relation imprimée x/(x+1/2) = 2/(x+4) est '
+        + 'exactement leur condition d\'alignement, donc elle, elle est juste.',
+        '7.3 q5)ب : S = 11/2 correspond à F = 0, c\'est-à-dire x = 1. Or '
+        + 'l\'alignement donne x² + 2x = 1, donc x = √2 − 1 et S = 9/2. '
+        + '(Contrôle : S = 23/2 donne bien x = 3, et c\'est E = 0.)'
       ]
     },
 

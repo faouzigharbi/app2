@@ -46,9 +46,18 @@ function rnd() {
 //               « GN = 2√5 » est donc recalculée sur la figure, pas crue.
 function environnements(c) {
   if (c.points) {
-    const P = R.figure(c.points, {});
-    const e = R.nommer(P);
-    for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
+    // Deux passes, et l'ordre n'est pas arbitraire : un `env` peut SERVIR à
+    // poser la figure — le x du carré ABCD —, ou au contraire en SORTIR —
+    // le x qui n'est autre que BH. On évalue donc d'abord ce qui se laisse
+    // évaluer seul, on bâtit la figure avec, puis on évalue le reste.
+    const avant = {}, apres = {};
+    for (const nom in (c.env || {})) {
+      try { avant[nom] = F.analyser(c.env[nom], avant); }
+      catch (err) { apres[nom] = c.env[nom]; }
+    }
+    const P = R.figure(c.points, avant);
+    const e = Object.assign(R.nommer(P), avant);
+    for (const nom in apres) e[nom] = F.analyser(apres[nom], e);
     e.__points = P;
     return [e];
   }
@@ -291,6 +300,140 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[0][5] = '1/3'; });
   pousse("EFBL declare trapeze isocele dans le mauvais ordre", parQuestion(24, 11),
     c => { c.controle.faits[0] = ['trapeze-isocele', 'E', 'B', 'F', 'L']; });
+
+  // ══ LA SÉANCE 7 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — réduire pour COMPARER : on vise le sens des inégalités ──
+  pousse("le levier 6√(3/2) rendu egal a 6√6", parQuestion(71, 0),
+    c => { c.controle.claims[0][1] = '6√6'; });
+  pousse("m decale", parQuestion(71, 1),
+    c => { c.controle.claims[0][1] = '3√6'; });
+  pousse("les deux termes en √3 additionnes au lieu de s annuler", parQuestion(71, 1),
+    c => { c.etapes[4][1] = '-2√3 + 2√3 = 4√3'; });
+  pousse("n decale", parQuestion(71, 2),
+    c => { c.controle.claims[0][1] = '6√2'; });
+  pousse("les carres de m et n intervertis", parQuestion(71, 2),
+    c => { c.etapes[7][1] = 'n^2 < m^2'; });
+  pousse("√3 = 4√6/(4√2) mal factorise", parQuestion(71, 3),
+    c => { c.controle.claims[0][1] = '4√2 √6'; });
+  pousse("la division par √2 mal faite", parQuestion(71, 3),
+    c => { c.controle.claims[1][1] = '7√2'; });
+  pousse("le fractionnement de (1 - n^2)/n faux", parQuestion(71, 4),
+    c => { c.controle.claims[0][1] = '1/n + n'; });
+  pousse("les inverses ranges dans le mauvais sens", parQuestion(71, 4),
+    c => { c.etapes[3][1] = '1/m < 1/n'; });
+  pousse("11 declare plus grand que 7√3", parQuestion(71, 5),
+    c => { c.etapes[7][1] = '7√3 < 11'; });
+  pousse("t mal developpe", parQuestion(71, 5),
+    c => { c.controle.claims[2][1] = '√11 - 5 - √33 - 5√3'; });
+  pousse("s mal factorise", parQuestion(71, 6),
+    c => { c.controle.claims[0][1] = '(2√3 + 5)(1 - √3)'; });
+  pousse("la multiplication par (1 - √3) ne retourne pas l inegalite", parQuestion(71, 7),
+    c => { c.etapes[5][1] = '(√11 - 5)(1 - √3) < (2√3 - 5)(1 - √3)'; });
+  pousse("2√3 ecrit √11", parQuestion(71, 7),
+    c => { c.controle.claims[0][1] = '√11'; });
+  pousse("s et t declares egaux dans le rangement", parQuestion(71, 8),
+    c => { c.etapes[3][1] = 's = t'; });
+
+  // ── التمرين 2 — la figure : S contraint par « sur le cercle » et SB = 6 ──
+  pousse("S deplace : SB ne vaut plus 6", parQuestion(72, 0),
+    c => { c.controle.points.S = ['point', '6', '4']; });
+  pousse("SA annonce 7", parQuestion(72, 1),
+    c => { c.controle.faits[0][3] = '7'; });
+  pousse("la relation metrique lue AK = SA^2/SB", parQuestion(72, 2),
+    c => { c.etapes[2][1] = 'AK = SA^2/SB'; });
+  pousse("SK et AK echanges", parQuestion(72, 2),
+    c => { c.controle.faits[0][3] = '24/5'; });
+  pousse("R pris comme projete de I sur (AB)", parQuestion(72, 3),
+    c => { c.controle.points.R = ['proj', 'I', 'A', 'B']; });
+  pousse("RI annonce 3", parQuestion(72, 4),
+    c => { c.controle.faits[0][3] = '3'; });
+  pousse("le rapport de Thales pris a 1/2", parQuestion(72, 4),
+    c => { c.controle.faits[3][5] = '1/2'; });
+  pousse("KJ annonce AS au lieu de AS/2", parQuestion(72, 5),
+    c => { c.etapes[2][1] = 'KJ = AS'; });
+  // Visée corrigée : la question 7 ne parle pas de I, la déplacer n'y touchait
+  // rien. C'est le calcul de RI qui en dépend, et là elle mord.
+  pousse("I pris milieu de [AB] au lieu de [AO]", parQuestion(72, 4),
+    c => { c.controle.points.I = ['milieu', 'A', 'B']; });
+  pousse("G declare centre de gravite apres deplacement", parQuestion(72, 7),
+    c => { c.controle.faits[0] = ['centre-gravite', 'J', 'A', 'S', 'B']; });
+  pousse("BG pris egal a BJ", parQuestion(72, 8),
+    c => { c.controle.faits[1][3] = '2√13'; });
+  pousse("E construit parallele a (AB) au lieu de (AS)", parQuestion(72, 9),
+    c => { c.controle.points.Z = ['translate', 'B', 'A', 'B']; });
+  pousse("OE annonce 10", parQuestion(72, 10),
+    c => { c.controle.faits[1][3] = '10'; });
+  pousse("F declare orthocentre du mauvais triangle", parQuestion(72, 11),
+    c => { c.controle.faits[0] = ['orthocentre', 'F', 'A', 'S', 'B']; });
+  pousse("H pris projete sur (AS)", parQuestion(72, 11),
+    c => { c.controle.points.H = ['proj', 'F', 'A', 'S']; });
+
+  // ── التمرين 3 — F = 2E + 12, et les deux coquilles du livre ────────────
+  pousse("la borne de J decalee", parQuestion(73, 0),
+    c => { c.controle.claims[0][1] = '-2/3'; });
+  pousse("2√2 declare plus grand que 5", parQuestion(73, 2),
+    c => { c.etapes[3][1] = '5 < 2√2'; });
+  pousse("E en 1 - √3 decale", parQuestion(73, 3),
+    c => { c.controle.claims[0][1] = '-9/2 + 2√3'; });
+  pousse("F = 2E + 12 remplace par 2E + 15", parQuestion(73, 4),
+    c => { c.controle.claims[0][0] = '2E + 15'; });
+  pousse("2E + 16 n est plus un carre", parQuestion(73, 5),
+    c => { c.controle.claims[0][0] = '2E + 15'; });
+  pousse("factorisation de F avec les racines echangees", parQuestion(73, 5),
+    c => { c.controle.claims[1][1] = '(x + 1)(x - 3)'; });
+  pousse("le facteur commun (x + 3) mal sorti", parQuestion(73, 6),
+    c => { c.controle.claims[1][1] = '(x + 3)(x + 1)'; });
+  pousse("l aire du triangle DHC prise avec DH = x", parQuestion(73, 7),
+    c => { c.controle.claims[2][0] = 'x(x + 4)/2'; });
+  pousse("S calculee sans retrancher le rectangle", parQuestion(73, 8),
+    c => { c.controle.derives.S = '(x + 4)^2 - (2x + 8) - (x + 2)(x + 4)/2'; });
+  pousse("x = 4 au lieu de 3 pour S = 23/2", parQuestion(73, 9),
+    c => { c.controle.env.x = '4'; });
+  pousse("l aire grise prise sur le triangle HMC", parQuestion(73, 9),
+    c => { c.controle.faits[0] = ['aire', 'H', 'M', 'C', '23/2']; });
+  // LA COQUILLE DU LIVRE : « A و M و I » — ces trois points ne sont jamais alignés.
+  pousse("l alignement A, M, I du livre au lieu de A, N, I", parQuestion(73, 10),
+    c => { c.controle.faits[0] = ['alignes', 'A', 'M', 'I']; });
+  pousse("CI pris a 5/2", parQuestion(73, 10),
+    c => { c.controle.points.I = ['point', 'x + 4 - 5/2', 'x + 4']; });
+  // LA SECONDE COQUILLE : S = 11/2, qui correspond à F = 0, pas à l'alignement.
+  pousse("S = 11/2, la valeur du livre", parQuestion(73, 11),
+    c => { c.controle.faits[0][5] = '11/2'; });
+  pousse("x^2 + 2x annonce 3", parQuestion(73, 11),
+    c => { c.controle.claims[0][1] = '3'; });
+
+  // ── التمرين 4 — la relation métrique, puis l'équilatéral ───────────────
+  pousse("la relation metrique lue AH^2 = BH + CH", parQuestion(74, 0),
+    c => { c.etapes[2][1] = 'x + √3 = 9'; });
+  pousse("CH deplace a 2√3", parQuestion(74, 0),
+    c => { c.controle.points.C = ['point', '-2√3', '0']; });
+  pousse("l aire prise sans diviser par 2", parQuestion(74, 1),
+    c => { c.controle.claims[1][1] = '12√3'; });
+  pousse("BC annonce 3√3", parQuestion(74, 1),
+    c => { c.controle.faits[0][3] = '3√3'; });
+  pousse("la division par 3 mal faite", parQuestion(74, 2),
+    c => { c.controle.claims[1][1] = '9√3'; });
+  pousse("AB annonce 2√13", parQuestion(74, 3),
+    c => { c.controle.faits[0][3] = '2√13'; });
+  pousse("AC pris egal a AB", parQuestion(74, 3),
+    c => { c.controle.faits[1][3] = '6'; });
+  pousse("HI pris egal a AB", parQuestion(74, 4),
+    c => { c.etapes[2][1] = 'HI = AB'; });
+  pousse("A deplace : le triangle AHI n est plus equilateral", parQuestion(74, 5),
+    c => { c.controle.points.A = ['point', '0', '4']; });
+  pousse("HK annonce 3/2", parQuestion(74, 5),
+    c => { c.controle.faits[2][3] = '3/2'; });
+  // Visée corrigée : prendre AH→ ou HA→ donne LA MÊME droite parallèle, donc le
+  // même L — ce n'était pas une falsification. La vraie est de changer de
+  // direction : parallèle à (BC) au lieu de (AH).
+  pousse("L pris sur la parallele a (BC) au lieu de (AH)", parQuestion(74, 6),
+    c => { c.controle.points.Z = ['translate', 'I', 'B', 'C']; });
+  pousse("ALIH declare losange dans le mauvais ordre", parQuestion(74, 6),
+    c => { c.controle.faits[0] = ['losange', 'A', 'I', 'L', 'H']; });
+  pousse("E pris symetrique de L par rapport a I", parQuestion(74, 7),
+    c => { c.controle.points.E = ['sym', 'L', 'I']; });
+  pousse("IJ pris egal a AE", parQuestion(74, 7),
+    c => { c.controle.faits[4][3] = '3'; });
 
   // ── les garde-fous du contrat « figure » ───────────────────────────────
   pousse("figure sans aucune fait a controler", parQuestion(23, 0),
