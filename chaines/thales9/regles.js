@@ -356,10 +356,16 @@
         for (const m of f.milieu) {
           const [, I, A, C] = m;
           const t = f.lg2.get(seg(A, C));
-          if (t && !f.lg2.has(seg(I, A))) {
-            out.push({ but: ['lg2', seg(I, A), F.qDiv(t, F.q(4))],
-                       depuis: [m, ['lg2', seg(A, C), t]],
-                       calcul: [seg(A, C), seg(I, A), 'moitie'] });
+          // LES DEUX MOITIÉS, PAS UNE. La règle ne rendait que [IA] ; devant
+          // « M milieu de [CD], calcule DM », elle donnait CM et se taisait
+          // sur DM — le même segment vu de l'autre bout. Un milieu partage en
+          // deux, et les deux valent la moitié.
+          for (const X of [A, C]) {
+            if (t && !f.lg2.has(seg(I, X))) {
+              out.push({ but: ['lg2', seg(I, X), F.qDiv(t, F.q(4))],
+                         depuis: [m, ['lg2', seg(A, C), t]],
+                         calcul: [seg(A, C), seg(I, X), 'moitie'] });
+            }
           }
           const d = f.lg2.get(seg(I, A));
           if (d && !f.lg2.has(seg(A, C))) {
@@ -631,6 +637,64 @@
               out.push({ but, depuis: [f.prop[i], f.prop[j]] });
             }
           }
+        }
+        return out;
+      }
+    },
+    // LE RAPPORT INVERSE. « MF/MN = 1 » et « MN/MF = 1 » sont le même fait
+    // pour l'élève, et deux faits différents pour le moteur — il cherchait
+    // l'un pendant qu'il tenait l'autre, et se taisait. Plutôt que d'apprendre
+    // à chaque règle à regarder dans les deux sens, on retourne le rapport
+    // une fois pour toutes : c'est un pas, et il porte un nom.
+    {
+      cle: 'rapport-inverse',
+      nom: 'مقلوب النّسبة : إذا كان AB/CD = r فإنّ CD/AB = 1/r',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const r of f.rapport) {
+          if (F.qNul(r[2])) continue;
+          const [h, b] = r[1].split('|');
+          const k = cleR(b, h);
+          if (!k || f.rapport.some(x => x[1] === k)) continue;
+          out.push({ but: ['rapport', k, F.qDiv(F.Q1, r[2])], depuis: [r] });
+        }
+        return out;
+      }
+    },
+    // COMPOSER DEUX RAPPORTS. NE/NM vaut 2, NM/NF vaut 1/2 : donc NE/NF vaut 1,
+    // et les deux morceaux sont égaux SANS qu'aucune de ces longueurs ne soit
+    // rationnelle. C'est la Série 9B ex2 tout entière — dans un losange, NM
+    // n'a pas de valeur exacte, et le maître ne la demande jamais.
+    {
+      cle: 'rapport-compose',
+      nom: 'نضرب نسبتين متتاليتين للحصول على النّسبة بين الطرفين',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const a of f.rapport) for (const b of f.rapport) {
+          if (a === b) continue;
+          const [ha, ba] = a[1].split('|'), [hb, bb] = b[1].split('|');
+          if (seg(ba[0], ba[1]) !== seg(hb[0], hb[1])) continue;   // NM = NM
+          const k = cleR(ha, bb);
+          if (!k || f.rapport.some(x => x[1] === k)) continue;
+          const v = F.qMul(a[2], b[2]);
+          if (F.qNul(v)) continue;
+          out.push({ but: ['rapport', k, v], depuis: [a, b] });
+        }
+        return out;
+      }
+    },
+    // DEUX MORCEAUX DE MÊME RAPPORT SONT ÉGAUX, donc le point est le milieu —
+    // et l'on n'a pas eu besoin de mesurer quoi que ce soit.
+    {
+      cle: 'milieu-par-rapport',
+      nom: 'النقطة التي تقسم قطعة إلى جزأين نسبتهما 1 هي منتصفها',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, X, B2] of ctx.entre || []) {
+          const su = f.rapport.find(x => x[1] === cleR(X + A, X + B2));
+          if (!su || !F.qEgaux(su[2], F.Q1)) continue;
+          if (f.milieu.some(m => m[1] === X && seg(m[2], m[3]) === seg(A, B2))) continue;
+          out.push({ but: ['milieu', X, ...seg(A, B2).split('')], depuis: [su] });
         }
         return out;
       }

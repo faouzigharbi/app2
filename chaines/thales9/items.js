@@ -1550,6 +1550,84 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // SÉRIE THALÈS 9B 2018 ex2 — LE LOSANGE, ET TROIS MILIEUX SANS UNE MESURE
+  //
+  // « نعتبر مُعيّنا ABCD قيس طول ضلعه 6، M منتصف [CD] و N من [AD] حيث DN = 2 »
+  //
+  //   1) E = (AB) ∩ (MN) : NE/NM = AE/DM = 2، puis A milieu de [BE]
+  //   2) F = (MN) ∩ (BC) : N milieu de [EF] ; BF ; M milieu de [NF]
+  //
+  // C'EST UN LOSANGE, PAS UN CARRÉ, et cela change tout pour le moteur : dans
+  // un losange, NM n'a pas de valeur exacte — elle dépend de l'angle, que
+  // l'énoncé ne donne pas. NE, NM, NF sont donc irrationnels, et le maître ne
+  // les demande jamais : il demande des MILIEUX, c'est-à-dire des rapports.
+  //
+  // D'où les deux règles qu'il a fallu poser : composer deux rapports
+  // (NE/NM × NM/NF = NE/NF) et conclure un milieu d'un rapport égal à 1. On
+  // démontre ainsi que N est le milieu de [EF] sans avoir mesuré quoi que ce
+  // soit — ce qui est exactement la leçon de l'exercice.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Série Thalès 9B 2018 ex2', 'probleme', 'difficile', () => {
+    // Un losange : quatre côtés égaux, les côtés opposés parallèles. On le
+    // pose par une diagonale et un demi-axe, ce qui garde le côté rationnel.
+    // LES DONNÉES DU MAÎTRE NE SONT PAS ARBITRAIRES. « A milieu de [BE] » ne
+    // tient que si DN vaut LE TIERS du côté : AE = DM × NA/ND = (côté/2) ×
+    // (1 − t)/t, et cela ne fait le côté que pour t = 1/3. Il écrit DN = 2
+    // dans un losange de côté 6 ; un tirage libre cassait sa question, et
+    // c'est la chaîne qui l'a dit en refusant de conclure.
+    const [u, v] = F.choix([[3, 4], [4, 3]]);
+    const k = 3 * F.ent(1, 2);                  // le côté 5k reste multiple de 3
+    const A = F.pt(0, 0), B = F.pt(F.q(5 * k), F.Q0);
+    const D = F.pt(F.q(u * k), F.q(v * k));
+    const C = F.pt(F.q(u * k + 5 * k), F.q(v * k));
+    const Mp = F.milieu(C, D);
+    const t = F.q(1, 3);                        // DN = côté/3
+    const N = F.surDroite(D, A, t);
+    const E = F.intersection(A, B, Mp, N);
+    const Fp = F.intersection(B, C, Mp, N);
+    if (!E || !Fp) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B, C, D, M: Mp, N, E, F: Fp },
+      // Le losange donne les deux parallélismes ; le reste se démontre.
+      para: [[dr('A', 'B'), dr('D', 'C')], [dr('A', 'D'), dr('B', 'C')],
+             [dr('A', 'E'), dr('D', 'M')], [dr('C', 'F'), dr('D', 'N')]],
+      thales: [{ S: 'N', B: 'D', C: 'M', M: 'A', N: 'E' },
+               { S: 'M', B: 'D', C: 'N', M: 'C', N: 'F' }],
+      milieux: [['M', 'C', 'D']],
+      // C EST ENTRE B ET F, ET NON L'INVERSE : la droite (MN) coupe (BC)
+      // AU-DELÀ de C, si bien que BF = BC + CF. Déclaré à l'envers, le
+      // validateur a répondu « BF vaut 20 et non 10 » — c'est la troisième
+      // fois qu'un « entre » lu de travers se fait prendre, toujours de la
+      // même façon : par le dessin, jamais par le texte.
+      entre: [['A', 'D', 'N'], ['B', 'A', 'E'], ['E', 'N', 'F'], ['N', 'M', 'F'],
+              ['B', 'C', 'F']],
+      donne: [seg('A', 'B'), seg('A', 'D'), seg('B', 'C'), seg('C', 'D'),
+              seg('D', 'N'), seg('A', 'N')],
+      buts: [
+        { but: ['prop', 'NA|ND', 'NE|NM', 'AE|DM'],
+          question: 'بيّن أنّ NA/ND = NE/NM = AE/DM.' },
+        { but: ['lg2', seg('A', 'E'), null], question: 'أحسب AE.' },
+        { but: ['milieu', 'A', 'B', 'E'], question: 'استنتج أنّ A هي منتصف [BE].' },
+        { but: ['lg2', seg('C', 'F'), null], question: 'أحسب CF.' },
+        { but: ['lg2', seg('B', 'F'), null], question: 'استنتج البعد BF.' },
+        // Le fait se nomme avec le segment dans l'ordre alphabétique — [FN] —
+        // sinon le but ne rejoint jamais la conclusion, alors que les deux
+        // disent la même chose.
+        { but: ['milieu', 'M', 'F', 'N'], question: 'بيّن أنّ M هي منتصف [NF].' },
+        { but: ['milieu', 'N', 'E', 'F'], question: 'بيّن أنّ N هي منتصف [EF].' }
+      ],
+      texte: g => ['ABCD مُعيّن قيس طول ضلعه ' + g(seg('A', 'B')) + '.',
+                   'M منتصف [CD]، و N نقطة من [AD] حيث DN = ' + g(seg('D', 'N')) + '.',
+                   'E نقطة تقاطع (AB) و (MN)، و F نقطة تقاطع (BC) و (MN).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['E', 'F'], ['A', 'E'], ['B', 'F']],
+                marques: [['C', 'M', 1], ['M', 'D', 1]] },
+      indice: 'المعيّن يعطي التوازيين ؛ و لا تحسب NM : اشتغل على النّسب'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
