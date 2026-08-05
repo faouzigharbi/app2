@@ -29,10 +29,14 @@
 
   // Thales 2021 modifié ex8 — ABC, M sur [BC], la parallèle à (AB) coupe [AC]
   item('Thales 2021 ex8', 'thales-longueur', 'moyen', () => {
-    const a = F.ent(3, 9), b = F.ent(3, 9);              // pose du triangle
+    // LES TROIS CÔTÉS DOIVENT ÊTRE RATIONNELS. La seconde question soustrait
+    // BM à BC : sans un triplet pythagoricien, BC est irrationnel, la règle se
+    // tait — et l'item ENTIER disparaît, ce qui est pire que la question
+    // manquante. On pose donc l'angle droit en A.
+    const [p2, q3] = F.choix(TRIPLETS);
     const num = F.ent(1, 4), den = num + F.ent(1, 3);    // BM/BC = num/den
     const t = F.q(num, den);
-    const S = F.pt(0, 0), B = F.pt(4 * a, 0), C = F.pt(F.q(a), F.q(3 * b));
+    const S = F.pt(0, 0), B = F.pt(p2, 0), C = F.pt(F.Q0, F.q(q3));
     // Le sommet est B : M sur [BC], N sur [BA], (MN)//(AC)… on prend le
     // triangle vu de B, comme la feuille.
     const Mp = F.surDroite(B, C, t), N = F.surDroite(B, S, t);
@@ -41,8 +45,10 @@
       points: { A: S, B, C, M: Mp, N },
       thales: [{ S: 'B', B: 'C', C: 'A', M: 'M', N: 'N' }],
       para: [[dr('M', 'N'), dr('C', 'A')]],
+      entre: [['B', 'M', 'C']],
       donne: [seg('B', 'M'), seg('B', 'C'), seg('C', 'A')],
-      but: ['lg2', seg('M', 'N'), null],
+      buts: [{ but: ['lg2', seg('M', 'N'), null], question: 'أحسب المسافة MN.' },
+             { but: ['lg2', seg('M', 'C'), null], question: 'استنتج المسافة MC.' }],
       texte: g => ['ABC مثلّث حيث BC = ' + g(seg('B', 'C')) + ' و AC = '
                    + g(seg('C', 'A')) + '.',
                    'M نقطة من [BC] بحيث BM = ' + g(seg('B', 'M')) + '.',
@@ -55,18 +61,22 @@
 
   // THALES9 ex12 — M sur [AB], deux parallèles successives
   item('THALES9 ex12', 'thales-longueur', 'moyen', () => {
-    const [p, q2] = [F.ent(4, 10), F.ent(4, 10)];
+    // Même raison : NC = AC − AN et MB = AB − AM exigent AC et AB rationnels.
+    const p = F.ent(4, 12), q2 = F.ent(4, 12);
     const num = F.ent(1, 3), den = num + F.ent(1, 4);
     const t = F.q(num, den);
-    const A = F.pt(0, 0), B = F.pt(3 * p, 0), C = F.pt(F.q(q2), F.q(2 * q2));
+    const A = F.pt(0, 0), B = F.pt(3 * p, 0), C = F.pt(F.Q0, F.q(3 * q2));
     const Mp = F.surDroite(A, B, t), N = F.surDroite(A, C, t);
     return {
       K: 1,
       points: { A, B, C, M: Mp, N },
       thales: [{ S: 'A', B: 'B', C: 'C', M: 'M', N: 'N' }],
       para: [[dr('M', 'N'), dr('B', 'C')]],
+      entre: [['A', 'N', 'C'], ['A', 'M', 'B']],
       donne: [seg('A', 'M'), seg('A', 'B'), seg('A', 'C')],
-      but: ['lg2', seg('A', 'N'), null],
+      buts: [{ but: ['lg2', seg('A', 'N'), null], question: 'أحسب المسافة AN.' },
+             { but: ['lg2', seg('N', 'C'), null], question: 'استنتج المسافة NC.' },
+             { but: ['lg2', seg('M', 'B'), null], question: 'أحسب المسافة MB.' }],
       texte: g => ['ABC مثلّث و M نقطة من [AB] بحيث AM = ' + g(seg('A', 'M'))
                    + ' و AB = ' + g(seg('A', 'B')) + '.',
                    'AC = ' + g(seg('A', 'C')) + '.',
@@ -267,19 +277,25 @@
   item('TRIANGLES9_23 ex7', 'pythagore', 'moyen', () => {
     const [x, y, z] = F.choix(TRIPLETS);
     const A = F.pt(0, 0), B = F.pt(x, 0), C = F.pt(0, y);
+    const P = F.plan(1);
     return {
       K: 1,
-      points: { A, B, C },
+      points: { A, B, C, H: P.projete(A, B, C), I: F.milieu(B, C) },
       triangles: [['B', 'A', 'C']],
       rects: [['B', 'A', 'C']],
+      pieds: { ['A' + seg('B', 'C')]: 'H' },
+      milieux: [['I', 'B', 'C']],
       donne: [seg('A', 'B'), seg('B', 'C')],
-      but: ['lg2', seg('A', 'C'), null],
+      buts: [{ but: ['lg2', seg('A', 'C'), null], question: 'أحسب المسافة AC.' },
+             { but: ['lg2', seg('A', 'H'), null], question: 'أحسب الارتفاع AH.' },
+             { but: ['lg2', seg('I', 'A'), null], question: 'استنتج المسافة IA.' }],
       texte: g => ['ABC مثلّث قائم الزاوية في A حيث AB = ' + g(seg('A', 'B'))
-                   + ' و BC = ' + g(seg('B', 'C')) + '.'],
-      question: 'أحسب المسافة AC.',
-      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A']],
-                angles: [['B', 'A', 'C']] },
-      indice: 'BC هو الوتر : BC² = AB² + AC²'
+                   + ' و BC = ' + g(seg('B', 'C')) + '.',
+                   'H هو المسقط العمودي لـ A على (BC)، و I منتصف [BC].'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'H'], ['I', 'A']],
+                angles: [['B', 'A', 'C']],
+                marques: [['B', 'I', 1], ['I', 'C', 1]] },
+      indice: 'بيتاغور، ثمّ العلاقة القياسية، ثمّ الدائرة المحيطة'
     };
   });
 
@@ -583,12 +599,18 @@
       K: 1, points: { I: I2, M: Mp, N, P, Q },
       thales: [{ S: 'I', B: 'P', C: 'Q', M: 'M', N: 'N' }],
       para: [[dr('M', 'N'), dr('P', 'Q')]],
-      donne: [seg('M', 'N'), seg('P', 'Q'), seg('I', 'Q')],
-      but: ['lg2', seg('I', 'N'), null],
+      entre: [['N', 'I', 'Q'], ['M', 'I', 'P']],
+      donne: [seg('M', 'N'), seg('P', 'Q'), seg('N', 'Q'), seg('M', 'P')],
+      // LES QUESTIONS DE LA FEUILLE, dans son ordre : « أحسب IN و IQ », puis
+      // le partage de l'autre diagonale. On ne donnait IQ que parce que le
+      // moteur ne savait pas partager un segment ; il le sait maintenant, et
+      // l'énoncé retrouve les données du maître — les deux diagonales.
+      buts: [{ but: ['lg2', seg('I', 'N'), null], question: 'أحسب IN.' },
+             { but: ['lg2', seg('I', 'Q'), null], question: 'أحسب IQ.' },
+             { but: ['lg2', seg('M', 'I'), null], question: 'أحسب MI.' }],
       texte: g => ['MNPQ شبه منحرف قاعدتاه [MN] و [PQ]، و I نقطة تقاطع قطريه.',
                    'MN = ' + g(seg('M', 'N')) + ' و PQ = ' + g(seg('P', 'Q'))
-                   + ' و IQ = ' + g(seg('I', 'Q')) + '.'],
-      question: 'أحسب المسافة IN.',
+                   + ' و NQ = ' + g(seg('N', 'Q')) + ' و MP = ' + g(seg('M', 'P')) + '.'],
       figure: { segments: [['M', 'N'], ['P', 'Q'], ['M', 'P'], ['N', 'Q'],
                            ['M', 'Q'], ['N', 'P']] },
       indice: 'القطران يتقاطعان في I : طبّق طالس في وضعية الفراشة'

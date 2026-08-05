@@ -188,6 +188,8 @@
       // À GAUCHE LE NOM, À DROITE LES NOMBRES. Écrire « 16/3 = 8 − 8/3 »
       // donne le résultat avant le calcul : c'est l'ordre inverse de celui où
       // l'on pense, et l'élève n'a plus rien à faire.
+      if (c[3] === 'partage') return '  ، لأنّ النّسبة ' + F.ecrireRapport(e(c[0]), e(c[1]))
+        + ' و المجموع ' + e(c[2]);
       if (c[3] === 'plus') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' + ' + e(c[1]);
       if (c[3] === 'moins') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' − ' + e(c[1]);
       if (c[3] === 'metrique') return '  ، لأنّ ' + n.fait[1] + ' × ' + e(c[2])

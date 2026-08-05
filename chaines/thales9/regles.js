@@ -407,6 +407,74 @@
       }
     },
 
+    // ── B quater. PARTAGER UN SEGMENT DANS UN RAPPORT DONNÉ ───────────────
+    //
+    // « أحسب IN و IQ » : on connaît le rapport IN/IQ par Thalès, et la somme
+    // IN + IQ = NQ par la figure. Ni l'un ni l'autre ne suffit — c'est un
+    // système, et c'est pour cela que le moteur butait. Deux données pour deux
+    // inconnues : IN = NQ · r/(1+r), où r est le rapport.
+    //
+    // Le moteur ne conclut que si le rapport et la somme sont RATIONNELS ;
+    // sinon il se tait, comme pour la somme de longueurs.
+    {
+      cle: 'partage-rapport',
+      nom: 'إذا عُلم رابط بين جزأي قطعة و عُلم طولها، أمكن حساب كلّ جزء',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.thales || []) {
+          const p = ['para', dr(t.M, t.N), dr(t.B, t.C)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          const mn = f.lg2.get(seg(t.M, t.N)), bc = f.lg2.get(seg(t.B, t.C));
+          if (!mn || !bc) continue;
+          const r = F.racQ(F.qDiv(mn, bc));            // le rapport, s'il est rationnel
+          if (!r || F.qNul(r)) continue;
+          // Les deux morceaux possibles : [N…C] de part et d'autre de S, et
+          // [M…B] de même.
+          for (const [X, Y] of [[t.N, t.C], [t.M, t.B]]) {
+            if (!(ctx.entre || []).some(e => e[1] === t.S
+                  && seg(e[0], e[2]) === seg(X, Y))) continue;
+            const tot = f.lg2.get(seg(X, Y));
+            if (!tot) continue;
+            const L = F.racQ(tot);
+            if (!L) continue;
+            const un = F.qDiv(F.qMul(L, r), F.qAdd(F.Q1, r));   // le côté de X
+            const deux = F.qSub(L, un);
+            if (!f.lg2.has(seg(t.S, X))) {
+              out.push({ but: ['lg2', seg(t.S, X), F.qMul(un, un)],
+                         depuis: [p, ['lg2', seg(t.M, t.N), mn],
+                                  ['lg2', seg(t.B, t.C), bc], ['lg2', seg(X, Y), tot]],
+                         calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'partage'] });
+            }
+            if (!f.lg2.has(seg(t.S, Y))) {
+              out.push({ but: ['lg2', seg(t.S, Y), F.qMul(deux, deux)],
+                         depuis: [p, ['lg2', seg(t.M, t.N), mn],
+                                  ['lg2', seg(t.B, t.C), bc], ['lg2', seg(X, Y), tot]],
+                         calcul: [seg(t.M, t.N), seg(t.B, t.C), seg(X, Y), 'partage'] });
+            }
+          }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'milieu-par-egalite',
+      nom: 'نقطة من قطعة متساوية البعد عن طرفيها هي منتصفها',
+      // « استنتج أنّ I منتصف [EF] » : deux moitiés égales et un point ENTRE
+      // les extrémités — la seconde condition n'est pas décorative, sans elle
+      // le point pourrait être sur le prolongement.
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, I, C] of ctx.entre || []) {
+          const a = f.lg2.get(seg(A, I)), b = f.lg2.get(seg(I, C));
+          if (!a || !b || !F.qEgaux(a, b)) continue;
+          if (f.milieu.some(m => m[1] === I && seg(m[2], m[3]) === seg(A, C))) continue;
+          out.push({ but: ['milieu', I, ...seg(A, C).split('')],
+                     depuis: [['lg2', seg(A, I), a], ['lg2', seg(I, C), b]] });
+        }
+        return out;
+      }
+    },
+
     // ── C. LES QUADRILATÈRES ──────────────────────────────────────────────
     //
     // UN QUADRILATÈRE SE NOMME DANS L'ORDRE. « ABCD » n'est pas « ABDC » : le
