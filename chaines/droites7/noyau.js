@@ -339,10 +339,16 @@
   // range du mauvais côté et prend l'allure d'un alef. Deux lettres suffisaient
   // pour les expressions ; un point n'en a qu'une.
   const ISOLER = /[⊥/=()[\]∈]|[A-Za-z]/;
+  // UN NOM DE POINT SEUL S'ÉCRIT COMME SUR LA FIGURE. Un « I » sans empattement
+  // posé au milieu de l'arabe ressemble à s'y méprendre à un alef, et l'élève
+  // lit « و ا منتصفها » là où le texte dit « و I منتصفها ». En italique à
+  // empattements — la lettre même que porte le dessin — le doute disparaît.
   function isoMixte(texte) {
-    return String(texte).replace(RUN, m =>
-      (ISOLER.test(m) ? '<span dir="ltr" class="expr">' + echapper(m) + '</span>'
-                      : echapper(m)));
+    return String(texte).replace(RUN, m => {
+      if (!ISOLER.test(m)) return echapper(m);
+      const seul = /^[A-Za-z]$/.test(m) ? ' pt' : '';
+      return '<span dir="ltr" class="expr' + seul + '">' + echapper(m) + '</span>';
+    });
   }
   const rendreMath = s => (s && typeof s === 'object' && s.svg) ? s.svg
     : (ARABE.test(String(s)) ? isoMixte(s) : bloc(s));

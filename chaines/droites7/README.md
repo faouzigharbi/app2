@@ -51,7 +51,19 @@ lieu de lire l'énoncé. On incline donc le repère — par des rotations exacte
 tirées des triplets pythagoriciens, pour que les coordonnées restent
 rationnelles et les longueurs entières.
 
-## Les six règles
+## Deux sortes de chaînes
+
+**Celles qui démontrent** — le moteur enchaîne les règles. « برهن أنّ
+(D) // (D') ».
+
+**Celles qui calculent** — « أحسب بعد A عن (BC) », « ما هي الوضعية النسبية
+لـ (Δ) و (C) ؟ ». On calcule, puis on compare : le moteur ne sert à rien ici,
+et vouloir l'y forcer produirait une démonstration tordue. Chacune a sa
+chaîne, mais la même exigence — ce qui est écrit est recalculé, verdict
+compris. « المستقيم مماس للدائرة » n'est pas une opinion : c'est
+d(O, (D)) = r, et rien d'autre.
+
+## Les sept règles
 
 1. `مستقيمان عموديان على نفس المستقيم متوازيان`
 2. `إذا كان مستقيم عموديا على أحد مستقيمين متوازيين فهو عمودي على الآخر`
@@ -59,8 +71,9 @@ rationnelles et les longueurs entières.
 4. `الموسط العمودي لقطعة مستقيم عمودي على حاملها`
 5. `المستقيم العمودي على قطعة و المارّ من منتصفها هو موسطها العمودي`
 6. `كلّ نقطة من الموسط العمودي لقطعة متساوية البعد عن طرفيها`
+7. `المماس لدائرة في نقطة عمودي على الشعاع في تلك النقطة`
 
-Six et pas une de plus : un élève de 7ème qui n'a pas vu les angles
+Sept et pas une de plus : un élève de 7ème qui n'a pas vu les angles
 alternes-internes ne doit pas lire une démonstration qui s'en sert.
 
 ## Ce qui a été écarté, et pourquoi
@@ -77,7 +90,16 @@ node verifier.js 60
 CONTRE_EXEMPLES=1 node verifier.js
 ```
 
-Sept falsifications sont tentées à chaque fois — un point déplacé, une
-perpendiculaire changée en parallèle, une droite réduite à un point, une étape
-dupliquée, une chaîne tronquée, l'aide retirée, la figure retirée. Le
-validateur doit les refuser toutes.
+Dix falsifications sont tentées à chaque fois — un point déplacé d'une unité,
+une perpendiculaire changée en parallèle, une droite réduite à un point, un
+verdict retourné, une distance changée, **le rayon donné pour tangente** (un
+point commun ne suffit pas), une étape dupliquée, une chaîne tronquée, l'aide
+retirée, la figure retirée. Le validateur doit les refuser toutes.
+
+## Les longueurs annoncées sont des affirmations
+
+« AB = 6 » écrit dans l'énoncé est aussi vérifiable que « (D) // (D') », et
+l'oublier a coûté : un repère qui doublait les coordonnées donnait une figure
+où AB valait 18 quand le texte annonçait 9, et rien ne le voyait — jusqu'à ce
+que la famille des distances calcule la réponse et la trahisse. Chaque item
+déclare donc les longueurs qu'il écrit, et le validateur les recalcule.

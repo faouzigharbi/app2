@@ -21,7 +21,10 @@
     med: (d, s) => d + ' هو الموسط العمودي للقطعة ' + s,
     passe: (d, p) => p + ' ∈ ' + d,
     egal: (a, b) => a + ' = ' + b,
-    mil: (p, s) => p + ' هو منتصف القطعة ' + s
+    mil: (p, s) => p + ' هو منتصف القطعة ' + s,
+    // « (Δ) مماس للدائرة (C) في A » — le point de contact fait partie de
+    // l'énoncé : une tangente sans son point n'apprend rien.
+    tang: (d, t) => d + ' مماس للدائرة ' + t.split('@')[1] + ' في ' + t.split('@')[0]
   };
 
   // Un fait s'écrit avec les NOMS de l'énoncé, jamais avec les clés.
@@ -54,6 +57,17 @@
       cle[g.nom] = k;
     }
 
+    const cercles = s.cercles || [];
+    // Le rayon d'un cercle est une droite comme une autre : elle porte un nom,
+    // et c'est par elle que la tangente devient une perpendiculaire.
+    for (const c of cercles) {
+      for (const p of Object.keys(s.pts)) {
+        if (F.memesPoints(s.pts[p], s.pts[c.centre])) continue;
+        const k = R.cleDroite(s.pts[c.centre], s.pts[p]);
+        if (noms[k] === undefined) noms[k] = '(' + c.centre + p + ')';
+      }
+    }
+
     // LES APPARTENANCES SE LISENT SUR LA FIGURE. Qu'un point soit ou non sur
     // une droite n'est pas à démontrer en 7ème : cela se voit, et cela se
     // vérifie ici exactement, sur les coordonnées.
@@ -76,17 +90,222 @@
       s, noms, cle, memes, segments, milieux, bouts, passe, ptsDe,
       hyp: (s.hyp || []).map(enCle),
       but: enCle(s.but),
+      cercles,
       ctx: {
         segments,
         ligneDe: k => segments.get(k),
         milieuDe: k => milieux[k],
-        boutsDe: k => bouts[k]
+        boutsDe: k => bouts[k],
+        // « A@(C) » : le rayon qui va du centre de (C) au point de contact A.
+        rayonDe: t => {
+          const [pt, nom] = String(t).split('@');
+          const c = cercles.find(x => x.nom === nom);
+          return (c && pt) ? R.cleDroite(s.pts[c.centre], s.pts[pt]) : null;
+        }
       }
     };
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // LES CHAÎNES QUI CALCULENT.
+  //
+  // « Quelle est la distance de A à (BC) ? », « le cercle et la droite se
+  // coupent-ils ? » ne se démontrent pas par enchaînement de règles : on
+  // calcule, puis on compare. Le moteur ne sert à rien ici, et vouloir l'y
+  // forcer produirait une démonstration tordue. Chacune a donc sa chaîne — mais
+  // la même exigence : ce qui est écrit est recalculé.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  const REGLE_DISTANCE =
+    'بعد نقطة عن مستقيم هو طول القطعة التي تصلها بمسقطها العمودي عليه';
+
+  function chaineDistance(item) {
+    const s = item.monter(F);
+    const P = s.pts, q = s.question;
+    const A = P[q.point], B = P[q.droite[0]], C = P[q.droite[1]];
+    if (!A || !B || !C || !F.droiteOk(B, C)) return null;
+    const nomD = q.nomDroite;
+    const etapes = [];
+    const verifs = [];
+
+    if (F.aligne(B, C, A)) {
+      // Le cas que les élèves manquent : le point EST sur la droite.
+      etapes.push(['النقطة على المستقيم', q.point + ' ∈ ' + nomD]);
+      etapes.push(['المسقط العمودي',
+                   'مسقط ' + q.point + ' على ' + nomD + ' هو ' + q.point + ' نفسها']);
+      etapes.push(['القاعدة',
+                   'إذا كانت النقطة تنتمي إلى المستقيم فإنّ بعدها عنه يساوي 0']);
+      etapes.push(['النتيجة', 'd(' + q.point + ' ، ' + nomD + ') = 0']);
+      verifs.push({ type: 'passe', a: q.droite, b: q.point,
+                    texte: q.point + ' ∈ ' + nomD });
+      verifs.push({ type: 'dist', a: q.point, b: q.droite, valeur: '0',
+                    texte: 'd(' + q.point + ' ، ' + nomD + ') = 0' });
+    } else {
+      const H = F.projete(A, B, C);
+      const d = F.longueur(A, H);
+      if (d === null) return null;      // longueur irrationnelle : pas de 7ème
+      const nomH = q.projete || 'H';
+      // Le projeté porte-t-il déjà un nom dans la scène ? On ne le baptise pas
+      // deux fois : deux noms pour un point, et la figure ment.
+      let cle = Object.keys(P).find(k => F.memesPoints(P[k], H));
+      if (!cle) { P[nomH] = H; cle = nomH; }
+      etapes.push(['المسقط العمودي',
+                   cle + ' هو المسقط العمودي لـ ' + q.point + ' على ' + nomD]);
+      etapes.push(['القاعدة', REGLE_DISTANCE]);
+      etapes.push(['نقرأ الطول', q.point + cle + ' = ' + F.qDec(d)]);
+      etapes.push(['النتيجة',
+                   'd(' + q.point + ' ، ' + nomD + ') = ' + F.qDec(d) + ' صم']);
+      verifs.push({ type: 'perp', a: [q.point, cle], b: q.droite,
+                    texte: '(' + q.point + cle + ') ⊥ ' + nomD });
+      verifs.push({ type: 'passe', a: q.droite, b: cle,
+                    texte: cle + ' ∈ ' + nomD });
+      verifs.push({ type: 'dist', a: q.point, b: q.droite, valeur: F.qTxt(d),
+                    texte: 'd(' + q.point + ' ، ' + nomD + ') = ' + F.qDec(d) });
+      if (s.fig && !s.fig.segments) s.fig.segments = [];
+      if (s.fig) {
+        s.fig.segments = (s.fig.segments || []).concat([[q.point, cle]]);
+        s.fig.angles = (s.fig.angles || []).concat([[q.point, cle, q.droite[0]]]);
+      }
+    }
+    return finir(item, s, etapes, verifs,
+                 'أنزل العمود من النقطة على المستقيم، ثمّ اقرأ الطول',
+                 'أحسب بعد ' + q.point + ' عن ' + nomD + '.');
+  }
+
+  // La position d'une droite par rapport à un cercle : on compare le BEDD du
+  // centre à la droite avec le rayon. Trois cas, et pas un de plus.
+  const VERDICTS_DC = {
+    coupe: 'المستقيم يقطع الدائرة في نقطتين',
+    tangent: 'المستقيم مماس للدائرة',
+    dehors: 'المستقيم لا يقطع الدائرة'
+  };
+  function chainePositionDroite(item) {
+    const s = item.monter(F);
+    const P = s.pts, q = s.question;
+    const O = P[q.centre], Bo = P[q.bord];
+    const B = P[q.droite[0]], C = P[q.droite[1]];
+    if (!O || !Bo || !F.droiteOk(B, C)) return null;
+    const d = F.distance(O, B, C), r = F.longueur(O, Bo);
+    if (d === null || r === null) return null;
+    const cmp = F.qEgaux(d, r) ? 'tangent'
+              : (F.qNum(d) < F.qNum(r) ? 'coupe' : 'dehors');
+    const signe = cmp === 'tangent' ? '=' : (cmp === 'coupe' ? '<' : '>');
+    const regle = { tangent: 'إذا كان البعد يساوي الشعاع فالمستقيم مماس للدائرة',
+                    coupe: 'إذا كان البعد أصغر من الشعاع فالمستقيم يقطع الدائرة في نقطتين',
+                    dehors: 'إذا كان البعد أكبر من الشعاع فالمستقيم لا يقطع الدائرة' }[cmp];
+    const etapes = [
+      ['نحسب البعد', 'd(' + q.centre + ' ، ' + q.nomDroite + ') = ' + F.qDec(d)],
+      ['الشعاع', 'r = ' + F.qDec(r)],
+      ['نقارن', F.qDec(d) + ' ' + signe + ' ' + F.qDec(r)],
+      ['القاعدة', regle],
+      ['النتيجة', q.nomDroite + ' و ' + q.nomCercle + ': ' + VERDICTS_DC[cmp]]
+    ];
+    const verifs = [
+      { type: 'dist', a: q.centre, b: q.droite, valeur: F.qTxt(d),
+        texte: 'd(' + q.centre + ' ، ' + q.nomDroite + ') = ' + F.qDec(d) },
+      { type: 'lg', a: [q.centre, q.bord], valeur: F.qTxt(r),
+        texte: 'r = ' + F.qDec(r) },
+      { type: 'pos-dc', a: [q.centre, q.bord], b: q.droite, valeur: cmp,
+        texte: VERDICTS_DC[cmp] }
+    ];
+    return finir(item, s, etapes, verifs,
+                 'قارن بعد المركز عن المستقيم بالشعاع',
+                 'ما هي الوضعية النسبية لـ ' + q.nomDroite + ' و ' + q.nomCercle + '؟');
+  }
+
+  // Deux cercles : on compare la distance des centres à la somme et à la
+  // différence des rayons. Cinq cas, et la feuille les demande tous.
+  const VERDICTS_CC = {
+    exterieur: 'الدائرتان خارج إحداهما عن الأخرى',
+    tangentExt: 'الدائرتان متماستان خارجيا',
+    secants: 'الدائرتان متقاطعتان في نقطتين',
+    tangentInt: 'الدائرتان متماستان داخليا',
+    interieur: 'إحدى الدائرتين داخل الأخرى'
+  };
+  function chainePositionCercles(item) {
+    const s = item.monter(F);
+    const P = s.pts, q = s.question;
+    const dd = F.longueur(P[q.centre1], P[q.centre2]);
+    const r1 = F.longueur(P[q.centre1], P[q.bord1]);
+    const r2 = F.longueur(P[q.centre2], P[q.bord2]);
+    if (dd === null || r1 === null || r2 === null) return null;
+    const somme = F.qAdd(r1, r2);
+    const diff = F.qNum(r1) >= F.qNum(r2) ? F.qSub(r1, r2) : F.qSub(r2, r1);
+    let cmp;
+    if (F.qEgaux(dd, somme)) cmp = 'tangentExt';
+    else if (F.qEgaux(dd, diff)) cmp = 'tangentInt';
+    else if (F.qNum(dd) > F.qNum(somme)) cmp = 'exterieur';
+    else if (F.qNum(dd) < F.qNum(diff)) cmp = 'interieur';
+    else cmp = 'secants';
+    const regle = {
+      tangentExt: 'إذا كان البعد بين المركزين يساوي مجموع الشعاعين فالدائرتان متماستان خارجيا',
+      tangentInt: 'إذا كان البعد بين المركزين يساوي الفرق بين الشعاعين فالدائرتان متماستان داخليا',
+      exterieur: 'إذا كان البعد بين المركزين أكبر من مجموع الشعاعين فكلّ دائرة خارج الأخرى',
+      interieur: 'إذا كان البعد بين المركزين أصغر من الفرق بين الشعاعين فإحداهما داخل الأخرى',
+      secants: 'إذا كان البعد بين المركزين محصورا بين الفرق و المجموع فالدائرتان متقاطعتان'
+    }[cmp];
+    const nn = q.centre1 + q.centre2;
+    const etapes = [
+      ['البعد بين المركزين', nn + ' = ' + F.qDec(dd)],
+      ['الشعاعان', 'r = ' + F.qDec(r1) + '  و  r\' = ' + F.qDec(r2)],
+      ['المجموع و الفرق',
+       'r + r\' = ' + F.qDec(somme) + '  و  |r - r\'| = ' + F.qDec(diff)],
+      ['القاعدة', regle],
+      ['النتيجة', VERDICTS_CC[cmp]]
+    ];
+    const verifs = [
+      { type: 'lg', a: [q.centre1, q.centre2], valeur: F.qTxt(dd),
+        texte: nn + ' = ' + F.qDec(dd) },
+      { type: 'lg', a: [q.centre1, q.bord1], valeur: F.qTxt(r1),
+        texte: 'r = ' + F.qDec(r1) },
+      { type: 'lg', a: [q.centre2, q.bord2], valeur: F.qTxt(r2),
+        texte: "r' = " + F.qDec(r2) },
+      { type: 'pos-cc', a: [q.centre1, q.bord1], b: [q.centre2, q.bord2],
+        valeur: cmp, texte: VERDICTS_CC[cmp] }
+    ];
+    return finir(item, s, etapes, verifs,
+                 'قارن البعد بين المركزين بمجموع الشعاعين و بفرقهما',
+                 'ما هي الوضعية النسبية للدائرتين؟');
+  }
+
+  // Le pied commun aux chaînes qui calculent : la figure, l'énoncé, le contrôle.
+  function finir(item, s, etapes, verifs, indice, question) {
+    if (etapes.length < 4) return null;
+    verifs = verifs.concat((s.longueurs || []).map(([a1, b1, v]) => ({
+      type: 'lg', a: [a1, b1], valeur: String(v), texte: a1 + b1 + ' = ' + v
+    })));
+    const enonce = (s.donnees || []).slice();
+    if (s.fig) {
+      const dess = Object.assign({ points: s.pts }, s.fig);
+      dess.droites = (s.fig.droites || []).map(d => {
+        const k = R.cleDroite(s.pts[d[0]], s.pts[d[1]]);
+        const l = (s.lignes || []).find(x =>
+          R.cleDroite(s.pts[x.A], s.pts[x.B]) === k);
+        return [d[0], d[1], d[2], l ? l.nom : ''];
+      });
+      enonce.push({ svg: F.dessiner(dess) });
+    }
+    enonce.push(question);
+    return { enonce, etapes, indice, source: item.src,
+             controle: { type: 'geometrie', pts: s.pts, cercles: s.cercles || [],
+                         verifs, regles: [] } };
+  }
+
   // ── La chaîne ────────────────────────────────────────────────────────────
+  const CALCULS = {
+    'distance': chaineDistance,
+    'position-droite-cercle': chainePositionDroite,
+    'position-deux-cercles': chainePositionCercles
+  };
+
   function chaine(item) {
+    if (CALCULS[item.f]) {
+      try { return CALCULS[item.f](item); } catch (e) { return null; }
+    }
+    return chaineRegles(item);
+  }
+
+  function chaineRegles(item) {
     let S;
     try { S = scene(item); } catch (e) { return null; }
     const suite = R.chercher(S.hyp.concat(S.passe), S.but, S.ctx);
@@ -149,16 +368,24 @@
       return { type: f[0], a: g(f[1]), b: g(f[2]), texte: ecrire(f, S.noms) };
     };
     const affirme = S.hyp.concat(suite.map(n => n.fait)).concat([S.but]);
+    // LES LONGUEURS ANNONCÉES DANS LE TEXTE SONT DES AFFIRMATIONS. « AB = 6 »
+    // est aussi vérifiable que « (D) // (D') », et l'oublier a déjà coûté :
+    // une figure où AB valait le double du texte est passée inaperçue, parce
+    // que rien ne reliait l'énoncé au dessin.
+    const lgs = (S.s.longueurs || []).map(([a1, b1, v]) => ({
+      type: 'lg', a: [a1, b1], valeur: String(v), texte: a1 + b1 + ' = ' + v
+    }));
     return {
       enonce, etapes,
       indice: S.s.indice || 'ابدأ من المعطيات، و طبّق قاعدة واحدة في كلّ مرحلة',
       source: item.src,
       controle: { type: 'geometrie', pts: S.s.pts,
-                  verifs: affirme.map(enPoints),
+                  cercles: S.s.cercles || [],
+                  verifs: affirme.map(enPoints).concat(lgs),
                   regles: suite.map(n => n.regle.cle) }
     };
   }
 
-  const API = { chaine, scene, ecrire, dit };
+  const API = { chaine, chaineRegles, scene, ecrire, dit, VERDICTS_DC, VERDICTS_CC };
   if (M) module.exports = API; else racine.Chaines = API;
 })(typeof window !== 'undefined' ? window : globalThis);

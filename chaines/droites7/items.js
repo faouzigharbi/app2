@@ -31,15 +31,23 @@
   // des triplets pythagoriciens, pour que les coordonnées restent rationnelles
   // et les longueurs entières.
   const POSES = [[1, 0], [4, 3], [3, 4], [-3, 4], [4, -3], [-4, 3], [5, 12], [12, 5]];
+  // Une demie reste exacte en rationnels : « ab/2 » n'a pas besoin qu'on
+  // double tout le reste pour rester un nombre.
+  const nb = x => (Number.isInteger(x) ? F.q(x) : F.q(Math.round(x * 2), 2));
   function repere() {
     const [a, b] = F.choix(POSES);
     const h = Math.hypot(a, b);
     // (u, v) est une base orthonormée à coordonnées rationnelles
     const u = F.pt(F.q(a, Math.round(h)), F.q(b, Math.round(h)));
     const v = F.pt(F.qNeg(u.y), u.x);
+    // LES LONGUEURS SONT CELLES DE L'ÉNONCÉ, au facteur près — c'est-à-dire
+    // sans facteur du tout. Un repère qui doublerait les coordonnées donnerait
+    // une figure où AB vaut 18 alors que le texte annonce 9, et le calcul de
+    // distance trahirait aussitôt le mensonge. La rotation, elle, conserve les
+    // longueurs : c'est tout ce qu'on lui demande.
     return (x, y) => F.pt(
-      F.qAdd(F.qMul(F.q(x * 2), u.x), F.qMul(F.q(y * 2), v.x)),
-      F.qAdd(F.qMul(F.q(x * 2), u.y), F.qMul(F.q(y * 2), v.y)));
+      F.qAdd(F.qMul(nb(x), u.x), F.qMul(nb(y), v.x)),
+      F.qAdd(F.qMul(nb(x), u.y), F.qMul(nb(y), v.y)));
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -62,6 +70,7 @@
       donnees: ['(D) و (Δ) مستقيمان متعامدان في النقطة A.',
                 'B نقطة من (Δ) حيث AB = ' + ab + ' صم.',
                 "(D') هو المستقيم المارّ من B و العمودي على (Δ)."],
+      longueurs: [['A', 'B', ab]],
       fig: { droites: [['A', 'B'], ['A', 'E'], ['B', 'G']],
              angles: [['B', 'A', 'E'], ['A', 'B', 'G']], caches: ['E', 'G'] }
     };
@@ -85,6 +94,7 @@
       donnees: ['(D) و (Δ) مستقيمان متعامدان في النقطة A.',
                 'B نقطة من (Δ) حيث AB = ' + ab + ' صم.',
                 '(D") هو الموسط العمودي للقطعة [AB]، و I منتصفها.'],
+      longueurs: [['A', 'B', ab], ['A', 'I', ab / 2]],
       fig: { droites: [['A', 'B'], ['A', 'E'], ['I', 'J']],
              angles: [['B', 'A', 'E'], ['A', 'I', 'J']],
              marques: [['A', 'I'], ['I', 'B']], caches: ['E', 'J'] }
@@ -107,6 +117,7 @@
       donnees: ['BUT مثلّث قائم الزاوية في B حيث BT = ' + bt + ' و BU = ' + bu + '.',
                 'A نقطة من القطعة [BU] حيث UA = ' + ua + '.',
                 'المستقيم العمودي على (BU) و المارّ من A يقطع (UT) في النقطة I.'],
+      longueurs: [['B', 'T', bt], ['B', 'U', bu], ['U', 'A', ua]],
       fig: { segments: [['B', 'T'], ['B', 'U'], ['U', 'T']],
              droites: [['A', 'I']],
              angles: [['T', 'B', 'U'], ['B', 'A', 'I']] }
@@ -130,6 +141,7 @@
       donnees: ['ABC مثلّث قائم الزاوية في A حيث AB = ' + ab + ' و AC = ' + ac + '.',
                 '(Δ) هو المستقيم المارّ من C و العمودي على (AC).',
                 "(Δ') هو المستقيم المارّ من B و الموازي لـ (AC)."],
+      longueurs: [['A', 'B', ab], ['A', 'C', ac]],
       fig: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C']],
              droites: [['C', 'D'], ['B', 'E']],
              angles: [['B', 'A', 'C'], ['A', 'C', 'D']], caches: ['D', 'E'] }
@@ -156,6 +168,7 @@
       donnees: ['ABCD مستطيل حيث AB = ' + ab + ' و AD = ' + ad + '.',
                 '(BF) هو الموسط العمودي للقطعة [AB]، و I منتصفها.',
                 '(DG) مستقيم موازٍ لـ (AB).'],
+      longueurs: [['A', 'B', ab], ['A', 'D', ad]],
       fig: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A']],
              droites: [['I', 'J'], ['K', 'L']],
              angles: [['B', 'A', 'D'], ['A', 'I', 'J']],
@@ -179,6 +192,7 @@
       donnees: ['ABC مثلّث قائم الزاوية في A حيث AB = ' + ab + ' و AC = ' + ac + '.',
                 'M منتصف القطعة [AB].',
                 '(Δ) هو المستقيم المارّ من M و العمودي على (AB).'],
+      longueurs: [['A', 'B', ab], ['A', 'C', ac]],
       indice: 'الموسط العمودي: عمودي على القطعة، و يمرّ من منتصفها',
       fig: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C']],
              droites: [['M', 'N']],
@@ -202,10 +216,223 @@
       donnees: ['[BC] قطعة مستقيم حيث BC = ' + bc + ' صم.',
                 '(Δ) هو الموسط العمودي للقطعة [BC]، و N منتصفها.',
                 'S نقطة من (Δ).'],
+      longueurs: [['B', 'C', bc]],
       fig: { segments: [['B', 'C'], ['S', 'B'], ['S', 'C']],
              droites: [['N', 'S']],
              angles: [['B', 'N', 'S']],
              marques: [['B', 'N'], ['N', 'C']] }
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — « المسقط العمودي لنقطة على مستقيم » (projection Orthogonale)
+  // فوزي الغربي
+  //
+  // Ici on ne démontre plus, on CALCULE : « أحسب بعد A عن (BC) ». La réponse
+  // est un nombre, et le nombre se vérifie — c'est la famille la plus sûre de
+  // toute la géométrie.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Exercice 2 — le triangle rectangle, et ses quatre distances
+  const TRIANGLES = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15]];
+  item('projection Orthogonale ex2', 'distance', 'facile', () => {
+    const P = repere();
+    const [a, b] = F.choix(TRIANGLES);
+    const pts = { B: P(0, 0), A: P(0, a), C: P(b, 0) };
+    return {
+      pts,
+      lignes: [{ nom: '(BC)', A: 'B', B: 'C' }, { nom: '(AB)', A: 'A', B: 'B' },
+               { nom: '(AC)', A: 'A', B: 'C' }],
+      question: { point: 'A', droite: ['B', 'C'], nomDroite: '(BC)' },
+      donnees: ['ABC مثلّث قائم الزاوية في B حيث AB = ' + a + ' و BC = ' + b + '.'],
+      longueurs: [['A', 'B', a], ['B', 'C', b]],
+      fig: { segments: [['A', 'B'], ['B', 'C'], ['A', 'C']],
+             angles: [['A', 'B', 'C']] }
+    };
+  });
+  // Le cas que les élèves manquent : la distance d'un point à une droite qui
+  // le porte. Elle est nulle, et il faut savoir le dire.
+  item('projection Orthogonale ex2', 'distance', 'facile', () => {
+    const P = repere();
+    const [a, b] = F.choix(TRIANGLES);
+    const pts = { B: P(0, 0), A: P(0, a), C: P(b, 0) };
+    return {
+      pts,
+      lignes: [{ nom: '(AC)', A: 'A', B: 'C' }, { nom: '(AB)', A: 'A', B: 'B' },
+               { nom: '(BC)', A: 'B', B: 'C' }],
+      question: { point: 'A', droite: ['A', 'C'], nomDroite: '(AC)' },
+      donnees: ['ABC مثلّث قائم الزاوية في B حيث AB = ' + a + ' و BC = ' + b + '.'],
+      longueurs: [['A', 'B', a], ['B', 'C', b]],
+      fig: { segments: [['A', 'B'], ['B', 'C'], ['A', 'C']],
+             angles: [['A', 'B', 'C']] }
+    };
+  });
+
+  // Exercice 3 — le rectangle et ses diagonales
+  item('projection Orthogonale ex3', 'distance', 'moyen', () => {
+    const P = repere();
+    const l = 2 * F.ent(3, 6), h = 2 * F.ent(2, 4);
+    const pts = { A: P(0, h), D: P(l, h), C: P(l, 0), B: P(0, 0),
+                  E: P(l / 2, h / 2) };
+    return {
+      pts,
+      lignes: [{ nom: '(BC)', A: 'B', B: 'C' }, { nom: '(AB)', A: 'A', B: 'B' },
+               { nom: '(CD)', A: 'C', B: 'D' }, { nom: '(AD)', A: 'A', B: 'D' }],
+      question: { point: F.choix(['D', 'A', 'E']), droite: ['B', 'C'],
+                  nomDroite: '(BC)' },
+      donnees: ['ABCD مستطيل حيث AB = ' + h + ' و BC = ' + l + '.',
+                'E هي نقطة تقاطع قطريه.'],
+      longueurs: [['A', 'B', h], ['B', 'C', l]],
+      fig: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                        ['A', 'C'], ['B', 'D']],
+             angles: [['A', 'B', 'C']] }
+    };
+  });
+
+  // Exercice 4 — l'aire donne la distance, et réciproquement
+  item('projection Orthogonale ex4', 'distance', 'moyen', () => {
+    const P = repere();
+    const [a, b] = F.choix(TRIANGLES);
+    const pts = { A: P(0, 0), B: P(b, 0), C: P(0, a) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }, { nom: '(AC)', A: 'A', B: 'C' }],
+      question: { point: 'C', droite: ['A', 'B'], nomDroite: '(AB)' },
+      donnees: ['(AB) مستقيم حيث AB = ' + b + '، و C نقطة لا تنتمي إليه.',
+                'المثلّث ABC قائم الزاوية في A، و AC = ' + a + '.'],
+      longueurs: [['A', 'B', b], ['A', 'C', a]],
+      fig: { droites: [['A', 'B']], segments: [['A', 'C'], ['B', 'C']],
+             angles: [['B', 'A', 'C']] }
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — « الوضعية النسبية لدائرة و مستقيم » (cercle7, Droites_70)
+  // فوزي الغربي
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // cercle7 ex2 / Droites_70 ex36 — les deux tangentes aux bouts d'un diamètre
+  item('cercle7 ex2', 'tangente-para', 'moyen', () => {
+    const P = repere();
+    const r = F.ent(2, 5);
+    const pts = { I: P(0, 0), A: P(-r, 0), B: P(r, 0),
+                  E: P(-r, 2), G: P(r, 2) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' },
+               { nom: '(Δ)', A: 'A', B: 'E' },
+               { nom: '(D)', A: 'B', B: 'G' }],
+      cercles: [{ nom: '(C)', centre: 'I', bord: 'A' }],
+      hyp: [['tang', '(Δ)', 'A@(C)'], ['tang', '(D)', 'B@(C)']],
+      but: ['para', '(Δ)', '(D)'],
+      donnees: ['(C) دائرة مركزها I و [AB] قطر لها، حيث AB = ' + (2 * r) + '.',
+                '(Δ) هو المماس لـ (C) في A، و (D) هو المماس لـ (C) في B.'],
+      longueurs: [['A', 'B', 2 * r], ['I', 'A', r]],
+      fig: { cercles: [['I', 'A']], segments: [['A', 'B']],
+             droites: [['A', 'E'], ['B', 'G']],
+             angles: [['I', 'A', 'E'], ['I', 'B', 'G']], caches: ['E', 'G'] }
+    };
+  });
+
+  // cercle7 ex6 — le rayon vaut la moitié : la médiatrice touche sans couper
+  item('cercle7 ex6', 'position-droite-cercle', 'moyen', () => {
+    const P = repere();
+    const ab = 2 * F.ent(2, 5);
+    const pts = { A: P(0, 0), B: P(ab, 0), I: P(ab / 2, 0), J: P(ab / 2, 3) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }, { nom: '(Δ)', A: 'I', B: 'J' }],
+      question: { centre: 'A', bord: 'I', droite: ['I', 'J'],
+                  nomDroite: '(Δ)', nomCercle: '(C)' },
+      donnees: ['[AB] قطعة مستقيم حيث AB = ' + ab + '، و I منتصفها.',
+                '(C) هي الدائرة التي مركزها A و شعاعها AI.',
+                '(Δ) هو الموسط العمودي للقطعة [AB].'],
+      longueurs: [['A', 'B', ab], ['A', 'I', ab / 2]],
+      fig: { cercles: [['A', 'I']], segments: [['A', 'B']],
+             droites: [['I', 'J']], marques: [['A', 'I'], ['I', 'B']],
+             angles: [['A', 'I', 'J']], caches: ['J'] }
+    };
+  });
+
+  // cercle7 ex3 — le cercle de diamètre [AC] et le côté (AB)
+  item('cercle7 ex3', 'position-droite-cercle', 'difficile', () => {
+    const P = repere();
+    const [a, b] = F.choix(TRIANGLES);
+    const pts = { A: P(0, 0), B: P(0, 2 * a), C: P(2 * b, 0), O: P(b, 0) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }, { nom: '(AC)', A: 'A', B: 'C' }],
+      question: { centre: 'O', bord: 'A', droite: ['A', 'B'],
+                  nomDroite: '(AB)', nomCercle: '(C)' },
+      donnees: ['ABC مثلّث قائم الزاوية في A حيث AB = ' + (2 * a)
+                + ' و AC = ' + (2 * b) + '.',
+                '(C) هي الدائرة التي قطرها [AC]، و O منتصفه.'],
+      longueurs: [['A', 'B', 2 * a], ['A', 'C', 2 * b], ['O', 'A', b]],
+      fig: { cercles: [['O', 'A']],
+             segments: [['A', 'B'], ['A', 'C'], ['B', 'C']],
+             angles: [['B', 'A', 'C']] }
+    };
+  });
+
+  // Une droite qui coupe franchement, et une qui passe au large : les trois
+  // verdicts doivent tous se rencontrer, sinon l'élève n'en apprend qu'un.
+  item('cercle7 ex15', 'position-droite-cercle', 'moyen', () => {
+    const P = repere();
+    const r = F.ent(3, 6), d = F.choix([0, 1, 2, r + 1, r + 3]);
+    const pts = { O: P(0, 0), A: P(r, 0), M: P(0, d), N: P(3, d) };
+    return {
+      pts,
+      lignes: [{ nom: '(D)', A: 'M', B: 'N' }],
+      question: { centre: 'O', bord: 'A', droite: ['M', 'N'],
+                  nomDroite: '(D)', nomCercle: '(C)' },
+      donnees: ['(C) دائرة مركزها O و شعاعها ' + r + ' صم.',
+                '(D) مستقيم يبعد عن O بـ ' + d + ' صم.'],
+      longueurs: [['O', 'A', r]],
+      fig: { cercles: [['O', 'A']], droites: [['M', 'N']],
+             segments: [['O', 'A']], caches: ['N'] }
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // 7ème — « الوضعية النسبية لدائرتين » (cercle7 ex8, Droites_70 ex42)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ex8 — trois cercles bâtis sur la même corde : tous les cas y passent
+  item('cercle7 ex8', 'position-deux-cercles', 'moyen', () => {
+    const P = repere();
+    const ab = 2 * F.ent(2, 5), r2 = F.ent(1, 6);
+    const pts = { A: P(0, 0), B: P(ab, 0), I: P(ab / 2, 0),
+                  J: P(ab / 2 + r2, 0) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }],
+      question: { centre1: 'A', bord1: 'I', centre2: 'I', bord2: 'J',
+                  nom1: '(C)', nom2: "(C')" },
+      donnees: ['[AB] قطعة مستقيم حيث AB = ' + ab + '، و I منتصفها.',
+                '(C) هي الدائرة التي مركزها A و شعاعها AI.',
+                "(C') هي الدائرة التي مركزها I و شعاعها " + r2 + '.'],
+      longueurs: [['A', 'B', ab], ['A', 'I', ab / 2], ['I', 'J', r2]],
+      fig: { cercles: [['A', 'I'], ['I', 'J']], segments: [['A', 'B']],
+             marques: [['A', 'I'], ['I', 'B']], caches: ['J'] }
+    };
+  });
+
+  // Droites_70 ex42 — deux cercles bâtis sur les deux moitiés d'une corde
+  item('Droites_70 ex42', 'position-deux-cercles', 'difficile', () => {
+    const P = repere();
+    const ab = 2 * F.ent(3, 6);
+    const pts = { A: P(0, 0), B: P(ab, 0), I: P(ab / 2, 0) };
+    return {
+      pts,
+      lignes: [{ nom: '(AB)', A: 'A', B: 'B' }],
+      question: { centre1: 'A', bord1: 'I', centre2: 'B', bord2: 'I',
+                  nom1: '(C)', nom2: '(C1)' },
+      donnees: ['[AB] قطعة مستقيم حيث AB = ' + ab + '، و I منتصفها.',
+                '(C) هي الدائرة التي مركزها A و شعاعها AI.',
+                '(C1) هي الدائرة التي مركزها B و شعاعها IB.'],
+      longueurs: [['A', 'B', ab], ['A', 'I', ab / 2], ['I', 'B', ab / 2]],
+      fig: { cercles: [['A', 'I'], ['B', 'I']], segments: [['A', 'B']],
+             marques: [['A', 'I'], ['I', 'B']] }
     };
   });
 

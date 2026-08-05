@@ -22,7 +22,11 @@
     ['perp-para-perp', 'عمودي على أحد متوازيين'],
     ['reconnaitre-mediatrice', 'التعرّف على الموسط العمودي'],
     ['mediatrice-para', 'الموسط العمودي و التوازي'],
-    ['mediatrice-equidistance', 'الموسط العمودي و تساوي البعد']
+    ['mediatrice-equidistance', 'الموسط العمودي و تساوي البعد'],
+    ['distance', 'المسقط العمودي و البعد عن مستقيم'],
+    ['tangente-para', 'المماس و التوازي'],
+    ['position-droite-cercle', 'الوضعية النسبية لدائرة و مستقيم'],
+    ['position-deux-cercles', 'الوضعية النسبية لدائرتين']
   ];
 
   // Une famille peut compter moins d'items que la page n'en montre : on la

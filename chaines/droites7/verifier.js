@@ -29,6 +29,13 @@ const TIRAGES = Number(process.argv[2]) || 60;
 let questions = 0, relations = 0, controles = 0;
 const echecs = [];
 
+// « 5/2 » ou « 4 » : le contrôle porte la valeur en texte pour survivre à la
+// copie, et la relit en rationnel exact pour la comparer.
+const lireQ = t => {
+  const [n, d] = String(t).split('/');
+  return F.q(BigInt(n), BigInt(d === undefined ? 1 : d));
+};
+
 // ── Refaire une affirmation ──────────────────────────────────────────────
 function verifierFait(v, pts) {
   const p = n => {
@@ -62,6 +69,55 @@ function verifierFait(v, pts) {
       const [x1, x2] = String(v.a).split(''), [y1, y2] = String(v.b).split('');
       return F.memeLongueur(p(x1), p(x2), p(y1), p(y2));
     }
+    case 'tang': {
+      // « (Δ) مماس للدائرة (C) في A » : le contact est SUR le cercle, et la
+      // droite y est perpendiculaire au rayon. Les deux, sinon ce n'est pas
+      // une tangente — une sécante passe aussi par un point du cercle.
+      const a = deux(v.a);
+      const [contact, cercle] = String(v.b).split('@');
+      const c = (v.cercles || []).find(x => x.nom === cercle);
+      if (!a || !c) return null;
+      return F.perp(a[0], a[1], p(c.centre), p(contact))
+          && F.memeLongueur(p(c.centre), p(contact), p(c.centre), p(c.bord))
+          && F.aligne(a[0], a[1], p(contact));
+    }
+    case 'dist': {
+      const b = deux(v.b);
+      const d = b && F.distance(p(v.a), b[0], b[1]);
+      return d !== null && d !== undefined && F.qEgaux(d, lireQ(v.valeur));
+    }
+    case 'lg': {
+      const a = deux(v.a);
+      const l = a && F.longueur(a[0], a[1]);
+      return l !== null && l !== undefined && F.qEgaux(l, lireQ(v.valeur));
+    }
+    // LES VERDICTS SE RECALCULENT AUSSI. « المستقيم مماس للدائرة » n'est pas
+    // une opinion : c'est d(O, (D)) = r, et rien d'autre.
+    case 'pos-dc': {
+      const a = deux(v.a), b = deux(v.b);
+      if (!a || !b) return null;
+      const d = F.distance(a[0], b[0], b[1]), r = F.longueur(a[0], a[1]);
+      if (d === null || r === null) return null;
+      const vu = F.qEgaux(d, r) ? 'tangent'
+               : (F.qNum(d) < F.qNum(r) ? 'coupe' : 'dehors');
+      return vu === v.valeur;
+    }
+    case 'pos-cc': {
+      const a = deux(v.a), b = deux(v.b);
+      if (!a || !b) return null;
+      const dd = F.longueur(a[0], b[0]);
+      const r1 = F.longueur(a[0], a[1]), r2 = F.longueur(b[0], b[1]);
+      if (dd === null || r1 === null || r2 === null) return null;
+      const somme = F.qAdd(r1, r2);
+      const diff = F.qNum(r1) >= F.qNum(r2) ? F.qSub(r1, r2) : F.qSub(r2, r1);
+      let vu;
+      if (F.qEgaux(dd, somme)) vu = 'tangentExt';
+      else if (F.qEgaux(dd, diff)) vu = 'tangentInt';
+      else if (F.qNum(dd) > F.qNum(somme)) vu = 'exterieur';
+      else if (F.qNum(dd) < F.qNum(diff)) vu = 'interieur';
+      else vu = 'secants';
+      return vu === v.valeur;
+    }
     default: return null;                       // type inconnu : on le dira
   }
 }
@@ -73,7 +129,7 @@ function verifierBrut(brut) {
 
   for (const v of c.verifs) {
     let ok;
-    try { ok = verifierFait(v, c.pts); }
+    try { ok = verifierFait(Object.assign({ cercles: c.cercles || [] }, v), c.pts); }
     catch (e) { probs.push('exception: ' + e.message); continue; }
     if (ok === null) { probs.push('نوع غير معروف: ' + v.type); continue; }
     relations++;
@@ -83,6 +139,7 @@ function verifierBrut(brut) {
 
   // Une droite dégénérée passe tous les tests et n'en est pas une.
   for (const v of c.verifs) {
+    if (v.type === 'pos-dc' || v.type === 'pos-cc' || v.type === 'lg') continue;
     for (const cote of [v.a, v.b]) {
       if (!Array.isArray(cote)) continue;
       if (F.memesPoints(c.pts[cote[0]], c.pts[cote[1]])) {
@@ -159,6 +216,23 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse('une droite réduite à un point', c => {
     const v = c.controle.verifs.find(x => Array.isArray(x.a));
     if (v) v.a = [v.a[0], v.a[0]];
+  });
+  pousse('un verdict retourné', c => {
+    const v = c.controle.verifs.find(x => x.type === 'pos-dc' || x.type === 'pos-cc');
+    if (v) v.valeur = (v.valeur === 'tangent') ? 'coupe' : 'tangent';
+  });
+  pousse('une distance changée', c => {
+    const v = c.controle.verifs.find(x => x.type === 'dist' || x.type === 'lg');
+    if (v) v.valeur = String(Number(String(v.valeur).split('/')[0]) + 1);
+  });
+  // Le RAYON passe par le point de contact, et il n'est pas tangent. C'est la
+  // confusion même que la règle doit écarter : un point commun ne suffit pas.
+  pousse('le rayon donné pour tangente', c => {
+    const v = c.controle.verifs.find(x => x.type === 'tang');
+    if (!v) return;
+    const [contact, nom] = String(v.b).split('@');
+    const cc = (c.controle.cercles || []).find(x => x.nom === nom);
+    if (cc) v.a = [cc.centre, contact];
   });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });

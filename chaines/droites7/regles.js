@@ -118,6 +118,19 @@
       }
     },
     {
+      cle: 'tangente-perp',
+      nom: 'المماس لدائرة في نقطة عمودي على الشعاع في تلك النقطة',
+      // (Δ) tangente en A à un cercle de centre O  ⟹  (Δ) ⊥ (OA)
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [d, points] of f.tang) for (const t of points) {
+          const r = ctx.rayonDe(t);
+          if (r && r !== d) out.push({ but: ['perp', d, r], depuis: [['tang', d, t]] });
+        }
+        return out;
+      }
+    },
+    {
       cle: 'med-equidistance',
       nom: 'كلّ نقطة من الموسط العمودي لقطعة متساوية البعد عن طرفيها',
       chercher: (ctx, f) => {
@@ -144,7 +157,8 @@
   const SYM = { perp: true, para: true, egal: true };
   function tables(liste) {
     const t = { perp: new Map(), para: new Map(), med: new Map(),
-                passe: new Map(), egal: new Map(), mil: new Map() };
+                passe: new Map(), egal: new Map(), mil: new Map(),
+                tang: new Map() };
     const pose = (m, a, b) => {
       if (!m.has(a)) m.set(a, []);
       if (m.get(a).indexOf(b) < 0) m.get(a).push(b);
