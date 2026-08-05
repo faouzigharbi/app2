@@ -485,9 +485,18 @@
       nom: 'نسبة طولين معلومين تُحسب مباشرة',
       chercher: (ctx, f) => {
         const out = [];
+        // Les rapports d'une configuration de Thalès, plus ceux que l'énoncé
+        // NOMME lui-même : « بيّن أنّ AK/AC = 3/4 » parle d'un rapport qui
+        // n'appartient à aucune configuration — c'est l'exercice qui le pose,
+        // et sans cela la question n'a pas de réponse à formuler.
+        const paires = [];
         for (const t of ctx.thales || []) {
-          for (const [h, b] of [[t.S + t.M, t.S + t.B], [t.S + t.N, t.S + t.C],
-                                [t.M + t.N, t.B + t.C]]) {
+          paires.push([t.S + t.M, t.S + t.B], [t.S + t.N, t.S + t.C],
+                      [t.M + t.N, t.B + t.C]);
+        }
+        for (const r of ctx.rapports || []) paires.push(r.split('|'));
+        {
+          for (const [h, b] of paires) {
             const k = cleR(h, b);
             if (!k || f.rapport.some(x => x[1] === k)) continue;
             const a = f.lg2.get(seg(h[0], h[1])), c = f.lg2.get(seg(b[0], b[1]));

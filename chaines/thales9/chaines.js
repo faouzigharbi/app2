@@ -101,7 +101,7 @@
       thales: s.thales || [], triangles: s.triangles || [],
       quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
       orthos: s.orthos || [], entre: s.entre || [], relations: s.relations || [],
-      alternes: s.alternes || [],
+      alternes: s.alternes || [], rapports: s.rapports || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -234,7 +234,7 @@
                // rejouait « كلّ مثلّث يقبل الارتسام في دائرة أحد أضلاعه قطر
                // لها » sur une scène sans cercle, et la règle ne donnait
                // évidemment rien : 32 refus, tous justes.
-               diametres: S.ctx.diametres }
+               diametres: S.ctx.diametres, rapports: S.ctx.rapports }
       }
     };
   }

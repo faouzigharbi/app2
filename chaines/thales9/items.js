@@ -1485,6 +1485,71 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // SÉRIE THALÈS 9B 2018 ex1 — LE TRIANGLE ISOCÈLE, LE SYMÉTRIQUE, LES QUARTS
+  //
+  // « ABC مثلّث متقايس الضّلعين قمته A حيث AB = 6، I منتصف [BC]. المستقيم
+  // المارّ من I و الموازي لـ (AC) يقطع [AB] في J. » Puis :
+  //
+  //   1) J est le milieu de [AB] ; en déduire IJ = 3
+  //   2) D symétrique de I par rapport à C, K = (AC) ∩ (DJ) :
+  //      K milieu de [DJ] ; CK = AC/4 ; en déduire AK/AC = 3/4
+  //
+  // Tout y est réciproque : on ne calcule pas J, on démontre que c'en est le
+  // milieu — puis on s'en sert. Deux fois de suite, dans deux triangles
+  // différents, et la seconde fois le triangle n'existe qu'après la symétrie.
+  //
+  // SA TROISIÈME QUESTION N'Y EST PAS : « MK = 3/8 BC », où M est sur (AD) et
+  // (MK)//(BD). Le calcul est juste — je l'ai refait — mais la configuration
+  // de Thalès qui le porte a pour troisième côté la droite (BD), et son
+  // sommet est le point où (BD) coupe (AC). Ce point, le maître ne le nomme
+  // pas ; l'ajouter serait ajouter à sa figure, et je ne le fais pas sans
+  // qu'il le dise.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Série Thalès 9B 2018 ex1', 'probleme', 'difficile', () => {
+    // Isocèle en A : AB = AC. Un couple pythagoricien rend les deux côtés
+    // rationnels en même temps que la base.
+    const [w, h] = F.choix([[3, 4], [4, 3], [6, 8], [5, 12], [8, 15], [12, 5]]);
+    const k = F.ent(1, 3);
+    const A = F.pt(0, h * k), B = F.pt(-w * k, 0), C = F.pt(w * k, 0);
+    const Ip = F.milieu(B, C), J = F.milieu(A, B);
+    const D = F.symetriqueCentre(Ip, C);
+    const K = F.intersection(A, C, D, J);
+    if (!K) throw new Error('pose dégénérée');
+    return {
+      K: 1, points: { A, B, C, I: Ip, J, D, K },
+      // Ce que l'énoncé donne : le milieu I, la symétrie, les parallèles.
+      // J et K ne sont PAS donnés milieux — c'est ce qu'il faut démontrer.
+      milieux: [['I', 'B', 'C'], ['C', 'I', 'D']],
+      para: [[dr('I', 'J'), dr('A', 'C')], [dr('C', 'K'), dr('I', 'J')]],
+      // LE MILIEU CONNU EST I, PAS J. La configuration se lit dans ce sens :
+      // I est sur [BC], J est celui qu'on cherche sur [BA] — l'écrire à
+      // l'envers, c'est demander au moteur de partir de la conclusion.
+      thales: [{ S: 'B', B: 'C', C: 'A', M: 'I', N: 'J' },
+               { S: 'D', B: 'I', C: 'J', M: 'C', N: 'K' }],
+      entre: [['A', 'K', 'C']],
+      rapports: ['AK|AC'],
+      donne: [seg('A', 'B'), seg('A', 'C')],
+      buts: [
+        { but: ['milieu', 'J', 'A', 'B'], question: 'بيّن أنّ J هي منتصف [AB].' },
+        { but: ['lg2', seg('I', 'J'), null], question: 'استنتج IJ.' },
+        { but: ['milieu', 'K', 'D', 'J'], question: 'بيّن أنّ K هي منتصف [DJ].' },
+        { but: ['lg2', seg('C', 'K'), null], question: 'بيّن أنّ CK = AC/4.' },
+        { but: ['lg2', seg('A', 'K'), null], question: 'أحسب AK.' },
+        { but: ['rapport', 'AK|AC', '3/4'], question: 'استنتج أنّ AK/AC = 3/4.' }
+      ],
+      texte: g => ['ABC مثلّث متقايس الضّلعين قمته A حيث AB = ' + g(seg('A', 'B'))
+                   + ' و AC = ' + g(seg('A', 'C')) + '، و I منتصف [BC].',
+                   'المستقيم المارّ من I و الموازي لـ (AC) يقطع [AB] في J.',
+                   'D هي نظيرة I بالنسبة إلى C، و K نقطة تقاطع (AC) و (DJ).'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['I', 'J'],
+                           ['D', 'J'], ['C', 'D']],
+                marques: [['B', 'I', 1], ['I', 'C', 1], ['I', 'C', 2], ['C', 'D', 2]] },
+      indice: 'مبرهنة المنتصفين مرّتين : في المثلّث ABC، ثمّ في المثلّث DIJ'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
