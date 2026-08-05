@@ -121,7 +121,16 @@
       fichier: 'Thales 2021 modifié.pdf', pages: 8, texte: 'lisible', etat: 'partiel',
       chapitres: ['thales9'], exercices: 16,
       contenu: [
-        { n: 1, questions: 3, notions: ['rectangle', 'Thalès'], sort: 'à faire' },
+        { n: 1, questions: 3, notions: ['symétrie centrale', 'triangle rectangle', 'rectangle'],
+          sort: 'à faire', pourquoi: 'sa q2a demande la même chose PAR DEUX CHEMINS — le moteur n\'en donne qu\'un, le plus court' },
+        { n: 2, questions: 4, notions: ['cercle de diamètre [AB]', 'isocèle', 'milieux', 'rapport d\'aires'],
+          sort: 'à faire', pourquoi: 'ses trois premières questions entrent ; la quatrième est un rapport d\'AIRES' },
+        { n: 3, questions: 3, notions: ['parallélogramme', 'Thalès', 'EB² = EF × EG', 'projection selon une direction'],
+          sort: 'à faire', pourquoi: 'la relation EB² = EF×EG s\'écrit comme un produit de rapports — la machinerie existe' },
+        { n: 4, questions: 5, notions: ['trapèze rectangle', 'ligne des milieux', 'réciproque des milieux'],
+          sort: 'bibliothèque',
+          ou: 'cinq questions ; la feuille écrit « الموازي لـ(AD) » là où seul (AB) donne sa figure' },
+        { n: 6, questions: 6, notions: ['trapèze', 'papillon', 'partage', 'milieux'], sort: 'à faire' },
         { n: 5, questions: 2, notions: ['milieux'], sort: 'bibliothèque' },
         { n: 7, questions: 2, notions: ['symétrie'], sort: 'à faire' },
         { n: 8, questions: 2, notions: ['Thalès', 'Chasles'], sort: 'bibliothèque' },
@@ -139,7 +148,8 @@
         { n: 15, questions: 3, notions: ['trapèze', 'projection selon une direction'], sort: 'à faire' }
       ],
       machine: ['« قطرا المستطيل متقايسان » — les diagonales d\'un rectangle sont égales (ex12 q2)',
-                'sept exercices sur seize restent à poser']
+                'le rapport d\'AIRES (ex2 q4) — les aires manquent au chapitre',
+                'la feuille est LUE EN ENTIER : quinze exercices recensés, quatre dans la bibliothèque, neuf prêts à y entrer, deux hors machinerie']
     },
 
     {

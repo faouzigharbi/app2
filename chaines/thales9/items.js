@@ -1783,6 +1783,56 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2021 ex4 — LA LIGNE DES MILIEUX DU TRAPÈZE
+  //
+  // « ABCD شبه منحرف قائم في A و D حيث AB = 3، AD = 4، CD = 9، E منتصف [AD].
+  // المستقيم المارّ من E و الموازي لـ(AB) يقطع (BC) في F. »
+  //
+  //   1) F est le milieu de [BC]      2) EF
+  //   3) (EF) coupe (BD) en G : EG, puis FG
+  //
+  // La feuille écrit « الموازي لـ(AD) » ; ce ne peut être que (AB), puisque E
+  // est SUR (AD) et qu'une parallèle à (AD) menée de E serait (AD) elle-même.
+  // On lit donc (AB), qui est la seule lecture qui donne sa figure.
+  //
+  // Tout passe par G, que l'énoncé n'introduit qu'en troisième question : c'est
+  // lui qui fait le pont entre les deux triangles, DAB et DBC.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2021 ex4', 'probleme', 'difficile', () => {
+    const ab = F.ent(2, 8), cd = ab + F.ent(1, 8), ad = 2 * F.ent(2, 6);
+    const A = F.pt(0, 0), B = F.pt(ab, 0);
+    const D = F.pt(F.Q0, F.q(-ad)), C = F.pt(F.q(cd), F.q(-ad));
+    const E = F.milieu(A, D), G = F.milieu(B, D), Fp = F.milieu(B, C);
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp, G },
+      milieux: [['E', 'A', 'D']],
+      para: [[dr('A', 'B'), dr('D', 'C')], [dr('E', 'G'), dr('A', 'B')],
+             [dr('G', 'F'), dr('D', 'C')]],
+      thales: [{ S: 'D', B: 'A', C: 'B', M: 'E', N: 'G' },
+               { S: 'B', B: 'D', C: 'C', M: 'G', N: 'F' }],
+      entre: [['E', 'G', 'F']],
+      donne: [seg('A', 'B'), seg('C', 'D'), seg('A', 'D')],
+      buts: [
+        { but: ['milieu', 'G', 'B', 'D'], question: 'بيّن أنّ G هي منتصف [BD].' },
+        { but: ['milieu', 'F', 'B', 'C'], question: 'استنتج أنّ F هي منتصف [BC].' },
+        { but: ['lg2', seg('E', 'G'), null], question: 'أحسب EG.' },
+        { but: ['lg2', seg('F', 'G'), null], question: 'أحسب FG.' },
+        { but: ['lg2', seg('E', 'F'), null], question: 'استنتج EF.' }
+      ],
+      texte: g => ['ABCD شبه منحرف قائم في A و في D حيث AB = ' + g(seg('A', 'B'))
+                   + ' و AD = ' + g(seg('A', 'D')) + ' و CD = ' + g(seg('C', 'D')) + '.',
+                   'E منتصف [AD]، و المستقيم المارّ من E و الموازي لـ (AB) يقطع (BC) في F،',
+                   'و يقطع القطر (BD) في G.'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
+                           ['E', 'F'], ['B', 'D']],
+                angles: [['B', 'A', 'D'], ['A', 'D', 'C']],
+                marques: [['A', 'E', 1], ['E', 'D', 1]] },
+      indice: 'كلّ شيء يمرّ بـ G : مبرهنة المنتصفين في DAB ثمّ في DBC'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
