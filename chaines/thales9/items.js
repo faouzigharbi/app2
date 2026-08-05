@@ -374,18 +374,21 @@
   item('Pythagore (3) — مراجعة', 'cercle-rectangle', 'difficile', () => {
     const [x, y] = F.choix(TRIPLETS);
     const A = F.pt(0, 0), B = F.pt(x, 0), C = F.pt(0, y);
-    const I = F.milieu(B, C);
+    const I = F.milieu(B, C), P2 = F.plan(1);
     return {
       K: 1,
-      points: { A, B, C, I },
+      points: { A, B, C, I, H: P2.projete(A, B, C) },
       triangles: [['B', 'A', 'C']],
       rects: [['B', 'A', 'C']],
       milieux: [['I', 'B', 'C']],
-      donne: [seg('B', 'C')],
-      but: ['lg2', seg('I', 'A'), null],
-      texte: g => ['ABC مثلّث قائم الزاوية في A حيث BC = ' + g(seg('B', 'C')) + '.',
-                   'I منتصف [BC].'],
-      question: 'أحسب المسافة IA.',
+      pieds: { ['A' + seg('B', 'C')]: 'H' },
+      donne: [seg('B', 'C'), seg('A', 'B'), seg('A', 'C')],
+      buts: [{ but: ['lg2', seg('B', 'I'), null], question: 'أحسب BI.' },
+             { but: ['lg2', seg('I', 'A'), null], question: 'استنتج IA.' },
+             { but: ['lg2', seg('A', 'H'), null], question: 'أحسب الارتفاع AH.' }],
+      texte: g => ['ABC مثلّث قائم الزاوية في A حيث BC = ' + g(seg('B', 'C'))
+                   + ' و AB = ' + g(seg('A', 'B')) + ' و AC = ' + g(seg('A', 'C')) + '.',
+                   'I منتصف [BC]، و H هو المسقط العمودي لـ A على (BC).'],
       figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['I', 'A']],
                 angles: [['B', 'A', 'C']],
                 marques: [['B', 'I', 1], ['I', 'C', 1]] },
@@ -406,18 +409,21 @@
     const P = F.plan(1), H = P.projete(A, B, C);
     return {
       K: 1,
-      points: { A, B, C, H },
+      points: { A, B, C, H, I: F.milieu(B, C) },
       triangles: [['B', 'A', 'C']],
       rects: [['B', 'A', 'C']],
       pieds: { ['A' + seg('B', 'C')]: 'H' },
+      milieux: [['I', 'B', 'C']],
       donne: [seg('A', 'B'), seg('A', 'C'), seg('B', 'C')],
-      but: ['lg2', seg('A', 'H'), null],
+      buts: [{ but: ['lg2', seg('A', 'H'), null], question: 'أحسب الارتفاع AH.' },
+             { but: ['lg2', seg('B', 'I'), null], question: 'أحسب BI.' },
+             { but: ['lg2', seg('I', 'A'), null], question: 'استنتج IA.' }],
       texte: g => ['ABC مثلّث قائم الزاوية في A حيث AB = ' + g(seg('A', 'B'))
                    + ' و AC = ' + g(seg('A', 'C')) + ' و BC = ' + g(seg('B', 'C')) + '.',
-                   'H هو المسقط العمودي للنقطة A على (BC).'],
-      question: 'أحسب الارتفاع AH.',
-      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'H']],
-                angles: [['B', 'A', 'C'], ['A', 'H', 'B']] },
+                   'H هو المسقط العمودي للنقطة A على (BC)، و I منتصف [BC].'],
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['A', 'H'], ['I', 'A']],
+                angles: [['B', 'A', 'C'], ['A', 'H', 'B']],
+                marques: [['B', 'I', 1], ['I', 'C', 1]] },
       indice: 'العلاقة القياسية : AH × BC = AB × AC'
     };
   });
@@ -583,8 +589,9 @@
       K: 1, points: { A, B, C, D, I: I2 },
       thales: [{ S: 'D', B: 'B', C: 'A', M: 'I', N: 'C' }],
       para: [[dr('I', 'C'), dr('A', 'B')]],
-      donne: [seg('A', 'B'), seg('D', 'A'), seg('D', 'C')],
-      but: ['lg2', seg('I', 'C'), null],
+      donne: [seg('A', 'B'), seg('D', 'A'), seg('D', 'C'), seg('B', 'D')],
+      buts: [{ but: ['lg2', seg('I', 'C'), null], question: 'أحسب IC.' },
+             { but: ['lg2', seg('D', 'I'), null], question: 'أحسب DI.' }],
       texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
                    + g(seg('A', 'C')) + '، و D نقطة من [AC] بحيث AD = '
                    + g(seg('A', 'D')) + '.',
@@ -657,8 +664,10 @@
       K: 1, points: { A, C, I: Ip, H, O },
       quadrilateres: ['AICH'],
       milieux: [['O', 'A', 'C'], ['O', 'I', 'H']],
-      donne: [],
-      but: ['pgram', 'AICH'],
+      donne: [seg('C', 'H')],
+      buts: [{ but: ['pgram', 'AICH'],
+               question: 'ما هي طبيعة الرّباعي AICH ؟ علّل جوابك.' },
+             { but: ['lg2', seg('A', 'I'), null], question: 'استنتج AI.' }],
       texte: () => ['O منتصف [AC]، و H هي نظيرة I بالتناظر المركزي الذي مركزه O.'],
       question: 'ما هي طبيعة الرّباعي AICH ؟ علّل جوابك.',
       figure: { segments: [['A', 'I'], ['I', 'C'], ['C', 'H'], ['H', 'A'],
@@ -702,8 +711,9 @@
       K: 1, points: { A, B, C, D, O },
       quadrilateres: ['ABCD'],
       milieux: [['O', 'A', 'C'], ['O', 'B', 'D']],
-      donne: [seg('A', 'B'), seg('B', 'C')],
-      but: ['losange', 'ABCD'],
+      donne: [seg('A', 'B'), seg('B', 'C'), seg('A', 'C')],
+      buts: [{ but: ['losange', 'ABCD'], question: 'أثبت أنّ الرّباعي ABCD معيّن.' },
+             { but: ['lg2', seg('A', 'O'), null], question: 'أحسب AO.' }],
       texte: g => ['O منتصف [AC] و منتصف [BD]،',
                    'و AB = ' + g(seg('A', 'B')) + ' و BC = ' + g(seg('B', 'C')) + '.'],
       question: 'أثبت أنّ الرّباعي ABCD معيّن.',
