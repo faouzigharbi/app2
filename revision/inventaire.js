@@ -191,7 +191,7 @@
     },
 
     {
-      fichier: 'Thales 2020.pdf', pages: 8, texte: 'lisible', etat: 'squelette',
+      fichier: 'Thales 2020.pdf', pages: 8, texte: 'lisible', etat: 'dépouillé',
       exercices: 19, chapitres: ['thales9'],
       // OUVERT ET RECONNU : sa première partie REPREND Thales 2008 — mêmes
       // figures, mêmes nombres (ex5 a/b/c, ex6, le menhir, OD/OE). Rien à y
@@ -207,10 +207,11 @@
           sort: 'bibliothèque', ou: 'la règle des angles correspondants a été posée pour elle' },
         { n: 'II-2', questions: 1, notions: ['triangle médian', 'périmètre'],
           sort: 'bibliothèque', ou: 'cinq questions : les trois côtés, puis les deux périmètres' },
-        { n: 'II-3', questions: 1, notions: ['milieux', 'périmètre d\'un quadrilatère'],
-          sort: 'à faire', pourquoi: 'la brique « périmètre » existe désormais — il ne manque que la pose' }
+        { n: 'II-3', questions: 1, notions: ['Thalès', 'Chasles', 'périmètre d\'un quadrilatère'],
+          sort: 'bibliothèque', ou: 'cinq questions : AD, AB, BC, AE, puis le périmètre' }
       ],
-      machine: ['il ne reste que II-3 : le périmètre d\'un quadrilatère, dont la figure demande une lecture attentive'] },
+      etatFinal: 'DÉPOUILLÉ — sa partie I est celle de Thales 2008, sa partie II est entière',
+      machine: [] },
 
     { fichier: 'revision_Concours_2019__TarTib.pdf', pages: 6, texte: 'lisible',
       etat: 'non lu', exercices: 8, chapitres: ['reel9', 'encadrement'],

@@ -1694,6 +1694,43 @@
     };
   });
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // THALES 2020 II-3 — « أحسب محيط الرباعي ABCE علما أنّ CE = 1 »
+  //
+  // (BA)//(CE), C sur [DB] et E sur [DA] : Thalès de sommet D donne les deux
+  // longueurs manquantes, Chasles les deux morceaux, et le périmètre les
+  // additionne. C'est le dernier exercice de la feuille, et le seul qui fasse
+  // travailler les quatre gestes à la suite.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('Thales 2020 II-3', 'probleme', 'difficile', () => {
+    const g = triangle(1);                       // D, B, A : trois côtés rationnels
+    const D = g.A, B = g.B, A = g.C;
+    const t = rapport();
+    const C = F.surDroite(D, B, t), E = F.surDroite(D, A, t);
+    return {
+      K: 1, points: { A, B, C, D, E },
+      thales: [{ S: 'D', B: 'B', C: 'A', M: 'C', N: 'E' }],
+      para: [[dr('C', 'E'), dr('B', 'A')]],
+      entre: [['D', 'C', 'B'], ['D', 'E', 'A']],
+      perimetres: ['ABCE'],
+      donne: [seg('B', 'D'), seg('C', 'D'), seg('D', 'E'), seg('C', 'E')],
+      buts: [
+        { but: ['lg2', seg('A', 'D'), null], question: 'أحسب AD.' },
+        { but: ['lg2', seg('A', 'B'), null], question: 'أحسب AB.' },
+        { but: ['lg2', seg('B', 'C'), null], question: 'استنتج BC.' },
+        { but: ['lg2', seg('A', 'E'), null], question: 'استنتج AE.' },
+        { but: ['perimetre', 'ABCE', null], question: 'أحسب محيط الرّباعي ABCE.' }
+      ],
+      texte: g2 => ['C نقطة من [DB] و E نقطة من [DA] حيث (CE) // (BA).',
+                    'BD = ' + g2(seg('B', 'D')) + ' و CD = ' + g2(seg('C', 'D'))
+                    + ' و DE = ' + g2(seg('D', 'E')) + ' و CE = '
+                    + g2(seg('C', 'E')) + '.'],
+      figure: { segments: [['D', 'B'], ['D', 'A'], ['A', 'B'], ['C', 'E']] },
+      indice: 'طالس في المثلّث DBA، ثمّ علاقة شال لكلّ من BC و AE'
+    };
+  });
+
   const CAS9 = [
     { nom: '1', donne: [['A', 'B'], ['A', 'D'], ['A', 'E']], but: ['A', 'C'] },
     { nom: '2', donne: [['A', 'B'], ['A', 'D'], ['B', 'C']], but: ['D', 'E'] },
