@@ -471,7 +471,7 @@
         // classement qui grimpe parce qu'on a changé la mise en page ne
         // classe rien. Seule « حسب نظرية طالس لنا » compte, parce que c'est
         // elle qui nomme le théorème appliqué.
-        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|نعوّض|^إذن$|^و لدينا$|^في المثلّث |^[0-9]+\)$/;
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|نعوّض|الاختيار|^إذن$|^و لدينا$|^في المثلّث |^[0-9]+\)$/;
         const notions = new Set();
         for (const e of (brut.etapes || [])) {
           if (CADRE.test(e[0])) continue;

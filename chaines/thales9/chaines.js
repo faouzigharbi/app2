@@ -125,7 +125,7 @@
     for (const b of buts) {
       const bout = R.chercher(acquis, b.but, S.ctx);
       if (!bout || !bout.length) return null;
-      blocs.push({ suite: bout, question: b.question });
+      blocs.push({ suite: bout, question: b.question, but: b.but });
       for (const n of bout) acquis.push(n.fait);
     }
     const suite = [].concat(...blocs.map(b => b.suite));
@@ -137,10 +137,30 @@
     const dire = f => ecrire(f, donnees.has(R.cleFait(f)) ? 'donnee' : null);
     const etapes = [['المعطيات', S.hyp.map(f => dire(f)).join('  و  ')]];
     const dites = new Set();
+    const itineraires = [];
+    let vus = S.hyp.slice();
     blocs.forEach((bloc, i) => {
       // La correction est numérotée comme l'énoncé : l'élève doit pouvoir
       // ramener chaque réponse à sa question.
       if (blocs.length > 1) etapes.push([(i + 1) + ')', bloc.question]);
+      // ── LE CHOIX DE L'ITINÉRAIRE ────────────────────────────────────────
+      //
+      // « À chaque fois, invite l'élève à bien choisir son itinéraire ; c'est
+      // le plus important. » Une correction qui applique la bonne règle sans
+      // dire POURQUOI celle-là enseigne à recopier, pas à chercher.
+      //
+      // Le moteur sait le dire sans rien inventer : à cet instant précis, il
+      // connaît TOUTES les règles qui pouvaient s'appliquer et ce que chacune
+      // aurait donné. Il nomme donc celle qu'il prend, et il nomme une de
+      // celles qu'il écarte AVEC son résultat — « Pythagore donnerait BC, et
+      // BC ne rapproche pas de MN ». C'est vrai, c'est vérifiable, et c'est
+      // exactement la question que l'élève doit se poser.
+      const choix = itineraire(bloc, vus, S.ctx, suite.indexOf(bloc.suite[0]));
+      if (choix) {
+        etapes.push(['الاختيار', choix.texte]);
+        itineraires.push(choix.controle);
+      }
+      for (const n of bloc.suite) vus.push(n.fait);
       for (const n of bloc.suite) {
         // ── LA RÉDACTION DE THALÈS EST UN GABARIT, PAS UNE PHRASE ──────────
         //
@@ -188,6 +208,7 @@
         points: Object.fromEntries(Object.keys(S.pts).map(n =>
           [n, [S.pts[n].x.n + '/' + S.pts[n].x.d, S.pts[n].y.n + '/' + S.pts[n].y.d]])),
         hyp: S.hyp.map(sec), but: sec(buts[buts.length - 1].but),
+        itineraires,
         // CE QUE LA RÉDACTION DOIT CONTENIR, pour chaque application de
         // Thalès : le triangle, la parallèle, les deux appartenances. Le
         // validateur relit le texte et refuse ce qui en manque.
@@ -215,6 +236,169 @@
   }
   // Un fait, sérialisé : les rationnels y deviennent du texte.
   const sec = f => f.map(x => (x && x.n !== undefined ? x.n + '/' + x.d : x));
+
+  // ── POURQUOI CELLE-LÀ, ET NON CELLE-CI ───────────────────────────────────
+  //
+  // On rejoue le premier pas de la question : quelles règles avaient quelque
+  // chose à proposer sur les faits déjà acquis ? Celle qui est prise est
+  // nommée avec ce qu'elle exige ; une autre est nommée avec ce qu'elle
+  // aurait donné — et l'on dit pourquoi ce résultat ne sert pas.
+  //
+  // AUCUNE DE CES PHRASES N'EST INVENTÉE : l'alternative sort du moteur, sa
+  // conclusion est vraie sur la figure, et le validateur vérifie qu'elle ne
+  // figure NULLE PART dans la chaîne — sans quoi la dire inutile serait faux.
+  const BUT = {
+    lg2: b => 'حساب ' + b[1],
+    para: b => 'إثبات (' + b[1] + ') // (' + b[2] + ')',
+    perp: b => 'إثبات (' + b[1] + ') ⊥ (' + b[2] + ')',
+    milieu: b => 'إثبات أنّ ' + b[1] + ' منتصف ' + L(b[2] + b[3]),
+    rect: b => 'إثبات أنّ المثلّث ' + b[1] + b[2] + b[3] + ' قائم',
+    prop: b => 'كتابة النّسب المتساوية',
+    rapport: b => 'حساب النّسبة ' + b[1].replace('|', '/'),
+    relation: b => 'إثبات العلاقة بين النّسب',
+    cercle: b => 'إثبات انتماء النّقط إلى دائرة',
+    pgram: b => 'إثبات أنّ ' + b[1] + ' متوازي أضلاع',
+    rect4: b => 'إثبات أنّ ' + b[1] + ' مستطيل',
+    losange: b => 'إثبات أنّ ' + b[1] + ' معيّن',
+    gravite: b => 'إثبات أنّ ' + b[1] + ' مركز ثقل ' + b[2],
+    ortho: b => 'إثبات أنّ ' + b[1] + ' المركز القائم',
+    sym: b => 'إثبات التناظر'
+  };
+  const nommerBut = b => (BUT[b[0]] ? BUT[b[0]](b) : b[0]);
+
+  // Le nom COURT d'une règle : dans une phrase de choix, « إذا كانت النقطة B
+  // بين A و C فإنّ AC = AB + BC » écrase la question qu'on veut poser.
+  const COURT = {
+    pythagore: 'نظرية بيتاغور', 'pythagore-reciproque': 'عكس بيتاغور',
+    'relation-metrique': 'العلاقة القياسية', 'circonscrit-milieu': 'الدائرة المحيطة',
+    'rayons-egaux': 'أنصاف الأقطار', 'demi-cercle-rect': 'الزاوية المرتكزة على قطر',
+    'milieu-equidistant-rect': 'المنتصف المتساوي البعد',
+    thales: 'نظرية طالس', 'thales-rapports': 'نظرية طالس',
+    'thales-reciproque': 'عكس طالس', milieux: 'مبرهنة المنتصفين',
+    'milieux-reciproque': 'عكس مبرهنة المنتصفين', 'milieu-longueur': 'نصف القطعة',
+    'somme-longueurs': 'علاقة شال AC = AB + BC',
+    'relation-rapports': 'العلاقة بين النّسب',
+    'partage-rapport': 'التقسيم حسب نسبة', 'partage-externe': 'النّسبة و الجزء الباقي',
+    'rapport-par-longueurs': 'نسبة طولين معلومين',
+    'rapport-transitif': 'انتقال النّسبة في تناسب',
+    'rapport-complement': 'تكملة النّسبة إلى 1',
+    'longueur-par-rapport': 'الطول انطلاقا من النّسبة',
+    'rapports-egaux': 'تقايس البسطين', 'prop-transitive': 'تركيب تناسبين',
+    'rapport-partie-tout': 'من نسبة الجزأين إلى نسبة الجزء و الكلّ',
+    'denominateurs-egaux': 'تقايس المقامين',
+    'partage-par-rapport': 'التقسيم حسب نسبة معلومة',
+    'rapport-par-somme': 'مجموع نسبتين يساوي 1',
+    'milieu-par-egalite': 'المنتصف بالتقايس', 'centre-gravite': 'مركز الثقل',
+    'gravite-deux-tiers': 'ثلثا المتوسّط', 'pgram-diagonales': 'قطرا متوازي الأضلاع',
+    'pgram-oppose': 'ضلعان متقابلان', 'pgram-cotes': 'أضلاع متوازي الأضلاع',
+    'rect-pgram': 'المستطيل', 'losange-pgram': 'المعيّن',
+    'para-alternes': 'الزاويتان المتبادلتان داخليا',
+    'ortho-troisieme': 'الارتفاع الثالث', 'ortho-medianes': 'المركز القائم',
+    'sym-longueur': 'التناظر المركزي', 'sym-para': 'صورة مستقيم بتناظر'
+  };
+  const court = r => COURT[r.cle] || r.nom.split(' : ')[0];
+
+  // POURQUOI UNE RÈGLE NE PEUT PAS S'APPLIQUER — dit avec ses mots.
+  //
+  // « Elle ne donne rien » n'apprend rien. Ce qui apprend, c'est : Pythagore
+  // veut un angle droit et il n'y en a pas ; Thalès veut deux droites
+  // parallèles et l'énoncé n'en donne aucune ; le théorème des milieux veut
+  // DEUX milieux et l'on n'en connaît qu'un. Chacune de ces phrases se lit
+  // sur les faits acquis à cet instant — on ne l'invente pas, on la constate.
+  const MANQUE = {
+    pythagore: (ctx, f) => f.rect.length ? null
+      : 'لأنّها تحتاج مثلّثا قائم الزاوية، و لا نعرف زاوية قائمة في هذا الشّكل',
+    'pythagore-reciproque': (ctx, f) => (ctx.triangles || []).length ? null
+      : 'لأنّها تحتاج الأطوال الثلاثة لمثلّث واحد',
+    'relation-metrique': (ctx, f) => Object.keys(ctx.pieds || {}).length ? null
+      : 'لأنّها تحتاج ارتفاعا نازلا من الزاوية القائمة، و لا ارتفاع هنا',
+    thales: (ctx, f) => f.para.length ? null
+      : 'لأنّها تحتاج مستقيمين متوازيين، و التوازي غير معطى',
+    'thales-reciproque': (ctx, f) => (ctx.thales || []).length ? null
+      : 'لأنّها تحتاج وضعية طالس',
+    milieux: (ctx, f) => f.milieu.length >= 2 ? null
+      : 'لأنّها تحتاج منتصفَي ضلعين، و لا نعرف إلا منتصفا واحدا على الأكثر',
+    'circonscrit-milieu': (ctx, f) => f.rect.length ? null
+      : 'لأنّها تحتاج مثلّثا قائم الزاوية',
+    'rayons-egaux': (ctx, f) => f.cercle.length ? null
+      : 'لأنّها تحتاج دائرة، و لا دائرة في المعطيات',
+    'centre-gravite': (ctx, f) => (ctx.gravites || []).length ? null
+      : 'لأنّها تحتاج متوسّطين في مثلّث',
+    'para-alternes': (ctx, f) => f.angles.length ? null
+      : 'لأنّها تحتاج زاويتين متقايستين، و لا زوايا في المعطيات'
+  };
+  // Les règles qu'un élève essaie d'abord : ce sont celles qu'il faut savoir
+  // écarter, et donc celles dont l'absence mérite une phrase.
+  const CANDIDATES = ['pythagore', 'thales', 'milieux', 'relation-metrique',
+                      'circonscrit-milieu', 'rayons-egaux', 'centre-gravite',
+                      'para-alternes', 'pythagore-reciproque'];
+
+  function itineraire(bloc, acquis, ctx, avant) {
+    const premier = bloc.suite[0];
+    if (!premier || !premier.regle) return null;
+    const dansLaChaine = new Set(bloc.suite.map(n => R.cleFait(n.fait)));
+    const connus = new Set(acquis.map(R.cleFait));
+    let table;
+    try { table = R.tables(acquis); } catch (e) { return null; }
+    // Ce que les AUTRES règles proposaient au même instant.
+    // UNE RIVALE DOIT ÊTRE UNE AUTRE IDÉE, pas le même théorème sous un autre
+    // nom. « Pourquoi pas Thalès ? » quand on vient de choisir Thalès n'est
+    // pas une question — c'est un bruit, et l'élève cesse de lire.
+    const nomChoisi = court(premier.regle);
+    const rivales = [];
+    for (const r of R.REGLES) {
+      if (r.cle === premier.regle.cle) continue;
+      if (court(r) === nomChoisi) continue;
+      let sort = [];
+      try { sort = r.chercher(ctx, table); } catch (e) { sort = []; }
+      for (const p of sort) {
+        const k = R.cleFait(p.but);
+        if (connus.has(k) || dansLaChaine.has(k)) continue;
+        if (p.depuis.some(d => !connus.has(R.cleFait(d)))) continue;
+        rivales.push({ regle: r, but: p.but });
+        break;
+      }
+    }
+    // Une longueur ou une propriété fausse route parle plus qu'une réécriture
+    // de proportion : on met celles-là devant.
+    rivales.sort((a, b2) => (a.but[0] === 'prop' ? 1 : 0) - (b2.but[0] === 'prop' ? 1 : 0));
+    // Ce que la règle choisie a EFFECTIVEMENT utilisé : c'est la réponse à
+    // « pourquoi celle-là », et elle est sous les yeux.
+    const dep = premier.depuis.map(f => ecrire(f)).join('  و  ');
+    const t = ['المطلوب : ' + nommerBut(bloc.but || premier.fait) + '.',
+               'نختار ' + nomChoisi + ' لأنّ معطياتها متوفّرة : ' + dep + '.'];
+    // Une règle célèbre qui NE PEUT PAS s'appliquer, avec la raison : c'est
+    // l'explication la plus utile, et on la met en premier.
+    let ecartee = null;
+    for (const cle of CANDIDATES) {
+      if (cle === premier.regle.cle || !MANQUE[cle]) continue;
+      const r = R.REGLES.find(x => x.cle === cle);
+      if (!r || court(r) === nomChoisi) continue;
+      const raison = MANQUE[cle](ctx, table);
+      if (raison) { ecartee = { regle: r, raison }; break; }
+    }
+    if (ecartee) {
+      t.push('و لماذا لا ' + court(ecartee.regle) + ' ؟ ' + ecartee.raison + '.');
+    } else if (rivales.length) {
+      const v = rivales[0];
+      t.push('و لماذا لا ' + court(v.regle) + ' ؟ تنطبق فعلا، لكنّها تعطي '
+             + nommerBut(v.but) + ' : نتيجة صحيحة لا تظهر فيها المطلوب.');
+    } else {
+      t.push('لا تنطبق قاعدة أخرى على هذه المعطيات : الطريق واحد.');
+    }
+    return {
+      texte: t.join(' '),
+      controle: { but: sec(bloc.but || premier.fait), choisie: premier.regle.cle,
+                  // Ce que le validateur devra refaire : la règle écartée l'a
+                  // bien été pour la raison dite, et la rivale ne sert
+                  // vraiment à rien dans cette chaîne.
+                  avant,
+                  ecartee: ecartee ? ecartee.regle.cle : null,
+                  rivale: (!ecartee && rivales.length)
+                    ? { regle: rivales[0].regle.cle, fait: sec(rivales[0].but) }
+                    : null }
+    };
+  }
 
   // ── LE GABARIT DE THALÈS ─────────────────────────────────────────────────
   // Les trois rapports, lus depuis le sommet, comme sur la feuille.

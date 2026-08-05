@@ -308,6 +308,46 @@ function verifierBrut(brut) {
     }
   }
 
+  // 5 quater. LE CHOIX DE L'ITINÉRAIRE EST UNE AFFIRMATION, DONC IL SE VÉRIFIE.
+  //
+  // « Pourquoi pas Pythagore ? parce qu'aucun angle droit n'est connu » : si
+  // un angle droit EST connu à cet instant, la phrase est fausse et elle
+  // enseigne le faux. On refait donc le décompte sur les faits réellement
+  // acquis avant la question — et l'on vérifie qu'une règle dite « inutile »
+  // ne sert nulle part dans la chaîne.
+  {
+    const MANQUE = {
+      pythagore: F2 => !F2.some(x => x[0] === 'rect'),
+      'pythagore-reciproque': (F2, ctx) => !(ctx.triangles || []).length,
+      'relation-metrique': (F2, ctx) => !Object.keys(ctx.pieds || {}).length,
+      thales: F2 => !F2.some(x => x[0] === 'para'),
+      'thales-reciproque': (F2, ctx) => !(ctx.thales || []).length,
+      milieux: F2 => F2.filter(x => x[0] === 'milieu').length < 2,
+      'circonscrit-milieu': F2 => !F2.some(x => x[0] === 'rect'),
+      'rayons-egaux': F2 => !F2.some(x => x[0] === 'cercle'),
+      'centre-gravite': (F2, ctx) => !(ctx.gravites || []).length,
+      'para-alternes': F2 => !F2.some(x => x[0] === 'angles')
+    };
+    const dansLaChaine = new Set(c.etapesCalcul.map(x => R.cleFait(x.fait)));
+    for (const it of c.itineraires || []) {
+      const avant = c.hyp.concat(
+        c.etapesCalcul.slice(0, it.avant || 0).map(x => x.fait));
+      if (it.ecartee) {
+        const test = MANQUE[it.ecartee];
+        if (test && !test(avant, c.ctx || {})) {
+          probs.push('سبب الاستبعاد غير صحيح : ' + it.ecartee);
+        }
+      }
+      if (it.rivale) {
+        if (dansLaChaine.has(R.cleFait(it.rivale.fait))) {
+          probs.push('قاعدة وُصفت بغير المفيدة و هي مستعملة : ' + it.rivale.regle);
+        }
+        let m; try { m = verifierFait(it.rivale.fait, S); } catch (e) { m = 'exception'; }
+        if (m) probs.push('نتيجة القاعدة البديلة غير صحيحة : ' + m);
+      }
+    }
+  }
+
   // 6. La forme de la fiche.
   // LE GABARIT SE RÉPÈTE, ET C'EST VOULU. Le maître réécrit la configuration
   // à CHAQUE application de Thalès — c'est même tout l'objet de sa consigne.
@@ -542,6 +582,14 @@ if (process.env.CONTRE_EXEMPLES) {
     const i = c.etapes.findIndex(e => /^في المثلّث /.test(e[0]) && / \/\/ /.test(e[1]));
     if (i < 0) throw new Error('pas de rédaction de Thalès');
     c.etapes[i] = [c.etapes[i][0], 'لدينا المعطيات'];
+  });
+  // Une raison d'écarter qui n'est pas vraie enseigne le faux : on la
+  // fabrique, et l'on exige le refus.
+  pousse('une raison d’écarter qui est fausse', c => {
+    const it = (c.controle.itineraires || [])[0];
+    if (!it) throw new Error('pas d’itinéraire');
+    it.ecartee = 'thales';
+    it.rivale = null;
   });
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });
