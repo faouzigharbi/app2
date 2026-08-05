@@ -78,6 +78,99 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LIRE LA CONFIGURATION — « النشاط الأول », neuf figures, AUCUN nombre
+  //
+  // La feuille ne demande pas de calculer : elle demande de reconnaître le
+  // triangle, la parallèle, les appartenances, et d'écrire les trois rapports.
+  // C'est l'exercice de démarrage, et le seul de tout le chapitre dont la
+  // conclusion n'est pas une longueur mais la proportion elle-même.
+  //
+  // DEUX POSES, PAS UNE. La parallèle coupe les côtés (M et B du même côté du
+  // sommet), ou bien elle coupe leurs prolongements — le « papillon ». Thalès
+  // vaut dans les deux cas, et la feuille les mélange à dessein : quatre de
+  // ses neuf figures sont des papillons.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  const poseThales = (papillon) => {
+    const a = F.ent(3, 9), b = F.ent(3, 9);
+    const num = F.ent(1, 4), den = num + F.ent(1, 4);
+    const t = F.q(papillon ? -num : num, den);
+    const S = F.pt(0, 0), B = F.pt(4 * a, F.q(a)), C = F.pt(F.q(b), F.q(3 * b));
+    return { S, B, C, M: F.surDroite(S, B, t), N: F.surDroite(S, C, t) };
+  };
+
+  for (const papillon of [false, true]) {
+    item('Ajustement_thales النشاط الأول' + (papillon ? ' — فراشة' : ''),
+         'thales-configuration', papillon ? 'moyen' : 'facile', () => {
+      const g = poseThales(papillon);
+      const noms = F.melanger(['A', 'B', 'C', 'M', 'N', 'E', 'F', 'G', 'I', 'J', 'K']);
+      const [nS, nB, nC, nM, nN] = noms;
+      const pts = {}; pts[nS] = g.S; pts[nB] = g.B; pts[nC] = g.C;
+      pts[nM] = g.M; pts[nN] = g.N;
+      return {
+        K: 1, points: pts,
+        thales: [{ S: nS, B: nB, C: nC, M: nM, N: nN }],
+        para: [[dr(nM, nN), dr(nB, nC)]],
+        donne: [],
+        but: ['prop', seg(nS, nM) + '|' + seg(nS, nB),
+                      seg(nS, nN) + '|' + seg(nS, nC),
+                      seg(nM, nN) + '|' + seg(nB, nC)],
+        texte: () => ['في المثلّث ' + nS + nB + nC + ' لدينا (' + nM + nN
+                      + ') // (' + nB + nC + ')،',
+                      'و ' + nM + ' ∈ (' + nS + nB + ') و ' + nN
+                      + ' ∈ (' + nS + nC + ').'],
+        question: 'أكتب النّسب المتساوية حسب نظرية طالس.',
+        figure: { segments: [[nS, nB], [nS, nC], [nB, nC], [nM, nN]],
+                  droites: [[nM, nN]] },
+        indice: 'الرّؤوس تُقرأ انطلاقا من ' + nS + ' : ثلاث نسب متساوية'
+      };
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LA QUATRIÈME PROPORTIONNELLE, EN DÉCIMAUX — « النشاط الثالث » ex2
+  //
+  // Ses figures 4, 5 et 6 concluent « إذن AN ≈ ..... ». On ne conclut jamais
+  // par une approximation : avec AM = 4,3 ; AB = 7,9 ; AC = 8,8 la réponse
+  // est 1892/395, et c'est cela qu'on écrit. Les données, elles, gardent
+  // l'écriture décimale de la feuille.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  for (const papillon of [false, true]) {
+    item('Applications_Thales النشاط الثالث ex2' + (papillon ? ' — فراشة' : ''),
+         'thales-decimaux', 'difficile', () => {
+      // Des dixièmes, comme sur la feuille : 4,3 ; 7,9 ; 8,8.
+      const ab = F.q(F.ent(45, 99), 10);
+      // LE RAPPORT RESTE LOIN DE 0 ET DE 1. À 6,8 contre 7,3, M se colle sur B
+      // et la figure ne se lit plus ; à 0,9 contre 8, il se colle sur A. Les
+      // nombres restaient exacts, mais le dessin ne montrait plus rien.
+      const brut = Number(ab.n);
+      const am = F.q(F.ent(Math.round(brut * 0.3), Math.round(brut * 0.7)), 10);
+      const ac = F.q(F.ent(45, 99), 10);
+      const t = F.qDiv(am, ab);
+      // AC est porté par l'axe des ordonnées, dont le poids vaut AC² : la
+      // longueur devient exacte quel que soit le décimal choisi.
+      const K = F.qMul(ac, ac);
+      const A = F.pt(0, 0), B = F.pt(ab, F.Q0), C = F.pt(F.Q0, F.Q1);
+      const s = papillon ? F.qNeg(t) : t;
+      return {
+        K, points: { A, B, C, M: F.surDroite(A, B, s), N: F.surDroite(A, C, s) },
+        thales: [{ S: 'A', B: 'B', C: 'C', M: 'M', N: 'N' }],
+        para: [[dr('M', 'N'), dr('B', 'C')]],
+        donne: [seg('A', 'M'), seg('A', 'B'), seg('A', 'C')],
+        but: ['lg2', seg('A', 'N'), null],
+        texte: g => ['المستقيمان (MN) و (BC) متوازيان، و :',
+                     'AM = ' + g(seg('A', 'M')) + ' ؛ AB = ' + g(seg('A', 'B'))
+                     + ' ؛ AC = ' + g(seg('A', 'C')) + '.'],
+        question: 'أحسب AN. (أترك النتيجة في شكل كسر غير قابل للاختزال)',
+        figure: { segments: [['A', 'B'], ['A', 'C'], ['B', 'C'], ['M', 'N']],
+                  droites: [['M', 'N']] },
+        indice: 'AM/AB = AN/AC ، و لا تُعطِ قيمة تقريبية'
+      };
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // OÙ L'ON DÉMONTRE UN PARALLÉLISME — عكس طالس (THALES9 ex1, ex4)
   // ═══════════════════════════════════════════════════════════════════════
 

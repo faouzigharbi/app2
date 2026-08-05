@@ -24,6 +24,28 @@ const seg = R.seg;
 const desec = f => f.map((x, i) => (f[0] === 'lg2' && i === 2 && x !== null)
   ? lireQ(x) : x);
 
+// RELIRE UNE LONGUEUR ÉCRITE, et rendre son CARRÉ. Trois formes possibles —
+// « 7,5 », « 1892/395 » empilé, « 4√2 » — et l'on refuse tout ce qui n'entre
+// dans aucune : mieux vaut un refus qu'une lecture indulgente.
+function relire(ecrit) {
+  const F2 = /<span class="frac" dir="ltr"><span class="num">(.*?)<\/span><span class="den">(.*?)<\/span><\/span>/
+    .exec(ecrit);
+  const morceau = t => {
+    const r = /^(\d*)√(\d+)$/.exec(t);                    // a√b  → a²b
+    if (r) { const a = BigInt(r[1] || '1'); return F.q(a * a * BigInt(r[2])); }
+    const d = /^(\d+),(\d+)$/.exec(t);                    // 7,5  → (75/10)²
+    if (d) { const q = F.q(BigInt(d[1] + d[2]), 10n ** BigInt(d[2].length));
+             return F.qMul(q, q); }
+    if (/^\d+$/.test(t)) return F.q(BigInt(t) * BigInt(t));
+    return null;
+  };
+  if (F2) {
+    const h = morceau(F2[1]), b = morceau(F2[2]);
+    return (h && b) ? F.qDiv(h, b) : null;
+  }
+  return morceau(ecrit);
+}
+
 // La scène, reconstruite depuis le contrôle seul : le validateur ne touche
 // jamais aux objets vivants de la chaîne, il repart du texte sérialisé.
 function rebatir(c) {
@@ -64,6 +86,19 @@ function verifierFait(f, S) {
       const L = f[2].split('').map(p);
       return P.cocycliques(p(f[1]), L) ? null
         : 'les points ' + f[2] + ' ne sont pas à égale distance de ' + f[1];
+    }
+    case 'prop': {
+      // Les trois rapports annoncés doivent être VRAIMENT égaux, mesurés sur
+      // les coordonnées : AB/CD = EF/GH s'y lit AB²·GH² = CD²·EF².
+      const paires = [f[1], f[2], f[3]].map(x => x.split('|'));
+      for (let i = 1; i < paires.length; i++) {
+        const [a, b] = paires[0], [c, d] = paires[i];
+        if (!P.memeRapport(p(a[0]), p(a[1]), p(b[0]), p(b[1]),
+                           p(c[0]), p(c[1]), p(d[0]), p(d[1]))) {
+          return 'le rapport ' + c + '/' + d + ' ne vaut pas ' + a + '/' + b;
+        }
+      }
+      return null;
     }
     case 'aligne':
       return F.aligne(p(f[1]), p(f[2]), p(f[3])) ? null
@@ -156,6 +191,28 @@ function verifierBrut(brut) {
       .replace(/<span class="frac" dir="ltr">[\s\S]*?<\/span><\/span>/g, '')
       .replace(/<span dir="ltr"[^>]*>[\s\S]*?<\/span>/g, '');
     if (nu.includes('√')) probs.push('جذر خارج جزيرة لاتينية : ' + String(bout).slice(0, 40));
+  }
+
+  // 5 bis. AUCUNE VALEUR APPROCHÉE — on relit ce qui est écrit.
+  //
+  // Les feuilles concluent parfois « إذن AN ≈ ..... » ; ici, jamais. Le
+  // contrôle ne se contente pas de le promettre : il REPARSE chaque longueur
+  // affichée — décimale, fraction ou radical — et exige qu'elle vaille très
+  // exactement la valeur portée par les coordonnées. Un arrondi, une
+  // troncature, un chiffre perdu ne passent pas le retour.
+  for (const h of [...c.hyp, ...c.etapesCalcul.map(x => x.fait)]) {
+    if (h[0] !== 'lg2' || h[2] === null) continue;
+    const exact = lireQ(h[2]);
+    for (const mode of ['donnee', null]) {
+      const ecrit = F.ecrireRacine(exact, mode);
+      let relu;
+      try { relu = relire(ecrit); } catch (e) { relu = null; }
+      if (relu === null) { probs.push('كتابة غير قابلة للقراءة : ' + h[1]); continue; }
+      if (!F.qEgaux(relu, exact)) {
+        probs.push('قيمة تقريبية : ' + h[1] + ' مكتوبة ' + ecrit.replace(/<[^>]+>/g, ' ')
+          + ' بينما القيمة ' + exact.n + '/' + exact.d);
+      }
+    }
   }
 
   // 6. La forme de la fiche.
@@ -293,6 +350,27 @@ if (process.env.CONTRE_EXEMPLES) {
     }
     cas.push(['le rendu qui renonce devant une fraction',
               vu ? { __deja: vu } : null]);
+  }
+  // LE « ≈ » DE LA FEUILLE, REJOUÉ. On remplace l'écriture exacte par une
+  // valeur arrondie à deux décimales — ce que font les figures 4, 5 et 6 de
+  // « النشاط الثالث » — et l'on exige que le contrôle le refuse.
+  {
+    const vrai = F.ecrireRacine;
+    const arrondi = (c2, mode) => {
+      const v = Math.sqrt(Number(c2.n) / Number(c2.d));
+      return Number.isInteger(v) ? vrai(c2, mode) : v.toFixed(2).replace('.', ',');
+    };
+    let vu = null;
+    for (let essai = 0; essai < 120 && !vu; essai++) {
+      const lot = F.tirer(NUMS[essai % NUMS.length]);
+      for (const b of lot) {
+        F.ecrireRacine = arrondi;
+        let probs; try { probs = verifierBrut(b); } catch (e) { probs = ['exception']; }
+        F.ecrireRacine = vrai;
+        if (probs.some(x => /تقريبية|قابلة للقراءة/.test(x))) { vu = probs; break; }
+      }
+    }
+    cas.push(['une réponse arrondie à deux décimales', vu ? { __deja: vu } : null]);
   }
   pousse('étape dupliquée', c => { c.etapes[2] = c.etapes[1].slice(); });
   pousse('chaîne tronquée', c => { c.etapes = c.etapes.slice(0, 3); });

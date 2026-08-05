@@ -18,16 +18,21 @@
 
   // ── Écrire un fait en arabe ──────────────────────────────────────────────
   const L = s => '[' + s[0] + s[1] + ']';
+  // Le mode d'écriture voyage avec le fait : « donnee » pour ce que l'énoncé
+  // fournit, rien pour ce que la chaîne a trouvé.
   const dit = {
-    lg2: (s, v) => s + ' = ' + F.ecrireRacine(v),
+    lg2: (s, v, m) => s + ' = ' + F.ecrireRacine(v, m),
     para: (a, b) => '(' + a + ') // (' + b + ')',
     perp: (a, b) => '(' + a + ') ⊥ (' + b + ')',
     milieu: (I, A, B) => I + ' منتصف ' + L(A + B),
     rect: (A, S, C) => 'المثلّث ' + A + S + C + ' قائم الزاوية في ' + S,
     cercle: (O, t) => 'النّقط ' + t.split('').join(' و ') + ' تنتمي إلى دائرة مركزها ' + O,
-    aligne: (A, B, C) => A + ' و ' + B + ' و ' + C + ' على استقامة واحدة'
+    aligne: (A, B, C) => A + ' و ' + B + ' و ' + C + ' على استقامة واحدة',
+    // Trois rapports empilés, reliés par des égalités — comme au tableau.
+    prop: (a, b, c) => [a, b, c].map(x => F.ecrireRapport(...x.split('|'))).join(' = ')
   };
-  const ecrire = f => dit[f[0]](f[1], f[2], f[3]);
+  const ecrire = (f, m) => dit[f[0]](f[1], f[2], f[0] === 'lg2' ? m : f[3]);
+  // (prop) prend ses trois rapports en f[1], f[2], f[3] — cf. dit.prop
 
   // ── La scène ─────────────────────────────────────────────────────────────
   function scene(it) {
@@ -64,7 +69,11 @@
     const suite = R.chercher(S.hyp, S.s.but, S.ctx);
     if (!suite || !suite.length) return null;
 
-    const etapes = [['المعطيات', S.hyp.map(ecrire).join('  و  ')]];
+    // Ce que l'énoncé a donné s'écrit comme sur la feuille, partout où cela
+    // reparaît ; ce que la chaîne a calculé s'écrit en fraction, partout.
+    const donnees = new Set(S.hyp.map(R.cleFait));
+    const dire = f => ecrire(f, donnees.has(R.cleFait(f)) ? 'donnee' : null);
+    const etapes = [['المعطيات', S.hyp.map(f => dire(f)).join('  و  ')]];
     const dites = new Set();
     for (const n of suite) {
       if (!dites.has(n.regle.cle)) {
@@ -74,13 +83,13 @@
       // Le calcul tient dans la même ligne que la déduction : séparé, il
       // arriverait APRÈS la conclusion, ce qui est l'ordre inverse de celui
       // où l'on pense.
-      etapes.push(['نطبّق', n.depuis.map(ecrire).join('  و  ') + '  إذن  '
-                   + ecrire(n.fait) + calculDe(n, S)]);
+      etapes.push(['نطبّق', n.depuis.map(f => dire(f)).join('  و  ') + '  إذن  '
+                   + dire(n.fait) + calculDe(n, S, donnees)]);
     }
-    etapes.push(['النتيجة', ecrire(suite[suite.length - 1].fait)]);
+    etapes.push(['النتيجة', dire(suite[suite.length - 1].fait)]);
     if (etapes.length < 4) return null;
 
-    const g = k => F.ecrireRacine(S.val(k));
+    const g = k => F.ecrireRacine(S.val(k), 'donnee');
     const enonce = (S.s.texte ? S.s.texte(g) : []).slice();
     const svg = figure(S);
     if (svg) enonce.push({ svg });
@@ -108,10 +117,14 @@
   const sec = f => f.map(x => (x && x.n !== undefined ? x.n + '/' + x.d : x));
 
   // Le détail du calcul, quand la règle en a fait un.
-  function calculDe(n, S) {
+  function calculDe(n, S, donnees) {
     const c = n.calcul;
     if (!c) return '';
-    const e = k => F.ecrireRacine(S.val ? S.val(k) : null);
+    const e = k => {
+      const v = S.val(k);
+      return F.ecrireRacine(v, (donnees && donnees.has(R.cleFait(['lg2', k, v])))
+        ? 'donnee' : null);
+    };
     try {
       if (c[3] === 'somme') return '  ، لأنّ ' + n.fait[1] + '² = ' + e(c[0]) + '² + ' + e(c[1]) + '²';
       if (c[3] === 'diff') return '  ، لأنّ ' + n.fait[1] + '² = ' + e(c[0]) + '² − ' + e(c[1]) + '²';

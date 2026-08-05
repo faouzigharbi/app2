@@ -30,7 +30,7 @@
   function tables(faits) {
     const t = {
       para: [], perp: [], milieu: [], lg2: new Map(), rect: [],
-      rapport: [], aligne: [], cercle: []
+      rapport: [], aligne: [], cercle: [], prop: []
     };
     for (const f of faits) {
       if (f[0] === 'lg2') t.lg2.set(f[1], f[2]);
@@ -224,6 +224,26 @@
                          calcul: [bi, hi, bj, hj, 'thales'] });
             }
           }
+        }
+        return out;
+      }
+    },
+    {
+      cle: 'thales-rapports',
+      nom: 'نظرية طالس : الموازي لأحد أضلاع مثلّث يقسم الضّلعين الآخرين إلى أجزاء متناسبة',
+      // La feuille « النشاط الأول » ne donne AUCUN nombre : elle demande de
+      // lire la configuration et d'écrire les trois rapports. La conclusion
+      // n'est donc pas une longueur, c'est la proportion elle-même.
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const t of ctx.thales || []) {
+          const p = ['para', dr(t.M, t.N), dr(t.B, t.C)];
+          if (!f.para.some(x => cleFait(x) === cleFait(p))) continue;
+          const but = ['prop', seg(t.S, t.M) + '|' + seg(t.S, t.B),
+                              seg(t.S, t.N) + '|' + seg(t.S, t.C),
+                              seg(t.M, t.N) + '|' + seg(t.B, t.C)];
+          if (f.prop.some(x => cleFait(x) === cleFait(but))) continue;
+          out.push({ but, depuis: [p] });
         }
         return out;
       }

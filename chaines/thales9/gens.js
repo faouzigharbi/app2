@@ -13,7 +13,9 @@
     ['pythagore-reciproque', 'عكس نظرية بيتاغور'],
     ['relation-metrique', 'العلاقة القياسية في المثلّث القائم'],
     ['cercle-rectangle', 'المثلّث القائم و الدائرة المحيطة به'],
+    ['thales-configuration', 'نظرية طالس — قراءة الشّكل'],
     ['thales-longueur', 'نظرية طالس — حساب طول'],
+    ['thales-decimaux', 'نظرية طالس — نتيجة في شكل كسر'],
     ['thales-parallele', 'عكس طالس — إثبات التوازي'],
     ['milieux', 'مبرهنة المنتصفين']
   ];

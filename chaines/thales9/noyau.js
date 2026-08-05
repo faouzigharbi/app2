@@ -183,16 +183,45 @@
     }
     return [a, b];
   }
+  // JAMAIS D'ARRONDI. Les feuilles écrivent « إذن AN ≈ ..... » quand le
+  // quotient ne tombe pas juste ; ici la réponse reste exacte — fraction
+  // irréductible, ou radical. Le « ≈ » n'existe pas dans ce chapitre.
+  //
+  // Deux façons d'écrire un même nombre exact, et le rôle décide :
+  //   — une DONNÉE se lit comme sur la feuille, 7,5 et non 15/2, quand son
+  //     écriture décimale est finie ;
+  //   — un RÉSULTAT s'écrit en fraction irréductible, comme demandé.
+  // Un nombre trouvé garde sa fraction lorsqu'il resert de prémisse : le même
+  // nombre ne doit pas changer de visage d'une ligne à l'autre.
+  const DIX = n => { // le dénominateur ne vit-il que de 2 et de 5 ?
+    let d = n;
+    while (d % 2n === 0n) d /= 2n;
+    while (d % 5n === 0n) d /= 5n;
+    return d === 1n;
+  };
+  function enDecimal(haut, bas) {
+    if (bas === 1n) return String(haut);
+    if (!DIX(bas)) return null;
+    let n = haut, d = bas, dec = 0;
+    while (d % 2n === 0n) { d /= 2n; n *= 5n; dec++; }
+    while (d % 5n === 0n) { d /= 5n; n *= 2n; dec++; }
+    let s = String(n < 0n ? -n : n).padStart(dec + 1, '0');
+    s = s.slice(0, s.length - dec) + ',' + s.slice(s.length - dec);
+    s = s.replace(/,?0+$/, '');
+    return (n < 0n ? '−' : '') + s;
+  }
   // √(n/d) = √(n·d)/d : on rend le dénominateur rationnel avant de peler.
-  function ecrireRacine(c) {
+  function ecrireRacine(c, mode) {
     if (!qPos(c) && !qNul(c)) throw new Error('carré de longueur négatif');
     if (qNul(c)) return '0';
     const [a, b] = peler(c.n * c.d);
     const g = bpgcd(a, c.d) || 1n;
     const haut = a / g, bas = c.d / g;
-    const rad = (b === 1n) ? '' : '√' + b;
-    if (b === 1n) return bas === 1n ? String(haut) : frac(String(haut), String(bas));
-    const num = (haut === 1n ? '' : String(haut)) + rad;
+    if (b === 1n) {
+      if (mode === 'donnee') { const s = enDecimal(haut, bas); if (s !== null) return s; }
+      return bas === 1n ? String(haut) : frac(String(haut), String(bas));
+    }
+    const num = (haut === 1n ? '' : String(haut)) + '√' + b;
     return bas === 1n ? num : frac(num, String(bas));
   }
   // UNE FRACTION EST UN ÎLOT LATIN. Sans dir="ltr", « 7√10 » au numérateur
