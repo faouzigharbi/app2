@@ -83,8 +83,28 @@
   function chaine(it) {
     let S;
     try { S = scene(it); } catch (e) { return null; }
-    const suite = R.chercher(S.hyp, S.s.but, S.ctx);
-    if (!suite || !suite.length) return null;
+    // UN EXERCICE, PLUSIEURS QUESTIONS QUI S'ENCHAÎNENT.
+    //
+    // Les feuilles du maître ne posent pas une question : THALES0 ex3 en pose
+    // huit, et chacune se sert de la précédente — « أحسب IN », puis « بيّن
+    // أنّ MI/MP = 3/8 », puis « استنتج أنّ I منتصف [EF] ». En n'en prenant
+    // qu'une, on ne raccourcissait pas l'exercice : on le TRONQUAIT, et c'est
+    // pour cela que tout le chapitre sortait facile.
+    //
+    // Chaque question part donc des hypothèses ET de tout ce que les questions
+    // précédentes ont établi — exactement comme l'élève, qui ne redémontre pas
+    // ce qu'il vient de démontrer.
+    const buts = S.s.buts || [{ but: S.s.but, question: S.s.question }];
+    const acquis = S.hyp.slice();
+    const blocs = [];
+    for (const b of buts) {
+      const bout = R.chercher(acquis, b.but, S.ctx);
+      if (!bout || !bout.length) return null;
+      blocs.push({ suite: bout, question: b.question });
+      for (const n of bout) acquis.push(n.fait);
+    }
+    const suite = [].concat(...blocs.map(b => b.suite));
+    if (!suite.length) return null;
 
     // Ce que l'énoncé a donné s'écrit comme sur la feuille, partout où cela
     // reparaît ; ce que la chaîne a calculé s'écrit en fraction, partout.
@@ -92,25 +112,31 @@
     const dire = f => ecrire(f, donnees.has(R.cleFait(f)) ? 'donnee' : null);
     const etapes = [['المعطيات', S.hyp.map(f => dire(f)).join('  و  ')]];
     const dites = new Set();
-    for (const n of suite) {
-      if (!dites.has(n.regle.cle)) {
-        dites.add(n.regle.cle);
-        etapes.push(['القاعدة', n.regle.nom]);
+    blocs.forEach((bloc, i) => {
+      // La correction est numérotée comme l'énoncé : l'élève doit pouvoir
+      // ramener chaque réponse à sa question.
+      if (blocs.length > 1) etapes.push([(i + 1) + ')', bloc.question]);
+      for (const n of bloc.suite) {
+        if (!dites.has(n.regle.cle)) {
+          dites.add(n.regle.cle);
+          etapes.push(['القاعدة', n.regle.nom]);
+        }
+        // Le calcul tient dans la même ligne que la déduction : séparé, il
+        // arriverait APRÈS la conclusion, ce qui est l'ordre inverse de celui
+        // où l'on pense.
+        etapes.push(['نطبّق', n.depuis.map(f => dire(f)).join('  و  ') + '  إذن  '
+                     + dire(n.fait) + calculDe(n, S, donnees)]);
       }
-      // Le calcul tient dans la même ligne que la déduction : séparé, il
-      // arriverait APRÈS la conclusion, ce qui est l'ordre inverse de celui
-      // où l'on pense.
-      etapes.push(['نطبّق', n.depuis.map(f => dire(f)).join('  و  ') + '  إذن  '
-                   + dire(n.fait) + calculDe(n, S, donnees)]);
-    }
-    etapes.push(['النتيجة', dire(suite[suite.length - 1].fait)]);
+      etapes.push(['النتيجة', dire(bloc.suite[bloc.suite.length - 1].fait)]);
+    });
     if (etapes.length < 4) return null;
 
     const g = k => F.ecrireRacine(S.val(k), 'donnee');
     const enonce = (S.s.texte ? S.s.texte(g) : []).slice();
     const svg = figure(S);
     if (svg) enonce.push({ svg });
-    enonce.push(S.s.question);
+    if (buts.length > 1) buts.forEach((b, i) => enonce.push((i + 1) + ') ' + b.question));
+    else enonce.push(S.s.question);
 
     return {
       enonce, etapes,
@@ -121,7 +147,7 @@
         K: String(S.P.k.n) + '/' + String(S.P.k.d),
         points: Object.fromEntries(Object.keys(S.pts).map(n =>
           [n, [S.pts[n].x.n + '/' + S.pts[n].x.d, S.pts[n].y.n + '/' + S.pts[n].y.d]])),
-        hyp: S.hyp.map(sec), but: sec(S.s.but),
+        hyp: S.hyp.map(sec), but: sec(buts[buts.length - 1].but),
         etapesCalcul: suite.map(n => ({
           regle: n.regle.cle, fait: sec(n.fait), depuis: n.depuis.map(sec)
         })),

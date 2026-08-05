@@ -507,13 +507,18 @@
       para: [[dr('D', 'E'), dr('B', 'C')], [dr('E', 'F'), dr('A', 'B')]],
       entre: [['A', 'E', 'C'], ['B', 'F', 'C']],
       donne: [seg('A', 'B'), seg('A', 'D'), seg('A', 'C'), seg('B', 'C')],
-      but: ['lg2', seg('B', 'F'), null],
+      // LES QUATRE QUESTIONS DE LA FEUILLE, dans son ordre. Le maître ne
+      // demande pas BF d'un coup : il fait passer par AE, puis CE, puis CF.
+      // N'en garder que la dernière, c'était couper son exercice.
+      buts: [{ but: ['lg2', seg('A', 'E'), null], question: 'أحسب AE.' },
+             { but: ['lg2', seg('C', 'E'), null], question: 'استنتج CE.' },
+             { but: ['lg2', seg('C', 'F'), null], question: 'أحسب CF.' },
+             { but: ['lg2', seg('B', 'F'), null], question: 'استنتج BF.' }],
       texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
                    + g(seg('A', 'C')) + ' و BC = ' + g(seg('B', 'C')) + '.',
                    'D نقطة من [AB] بحيث AD = ' + g(seg('A', 'D')) + '.',
                    'الموازي لـ (BC) المارّ من D يقطع (AC) في E،',
                    'و الموازي لـ (AB) المارّ من E يقطع (BC) في F.'],
-      question: 'أحسب المسافة BF.',
       figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'E'], ['E', 'F']] },
       indice: 'طالس مرّتين : أوّلا في ABC، ثمّ في CAB ؛ و CE = CA − AE'
     };
