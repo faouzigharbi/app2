@@ -387,6 +387,42 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LA PROJECTION PARALLÈLE — THALES0 2014 ex1
+  //
+  // « لتكن I مسقط C على (BD) وفقا لمنحى (AB) » : le projeté de C sur (BD)
+  // SELON LA DIRECTION (AB), qui n'est pas le projeté orthogonal.
+  //
+  // On l'avait mise de côté comme demandant une notion neuve. C'était faux :
+  // dire que I est le projeté de C sur (BD) selon (AB), c'est exactement dire
+  // que I est sur (DB), que C est sur (DA), et que (IC) // (AB) — une
+  // configuration de Thalès de sommet D, que le moteur sait déjà traiter. Il
+  // n'y avait pas de règle à ajouter, seulement une CONSTRUCTION.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex1', 'projection-parallele', 'difficile', () => {
+    const b = F.ent(2, 9), d = F.ent(1, 5), c = d + F.ent(1, 6);
+    // (DA) portée par l'axe des ordonnées, (AB) par celui des abscisses :
+    // le projeté selon (AB) est alors le point de (DB) à la hauteur de C.
+    const A = F.pt(0, 0), B = F.pt(b, 0), C = F.pt(F.Q0, F.q(c)), D = F.pt(F.Q0, F.q(d));
+    const I2 = F.intersection(D, B, C, F.translate(C, A, B));
+    return {
+      K: 1, points: { A, B, C, D, I: I2 },
+      thales: [{ S: 'D', B: 'B', C: 'A', M: 'I', N: 'C' }],
+      para: [[dr('I', 'C'), dr('A', 'B')]],
+      donne: [seg('A', 'B'), seg('D', 'A'), seg('D', 'C')],
+      but: ['lg2', seg('I', 'C'), null],
+      texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
+                   + g(seg('A', 'C')) + '، و D نقطة من [AC] بحيث AD = '
+                   + g(seg('A', 'D')) + '.',
+                   'I هي مسقط C على (BD) وفقا لمنحى (AB).'],
+      question: 'أحسب المسافة IC.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'B'], ['I', 'C']],
+                droites: [['D', 'B']] },
+      indice: 'المسقط وفقا لمنحى (AB) يعني (IC) // (AB) : طالس في المثلّث DAB'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // LE TRAPÈZE ET SES DIAGONALES — THALES0 2014 ex3 et ex5
   //
   // « MNPQ شبه منحرف قاعدتاه [MN] و [PQ] و I نقطة تقاطع قطريه ». Les deux

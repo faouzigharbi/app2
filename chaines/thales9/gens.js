@@ -19,6 +19,7 @@
     ['thales-parallele', 'عكس طالس — إثبات التوازي'],
     ['milieux', 'مبرهنة المنتصفين'],
     ['trapeze', 'شبه المنحرف و قطراه'],
+    ['projection-parallele', 'المسقط وفقا لمنحى'],
     ['quadrilatere', 'طبيعة رباعي'],
     ['centre-gravite', 'مركز ثقل مثلّث'],
     ['orthocentre', 'المركز القائم لمثلّث'],
