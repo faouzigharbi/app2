@@ -719,6 +719,29 @@
   function rendre(brut) {
     return {
       operation: brut.enonce.map(rendreMath).join('<br>'),
+      // LA DIFFICULTÉ SE COMPTE EN NOTIONS, pas en étapes.
+      //
+      // Une notion, c'est une FORMULE APPLIQUÉE. Un exercice qui applique
+      // Pythagore trois fois n'est pas difficile — il est long ; celui qui
+      // enchaîne Pythagore, la relation métrique et le cercle circonscrit
+      // l'est, parce qu'il faut savoir laquelle choisir à chaque fois.
+      //
+      //     1 notion → facile · 2 ou 3 → moyen · 4 et plus → difficile
+      //
+      // Les chapitres de géométrie nomment la règle sous « القاعدة » : c'est
+      // sa VALEUR qui distingue. Les chapitres de calcul la nomment dans
+      // l'étiquette même — « نفس الأساس », « نجمع الأسّة ». On prend donc l'une
+      // ou l'autre, et l'on écarte ce qui n'est qu'ossature.
+      difficulte: (() => {
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|^[0-9]+\)$/;
+        const notions = new Set();
+        for (const e of (brut.etapes || [])) {
+          if (CADRE.test(e[0])) continue;
+          notions.add(/القاعدة/.test(e[0]) ? String(e[1]) : String(e[0]));
+        }
+        const n = notions.size;
+        return n <= 1 ? 'facile' : (n <= 3 ? 'moyen' : 'difficile');
+      })(),
       steps: brut.etapes.map(e => rendreMath(e[0]) + ': ' + rendreMath(e[1])),
       hint: rendreMath(brut.indice)
     };

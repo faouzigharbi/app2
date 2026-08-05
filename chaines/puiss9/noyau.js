@@ -469,17 +469,28 @@
       hint: brut.indice,
       // LA PROVENANCE VOYAGE AVEC L'EXERCICE — voir ci-dessus.
       source: brut.source || '',
-// LA DIFFICULTÉ SE LIT SUR LA CORRECTION, elle ne se décrète pas.
+      // LA DIFFICULTÉ SE COMPTE EN NOTIONS, pas en étapes.
       //
-      // Ce qui fait qu'un exercice est dur, c'est la LONGUEUR du chemin —
-      // combien d'étapes l'élève doit franchir. Deux exercices d'une même
-      // rubrique n'ont pas la même chaîne, et l'étiquette posée sur la
-      // rubrique mentait donc pour l'un des deux. On la compte ici, sur la
-      // correction elle-même, et le seuil vient de la répartition réelle des
-      // 4767 exercices : trois quarts tiennent entre quatre et six étapes.
+      // Une notion, c'est une FORMULE APPLIQUÉE. Un exercice qui applique
+      // Pythagore trois fois n'est pas difficile — il est long ; celui qui
+      // enchaîne Pythagore, la relation métrique et le cercle circonscrit
+      // l'est, parce qu'il faut savoir laquelle choisir à chaque fois.
+      //
+      //     1 notion → facile · 2 ou 3 → moyen · 4 et plus → difficile
+      //
+      // Les chapitres de géométrie nomment la règle sous « القاعدة » : c'est
+      // sa VALEUR qui distingue. Les chapitres de calcul la nomment dans
+      // l'étiquette même — « نفس الأساس », « نجمع الأسّة ». On prend donc l'une
+      // ou l'autre, et l'on écarte ce qui n'est qu'ossature.
       difficulte: (() => {
-        const n = (brut.etapes || []).length;
-        return n <= 4 ? 'facile' : (n <= 6 ? 'moyen' : 'difficile');
+        const CADRE = /المعطيات|النتيجة|نطبّق|نحسب|^[0-9]+\)$/;
+        const notions = new Set();
+        for (const e of (brut.etapes || [])) {
+          if (CADRE.test(e[0])) continue;
+          notions.add(/القاعدة/.test(e[0]) ? String(e[1]) : String(e[0]));
+        }
+        const n = notions.size;
+        return n <= 1 ? 'facile' : (n <= 3 ? 'moyen' : 'difficile');
       })()
     };
   }
