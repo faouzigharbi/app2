@@ -555,33 +555,73 @@
   // et elle attendait qu'on sache ADDITIONNER deux rapports.
   // ═══════════════════════════════════════════════════════════════════════
 
-  item('THALES0 2014 ex5', 'relation-rapports', 'difficile', () => {
-    const ab = F.ent(2, 9), cd = F.ent(2, 9), ad = F.ent(3, 9);
+  // SES SIX QUESTIONS, ET NON LA TROISIÈME SEULE. On n'en gardait qu'une —
+  // la relation harmonique — parce que le moteur ne savait pas en tirer EF,
+  // ni prolonger jusqu'à G, H et AH. Il le sait ; l'exercice reprend sa
+  // longueur, et sa dernière question — AH = 6 — est une équation dont
+  // l'inconnue est des deux côtés, comme le menhir.
+  item('THALES0 2014 ex5 — ستّ مراحل', 'probleme', 'difficile', () => {
+    // AB < CD : le point H, rencontre des côtés non parallèles, tombe alors
+    // au-delà de A, et le rapport du partage extérieur reste inférieur à 1.
+    const ab = F.ent(2, 7), cd = ab + F.ent(1, 6), ad = F.ent(3, 9);
     const A = F.pt(0, 0), B = F.pt(ab, 0);
     const D = F.pt(F.Q0, F.q(-ad)), C = F.pt(F.q(cd), F.q(-ad));
     const E = F.intersection(A, C, B, D);
     const Fp = F.pt(F.Q0, E.y);                  // le projeté de E sur (AD)
+    const G = F.intersection(E, Fp, B, C);       // (EF) recoupe (BC) en G
+    const H = F.intersection(A, D, B, C);        // (AD) et (BC) se rencontrent
+    if (!E || !G || !H) throw new Error('pose dégénérée');
+    // HA/HF = AB/FG, et FG = 2·EF = 2·AB·CD/(AB + CD) : le rapport vaut donc
+    // (AB + CD)/(2·CD) — on le calcule ici pour que l'énoncé le porte.
+    const rapHF = F.q(ab + cd, 2 * cd);
     return {
-      K: 1, points: { A, B, C, D, E, F: Fp },
-      para: [[dr('A', 'B'), dr('D', 'C')], [dr('E', 'F'), dr('A', 'B')]],
-      relations: [{ op: 'somme',
-                    rapports: [['E', 'F', 'A', 'B'], ['E', 'F', 'C', 'D']],
-                    valeur: F.Q1,
-                    depuis: [[dr('A', 'B'), dr('D', 'C')]] }],
+      K: 1, points: { A, B, C, D, E, F: Fp, G, H },
+      // Le trapèze est droit en A et en D : (EF), perpendiculaire à (AD)
+      // comme (AB) et (CD), leur est donc parallèle — et (FG) est la même
+      // droite que (EF), puisque G est dessus.
+      para: [[dr('A', 'B'), dr('D', 'C')], [dr('E', 'F'), dr('A', 'B')],
+             [dr('E', 'F'), dr('C', 'D')], [dr('F', 'G'), dr('D', 'C')]],
+      thales: [{ S: 'D', B: 'B', C: 'A', M: 'E', N: 'F' },
+               { S: 'A', B: 'C', C: 'D', M: 'E', N: 'F' },
+               { S: 'H', B: 'D', C: 'C', M: 'A', N: 'B' },
+               { S: 'H', B: 'D', C: 'C', M: 'F', N: 'G' }],
+      entre: [['A', 'F', 'D'], ['F', 'E', 'G'], ['H', 'A', 'D'], ['H', 'F', 'D']],
+      relations: [
+        { op: 'somme', rapports: [['E', 'F', 'A', 'B'], ['E', 'F', 'C', 'D']],
+          valeur: F.Q1, depuis: [[dr('A', 'B'), dr('D', 'C')]] },
+        { op: 'somme', rapports: [['E', 'G', 'A', 'B'], ['E', 'G', 'C', 'D']],
+          valeur: F.Q1, depuis: [[dr('A', 'B'), dr('D', 'C')]] },
+        // HA/HD = AB/DC et HF/HD = FG/DC : le quotient des deux donne
+        // HA/HF = AB/FG, la cinquième question du maître.
+        { op: 'produit', rapports: [['H', 'A', 'H', 'F']], valeur: rapHF,
+          longueurs: [seg('A', 'B'), seg('F', 'G')],
+          depuis: [[dr('F', 'G'), dr('D', 'C')], [dr('A', 'B'), dr('D', 'C')]] }
+      ],
       donne: [seg('A', 'B'), seg('C', 'D'), seg('A', 'D')],
-      // Le rapport s'écrit en QUATRE morceaux — E|F|A|B —, comme la règle le
-      // produit : deux points au numérateur, deux au dénominateur. Écrit en
-      // deux (« EF|AB »), le but ne rejoignait jamais la conclusion.
-      but: ['relation', 'somme', 'E|F|A|B;E|F|C|D', '1/1'],
+      buts: [
+        { but: ['prop', 'DE|DB', 'DF|DA', 'EF|BA'],
+          question: 'بيّن أنّ DE/DB = DF/DA = EF/BA.' },
+        { but: ['prop', 'AE|AC', 'AF|AD', 'EF|CD'],
+          question: 'بيّن أنّ AE/AC = AF/AD = EF/CD.' },
+        { but: ['relation', 'somme', 'E|F|A|B;E|F|C|D', '1/1'],
+          question: 'استنتج أنّ EF/AB + EF/CD = 1.' },
+        { but: ['lg2', seg('E', 'F'), null], question: 'استنتج EF.' },
+        { but: ['lg2', seg('E', 'G'), null], question: 'أحسب EG بنفس الطريقة.' },
+        { but: ['milieu', 'E', 'F', 'G'], question: 'بيّن أنّ E هي منتصف [FG].' },
+        { but: ['lg2', seg('F', 'G'), null], question: 'أحسب FG.' },
+        { but: ['relation', 'produit', 'H|A|H|F', rapHF.n + '/' + rapHF.d],
+          question: 'بيّن أنّ HA/HF = AB/FG.' },
+        { but: ['lg2', seg('A', 'H'), null], question: 'أحسب AH.' }
+      ],
       texte: g => ['ABCD شبه منحرف قاعدتاه (AB) و (CD)، قائم في A و في D،',
                    'حيث AB = ' + g(seg('A', 'B')) + ' و CD = ' + g(seg('C', 'D'))
                    + ' و AD = ' + g(seg('A', 'D')) + '.',
-                   'E نقطة تقاطع القطرين (AC) و (BD)، و F المسقط العمودي لـ E على (AD).'],
-      question: 'بيّن أنّ EF/AB + EF/CD = 1.',
+                   'E نقطة تقاطع القطرين (AC) و (BD)، و F المسقط العمودي لـ E على (AD).',
+                   'G نقطة تقاطع (EF) و (BC)، و H نقطة تقاطع (AD) و (BC).'],
       figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'],
-                           ['A', 'C'], ['B', 'D'], ['E', 'F']],
+                           ['A', 'C'], ['B', 'D'], ['F', 'G'], ['H', 'D'], ['H', 'C']],
                 angles: [['B', 'A', 'D'], ['A', 'D', 'C']] },
-      indice: 'طالس مرّتين : EF/AB dans le triangle DAB، و EF/CD dans CDA'
+      indice: 'طالس مرّتين للنّسبتين، ثمّ المجموع يعطي EF ؛ و AH مجهول في الطّرفين'
     };
   });
 

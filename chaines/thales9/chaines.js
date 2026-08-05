@@ -281,6 +281,11 @@
         ? 'donnee' : null);
     };
     try {
+      // « EF × (1/AB + 1/CD) = 1 » : le calcul du maître, écrit tel quel.
+      if (c[1] === 'somme-un') {
+        return '  ، لأنّ ' + n.fait[1] + ' × ( '
+          + c.slice(2).map(k => F.ecrireRapport('1', k)).join(' + ') + ' ) = 1';
+      }
       if (c[3] === 'somme') return '  ، لأنّ ' + n.fait[1] + '² = ' + e(c[0]) + '² + ' + e(c[1]) + '²';
       if (c[3] === 'diff') return '  ، لأنّ ' + n.fait[1] + '² = ' + e(c[0]) + '² − ' + e(c[1]) + '²';
       if (c[3] === 'verif') return '  ، لأنّ ' + e(c[2]) + '² = ' + e(c[0]) + '² + ' + e(c[1]) + '²';

@@ -439,6 +439,46 @@
       }
     },
 
+    // ── B ter bis. LA SOMME DE DEUX RAPPORTS QUI VAUT UN ──────────────────
+    //
+    // THALES0 2014 ex5 : on démontre d'abord EF/AB + EF/CD = 1, puis le
+    // maître écrit « استنتج أنّ EF = 15/8 ». C'est une déduction, pas une
+    // évidence : les deux rapports ont le MÊME numérateur, donc
+    //
+    //     EF × (1/AB + 1/CD) = 1     d'où     EF = 1/(1/AB + 1/CD).
+    //
+    // Le moteur savait établir la relation ; il ne savait pas en tirer la
+    // longueur, et l'exercice s'arrêtait à sa troisième question.
+    {
+      cle: 'rapport-par-somme',
+      nom: 'إذا كان مجموع نسبتين لهما نفس البسط يساوي 1، أمكن حساب هذا البسط',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const r of f.relation) {                 // ['relation', op, liste, val]
+          if (r[1] !== 'somme' || r[3] !== '1/1') continue;
+          const parts = r[2].split(';').map(x => x.split('|'));
+          const num = seg(parts[0][0], parts[0][1]);
+          if (!parts.every(p => seg(p[0], p[1]) === num)) continue;
+          if (f.lg2.has(num)) continue;
+          let somme = F.Q0, bon = true;
+          const dep = [r];
+          for (const p of parts) {
+            const k = seg(p[2], p[3]);
+            const v = f.lg2.get(k);
+            const L = v ? F.racQ(v) : null;
+            if (!L || F.qNul(L)) { bon = false; break; }
+            somme = F.qAdd(somme, F.qDiv(F.Q1, L));
+            dep.push(['lg2', k, v]);
+          }
+          if (!bon || F.qNul(somme)) continue;
+          const x = F.qDiv(F.Q1, somme);
+          out.push({ but: ['lg2', num, F.qMul(x, x)], depuis: dep,
+                     calcul: [num, 'somme-un'].concat(parts.map(p => seg(p[2], p[3]))) });
+        }
+        return out;
+      }
+    },
+
     // ── B quater. PARTAGER UN SEGMENT DANS UN RAPPORT DONNÉ ───────────────
     //
     // « أحسب IN و IQ » : on connaît le rapport IN/IQ par Thalès, et la somme
