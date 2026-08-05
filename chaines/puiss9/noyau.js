@@ -435,7 +435,13 @@
   const echapper = s => String(s).replace(/&/g, '&amp;')
     .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   // Un exposant peut être négatif ou parenthésé : « 5^-3 », « 5^(-3) ».
-  const exposants = s => String(s).replace(/\^\(?(-?\d+)\)?/g, '<sup>$1</sup>');
+  //
+  // LES DEUX PARENTHÈSES VONT ENSEMBLE, ou aucune. Écrite « \(?…\)? », la
+  // règle acceptait une parenthèse fermante sans ouvrante — et mangeait alors
+  // celle de la BASE : « (2^4)^11 » s'affichait « (2⁴¹¹ », sans fermeture et
+  // avec deux exposants collés. L'élève lisait une expression qui n'existe pas.
+  const exposants = s => String(s).replace(/\^\((-?\d+)\)|\^(-?\d+)/g,
+    (m, entre, nu) => '<sup>' + (entre === undefined ? nu : entre) + '</sup>');
   const bloc = s => '<span dir="ltr" class="expr">'
     + exposants(fraction(echapper(s))) + '</span>';
 

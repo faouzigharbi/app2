@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مولّد أوراق المراجعة — devoirati</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent:#6c63ff; --texte:#2c3e50; --muet:#8798ab;
+    --bord:#e4e9f0; --fond:#f6f8fb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body { font-family:'Cairo','Segoe UI',Tahoma,sans-serif; color:var(--texte);
+         background:var(--fond); direction:rtl; padding:18px }
+  .ecran, .feuille { max-width:860px; margin:0 auto }
+
+  /* ─────────── L'ÉCRAN DE CHOIX ─────────── */
+  .titre { text-align:center; margin-bottom:14px }
+  .titre h1 { font-size:1.5em; color:var(--accent) }
+  .titre p  { color:var(--muet); font-size:.95em; margin-top:4px }
+
+  .carte { background:#fff; border:1px solid var(--bord); border-radius:14px;
+           padding:16px 18px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,.04) }
+  .carte h2 { font-size:1.05em; color:var(--accent); margin-bottom:10px }
+
+  .rubriques { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+               gap:8px }
+  label.rub { display:flex; align-items:center; gap:9px; padding:9px 11px;
+              border:1.5px solid var(--bord); border-radius:10px; cursor:pointer;
+              background:#fcfdff; transition:.12s; font-size:.95em }
+  label.rub:hover { border-color:#c3cfdd }
+  label.rub input { accent-color:var(--accent); width:17px; height:17px; cursor:pointer }
+  label.rub.coche { border-color:var(--accent); background:#f5f4ff }
+  label.rub .n { margin-inline-start:auto; color:var(--muet); font-size:.82em }
+
+  .puces { display:flex; flex-wrap:wrap; gap:8px }
+  .puce { padding:8px 15px; border:1.5px solid var(--bord); border-radius:20px;
+          cursor:pointer; background:#fcfdff; font-size:.92em; user-select:none }
+  .puce.on { border-color:var(--accent); background:var(--accent); color:#fff }
+
+  .rangee { display:flex; flex-wrap:wrap; gap:22px; align-items:center }
+  .rangee > div { display:flex; align-items:center; gap:9px }
+  .rangee b { font-weight:600; font-size:.95em }
+
+  .boutons { display:flex; gap:10px; flex-wrap:wrap; margin-top:4px }
+  button.go { flex:1; min-width:180px; padding:13px; border:0; border-radius:11px;
+              background:var(--accent); color:#fff; font-family:inherit;
+              font-size:1.02em; font-weight:600; cursor:pointer }
+  button.go:hover { filter:brightness(1.07) }
+  button.sec { background:#fff; color:var(--accent); border:1.5px solid var(--accent) }
+  button:disabled { opacity:.45; cursor:not-allowed }
+  .avis { color:var(--muet); font-size:.88em; margin-top:9px; text-align:center }
+
+  /* ─────────── LA FEUILLE ─────────── */
+  .feuille { background:#fff; border:1px solid var(--bord); border-radius:14px;
+             padding:26px 30px; margin-top:16px }
+  .feuille:empty { display:none }
+  .entete { border-bottom:2px solid var(--texte); padding-bottom:10px; margin-bottom:8px }
+  .entete h2 { font-size:1.25em }
+  .entete .lignes { display:flex; gap:26px; flex-wrap:wrap; margin-top:9px;
+                    font-size:.93em; color:#4a5b6e }
+  .entete .lignes span { border-bottom:1px dotted #93a4b6; min-width:160px;
+                         padding-bottom:2px }
+
+  .exo { padding:14px 0; border-bottom:1px dashed var(--bord); break-inside:avoid }
+  .exo:last-child { border-bottom:0 }
+  .exo .tete { display:flex; align-items:baseline; gap:10px; margin-bottom:8px }
+  .exo .num { font-weight:700; color:var(--accent); font-size:1.05em; white-space:nowrap }
+  .exo .rub { color:var(--muet); font-size:.82em; margin-inline-start:auto }
+  .exo .enonce { font-size:1.05em; line-height:2 }
+  .espace { border-inline-start:2px solid #eef1f6; margin:10px 6px 0 }
+
+  .separation { margin:26px 0 12px; padding-top:12px; border-top:2px solid var(--texte);
+                font-weight:700; font-size:1.15em; break-before:page }
+  .corr { padding:11px 0; border-bottom:1px dashed var(--bord); break-inside:avoid }
+  .corr .num { font-weight:700; color:var(--accent) }
+  .corr ol { margin:7px 20px 0 0; line-height:1.95; font-size:.96em }
+  .corr .quoi { color:#5b6b7f; font-size:.9em }
+
+  /* ─── LE MATHÉMATIQUE AU MILIEU DE L'ARABE ───
+     Ces règles ne sont pas décoratives : sans elles, « 16/25 » s'affiche
+     « 1625 », parce que la fraction est empilée en deux <span> qui, faute
+     d'être mis en bloc, retombent l'un à côté de l'autre. Elles viennent
+     telles quelles des feuilles de style des fiches — même rendu, partout. */
+  .expr { display:inline-block; white-space:nowrap; line-height:1.35 }
+  span[dir=ltr] { unicode-bidi:isolate; font-family:'Segoe UI',Tahoma,sans-serif }
+  .frac { display:inline-block; vertical-align:middle; text-align:center;
+          margin:0 .12em; font-size:.92em }
+  .frac .num { display:block; border-bottom:1.6px solid currentColor;
+               padding:0 .3em 1px }
+  .frac .den { display:block; padding:1px .3em 0 }
+  .figure { display:block; margin:6px auto 10px; max-width:100%; height:auto }
+  sup { font-size:.72em }
+
+  /* ─────────── L'IMPRESSION ─────────── */
+  @page { size:A4; margin:14mm }
+  @media print {
+    body { background:#fff; padding:0 }
+    .ecran, .nonimprime { display:none !important }
+    .feuille { border:0; border-radius:0; padding:0; margin:0; max-width:none }
+    .exo, .corr { break-inside:avoid }
+    .separation { break-before:page }
+  }
+</style>
+</head>
+<body>
+
+<div class="ecran">
+  <div class="titre">
+    <h1>مولّد أوراق المراجعة</h1>
+    <p>اختر المواضيع، ثمّ عدد التمارين من كلّ موضوع — و اطبع الورقة</p>
+  </div>
+
+  <div class="carte">
+    <h2>المواضيع</h2>
+    <div id="chapitres"></div>
+  </div>
+
+  <div class="carte">
+    <h2>الإعدادات</h2>
+    <div class="rangee">
+      <div><b>المستوى</b>
+        <div class="puces" id="niv">
+          <span class="puce on" data-d="facile">سهل</span>
+          <span class="puce on" data-d="moyen">متوسّط</span>
+          <span class="puce on" data-d="difficile">صعب</span>
+        </div>
+      </div>
+      <div><b>من كلّ موضوع</b>
+        <div class="puces" id="nb">
+          <span class="puce" data-n="1">1</span>
+          <span class="puce on" data-n="2">2</span>
+          <span class="puce" data-n="3">3</span>
+        </div>
+      </div>
+      <div><b>الإصلاح</b>
+        <div class="puces" id="cor">
+          <span class="puce on" data-c="1">مع الإصلاح</span>
+          <span class="puce" data-c="0">بدونه</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carte">
+    <div class="boutons">
+      <button class="go" id="creer">أنشئ الورقة</button>
+      <button class="go sec" id="imprimer" disabled>اطبع / PDF</button>
+    </div>
+    <div class="avis" id="avis">لم تُختر أيّ رّبريكة بعد.</div>
+  </div>
+</div>
+
+<div class="feuille" id="feuille"></div>
+
+<script src="biblio-puiss9.js"></script>
+<script src="biblio-geometrie.js"></script>
+<script>
+(function () {
+  'use strict';
+  const TOUT = window.BIBLIO || [];
+  const DIFF = { facile:'سهل', moyen:'متوسّط', difficile:'صعب' };
+  const MOIS = ['جانفي','فيفري','مارس','أفريل','ماي','جوان',
+                'جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+  // ── L'inventaire : quels chapitres, quelles rubriques, combien dans chacune.
+  const chapitres = [];
+  for (const x of TOUT) {
+    let c = chapitres.find(k => k.cle === x.chapitre);
+    if (!c) { c = { cle:x.chapitre, nom:x.chapitreNom, rubriques:[] }; chapitres.push(c); }
+    let r = c.rubriques.find(k => k.cle === x.rubrique);
+    if (!r) { r = { cle:x.rubrique, nom:x.rubriqueNom, n:0 }; c.rubriques.push(r); }
+    r.n++;
+  }
+
+  const el = s => document.querySelector(s);
+  const zone = el('#chapitres');
+  if (!chapitres.length) {
+    zone.innerHTML = '<p style="color:#8798ab">المكتبة فارغة.</p>';
+  }
+  chapitres.forEach(c => {
+    const bloc = document.createElement('div');
+    bloc.innerHTML = '<h2 style="margin:14px 0 8px;font-size:1em">' + c.nom + '</h2>'
+      + '<div class="rubriques">' + c.rubriques.map(r =>
+        '<label class="rub"><input type="checkbox" data-c="' + c.cle + '" data-r="'
+        + r.cle + '"><span>' + r.nom + '</span><span class="n">' + r.n + '</span></label>'
+      ).join('') + '</div>';
+    zone.appendChild(bloc);
+  });
+
+  // ── Les puces : une seule choisie pour le nombre et le corrigé, plusieurs
+  //    pour le niveau — on ne veut pas d'une feuille sans aucun niveau.
+  function puces(id, unique) {
+    el('#' + id).addEventListener('click', e => {
+      const p = e.target.closest('.puce');
+      if (!p) return;
+      if (unique) [...p.parentNode.children].forEach(x => x.classList.remove('on'));
+      p.classList.toggle('on', unique ? true : !p.classList.contains('on'));
+      if (!unique && !p.parentNode.querySelector('.on')) p.classList.add('on');
+      etat();
+    });
+  }
+  puces('niv', false); puces('nb', true); puces('cor', true);
+  document.addEventListener('change', e => {
+    if (e.target.matches('.rub input')) {
+      e.target.closest('.rub').classList.toggle('coche', e.target.checked);
+      etat();
+    }
+  });
+
+  const choisies = () => [...document.querySelectorAll('.rub input:checked')]
+    .map(i => ({ c:i.dataset.c, r:i.dataset.r }));
+  const niveaux = () => [...document.querySelectorAll('#niv .puce.on')].map(p => p.dataset.d);
+  const parRub  = () => Number(el('#nb .puce.on').dataset.n);
+  const avecCor = () => el('#cor .puce.on').dataset.c === '1';
+
+  // Combien la bibliothèque peut RÉELLEMENT en fournir. Annoncer six et en
+  // servir cinq, c'est mentir sur la feuille : on compte case par case, et
+  // l'on dit quelles rubriques sont trop maigres pour la demande.
+  function etat() {
+    const sels = choisies(), n = parRub(), difficultes = niveaux();
+    el('#creer').disabled = !sels.length;
+    if (!sels.length) { el('#avis').textContent = 'لم تُختر أيّ رّبريكة بعد.'; return; }
+    let total = 0;
+    const maigres = [];
+    sels.forEach(sel => {
+      const dispo = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
+                        && difficultes.indexOf(x.difficulte) >= 0).length;
+      total += Math.min(dispo, n);
+      if (dispo < n) {
+        const c = chapitres.find(k => k.cle === sel.c);
+        maigres.push(c.rubriques.find(k => k.cle === sel.r).nom + ' (' + dispo + ')');
+      }
+    });
+    el('#avis').textContent = sels.length + ' مواضيع مختارة → ' + total + ' تمارين'
+      + (maigres.length ? ' — لا يكفي في: ' + maigres.join('، ') : '');
+  }
+  etat();
+
+  // ── LE TIRAGE. On garde en mémoire ce qui a déjà été servi : deux feuilles
+  //    de suite ne doivent pas se ressembler. Quand une case est épuisée, on
+  //    la rouvre — mieux vaut un exercice déjà vu qu'une feuille trop courte.
+  const VU = 'devoirati.revision.vus';
+  const lus = () => { try { return new Set(JSON.parse(localStorage.getItem(VU)) || []); }
+                      catch (e) { return new Set(); } };
+  const noter = s => { try { localStorage.setItem(VU, JSON.stringify([...s].slice(-4000))); }
+                       catch (e) {} };
+
+  function tirer(sel, n, difficultes, vus) {
+    const pool = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
+                                  && difficultes.indexOf(x.difficulte) >= 0);
+    if (!pool.length) return [];
+    let neufs = pool.filter(x => !vus.has(x.id));
+    if (neufs.length < n) { pool.forEach(x => vus.delete(x.id)); neufs = pool.slice(); }
+    const sac = [];
+    while (sac.length < n && neufs.length) {
+      const i = Math.floor(Math.random() * neufs.length);
+      sac.push(neufs.splice(i, 1)[0]);
+    }
+    sac.forEach(x => vus.add(x.id));
+    return sac;
+  }
+
+  el('#creer').addEventListener('click', () => {
+    const vus = lus();
+    const n = parRub(), difficultes = niveaux();
+    const exos = [];
+    choisies().forEach(sel => exos.push(...tirer(sel, n, difficultes, vus)));
+    noter(vus);
+    if (!exos.length) {
+      el('#avis').textContent = 'لا يوجد تمرين بهذا المستوى في المواضيع المختارة.';
+      return;
+    }
+    rendre(exos);
+    el('#imprimer').disabled = false;
+    el('#feuille').scrollIntoView({ behavior:'smooth' });
+  });
+
+  el('#imprimer').addEventListener('click', () => window.print());
+
+  function rendre(exos) {
+    const d = new Date();
+    const date = d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear();
+    const chapitresLus = [...new Set(exos.map(x => x.chapitreNom))].join(' — ');
+
+    let h = '<div class="entete"><h2>ورقة مراجعة — ' + chapitresLus + '</h2>'
+      + '<div class="lignes"><span>الاسم:</span><span>القسم:</span>'
+      + '<span>التاريخ: ' + date + '</span></div></div>';
+
+    exos.forEach((x, i) => {
+      // La place à écrire suit la longueur du corrigé : un exercice en six
+      // étapes ne se traite pas dans les trois lignes d'un exercice en deux.
+      const lignes = Math.max(3, x.correction.length);
+      h += '<div class="exo"><div class="tete">'
+        + '<span class="num">التمرين ' + (i + 1) + '</span>'
+        + '<span class="rub">' + x.rubriqueNom + ' · ' + (DIFF[x.difficulte] || '') + '</span>'
+        + '</div><div class="enonce">' + x.enonce + '</div>'
+        + '<div class="espace" style="height:' + (lignes * 1.7) + 'em"></div></div>';
+    });
+
+    if (avecCor()) {
+      h += '<div class="separation">الإصلاح</div>';
+      exos.forEach((x, i) => {
+        h += '<div class="corr"><span class="num">التمرين ' + (i + 1) + '</span>'
+          + '<ol>' + x.correction.map(e =>
+              '<li><span class="quoi">' + e.quoi + ' — </span>' + e.math + '</li>').join('')
+          + '</ol></div>';
+      });
+    }
+    el('#feuille').innerHTML = h;
+  }
+})();
+</script>
+</body>
+</html>

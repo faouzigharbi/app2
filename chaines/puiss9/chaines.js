@@ -1514,9 +1514,13 @@
     // question se pose sur les noms — « a × b » — alors que la chaîne travaille
     // sur ce qu'ils valent. L'élève voit donc l'énoncé du maître, et la
     // démonstration porte sur l'expression réelle.
+    // Quand la feuille ne NOMME pas la question — « احسب (2−√3)¹⁰³ : … » —, le
+    // nom est l'expression elle-même, et l'écrire des deux côtés du signe égal
+    // la ferait paraître deux fois sur la ligne. On ne l'écrit qu'une.
+    const nomme = item.defs && item.nom && item.nom.trim() !== item.e.trim();
     const tete = item.defs
       ? [item.defs, (forme ? 'أكتب في صيغة قوّة لعدد حقيقي: ' : 'أحسب: ')
-                    + item.nom + ' = ' + item.e]
+                    + (nomme ? item.nom + ' = ' : '') + item.e]
       : [forme ? 'أكتب في صيغة قوّة لعدد صحيح طبيعي:' : 'أحسب:', 'A = ' + item.e];
     return {
       enonce: tete,
