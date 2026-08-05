@@ -183,51 +183,47 @@
 <div class="feuille" id="feuille"></div>
 
 <!-- BIBLIOS -->
-<script src="biblio-addz8.js"></script>
-<script src="biblio-angles7.js"></script>
-<script src="biblio-arith9.js"></script>
-<script src="biblio-diviseurs7.js"></script>
-<script src="biblio-divisibilite8.js"></script>
-<script src="biblio-droites7.js"></script>
-<script src="biblio-encadrement.js"></script>
-<script src="biblio-expr7.js"></script>
-<script src="biblio-factq8.js"></script>
-<script src="biblio-gradue8.js"></script>
-<script src="biblio-naturels7.js"></script>
-<script src="biblio-pgcd7.js"></script>
-<script src="biblio-premiers7.js"></script>
-<script src="biblio-produitq8.js"></script>
-<script src="biblio-proport9.js"></script>
-<script src="biblio-puiss9.js"></script>
-<script src="biblio-radic9.js"></script>
-<script src="biblio-rationnels8.js"></script>
-<script src="biblio-reel9.js"></script>
-<script src="biblio-reels.js"></script>
-<script src="biblio-revision2.js"></script>
-<script src="biblio-serie1.js"></script>
-<script src="biblio-serie2.js"></script>
-<script src="biblio-serie3.js"></script>
-<script src="biblio-sommeq8.js"></script>
-<script src="biblio-thales9.js"></script>
-<script src="biblio-perso.js"></script>
+<script src="index-biblio.js"></script>
 <!-- /BIBLIOS -->
 <script>
 (function () {
   'use strict';
-  const TOUT = window.BIBLIO || [];
+  // LES EXERCICES N'ARRIVENT QU'AU TIRAGE. Le sélecteur se bâtit sur un
+  // manifeste de 25 Ko ; les 8,7 Mo de bibliothèques attendaient jusqu'ici
+  // d'être tous analysés avant le premier affichage — vingt secondes d'écran
+  // blanc pour un élève qui va cocher deux rubriques.
+  const INV = window.INVENTAIRE || [];
+  // Chaque bibliothèque fait « window.BIBLIO = (window.BIBLIO||[]).concat(…) » :
+  // elle REMPLACE le tableau. Garder une référence figée reviendrait à tirer
+  // dans celui d'avant le chargement — donc dans le vide.
+  const TOUT = () => (window.BIBLIO || []);
   const DIFF = { facile:'سهل', moyen:'متوسّط', difficile:'صعب' };
   const MOIS = ['جانفي','فيفري','مارس','أفريل','ماي','جوان',
                 'جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
   // ── L'inventaire : quels chapitres, quelles rubriques, combien dans chacune.
-  const chapitres = [];
-  for (const x of TOUT) {
-    let c = chapitres.find(k => k.cle === x.chapitre);
-    if (!c) { c = { cle:x.chapitre, nom:x.chapitreNom, niveau:x.niveau,
-                    rubriques:[], n:0 }; chapitres.push(c); }
-    let r = c.rubriques.find(k => k.cle === x.rubrique);
-    if (!r) { r = { cle:x.rubrique, nom:x.rubriqueNom, n:0 }; c.rubriques.push(r); }
-    r.n++; c.n++;
+  const chapitres = INV.map(c => ({
+    cle: c.cle, nom: c.nom, niveau: c.niveau, fichier: c.fichier,
+    rubriques: c.rubriques.map(r => ({ cle:r.cle, nom:r.nom, n:r.n, diff:r.diff })),
+    n: c.rubriques.reduce((t, r) => t + r.n, 0)
+  }));
+
+  // ── LE CHARGEMENT À LA DEMANDE ──────────────────────────────────────────
+  //
+  // fetch() est interdit sur file:// — c'est pourquoi les bibliothèques sont
+  // des .js et non des .json. Injecter une balise <script>, en revanche, reste
+  // permis : c'est ainsi qu'on va les chercher, une par chapitre choisi.
+  const CHARGES = new Set();
+  function charger(fichiers) {
+    const restants = fichiers.filter(f => f && !CHARGES.has(f));
+    if (!restants.length) return Promise.resolve();
+    return Promise.all(restants.map(f => new Promise((ok, ko) => {
+      const t = document.createElement('script');
+      t.src = f;
+      t.onload = () => { CHARGES.add(f); ok(); };
+      t.onerror = () => ko(new Error(f));
+      document.head.appendChild(t);
+    })));
   }
 
   const el = s => document.querySelector(s);
@@ -308,8 +304,14 @@
     let total = 0;
     const maigres = [];
     sels.forEach(sel => {
-      const dispo = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
-                        && eligible(x, difficultes)).length;
+      // Le compte vient du manifeste : les exercices ne sont pas encore là.
+      const ch = chapitres.find(k => k.cle === sel.c);
+      const ru = ch && ch.rubriques.find(k => k.cle === sel.r);
+      let dispo = 0;
+      if (ru) for (const d of Object.keys(ru.diff)) {
+        // Une fiche sans difficulté déclarée se tire à tous les niveaux.
+        if (!d || difficultes.indexOf(d) >= 0) dispo += ru.diff[d];
+      }
       total += Math.min(dispo, n);
       if (dispo < n) {
         const c = chapitres.find(k => k.cle === sel.c);
@@ -337,7 +339,7 @@
     !x.difficulte || difficultes.indexOf(x.difficulte) >= 0;
 
   function tirer(sel, n, difficultes, vus) {
-    const pool = TOUT.filter(x => x.chapitre === sel.c && x.rubrique === sel.r
+    const pool = TOUT().filter(x => x.chapitre === sel.c && x.rubrique === sel.r
                                   && eligible(x, difficultes));
     if (!pool.length) return [];
     let neufs = pool.filter(x => !vus.has(x.id));
@@ -352,6 +354,21 @@
   }
 
   el('#creer').addEventListener('click', () => {
+    const sels = choisies();
+    const besoin = [...new Set(sels.map(sel => {
+      const c = chapitres.find(k => k.cle === sel.c);
+      return c && c.fichier;
+    }))];
+    el('#creer').disabled = true;
+    const avant = el('#avis').textContent;
+    el('#avis').textContent = 'جارٍ التحميل…';
+    charger(besoin).then(composer).catch(e => {
+      el('#avis').textContent = 'تعذّر تحميل المكتبة : ' + e.message;
+      el('#creer').disabled = false;
+    });
+    function composer() {
+    el('#creer').disabled = false;
+    el('#avis').textContent = avant;
     const vus = lus();
     const n = parRub(), difficultes = niveaux();
     const exos = [];
@@ -364,6 +381,7 @@
     rendre(exos);
     el('#imprimer').disabled = false;
     el('#feuille').scrollIntoView({ behavior:'smooth' });
+    }
   });
 
   el('#imprimer').addEventListener('click', () => window.print());
@@ -407,11 +425,20 @@
     el('#feuille').innerHTML = h;
   }
 
-  // La police, tout à la fin : plus rien ne l'attend.
-  const police = document.createElement('link');
-  police.rel = 'stylesheet';
-  police.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap';
-  document.head.appendChild(police);
+  // LA POLICE SE DEMANDE APRÈS « load », JAMAIS AVANT.
+  //
+  // Une feuille de style retarde l'événement « load » tant qu'elle n'a pas
+  // répondu. Hors ligne, la requête met treize secondes à échouer : la page
+  // était utilisable en 136 ms, mais le navigateur gardait sa roue qui tourne
+  // tout ce temps — et un élève qui voit tourner croit que c'est cassé.
+  // Posée après « load », elle n'a plus rien à retarder ; si elle n'arrive
+  // jamais, l'arabe s'affiche dans la police du système, et c'est tout.
+  addEventListener('load', () => {
+    const police = document.createElement('link');
+    police.rel = 'stylesheet';
+    police.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap';
+    document.head.appendChild(police);
+  });
 })();
 </script>
 </body>

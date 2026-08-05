@@ -196,7 +196,47 @@ function recoudre() {
   const tous = fs.readdirSync(ICI).filter(x => /^biblio-.*\.js$/.test(x)).sort();
   const fichiers = tous.filter(x => x !== 'biblio-perso.js')
     .concat(tous.includes('biblio-perso.js') ? ['biblio-perso.js'] : []);
-  const bloc = fichiers.map(f => '<script src="' + f + '"></script>').join('\n');
+  // ── L'INVENTAIRE SÉPARÉ DES EXERCICES ────────────────────────────────
+  //
+  // Vingt-sept bibliothèques font 8,7 Mo, et le navigateur les analysait TOUTES
+  // à l'ouverture : vingt secondes d'écran blanc pour un élève qui va cocher
+  // deux rubriques. On n'écrit donc plus qu'un manifeste — chapitres,
+  // rubriques, effectifs par difficulté —, quelques dizaines de kilo-octets ;
+  // les exercices eux-mêmes ne sont chargés qu'au moment du tirage, et
+  // seulement ceux des chapitres choisis.
+  const inventaire = [];
+  for (const f of fichiers) {
+    const bac = {};
+    const faux = { window: bac };
+    faux.window.BIBLIO = [];
+    try {
+      new Function('window', fs.readFileSync(path.join(ICI, f), 'utf8')).call(bac, bac);
+    } catch (e) { console.log('⚠  ' + f + ' illisible : ' + e.message); continue; }
+    const ex = bac.BIBLIO || [];
+    const chap = {};
+    for (const x of ex) {
+      const c = chap[x.chapitre] || (chap[x.chapitre] = {
+        fichier: f, cle: x.chapitre, nom: x.chapitreNom, niveau: x.niveau,
+        rubriques: {} });
+      const r = c.rubriques[x.rubrique] || (c.rubriques[x.rubrique] = {
+        cle: x.rubrique, nom: x.rubriqueNom, n: 0, diff: {} });
+      r.n++;
+      const d = x.difficulte || '';
+      r.diff[d] = (r.diff[d] || 0) + 1;
+    }
+    for (const k of Object.keys(chap)) {
+      chap[k].rubriques = Object.values(chap[k].rubriques);
+      inventaire.push(chap[k]);
+    }
+  }
+  fs.writeFileSync(path.join(ICI, 'index-biblio.js'),
+    '// ENGENDRÉ PAR exporter.js — l’inventaire seul, sans les exercices.\n'
+    + '// Il sert à bâtir le sélecteur ; les bibliothèques ne sont chargées\n'
+    + '// qu’au tirage, et seulement celles dont on a besoin.\n'
+    + 'window.INVENTAIRE = ' + JSON.stringify(inventaire) + ';\n');
+  const ko = Math.round(fs.statSync(path.join(ICI, 'index-biblio.js')).size / 1024);
+  console.log('index-biblio.js — ' + inventaire.length + ' chapitres, ' + ko + ' Ko.');
+  const bloc = '<script src="index-biblio.js"></script>';
   const html = fs.readFileSync(p, 'utf8');
   const REPERES = /<!-- BIBLIOS -->[\s\S]*?<!-- \/BIBLIOS -->/;
   // On vérifie que les repères EXISTENT — et non que le texte a changé.
