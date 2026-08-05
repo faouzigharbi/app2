@@ -334,6 +334,49 @@
       }
     },
 
+    // ── B bis. L'ARITHMÉTIQUE DES LONGUEURS ALIGNÉES ──────────────────────
+    //
+    // « CE = CA − AE » : rien de plus banal, et le moteur ne savait pas le
+    // faire. Il stocke des CARRÉS — c'est ce qui rend tout exact — et
+    // (√a + √b)² vaut a + b + 2√(ab), irrationnel en général. On ne conclut
+    // donc que lorsque les deux longueurs sont elles-mêmes rationnelles ; dans
+    // les autres cas la règle se tait, plutôt que d'écrire un carré faux.
+    //
+    // L'ORDRE DES POINTS EST LU SUR LA FIGURE. « B entre A et C » n'est pas
+    // démontré ici : c'est l'énoncé qui le pose, comme il pose un milieu.
+    {
+      cle: 'somme-longueurs',
+      nom: 'إذا كانت النقطة B بين A و C فإنّ AC = AB + BC',
+      chercher: (ctx, f) => {
+        const out = [];
+        for (const [A, Bp, C] of ctx.entre || []) {
+          const ab = f.lg2.get(seg(A, Bp)), bc = f.lg2.get(seg(Bp, C)),
+                ac = f.lg2.get(seg(A, C));
+          const r = x => (x === undefined ? null : F.racQ(x));
+          const ra = r(ab), rb = r(bc), rc = r(ac);
+          if (ra && rb && !ac) {
+            const t = F.qAdd(ra, rb);
+            out.push({ but: ['lg2', seg(A, C), F.qMul(t, t)],
+                       depuis: [['lg2', seg(A, Bp), ab], ['lg2', seg(Bp, C), bc]],
+                       calcul: [seg(A, Bp), seg(Bp, C), seg(A, C), 'plus'] });
+          }
+          if (rc && ra && !bc) {
+            const t = F.qSub(rc, ra);
+            if (F.qPos(t)) out.push({ but: ['lg2', seg(Bp, C), F.qMul(t, t)],
+                       depuis: [['lg2', seg(A, C), ac], ['lg2', seg(A, Bp), ab]],
+                       calcul: [seg(A, C), seg(A, Bp), seg(Bp, C), 'moins'] });
+          }
+          if (rc && rb && !ab) {
+            const t = F.qSub(rc, rb);
+            if (F.qPos(t)) out.push({ but: ['lg2', seg(A, Bp), F.qMul(t, t)],
+                       depuis: [['lg2', seg(A, C), ac], ['lg2', seg(Bp, C), bc]],
+                       calcul: [seg(A, C), seg(Bp, C), seg(A, Bp), 'moins'] });
+          }
+        }
+        return out;
+      }
+    },
+
     // ── C. LES QUADRILATÈRES ──────────────────────────────────────────────
     //
     // UN QUADRILATÈRE SE NOMME DANS L'ORDRE. « ABCD » n'est pas « ABDC » : le

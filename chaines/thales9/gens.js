@@ -20,6 +20,7 @@
     ['milieux', 'مبرهنة المنتصفين'],
     ['trapeze', 'شبه المنحرف و قطراه'],
     ['projection-parallele', 'المسقط وفقا لمنحى'],
+    ['cascade', 'تتالي المتوازيات'],
     ['quadrilatere', 'طبيعة رباعي'],
     ['centre-gravite', 'مركز ثقل مثلّث'],
     ['orthocentre', 'المركز القائم لمثلّث'],

@@ -66,7 +66,7 @@
     const ctx = {
       thales: s.thales || [], triangles: s.triangles || [],
       quadrilateres: s.quadrilateres || [], gravites: s.gravites || [],
-      orthos: s.orthos || [],
+      orthos: s.orthos || [], entre: s.entre || [],
       milieux, pieds: s.pieds || {}, diametres: s.diametres || [],
       dessin: (s.alignements || []).map(a => ['aligne', ...a])
     };
@@ -121,7 +121,7 @@
         })),
         ctx: { thales: S.ctx.thales, triangles: S.ctx.triangles,
                quadrilateres: S.ctx.quadrilateres, gravites: S.ctx.gravites,
-               orthos: S.ctx.orthos,
+               orthos: S.ctx.orthos, entre: S.ctx.entre,
                milieux: S.ctx.milieux, pieds: S.ctx.pieds }
       }
     };
@@ -152,6 +152,11 @@
         + ' = ' + F.ecrireRapport(c[2], c[3]);
       if (c[4] === 'reciproque') return '  ، لأنّ ' + F.ecrireRapport(c[0], c[1])
         + ' = ' + F.ecrireRapport(c[2], c[3]);
+      // À GAUCHE LE NOM, À DROITE LES NOMBRES. Écrire « 16/3 = 8 − 8/3 »
+      // donne le résultat avant le calcul : c'est l'ordre inverse de celui où
+      // l'on pense, et l'élève n'a plus rien à faire.
+      if (c[3] === 'plus') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' + ' + e(c[1]);
+      if (c[3] === 'moins') return '  ، لأنّ ' + n.fait[1] + ' = ' + e(c[0]) + ' − ' + e(c[1]);
       if (c[3] === 'metrique') return '  ، لأنّ ' + n.fait[1] + ' × ' + e(c[2])
         + ' = ' + e(c[0]) + ' × ' + e(c[1]);
     } catch (x) { return ''; }

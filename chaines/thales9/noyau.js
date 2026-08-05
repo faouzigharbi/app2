@@ -167,6 +167,20 @@
   // On n'a que son carré. « AB² = 32 » doit s'écrire « AB = 4√2 », et
   // « AB² = 52/9 » doit s'écrire « AB = 2√13/3 ». C'est le seul endroit du
   // chapitre où un radical apparaît, et il n'y sert qu'à l'affichage.
+  // LA RACINE RATIONNELLE D'UN CARRÉ DE LONGUEUR, ou rien.
+  //
+  // Additionner deux longueurs, c'est calculer (√a + √b)² = a + b + 2√(ab) —
+  // irrationnel en général, et c'est justement pourquoi tout le chapitre est
+  // en carrés. Mais quand les deux longueurs sont elles-mêmes rationnelles,
+  // la somme l'est aussi, et l'on peut conclure. On refuse dans tous les
+  // autres cas : mieux vaut ne rien dire que d'écrire un carré faux.
+  function racQ(c) {
+    if (!qPos(c) && !qNul(c)) return null;
+    if (qNul(c)) return Q0;
+    const rn = racineEntiere(c.n), rd = racineEntiere(c.d);
+    return (rn !== null && rd !== null) ? q(rn, rd) : null;
+  }
+
   function racineEntiere(n) {
     if (n < 0n) return null;
     if (n < 2n) return n;
@@ -411,7 +425,7 @@
     q, Q0, Q1, Q2, qAdd, qSub, qMul, qDiv, qNeg, qNul, qEgaux, qPos, qNum, qCmp,
     pt, vec, det, memesPoints, aligne, milieu, surDroite, symetriqueCentre,
     intersection, translate, plan,
-    racineEntiere, peler, ecrireRacine, ecrireQ, ecrireRapport, frac,
+    racineEntiere, racQ, peler, ecrireRacine, ecrireQ, ecrireRapport, frac,
     dessiner, metre,
     bloc, isoMixte, rendreMath, rendre, echapper, ARABE,
     PROBLEMES, enregistrer, tirer, construire

@@ -387,6 +387,41 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════
+  // LA CASCADE DE PARALLÈLES — THALES0 2014 ex4
+  //
+  // Une parallèle, puis une autre menée du point qu'elle vient de créer, puis
+  // une troisième. L'exercice attendait la SOUSTRACTION de longueurs — CE =
+  // CA − AE —, que le moteur ne savait pas faire ; c'est la brique qu'on
+  // vient de poser. Cinq maillons, et chacun est refait par le validateur.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  item('THALES0 2014 ex4', 'cascade', 'difficile', () => {
+    const [b, c] = F.choix([[3, 4], [4, 3], [6, 8], [8, 6], [5, 12], [12, 5], [8, 15]]);
+    const d = F.ent(1, b - 1);
+    const A = F.pt(0, 0), B = F.pt(b, 0), C = F.pt(F.Q0, F.q(c));
+    const D = F.pt(F.q(d), F.Q0);
+    const E = F.pt(F.Q0, F.q(c * d, b));                 // (DE) // (BC)
+    const Fp = F.pt(F.q(b - d), F.q(c * d, b));          // (EF) // (AB)
+    return {
+      K: 1, points: { A, B, C, D, E, F: Fp },
+      thales: [{ S: 'A', B: 'B', C: 'C', M: 'D', N: 'E' },
+               { S: 'C', B: 'A', C: 'B', M: 'E', N: 'F' }],
+      para: [[dr('D', 'E'), dr('B', 'C')], [dr('E', 'F'), dr('A', 'B')]],
+      entre: [['A', 'E', 'C'], ['B', 'F', 'C']],
+      donne: [seg('A', 'B'), seg('A', 'D'), seg('A', 'C'), seg('B', 'C')],
+      but: ['lg2', seg('B', 'F'), null],
+      texte: g => ['ABC مثلّث حيث AB = ' + g(seg('A', 'B')) + ' و AC = '
+                   + g(seg('A', 'C')) + ' و BC = ' + g(seg('B', 'C')) + '.',
+                   'D نقطة من [AB] بحيث AD = ' + g(seg('A', 'D')) + '.',
+                   'الموازي لـ (BC) المارّ من D يقطع (AC) في E،',
+                   'و الموازي لـ (AB) المارّ من E يقطع (BC) في F.'],
+      question: 'أحسب المسافة BF.',
+      figure: { segments: [['A', 'B'], ['B', 'C'], ['C', 'A'], ['D', 'E'], ['E', 'F']] },
+      indice: 'طالس مرّتين : أوّلا في ABC، ثمّ في CAB ؛ و CE = CA − AE'
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
   // LA PROJECTION PARALLÈLE — THALES0 2014 ex1
   //
   // « لتكن I مسقط C على (BD) وفقا لمنحى (AB) » : le projeté de C sur (BD)
