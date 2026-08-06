@@ -133,7 +133,7 @@ function couper(etape) {
 // seule rubrique. On vise un BUDGET DE QUESTIONS : un exercice long se sert
 // une fois, un exercice court se sert plusieurs fois. La variété reste là où
 // elle coûte peu, et disparaît là où elle ne servait qu'à peser.
-const BUDGET = 20;
+const BUDGET = 30;
 
 function moissonner(construire, n, parCase) {
   const vus = new Map();
