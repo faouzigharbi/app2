@@ -54,14 +54,15 @@
               border:1.5px solid var(--bord); border-radius:10px; cursor:pointer;
               background:#fcfdff; transition:.12s; font-size:.95em }
   label.rub:hover { border-color:#c3cfdd }
-.exos { grid-column:1/-1; display:flex; flex-direction:column; gap:6px;
-          margin:6px 0 10px; padding:8px; background:#0e1621; border-radius:8px }
-  .exo-btn { text-align:right; background:#16202c; border:1px solid #22303f;
-             color:#cfd9e4; border-radius:7px; padding:9px 11px; cursor:pointer;
-             display:flex; flex-direction:column; gap:3px; font:inherit }
+.exos { grid-column:1/-1; display:grid; gap:6px; margin:6px 0 10px; padding:8px;
+          background:#0e1621; border-radius:8px;
+          grid-template-columns:repeat(auto-fill,minmax(104px,1fr)) }
+  .exo-btn { text-align:center; background:#16202c; border:1px solid #22303f;
+             color:#cfd9e4; border-radius:7px; padding:8px 6px; cursor:pointer;
+             display:flex; flex-direction:column; gap:2px; font:inherit }
   .exo-btn:hover { border-color:var(--accent) }
   .exo-btn.pris { border-color:var(--accent); background:#1b2a3a }
-  .exo-btn .t { font-size:.95em; line-height:1.6 }
+  .exo-btn .t { font-size:.95em; line-height:1.4; white-space:nowrap }
   .exo-btn .b { font-size:.8em; color:#8798ab }
   button.rub { width:100%; text-align:right; font:inherit; cursor:pointer;
                display:flex; align-items:center; gap:10px;
@@ -329,13 +330,18 @@
       const liste = TOUT().filter(x => x.chapitre === bouton.dataset.s
                                     && x.rubrique === bouton.dataset.r);
       if (!liste.length) { boite.textContent = 'لا شيء هنا.'; return; }
-      boite.innerHTML = liste.map(x =>
+      // UN OU DEUX MOTS, PAS UNE PHRASE. Vingt boutons portant la même longue
+      // phrase ne se lisent pas — ils se ressemblent tous, et l'œil n'y trouve
+      // rien. Le nom de la rubrique est déjà écrit juste au-dessus : le bouton
+      // n'a qu'à NUMÉROTER, et à dire son poids. Le titre complet reste en
+      // infobulle pour qui veut vérifier avant de cliquer.
+      boite.innerHTML = liste.map((x, k) =>
         '<button class="exo-btn' + (PANIER.indexOf(x.id) >= 0 ? ' pris' : '') + '"'
-        + ' data-id="' + x.id + '">'
-        + '<span class="t">' + sansBalise(x.enonce).slice(0, 110) + '…</span>'
-        + '<span class="b">' + compteQ(x) + ' أسئلة'
+        + ' data-id="' + x.id + '" title="' + sansBalise(x.enonce).slice(0, 160)
+        .replace(/"/g, '') + '">'
+        + '<span class="t">تمرين ' + (k + 1) + '</span>'
+        + '<span class="b">' + compteQ(x) + ' س'
         + (x.difficulte ? ' · ' + (DIFF[x.difficulte] || '') : '')
-        + (x.notions && x.notions.length ? ' · ' + x.notions.slice(0, 3).join('، ') : '')
         + '</span></button>').join('');
     }).catch(() => { boite.textContent = 'تعذّر التحميل.'; });
   }
