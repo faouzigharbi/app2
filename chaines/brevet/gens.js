@@ -14,6 +14,27 @@
   const page = (n, entete, titre, f, questions) =>
     F.enregistrer(n, { entete, titre, f, questions });
 
+  // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
+  // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce
+  // manquait ; c'est `denombrer.js`, et il compte en parcourant les mille
+  // nombres à trois chiffres, jamais en refaisant le produit de la chaîne.
+  //
+  // Son exercice 11 est LE MÊME que l'exercice 5 de la séance 13 — mais il
+  // porte SA FIGURE, que la séance 13 avait perdue. L'exclusion notée là-bas
+  // tombe : c'est cette page qui porte l'exercice.
+  page(11, 'الحصّة 1 — التمرين 1 — ', 'رقمان، و قوّة، و شجرة اختيار',
+       S.seance1ex1, 3);
+  page(12, 'الحصّة 1 — التمرين 2 — ', 'ثلاثة تعدادات، و حلّ واحد في آخرها',
+       S.seance1ex2, 3);
+  page(15, 'الحصّة 1 — التمرين 5 — ', 'بواقي القسمة على 4، و ما يُبنى عليها',
+       S.seance1ex5, 2);
+  page(16, 'الحصّة 1 — التمرين 6 — ', 'ثلاث عائلات من الأرقام، و 42 عددا',
+       S.seance1ex6, 3);
+  page(17, 'الحصّة 1 — التمرين 7 — ', 'رقمان متتاليان، و قوّة',
+       S.seance1ex7, 3);
+  page(110, 'الحصّة 1 — التمرين 11 — ', 'مستطيل في معلم — و الشكل الضائع من الحصّة 13',
+       S.seance1ex11, 8);
+
   page(21, 'الحصّة 2 — التمرين 1 — ', 'ثلاث عبارات صمّاء، و مقلوبان في آخر سطر',
        S.seance2ex1, 7);
   page(22, 'الحصّة 2 — التمرين 2 — ', 'عبارة واحدة A، و ثمانية أسئلة حولها',

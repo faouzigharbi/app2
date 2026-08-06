@@ -12,6 +12,52 @@ C'est une **partie à part** de la bibliothèque, pas un chapitre de plus : une
 seule séance mêle radicaux, factorisation, équations, inéquations et relation
 métrique. La ranger sous « العمليات في ℝ » la rendrait introuvable.
 
+## Séance 1 — six exercices sur douze, et l'arbre de choix
+
+La plus longue du livre, et la **dernière ouverte** — parce qu'elle vit
+presque entièrement de **dénombrement**, la pièce qui manquait.
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex11.html` | التمرين 1 | 3 | `35a3b` par 12 · `27⁴⁰ + 7×3¹²¹ = 22 × 3¹²⁰` · l'arbre du restaurant : **2 × 4 × 3**, pas 2 + 4 + 3 |
+| `ex12.html` | التمرين 2 | 3 | trois dénombrements · le troisième n'a qu'**une** solution, `671` |
+| `ex15.html` | التمرين 5 | 2 | les restes modulo 4 : `card A = 4`, **pas 5** — le reste n'atteint jamais le diviseur |
+| `ex16.html` | التمرين 6 | 3 | trois familles de chiffres · le produit brut donne 48, le compte vrai **42** |
+| `ex17.html` | التمرين 7 | 3 | chiffres consécutifs · `2⁴³ − 5×32⁸ = 3 × 2⁴⁰` |
+| `ex110.html` | التمرين 11 | 8 | un rectangle dans un repère — **et la figure que la séance 13 avait perdue** |
+
+**L'exercice 11 est exactement l'exercice 5 de la séance 13**, mot pour mot.
+Mais ici il porte **sa figure**, qui manquait là-bas : on y lit `C(0 ; 3√2)`,
+`M(3 ; 0)`, `B(6 ; 3√2)`. L'exclusion notée pour la séance 13 tombe donc — et
+c'est cette page qui porte l'exercice.
+
+Restent six exercices : le **3**, le **4**, le **8** (un QCM de sept items puis
+neuf questions — le plus gros du livre), le **9**, le **10** et le **12** (douze
+volets sur `x² = 36 − 16√5`). Tous sont **désormais portables** : `denombrer.js`
+et `entiers.js` ont levé les deux blocages.
+
+## L'arbre de choix — `denombrer.js`
+
+C'était le dernier manque nommé de l'inventaire. Une chaîne d'arbre de choix
+raisonne par le **produit** : « 2 choix de centaine, puis 3 de dizaine, puis 2
+d'unité, donc 12 ». Si le validateur refaisait ce produit, il ne vérifierait
+rien — il répéterait l'argument.
+
+Il fait donc autre chose : il **parcourt les mille nombres à trois chiffres** un
+par un et compte ceux qui passent. Les deux chemins n'ont rien en commun, et
+c'est ce qui donne au contrôle sa valeur.
+
+Les contraintes sont des **données**, jamais du code : un objet que la question
+déclare et que le noyau interprète (`chiffres`, `distincts`, `divisiblePar`,
+`centaines`/`dizaines`/`unites` — une liste ou une famille nommée —, et des
+`relations` nommées comme `dizaine-multiple-unite`). Une contrainte inconnue est
+**refusée**, pas ignorée.
+
+L'exercice 6 montre pourquoi ce détour compte : les trois familles se recoupent
+(2 et 3 sont à la fois diviseurs de 6 et premiers), six branches de l'arbre
+meurent, et le compte vrai est **42** quand le produit brut annonce 48. Une
+falsification rejoue le 48.
+
 ## Séance 2 — ce qui est en place
 
 | page | exercice | volets | questions |
@@ -287,8 +333,9 @@ Deux choses que ces exercices cachent :
 
 - **l'exercice 4** est une pyramide régulière — de l'espace, sans chapitre ;
 - **l'exercice 5** renvoie à « الرسم المصاحب » pour lire les coordonnées de `C`,
-  `B` et `M`, et **ce dessin est absent du document**. Sans lui, aucune des
-  sept questions n'a de données. À redemander au maître.
+  `B` et `M`, et ce dessin est absent **de cette page**. ~~À redemander au
+  maître.~~ **EXCLUSION LEVÉE** : c'est le même exercice que le **11 de la
+  séance 1**, mot pour mot, et celui-là porte sa figure. `ex110` le porte.
 
 **La partie II de l'exercice 2 ne se referme pas non plus.** Avec les données
 imprimées — `AB = 1`, `AC = 1/2`, l'angle droit en `C`, `BD = 3/2` — on obtient
@@ -359,8 +406,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 120            # 49 560 questions, 887 040 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 645/645
+    node verifier.js 120            # 52 200 questions, 915 960 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 677/677
     node _build.js .                # régénérer les pages
 
 ## Dix-huit coquilles du livre, relevées par le calcul

@@ -236,13 +236,48 @@
           sujet: 'un repère et un parallélogramme · le nombre d\'or et deux cercles · un équilatéral, un losange et un cercle · une pyramide · un repère et un rectangle · LE SEUL EXERCICE DE STATISTIQUES DU LIVRE' }
       ],
       contenu: [
-        { n: '1.1', questions: 3, notions: ['divisibilité par 12', 'reste d\'une puissance', 'arbre de choix'], sort: 'à faire' },
-        { n: '1.2', questions: 3, notions: ['nombres à 3 chiffres divisibles par 12, 15'], sort: 'à faire' },
-        { n: '1.3', questions: 4, notions: ['arbre de choix', 'PGCD des chiffres', 'divisibilité par 15'], sort: 'à faire' },
-        { n: '1.4', questions: 3, notions: ['code secret', 'divisibilité par 15 et 12'], sort: 'à faire' },
-        { n: '1.5', questions: 2, notions: ['restes de la division par 4', 'arbre de choix'], sort: 'à faire' },
-        { n: '1.6', questions: 3, notions: ['ensemble défini par des conditions sur les chiffres'], sort: 'à faire' },
-        { n: '1.7', questions: 2, notions: ['arbre de choix', 'divisibilité par 12'], sort: 'à faire' },
+        { n: '1.1', questions: 3,
+          notions: ['divisibilité par 12', 'mise en facteur d\'une puissance', 'arbre de choix'],
+          sort: 'bibliothèque', ou: 'brevet ex11 — trois volets',
+          pourquoi: '27^40 + 7×3^121 = 22 × 3^120, vérifié en BigInt ; et l\'arbre du '
+                  + 'restaurant donne 2 × 4 × 3 = 24, pas 2 + 4 + 3' },
+        { n: '1.2', questions: 3,
+          notions: ['dénombrement sous critère de divisibilité', 'chiffres distincts',
+                    'deux relations entre chiffres simultanées'],
+          sort: 'bibliothèque', ou: 'brevet ex12 — trois volets',
+          pourquoi: 'la troisième question n\'a qu\'UNE solution, 671 — le genre de '
+                  + 'réponse qu\'on ne croit qu\'après avoir parcouru les mille nombres' },
+        { n: '1.3', questions: 4, notions: ['arbre de choix', 'PGCD des chiffres', 'divisibilité par 15', 'puissances'], sort: 'à faire',
+          pourquoi: 'portable désormais (denombrer.js + entiers.js) — pas encore écrit' },
+        { n: '1.4', questions: 3, notions: ['code secret', 'divisibilité par 15 et 12', 'puissances'], sort: 'à faire',
+          pourquoi: 'portable désormais — pas encore écrit' },
+        { n: '1.5', questions: 2,
+          notions: ['restes de la division euclidienne par 4', 'arbre de choix', 'chiffres premiers'],
+          sort: 'bibliothèque', ou: 'brevet ex15 — deux volets',
+          pourquoi: 'card A = 4 et non 5 : le reste ne peut pas atteindre le diviseur' },
+        { n: '1.6', questions: 3,
+          notions: ['trois familles de chiffres', 'arbre de choix', 'chiffres distincts',
+                    'divisibilité par 6'],
+          sort: 'bibliothèque', ou: 'brevet ex16 — trois volets',
+          pourquoi: 'le produit brut donne 48, mais 2 et 3 appartiennent à DEUX familles '
+                  + 'à la fois : six branches meurent, et il reste 42. C\'est là que '
+                  + 'l\'arbre cesse d\'être un simple produit' },
+        { n: '1.7', questions: 3,
+          notions: ['chiffres consécutifs', 'arbre de choix', 'divisibilité par 6',
+                    'mise en facteur d\'une puissance'],
+          sort: 'bibliothèque', ou: 'brevet ex17 — trois volets' },
+        { n: '1.8', questions: 16, notions: ['QCM (7 items)', 'divisibilité', 'puissances', 'arrondis', 'arbre de choix'], sort: 'à faire',
+          pourquoi: 'le plus gros exercice du livre : un QCM de 7 items puis 9 questions' },
+        { n: '1.9', questions: 3, notions: ['parité', 'multiples', 'fraction entière'], sort: 'à faire' },
+        { n: '1.10', questions: 8, notions: ['restes', 'divisibilité', 'puissances', 'nombres à chiffres littéraux'], sort: 'à faire' },
+        { n: '1.11', questions: 8,
+          notions: ['repère', 'symétrique', 'rectangle', 'parallélogramme', 'Pythagore', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex110 — huit volets',
+          pourquoi: 'c\'est EXACTEMENT l\'exercice 5 de la séance 13 — mais ici il porte '
+                  + 'SA FIGURE, que la séance 13 avait perdue. C\'est lui qui lève '
+                  + 'l\'exclusion notée là-bas' },
+        { n: '1.12', questions: 12, notions: ['radicaux', 'valeur absolue', 'signe', 'Pythagore', 'cercle de diamètre'], sort: 'à faire',
+          pourquoi: 'douze volets, x² = 36−16√5 et y² = 6−2√5 — pas encore écrit' },
 
         // ── SÉANCE 2 — lue en entier, et portée pour ses deux premiers tiers ──
         // Le chapitre d'accueil est « brevet » : une séance mêle radicaux,
@@ -693,12 +728,12 @@
         { n: '13.4', questions: 7,
           notions: ['pyramide régulière', 'perpendicularité dans l\'espace', 'section'],
           sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
-        { n: '13.5', questions: 7,
-          notions: ['repère', 'rectangle', 'parallélogramme', 'aire'],
-          sort: 'hors machinerie',
-          pourquoi: 'l\'énoncé renvoie à « الرسم المصاحب » pour lire les coordonnées de '
-                  + 'C, B et M — et CE DESSIN EST ABSENT du document. Sans lui, aucune '
-                  + 'des sept questions n\'a de données. À redemander au maître' },
+        { n: '13.5', questions: 8,
+          notions: ['repère', 'rectangle', 'parallélogramme', 'Pythagore', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex110 — c\'est EXACTEMENT l\'exercice 11 de la séance 1',
+          pourquoi: 'EXCLUSION LEVÉE. Le dessin manquait ici, mais la séance 1 porte le '
+                  + 'MÊME exercice — mot pour mot — AVEC sa figure : C(0 ; 3√2), M(3 ; 0), '
+                  + 'B(6 ; 3√2). C\'est ex110 qui le porte' },
         { n: '13.6', questions: 6,
           notions: ['série continue', 'effectifs inconnus', 'fréquence cumulée croissante',
                     'cumuls', 'étendue', 'classe modale', 'moyenne par les centres',

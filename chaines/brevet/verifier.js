@@ -20,6 +20,7 @@ const F = require('./noyau.js');
 const R = require('./repere.js');
 const E = require('./entiers.js');
 const T = require('./stat.js');
+const N = require('./denombrer.js');
 require('./seances.js');
 require('./gens.js');
 
@@ -55,6 +56,14 @@ function environnements(c) {
   // pas les grandeurs, on les recalcule sur les seules données brutes — bornes
   // (ou valeurs) et effectifs. Les noms disponibles aux étapes en sortent tout
   // seuls : N, M, Me, E, na, ca, ra, fa, pa, ga, xa, ba…
+  // UN ENSEMBLE À DÉNOMBRER. Il n'apporte aucun nom aux étapes : ce qu'il
+  // porte est un COMPTE, et le compte se contrôle par énumération exhaustive,
+  // jamais par le produit que la chaîne emploie.
+  if (c.ensemble) {
+    const e = {};
+    for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
+    return [e];
+  }
   if (c.serie) {
     const s = T.serie(Object.assign({ nom: 'contrôle' }, c.serie));
     const e = T.nommer(s);
@@ -216,6 +225,14 @@ function verifierBrut(brut) {
     const p = R.verifierFaits(c.faits, P, envs[0]);
     controles += (c.faits || []).length;
     probs.push(...p);
+  }
+  // LES FAITS DE L'ENSEMBLE — le compte et la liste, obtenus en parcourant les
+  // mille nombres à trois chiffres un par un. La chaîne, elle, a multiplié des
+  // branches : les deux chemins n'ont rien en commun.
+  if (c.ensemble) {
+    if (!(c.faits || []).length) probs.push('مجموعة بلا واقعة تُراقَب');
+    probs.push(...N.verifierFaits(c.faits, c.ensemble));
+    controles += (c.faits || []).length;
   }
   // LES FAITS DE LA SÉRIE — « la moyenne vaut 288/5 », « la médiane vaut 62 »,
   // « le tableau cumulé est 15, 23, 43, 50 » : recalculés sur les effectifs.
@@ -1449,6 +1466,89 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.points.F = ['inter', 'O', 'G', 'A', 'E']; });
   pousse("OF annonce 8", parQuestion(116, 9),
     c => { c.controle.faits[2][3] = '8'; });
+
+  // ══ LA SÉANCE 1 — l'arbre de choix ═════════════════════════════════════
+  //
+  // LA PLUS IMPORTANTE de la séance rejoue le PRODUIT BRUT 48 là où le compte
+  // vrai est 42. C'est exactement le piège de l'exercice 6 : trois familles de
+  // chiffres qui se recoupent, donc un arbre dont six branches meurent. Si le
+  // validateur acceptait 48, c'est qu'il referait le produit de la chaîne au
+  // lieu de parcourir les mille nombres — et il ne vérifierait rien.
+  pousse("le produit brut 48 pris pour le compte", parQuestion(16, 1),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '48'; });
+  pousse("le compte de E annonce 40", parQuestion(16, 0),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '40'; });
+  pousse("un nombre a chiffres repetes declare dans E", parQuestion(16, 0),
+    c => { c.controle.faits.find(f => f[0] === 'contient').push('224'); });
+  pousse("le produit des branches annonce 3 × 4 × 3", parQuestion(16, 0),
+    c => { const f = c.controle.faits.find(x => x[0] === 'produit'); f[2] = '3'; });
+  pousse("les multiples de 6 de E comptes 15", parQuestion(16, 2),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '15'; });
+  pousse("la liste des multiples de 6 amputee d un terme", parQuestion(16, 2),
+    c => { c.controle.faits.find(f => f[0] === 'liste')[1] =
+             '210 234 264 318 324 360 510 528 534 564 714 720 738'; });
+
+  pousse("l arbre du restaurant additionne au lieu de multiplier", parQuestion(11, 2),
+    c => { c.controle.faits.find(f => f[0] === 'produit')[3] = '9'; });
+  pousse("35232 declare non multiple de 12", parQuestion(11, 0),
+    c => { c.controle.claims[1][1] = '2937'; });
+  pousse("27^40 lu 3^40", parQuestion(11, 1),
+    c => { c.controle.entiers[0][1] = '3^40'; });
+  pousse("le nombre declare divisible par 4", parQuestion(11, 1),
+    c => { c.controle.divisibles[0][1] = 4; });
+
+  pousse("le comptage /12 annonce 9", parQuestion(12, 0),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '9'; });
+  pousse("024 accepte comme nombre a trois chiffres", parQuestion(12, 0),
+    c => { c.controle.faits.find(f => f[0] === 'ne-contient-pas')[1] = '204'; });
+  pousse("le comptage /15 annonce 12", parQuestion(12, 1),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '12'; });
+  pousse("le double critere reduit a un seul", parQuestion(12, 2),
+    c => { c.controle.ensemble.relations = ['dizaine-multiple-unite']; });
+
+  pousse("le compte des codes annonce 24", parQuestion(15, 1),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '24'; });
+  pousse("les chiffres autorises a se repeter", parQuestion(15, 1),
+    c => { delete c.controle.ensemble.distincts; });
+  pousse("la centaine autorisee a valoir 1", parQuestion(15, 1),
+    c => { c.controle.ensemble.centaines = [1, 2, 3]; });
+
+  pousse("les chiffres consecutifs comptes 16", parQuestion(17, 0),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '16'; });
+  pousse("132 declare a chiffres consecutifs", parQuestion(17, 0),
+    c => { c.controle.faits.find(f => f[0] === 'ne-contient-pas')[1] = '124'; });
+  pousse("32^8 lu 2^13", parQuestion(17, 2),
+    c => { c.controle.entiers[0][1] = '2^13'; });
+  pousse("le nombre declare divisible par 5", parQuestion(17, 2),
+    c => { c.controle.divisibles[0][1] = 5; });
+
+  // ── التمرين 11 — le repère, et la figure que la séance 13 avait perdue ──
+  pousse("C place a 3√3 : le rectangle change de hauteur", parQuestion(110, 0),
+    c => { c.controle.points.C = ['point', '0', '3√3']; });
+  pousse("D pris symetrique de M par rapport a O", parQuestion(110, 1),
+    c => { c.controle.points.D = ['sym', 'M', 'O']; });
+  pousse("OCBD declare carre", parQuestion(110, 2),
+    c => { c.controle.faits[0] = ['carre', 'O', 'C', 'B', 'D']; });
+  pousse("CD calcule sans le carre de OD", parQuestion(110, 3),
+    c => { c.controle.faits[0][3] = '3√2'; });
+  pousse("H pris sur (CB) au lieu de (CM)", parQuestion(110, 4),
+    c => { c.controle.points.H = ['inter', 'B', 'D', 'C', 'B']; });
+  // K est le SECOND point de (OH) à la distance DH de D — l'autre étant H.
+  // Le prendre en H, c'est justement l'erreur que l'énoncé écarte.
+  pousse("K confondu avec H", parQuestion(110, 5),
+    c => { c.controle.points.K = ['point', '6', '-3√2']; });
+  pousse("BK annonce 4√2", parQuestion(110, 5),
+    c => { c.controle.faits[1][3] = '4√2'; });
+  pousse("DP annonce √2", parQuestion(110, 6),
+    c => { c.controle.faits[0][3] = '√2'; });
+  pousse("l aire du parallelogramme comptee une seule fois", parQuestion(110, 7),
+    c => { c.controle.faits.find(f => f[0] === 'aire')[4] = '12√2'; });
+
+  // ── le garde-fou du contrat « ensemble » ───────────────────────────────
+  pousse("ensemble sans aucune fait a controler", parQuestion(16, 0),
+    c => { c.controle.faits = []; });
+  pousse("relation de denombrement inconnue", parQuestion(17, 0),
+    c => { c.controle.ensemble.relations = ['chiffres-magiques']; });
 
   // ══ LA SÉANCE 12 ═══════════════════════════════════════════════════════
   //
