@@ -50,6 +50,9 @@
     'multiple-de-4': [0, 4, 8],
     'diviseur-de-6': [1, 2, 3, 6],
     'diviseur-de-14': [1, 2, 7],          // parmi les chiffres
+    'multiple-de-3': [0, 3, 6, 9],
+    // « رقم آحادها مربّعا كاملا » — les chiffres qui sont des carrés parfaits.
+    'carre-parfait': [0, 1, 4, 9],
     pair: [0, 2, 4, 6, 8],
     impair: [1, 3, 5, 7, 9],
     'non-nul': [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -124,27 +127,69 @@
     return out;
   }
 
+  // ── LES NOMBRES À CHIFFRES LITTÉRAUX ────────────────────────────────────
+  //
+  // « x = 583c2ba », « m = 29a4b », « A = 35a3b » : la séance 1 en est pleine.
+  // Ce ne sont plus des nombres à trois chiffres qu'on balaie, mais un MOTIF
+  // dont certaines positions sont des lettres. On énumère alors toutes les
+  // affectations de ces lettres — au plus 10⁵ —, on garde celles qui passent,
+  // et l'on rend les nombres obtenus.
+  //
+  // Le principe de contrôle ne change pas d'un pouce : la chaîne, elle,
+  // raisonne par critères (« b doit être pair, puis a + b multiple de 3 ») ; le
+  // validateur, lui, ESSAIE TOUT. Les deux chemins n'ont rien en commun.
+  function listeMotif(c) {
+    const forme = String(c.forme);
+    if (!/^[0-9a-z]+$/.test(forme)) throw new Error('motif illisible : ' + forme);
+    const lettres = [];
+    for (const ch of forme)
+      if (/[a-z]/.test(ch) && lettres.indexOf(ch) < 0) lettres.push(ch);
+    if (!lettres.length) throw new Error('motif sans lettre libre : ' + forme);
+    if (lettres.length > 5) throw new Error('trop de lettres libres : ' + forme);
+    const out = [], aff = {};
+    (function rec(i) {
+      if (i === lettres.length) {
+        let s = '';
+        for (const ch of forme) s += (/[a-z]/.test(ch) ? aff[ch] : ch);
+        if (s[0] === '0') return;                       // pas de zéro en tête
+        if (c.distincts && new Set(lettres.map(l => aff[l])).size !== lettres.length)
+          return;
+        const n = Number(s);
+        if (c.divisiblePar !== undefined && n % c.divisiblePar !== 0) return;
+        out.push(n);
+        return;
+      }
+      for (let d = 0; d <= 9; d++) { aff[lettres[i]] = d; rec(i + 1); }
+    })(0);
+    out.sort((a, b) => a - b);
+    return out;
+  }
+
   const compte = c => liste(c).length;
 
   // Le PRODUIT d'un arbre de choix — pour les questions où l'on ne dénombre pas
   // des nombres mais des menus : « deux entrées, quatre plats, trois desserts ».
   const produit = t => t.reduce((a, b) => a * b, 1);
 
+  // Le point d'entrée unique : un ensemble décrit par un MOTIF passe par
+  // listeMotif, tous les autres par le balayage des nombres à trois chiffres.
+  const enumerer = c => (c.forme ? listeMotif(c) : liste(c));
+
   const REGLES = {
-    compte: (E, [v]) => compte(E) === Number(v),
+    compte: (E, [v]) => enumerer(E).length === Number(v),
     // La liste EXACTE, séparée par des espaces. Annoncer un compte sans la
     // liste laisserait passer deux erreurs qui se compensent.
     liste: (E, t) => {
       const attendu = t.join(' ').trim().split(/\s+/).map(Number);
-      const vrai = liste(E);
+      const vrai = enumerer(E);
       return attendu.length === vrai.length && attendu.every((x, i) => x === vrai[i]);
     },
     contient: (E, t) => {
-      const vrai = liste(E);
+      const vrai = enumerer(E);
       return t.map(Number).every(x => vrai.indexOf(x) >= 0);
     },
     'ne-contient-pas': (E, t) => {
-      const vrai = liste(E);
+      const vrai = enumerer(E);
       return t.map(Number).every(x => vrai.indexOf(x) < 0);
     },
     // « le produit de l'arbre » : on donne les branches et le total attendu.
@@ -167,6 +212,6 @@
     return p;
   }
 
-  const API = { liste, compte, produit, RELATIONS, FAMILLES, REGLES, verifierFaits };
+  const API = { liste, liste4, listeMotif, enumerer, compte, produit, RELATIONS, FAMILLES, REGLES, verifierFaits };
   if (M) module.exports = API; else racine.Denombrer = API;
 })(typeof window !== 'undefined' ? window : globalThis);

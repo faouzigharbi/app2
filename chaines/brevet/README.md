@@ -363,6 +363,24 @@ point par une **distance** et non par une intersection ; la propriété qui le
 caractérise — la longueur, l'appartenance au cercle — est ensuite recalculée
 comme un fait.
 
+## Les nombres à chiffres littéraux — le motif
+
+`x = 583c2ba`, `m = 29a4b`, `A = 35a3b` : la séance 1 en est pleine. Ce ne sont
+plus des nombres à trois chiffres qu'on balaie, mais un **motif** dont certaines
+positions sont des lettres. `denombrer.js` énumère alors toutes les affectations
+— au plus 10⁵ —, garde celles qui passent, et rend les nombres obtenus.
+
+Le principe de contrôle ne bouge pas d'un pouce : la chaîne raisonne par
+**critères** (« `a` doit être nul, `b` pair, puis `b + c` multiple de 3 ») ; le
+validateur, lui, **essaie tout**. Les deux chemins n'ont rien en commun.
+
+Une falsification a refusé de mordre, et elle avait raison : renommer les
+lettres — `583c2ba` lu `583a2bc` — ne change **rien**. Les lettres ne portent
+aucune information, seules leurs **positions** en portent ; et même permuter les
+trois positions libres laisse le compte à 17. Ce qui le change, c'est un chiffre
+**fixe** : avec `585c2ba`, la somme des chiffres fixes passe de 18 à 20, sa
+classe modulo 3 change, et l'on tombe à 16.
+
 ## Les diviseurs — le complément d'`entiers.js`
 
 L'exercice 9 de la séance 1 demande les entiers `t` pour lesquels `15/(t−3)`

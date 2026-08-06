@@ -1974,6 +1974,64 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
     c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
 
+  // ── الحصّة 1، التمرين 3 — trois arbres et un motif ─────────────────────
+  pousse("la contrainte de divisibilite commune oubliee", parQuestion(13, 0),
+    c => { c.controle.ensemble.relations = []; });
+  pousse("les carres parfaits pris pour les multiples de 4", parQuestion(13, 0),
+    c => { c.controle.ensemble.unites = 'multiple-de-4'; });
+  pousse("le cas du chiffre 1 mal compte", parQuestion(13, 0),
+    c => { c.etapes[3][1] = "2 + 3 + 3 + 2 = 11"; });
+  pousse("les chiffres autorises a se repeter", parQuestion(13, 0),
+    c => { c.controle.ensemble.distincts = false; });
+  pousse("12 et 15 combines en 30 au lieu de 60", parQuestion(13, 1),
+    c => { c.controle.ensemble.divisiblePar = 30; });
+  // CELLE-CI A REFUSÉ DE MORDRE, et elle avait raison. Renommer les lettres —
+  // 583c2ba lu 583a2bc — ne change RIEN : les lettres ne portent aucune
+  // information, seules leurs POSITIONS en portent. Et même déplacer les trois
+  // lettres entre elles laisse le compte à 17. Ce qui le change, c'est un
+  // chiffre FIXE : avec 585c2ba la somme des chiffres fixes passe de 18 à 20,
+  // sa classe modulo 3 change, et l'on tombe à 16.
+  pousse("un chiffre fixe du motif decale : 583 devient 585", parQuestion(13, 1),
+    c => { c.controle.ensemble.forme = '585c2ba'; });
+  pousse("le 2 fixe du motif lu 4", parQuestion(13, 1),
+    c => { c.controle.ensemble.forme = '583c4ba'; });
+  pousse("la somme des cas de b fautive", parQuestion(13, 1),
+    c => { c.etapes[6][1] = "4 + 3 + 3 + 4 + 3 = 18"; });
+  pousse("25^160 lu comme 5^160", parQuestion(13, 2),
+    c => { c.etapes[1][1] = "25^160 = 5^160"; });
+  pousse("le facteur commun sorti en 2 au lieu de 3", parQuestion(13, 2),
+    c => { c.etapes[2][1] = "5^320 + 2 × 5^320 = 2 × 5^320"; });
+  pousse("le perimetre declare non multiple de 3", parQuestion(13, 3),
+    c => { c.controle.divisibles[0] = ['5^320 + 2 × 25^160', 7]; });
+  pousse("la centaine prise superieure ou egale a 5", parQuestion(13, 4),
+    c => { c.controle.ensemble.centaines = [5, 6, 7, 8, 9]; });
+  pousse("les diviseurs de 14 pris pour ceux de 6", parQuestion(13, 4),
+    c => { c.controle.ensemble.dizaines = 'diviseur-de-6'; });
+  pousse("l arbre multiplie 4 × 3 × 4", parQuestion(13, 4),
+    c => { c.etapes[4][1] = "4 × 3 × 4 = 60"; });
+
+  // ── الحصّة 1، التمرين 4 — un code secret, un nombre à trous ────────────
+  pousse("le zero autorise dans le code secret", parQuestion(14, 0),
+    c => { c.controle.ensemble.chiffres = [0,1,2,3,4,5,6,7,8,9];
+           c.controle.ensemble.dizaines = [0,1,2,3,4,5];
+           c.controle.ensemble.unites = [0,2,4,6,8]; });
+  pousse("la centaine prise impaire au lieu de premiere", parQuestion(14, 0),
+    c => { c.controle.ensemble.centaines = 'impair'; });
+  pousse("le cas du 7 compte comme celui du 5", parQuestion(14, 0),
+    c => { c.etapes[7][1] = "4 + 3 + 4 + 3 + 4 = 14"; });
+  pousse("les chiffres autorises a se repeter dans le code", parQuestion(14, 0),
+    c => { c.controle.ensemble.distincts = false; });
+  pousse("3a5b teste sur la divisibilite par 5 seule", parQuestion(14, 1),
+    c => { c.controle.ensemble.divisiblePar = 5; });
+  pousse("le chiffre fixe des dizaines deplace", parQuestion(14, 1),
+    c => { c.controle.ensemble.forme = '3a b5'.replace(' ', ''); });
+  pousse("64^21 lu comme 2^42", parQuestion(14, 2),
+    c => { c.etapes[2][1] = "64^21 = 2^42"; });
+  pousse("le facteur commun sorti en 2 au lieu de 3", parQuestion(14, 2),
+    c => { c.etapes[3][1] = "2^129 - 5 × 2^126 = 2^126 × 2"; });
+  pousse("le resultat annonce sur 6 au lieu de 12", parQuestion(14, 2),
+    c => { c.controle.entiers[2][1] = "6 × 2^124"; });
+
   // ── الحصّة 1، التمرين 12 — le plus long, et le nombre d'or dedans ──────
   pousse("x^2 + y^2 annonce 2xy", parQuestion(1012, 0),
     c => { c.controle.claims[3][1] = "2 × x × y"; });

@@ -247,10 +247,28 @@
           sort: 'bibliothèque', ou: 'brevet ex12 — trois volets',
           pourquoi: 'la troisième question n\'a qu\'UNE solution, 671 — le genre de '
                   + 'réponse qu\'on ne croit qu\'après avoir parcouru les mille nombres' },
-        { n: '1.3', questions: 4, notions: ['arbre de choix', 'PGCD des chiffres', 'divisibilité par 15', 'puissances'], sort: 'à faire',
-          pourquoi: 'portable désormais (denombrer.js + entiers.js) — pas encore écrit' },
-        { n: '1.4', questions: 3, notions: ['code secret', 'divisibilité par 15 et 12', 'puissances'], sort: 'à faire',
-          pourquoi: 'portable désormais — pas encore écrit' },
+        { n: '1.3', questions: 5,
+          notions: ['arbre de choix', 'diviseur commun des chiffres', 'motif littéral',
+                    'divisibilité par 60', 'puissances', 'périmètre'],
+          sort: 'bibliothèque', ou: 'brevet ex13 — cinq volets',
+          pourquoi: 'la question 1 empile trois conditions, et la troisième — la '
+                  + 'centaine DIVISEUR COMMUN des deux autres — étrangle tout : au-delà '
+                  + 'de 3 aucun chiffre ne survit, et il reste 10 + 3 + 4 = 17 nombres. '
+                  + 'La question 2 porte sur x = 583c2ba, TROIS lettres, divisible par '
+                  + '12 et 15 donc par 60 : c\'est pour elle que denombrer.js sait '
+                  + 'maintenant lire un MOTIF — la chaîne raisonne par critères, le '
+                  + 'validateur essaie les mille affectations. Dix-sept encore, et les '
+                  + 'deux dix-sept n\'ont rien à voir' },
+        { n: '1.4', questions: 3,
+          notions: ['code secret', 'motif littéral', 'divisibilité par 15 et 12',
+                    'puissances de 2'],
+          sort: 'bibliothèque', ou: 'brevet ex14 — trois volets',
+          pourquoi: 'le 7 est le chiffre des centaines le plus généreux (dix-huit '
+                  + 'codes) parce qu\'il ne se dispute ni les dizaines ni les unités ; '
+                  + 'le 2 est le plus pauvre (onze), parce qu\'il se dispute les deux. '
+                  + '57 en tout. Puis 3a5b donne six solutions, et 8⁴³ − 5×64²¹ vaut '
+                  + '2¹²⁶(8−5) = 12 × 2¹²⁴ — même famille que le 8⁴³ + 2¹³⁰ de '
+                  + 'l\'exercice 10' },
         { n: '1.5', questions: 2,
           notions: ['restes de la division euclidienne par 4', 'arbre de choix', 'chiffres premiers'],
           sort: 'bibliothèque', ou: 'brevet ex15 — deux volets',
