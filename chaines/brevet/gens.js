@@ -11,8 +11,16 @@
   const F = M ? require('./noyau.js') : racine.Reel;
   const S = M ? require('./seances.js') : racine.Seances;
 
-  const page = (n, entete, titre, f, questions) =>
-    F.enregistrer(n, { entete, titre, f, questions });
+  // Le sixième argument dit comment l'énoncé se transporte d'un volet au
+  // suivant. Par défaut il se transporte : un exercice du livre est UN énoncé
+  // suivi de ses questions. Deux exceptions, et elles se déclarent ici plutôt
+  // que de se deviner :
+  //   liste: true   l'exercice n'est qu'une SUITE de questions indépendantes —
+  //                 le 18 en aligne dix-sept, le 10 en aligne six ;
+  //   neuf: [k]     le volet k ROUVRE un énoncé : une partie II, un triangle
+  //                 qui n'a rien à voir avec l'expression d'avant.
+  const page = (n, entete, titre, f, questions, opt) =>
+    F.enregistrer(n, Object.assign({ entete, titre, f, questions }, opt || {}));
 
   // ── LE LIVRE 2026 — une REFONTE, pas une réédition ──────────────────────
   // 38 pages, HUIT séances, une quarantaine d'exercices — contre 47 pages,
@@ -58,13 +66,13 @@
   // porte SA FIGURE, que la séance 13 avait perdue. L'exclusion notée là-bas
   // tombe : c'est cette page qui porte l'exercice.
   page(11, 'الحصّة 1 — التمرين 1 — ', 'رقمان، و قوّة، و شجرة اختيار',
-       S.seance1ex1, 3);
+       S.seance1ex1, 3, { liste: true });
   page(12, 'الحصّة 1 — التمرين 2 — ', 'ثلاثة تعدادات، و حلّ واحد في آخرها',
        S.seance1ex2, 3);
   page(13, 'الحصّة 1 — التمرين 3 — ', 'ثلاث شجرات، و عدد بأرقام حرفية',
-       S.seance1ex3, 5);
+       S.seance1ex3, 5, { liste: true });
   page(14, 'الحصّة 1 — التمرين 4 — ', 'رقم سرّي، عدد بثقوب، و قوّة',
-       S.seance1ex4, 3);
+       S.seance1ex4, 3, { liste: true });
   page(15, 'الحصّة 1 — التمرين 5 — ', 'بواقي القسمة على 4، و ما يُبنى عليها',
        S.seance1ex5, 2);
   page(16, 'الحصّة 1 — التمرين 6 — ', 'ثلاث عائلات من الأرقام، و 42 عددا',
@@ -72,13 +80,13 @@
   page(17, 'الحصّة 1 — التمرين 7 — ', 'رقمان متتاليان، و قوّة',
        S.seance1ex7, 3);
   page(18, 'الحصّة 1 — التمرين 8 — ', 'سبعة أسئلة اختيار، ثمّ تسعة أسئلة',
-       S.seance1ex8, 17);
+       S.seance1ex8, 17, { liste: true });
   page(19, 'الحصّة 1 — التمرين 9 — ', 'حرف زوجي، و قواسم العدد 15',
-       S.seance1ex9, 4);
+       S.seance1ex9, 4, { neuf: [3] });
   // La clé est 1010, pas 110 : le livre numérote À L'INTÉRIEUR de la séance, et
   // le 110 était déjà pris par l'exercice 11.
   page(1010, 'الحصّة 1 — التمرين 10 — ', 'ستّ قابليات للقسمة، و سابعة صُحّحت',
-       S.seance1ex10, 6);
+       S.seance1ex10, 6, { liste: true });
   page(110, 'الحصّة 1 — التمرين 11 — ', 'مستطيل في معلم — و الشكل الضائع من الحصّة 13',
        S.seance1ex11, 8);
 
@@ -88,7 +96,7 @@
   page(21, 'الحصّة 2 — التمرين 1 — ', 'ثلاث عبارات صمّاء، و مقلوبان في آخر سطر',
        S.seance2ex1, 7);
   page(22, 'الحصّة 2 — التمرين 2 — ', 'عبارة واحدة A، و ثمانية أسئلة حولها',
-       S.seance2ex2, 8);
+       S.seance2ex2, 8, { neuf: [7] });
   page(23, 'الحصّة 2 — التمرين 3 — ', 'معيّن، و مستطيل يفتح على معيَّن آخر',
        S.seance2ex3, 13);
   page(24, 'الحصّة 2 — التمرين 4 — ', 'دائرة قطرها [AB]، و طالس في معلم',
@@ -101,7 +109,7 @@
   page(32, 'الحصّة 3 — التمرين 2 — ', 'معلم، و معيّن يفضحه قطراه',
        S.seance3ex2, 6);
   page(33, 'الحصّة 3 — التمرين 3 — ', 'عددان سالبان، و مقارنات تنقلب',
-       S.seance3ex3, 5);
+       S.seance3ex3, 5, { neuf: [5] });
   page(34, 'الحصّة 3 — التمرين 4 — ', 'متطابقة واحدة تغلق التمرين كلّه',
        S.seance3ex4, 6);
 
@@ -109,11 +117,11 @@
        S.seance3ex6, 20);
 
   page(41, 'الحصّة 4 — التمرين 1 — ', 'عبارة، ثمّ شبه منحرف يعيد تكوين معادلتها',
-       S.seance4ex1, 6);
+       S.seance4ex1, 6, { neuf: [4] });
   page(42, 'الحصّة 4 — التمرين 2 — ', 'معلم، و نقطة A تلعب ثلاثة أدوار',
-       S.seance4ex2, 8);
+       S.seance4ex2, 8, { neuf: [3] });
   page(43, 'الحصّة 4 — التمرين 3 — ', 'العدد الذهبي و مقلوبه',
-       S.seance4ex3, 4);
+       S.seance4ex3, 4, { neuf: [4] });
   page(44, 'الحصّة 4 — التمرين 4 — ', 'نحصر بدل أن نحسب',
        S.seance4ex4, 7);
   page(45, 'الحصّة 4 — التمرين 5 — ', 'زاوية 60° تصنع مثلّثا متقايس الأضلاع',
@@ -134,7 +142,7 @@
   page(56, 'الحصّة 5 — التمرين 6 — ', 'موشور قائم بلا عدد واحد',
        S.seance5ex6, 7);
   page(57, 'الحصّة 5 — التمرين 7 — ', 'عبارة، ثمّ مساحة تعيد تكوينها',
-       S.seance5ex7, 5);
+       S.seance5ex7, 5, { neuf: [5] });
   page(58, 'الحصّة 5 — التمرين 8 — ', 'مربّع ينزلق، و مجموع مساحتين',
        S.seance5ex8, 7);
 
@@ -148,12 +156,12 @@
   page(63, 'الحصّة 6 — التمرين 3 — ', 'المثلّث 6-8-10 موضوعا في معلم',
        S.seance6ex3, 8);
   page(65, 'الحصّة 6 — التمرين 5 (منزه) — ', 'العدد الذهبي، و مربّع يرسمه',
-       S.seance6ex5, 7);
+       S.seance6ex5, 7, { neuf: [5] });
   page(66, 'الحصّة 6 — التمرين 5 (متوازي المستطيلات) — ', 'متوسّط يساوي نصف الوتر، في الفضاء',
        S.seance6ex6, 7);
 
   page(71, 'الحصّة 7 — التمرين 1 — ', 'نختصر لكي نُقارن، و الضرب في عدد سالب يقلب',
-       S.seance7ex1, 9);
+       S.seance7ex1, 9, { neuf: [2] });
   page(72, 'الحصّة 7 — التمرين 2 — ', 'دائرتان متداخلتان، من القطر إلى مركز التعامد',
        S.seance7ex2, 12);
   page(73, 'الحصّة 7 — التمرين 3 — ', 'مجالات، ثمّ F = 2E + 12 تحكم كلّ شيء',

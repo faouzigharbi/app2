@@ -472,34 +472,56 @@
   // Les morceaux de l'énoncé vont à la ligne : un énoncé de la fiche pose
   // souvent deux ou trois expressions avant sa question, et les enchaîner sur
   // une seule ligne les rend illisibles — à l'écran comme sur la feuille.
-  // L'ÉNONCÉ COMPLET — la faute la plus grave qu'on ait faite ici, et la plus
-  // longue à voir.
+  // L'ÉNONCÉ COMPLET — et les trois natures d'une ligne d'énoncé.
   //
-  // Sur la feuille du maître, un exercice est UN SEUL énoncé suivi de ses
-  // questions : les données sont posées une fois, en tête, et la question 12
-  // les suppose encore là. Chaque volet, lui, est une page autonome. Tant que
-  // chaque page n'affichait que SA ligne, l'élève lisait « استنتج x/y + y/x »
-  // sans savoir ce que x désigne. 315 volets sur 572 étaient dans ce cas :
-  // plus de la moitié de la bibliothèque servait des débris.
+  // Sur la feuille du maître, un exercice est UN énoncé suivi de ses questions :
+  // les données sont posées une fois et la dernière question les suppose encore
+  // là. Tant que chaque volet n'affichait que SA ligne, l'élève lisait
+  // « استنتج x/y + y/x » sans savoir ce que x désigne.
   //
-  // La règle d'écriture était pourtant déjà la bonne : dans chaque volet, la
-  // DERNIÈRE ligne de `enonce` est la question, et toutes celles d'avant
-  // POSENT quelque chose — les données de départ, une figure qui arrive, une
-  // lettre qu'on introduit en cours de route. Il suffisait de les garder.
+  // Mais accumuler AVEUGLÉMENT est aussi faux, et pour deux raisons qu'on n'a
+  // vues qu'en regardant les énoncés un par un :
   //
-  // C'est ce que fait cette accumulation : le volet n affiche toutes les
-  // lignes posées depuis le début, puis sa question. La page 17 de l'exercice
-  // 12 montre donc ses sept lignes de données, exactement comme la feuille.
+  //   1. TOUTE LIGNE N'EST PAS UNE DONNÉE. « فكّك إلى جداء عوامل العبارة: » est
+  //      la TÊTE d'une question, pas un fait ; la coller en haut des volets
+  //      suivants ne renseigne personne, ça les encombre. On les reconnaît à
+  //      leur premier mot : ce sont des IMPÉRATIFS.
+  //
+  //   2. UN EXERCICE PEUT REPARTIR À ZÉRO. Le 22 pose une expression A, puis
+  //      son 7 ouvre un triangle qui n'a rien à voir. Et certains exercices ne
+  //      sont qu'une LISTE de questions indépendantes — le 18 en aligne dix-sept.
+  //      Aucune règle ne distingue « ليكن a = 9n + 8 » (qui recommence) de
+  //      « لتكن O منتصف [AC] » (qui continue) : elles ont la même forme. Il faut
+  //      donc le DIRE, et c'est déclaré une fois par exercice dans gens.js —
+  //      `liste: true` pour un exercice sans fil, `neuf: [7]` pour un volet qui
+  //      rouvre.
   //
   // `enonce` reste intact pour le validateur : chaque ligne n'est vérifiée
   // qu'une fois, dans le volet qui l'introduit.
-  function contextualiser(volets) {
-    const pose = [];
-    return volets.map(v => {
+  const IMPERATIF = /^\s*(أحسب|بيّن|بين|فكّك|فكك|حلّ|حل|استنتج|رتّب|رتب|قارن|أكتب|اكتب|أوجد|أنجز|حدّد|حدد|عيّن|عين|ابن|أعط|مثّل|مثل|إبحث|ابحث|تحقّق|تحقق|هل)\b/;
+
+  function contextualiser(volets, opt) {
+    const o = opt || {};
+    const neuf = new Set(o.neuf || []);
+    let pose = [];
+    return volets.map((v, i) => {
       const lignes = (v.enonce || []).slice();
       const question = lignes.pop();
-      for (const l of lignes) if (pose.indexOf(l) < 0) pose.push(l);
-      return Object.assign({}, v, { enonceComplet: pose.concat([question]) });
+      // Un exercice « liste » ne transporte rien ; un volet « neuf » repart.
+      if (o.liste || neuf.has(i + 1)) pose = [];
+      // Les têtes de question restent avec leur question, jamais dans le contexte.
+      const tetes = [];
+      for (const l of lignes) {
+        if (typeof l === 'string' && IMPERATIF.test(l)) { tetes.push(l); continue; }
+        if (pose.indexOf(l) < 0) pose.push(l);
+      }
+      return Object.assign({}, v, {
+        enonceComplet: pose.concat(tetes, [question]),
+        // La feuille imprimée en a besoin séparément : l'énoncé une fois, puis
+        // les questions numérotées dessous.
+        posePropre: pose.slice(),
+        questionPropre: tetes.concat([question])
+      });
     });
   }
 
@@ -529,6 +551,11 @@
         const n = notions.size;
         return n <= 1 ? 'facile' : (n <= 3 ? 'moyen' : 'difficile');
       })(),
+      // L'énoncé DÉCOUPÉ, pour la feuille imprimée : les données d'un côté —
+      // elles s'écrivent une fois en tête du bloc —, la question de l'autre,
+      // qui prend son numéro sous l'énoncé.
+      pose: (brut.posePropre || []).map(rendreMath).join('<br>'),
+      question: (brut.questionPropre || []).map(rendreMath).join('<br>'),
       steps: brut.etapes.map(e => rendreMath(e[0]) + ': ' + rendreMath(e[1])),
       hint: rendreMath(brut.indice)
     };
@@ -553,7 +580,7 @@
     return {
       id: 'ex' + n,
       title: entete(n) + PROBLEMES[n].titre,
-      questions: contextualiser(tirer(n)).map(rendre)
+      questions: contextualiser(tirer(n), PROBLEMES[n]).map(rendre)
     };
   }
 
