@@ -36,7 +36,9 @@ window.CLASSEMENT = {
   brevet: { nom: 'البريفي — مراجعة المناظرة' },
 
   // repere9 porte la LEÇON du repère ; il reste chez lui, c'est un chapitre du
-  // programme et non une série de révision.
+  // programme et non une série de révision. stat9 est dans le même cas : c'est
+  // la leçon de statistiques, née des trois fiches Stat2009 / Stat2013 /
+  // Stat9_Corrige, et les séances 12 et 13 du livre de révision y aboutiront.
 
   // ── 7ᵉ ────────────────────────────────────────────────────────────────
   // « سلاسل البرهان » ne dit pas de quoi il s'agit : carré parfait, cube,

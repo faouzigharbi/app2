@@ -633,7 +633,11 @@
                 + 'flottant ne peut pas porter. La séance 1 est pleine d\'arithmétique '
                 + 'de ce genre : il resservira',
                 'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
-                'les statistiques (séances 12 et 13) n\'ont aucun chapitre',
+                'LES STATISTIQUES SONT FAITES — chaines/stat9 : huit familles '
+                + 'engendrées (lecture de tableau, moyenne, cumuls, fréquences et '
+                + 'angles, médiane discrète, centre de classe, MÉDIANE CONTINUE par '
+                + 'le polygone, probabilité). Les séances 12 et 13 ont désormais un '
+                + 'chapitre d\'accueil',
                 'restent les séances 12 et 13'],
       // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
       // chaines/brevet/README.md, et trois falsifications les rejouent.
@@ -696,6 +700,98 @@
         + 'condition donne exactement (4−x)² = 5, c\'est-à-dire x²−8x+11 = 0, '
         + 'et x = 4−√5 puis AN = 5/2. Le /4 est tombé.'
       ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
+    // LES STATISTIQUES — trois fiches, et le chapitre qui manquait
+    // ═══════════════════════════════════════════════════════════════════
+    {
+      fichier: 'Stat2013_9eme.pdf', pages: 6, texte: 'lisible', etat: 'dépouillé',
+      exercices: 11, chapitres: ['stat9'],
+      titre: 'الإحصاء 9 أساسي — المدرسة الإعدادية النموذجية ضفاف البحيرة',
+      // La numérotation du fichier est celle d'un ASSEMBLAGE : deux « تمرين 5 »
+      // et deux « تمرين 6 » différents, et les pages 5-6 reprennent une autre
+      // feuille en entier. On les repère plutôt que de les lisser.
+      contenu: [
+        { n: '1', questions: 4, notions: ['histogramme', 'tableau à compléter', 'centre de classe', 'moyenne', 'polygone des effectifs'], sort: 'bibliothèque', ou: 'stat9 familles 1, 3, 6' },
+        { n: '2', questions: 7, notions: ['diagramme en bâtons', 'pourcentages', 'mode', 'médiane', 'cumuls croissants et décroissants'], sort: 'bibliothèque', ou: 'stat9 familles 3, 4, 5' },
+        { n: '6 (p.2)', questions: 4, notions: ['classes', 'pourcentages', 'moyenne'], sort: 'bibliothèque', ou: 'stat9 familles 4, 6' },
+        { n: '7', questions: 4, notions: ['histogramme', 'lecture de classes', 'moyenne'], sort: 'bibliothèque', ou: 'stat9 famille 6' },
+        { n: '8', questions: 4, notions: ['histogramme', 'mode', 'étendue', 'moyenne'], sort: 'bibliothèque', ou: 'stat9 familles 1, 6' },
+        { n: '9', questions: 4, notions: ['histogramme à échelle d\'aires', 'effectif total', 'moyenne'], sort: 'bibliothèque', ou: 'stat9 famille 6' },
+        { n: '10', questions: 6, notions: ['classes décimales (0,5 kg)', 'moyenne', 'mode', 'étendue', 'seuils'], sort: 'bibliothèque', ou: 'stat9 familles 1, 6, 8',
+          pourquoi: 'c\'est cet exercice qui a fait sauter le piège du décimal : le noyau lisait « 0.5 » comme 0' },
+        { n: '5 (p.4)', questions: 4, notions: ['diagramme circulaire', 'cumuls décroissants', 'mode', 'médiane'], sort: 'bibliothèque', ou: 'stat9 familles 4, 5, 7' },
+        { n: '6 (p.4)', questions: 3, notions: ['série donnée en pourcentages', 'cumuls croissants', 'polygone'], sort: 'bibliothèque', ou: 'stat9 familles 3, 4' },
+        { n: '1-3 (p.5-6)', questions: 24, notions: ['série discrète', 'diagramme', 'cumuls', 'médiane', 'probabilité'],
+          sort: 'bibliothèque', ou: 'DOUBLON EXACT de Stat2009_9eme.pdf ex1, 2, 3',
+          pourquoi: 'mot pour mot, même graphique, mêmes nombres — les pages 5 et 6 sont l\'autre feuille recollée' }
+      ],
+      machine: [],
+      etatFinal: 'DÉPOUILLÉ — les onze exercices sont couverts par les huit familles de stat9'
+    },
+
+    {
+      fichier: 'Stat2009_9eme.pdf', pages: 2, texte: 'lisible', etat: 'dépouillé',
+      exercices: 4, chapitres: ['stat9'],
+      titre: 'الإحصاء 9 أساسي — même en-tête, même auteur',
+      contenu: [
+        { n: '1', questions: 9, notions: ['série discrète', 'mode', 'étendue', 'moyenne', 'cumuls croissants', 'médiane', 'pourcentages', 'angle du camembert'],
+          sort: 'bibliothèque', ou: 'DOUBLON de Stat2013 p.5 — couvert par stat9 familles 1 à 5' },
+        { n: '2', questions: 9, notions: ['diagramme', 'mode', 'étendue', 'moyenne', 'cumuls', 'médiane', 'pourcentages'],
+          sort: 'bibliothèque', ou: 'DOUBLON de Stat2013 p.5 — couvert par stat9 familles 1 à 5' },
+        { n: '3', questions: 6, notions: ['classes', 'moyenne', 'cumuls croissants et décroissants', 'médiane', 'probabilité'],
+          sort: 'bibliothèque', ou: 'DOUBLON de Stat2013 p.5-6 — couvert par stat9 familles 6, 7, 8' },
+        { n: '4', questions: 7, notions: ['diagramme en bâtons', 'mode', 'étendue', 'cumuls', 'médiane', 'moyenne', 'probabilité'],
+          sort: 'bibliothèque', ou: 'stat9 familles 1, 3, 5, 8',
+          pourquoi: 'le SEUL exercice que Stat2013 n\'a pas — le reste du fichier y est déjà' }
+      ],
+      machine: [],
+      etatFinal: 'DÉPOUILLÉ — trois exercices sur quatre sont des doublons de Stat2013'
+    },
+
+    {
+      fichier: 'Stat9_Corrige_1.pdf', pages: 4, texte: 'lisible', etat: 'dépouillé',
+      exercices: 10, chapitres: ['stat9'],
+      titre: 'مراجعة لبرنامج الرياضيات — dourat 2009 à 2019, AVEC corrigés',
+      // Ce fichier n'est pas une feuille d'exercices : c'est un recueil de
+      // sujets d'examen CORRIGÉS. Sa valeur est ailleurs — il donne la RÈGLE
+      // du maître pour la médiane, et un jeu de réponses publiées contre
+      // lequel confronter le noyau. C'est ce qui a servi à le valider.
+      contenu: [
+        { n: '2009-4', questions: 3, notions: ['série discrète', 'mode', 'médiane par les rangs N/2 et N/2+1', 'cumuls', 'probabilité'],
+          sort: 'bibliothèque', ou: 'stat9 familles 1, 3, 5, 8',
+          pourquoi: 'le corrigé y écrit la règle du cas PAIR : la médiane est la demi-somme des valeurs de rangs 50 et 51' },
+        { n: '2012/2015', questions: 3, notions: ['classes', 'moyenne 33,4', 'cumuls en proportions', 'médiane lue à 0,5', 'probabilité 0,92'],
+          sort: 'bibliothèque', ou: 'stat9 familles 6, 7, 8',
+          pourquoi: 'noyau confronté : moyenne 167/5 = 33,4 ✓, Me = 220/7 ≈ 31,43 contre « ≈ 31 » lu au crayon ✓' },
+        { n: '2014-5', questions: 4, notions: ['histogramme', 'centre de classe', 'moyenne 35,12', 'cumuls en %', 'médiane lue à 50 %', 'probabilité'],
+          sort: 'bibliothèque', ou: 'stat9 familles 6, 7, 8',
+          pourquoi: 'noyau confronté : moyenne 878/25 = 35,12 ✓, cumuls 10-26-56-80-100 % ✓, Me = 176/5 = 35,2 contre « ≈ 35 » ✓' },
+        { n: '2017-5', questions: 4, notions: ['classe modale', 'moyenne', 'cumuls', 'médiane', 'probabilité 60 %'],
+          sort: 'bibliothèque', ou: 'stat9 familles 6, 7, 8',
+          pourquoi: 'classe modale [40;60[ ✓, cumuls 20-104-240-348-400 ✓, Me = 920/17 ≈ 54,12 contre « ≈ 54 » ✓ — mais voir la coquille' },
+        { n: '2019-5', questions: 3, notions: ['classe modale', 'moyenne 162,5', 'cumuls', 'médiane lue à N/2 = 50'],
+          sort: 'bibliothèque', ou: 'stat9 familles 6, 7',
+          pourquoi: 'moyenne 325/2 = 162,5 ✓, Me = 500/3 ≈ 166,67 contre « ≈ 167 » ✓' },
+        { n: '2010, 2013, 2016, 2018', questions: 4, notions: ['QCM: moyenne d\'une petite série', 'probabilité', 'cumul croissant à rebours'],
+          sort: 'bibliothèque', ou: 'stat9 familles 2, 3, 8' },
+        { n: '2011-1', questions: 2, notions: ['diagramme circulaire', 'angles', 'probabilité'],
+          sort: 'bibliothèque', ou: 'stat9 famille 4' }
+      ],
+      machine: [],
+      // UNE COQUILLE, relevée par recalcul — la seule du corrigé.
+      coquilles: [
+        '2017-5 q2 : « معدّل إنتاج شجرة زيتون = 21760/400 = 54,5 ». Le numérateur '
+        + '21760 est juste (20×10 + 84×30 + 136×50 + 108×70 + 52×90), le '
+        + 'dénominateur 400 aussi — mais 21760/400 vaut 54,4 et non 54,5. '
+        + '(Contrôle : 400 × 54,5 = 21800 ≠ 21760.) Le corrigé se contredit '
+        + 'd\'une ligne à l\'autre ; c\'est 54,4.',
+        '2014-5 q2 : la ligne intermédiaire écrit « (390 + 720 + 1530 + 1368 + '
+        + '1260)/1000 » alors que N = 150. Le résultat suivant, 5268/150 = 35,12, '
+        + 'est juste : le 1000 est un report de l\'exercice précédent.'
+      ],
+      etatFinal: 'DÉPOUILLÉ — et c\'est lui qui a servi de jeu de contrôle au noyau statistique'
     },
 
     {
