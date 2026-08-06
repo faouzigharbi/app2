@@ -104,4 +104,18 @@
        S.seance9ex2, 8);
   page(94, 'الحصّة 9 — التمرين 4 — ', 'زاوية قائمة في B تنتشر في كلّ الشكل',
        S.seance9ex4, 8);
+
+  // La séance 10 compte SIX exercices, et deux d'entre eux sont des reprises
+  // mot pour mot : son exercice 2 est l'exercice 1 de la séance 3 (ABC avec
+  // AB = 3, AC = 5, BC = 6, BM = 1 — jusqu'à la numérotation cassée 2, 3, 4, 5)
+  // et son exercice 6 est l'exercice 4 de la séance 9 (ABMN, MN = 6√2,
+  // AB = 2√2, BI = BJ = 4). ex31 et ex94 les portent déjà.
+  page(101, 'الحصّة 10 — التمرين 1 — ', 'عددان مجهريّان، و مربّع يجمعهما',
+       S.seance10ex1, 8);
+  page(103, 'الحصّة 10 — التمرين 3 — ', 'عبارة، ثمّ مثلّث قائم يعيد تكوينها',
+       S.seance10ex3, 8);
+  page(104, 'الحصّة 10 — التمرين 4 — ', 'مثلّث متقايس الأضلاع يصير قائما',
+       S.seance10ex4, 6);
+  page(105, 'الحصّة 10 — التمرين 5 — ', 'العدد الذهبي، و طالس يعثر عليه',
+       S.seance10ex5, 9);
 })(typeof window !== 'undefined' ? window : globalThis);

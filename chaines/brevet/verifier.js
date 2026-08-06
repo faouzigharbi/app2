@@ -1094,6 +1094,132 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("L pris sur (MK) au lieu de (MF)", parQuestion(94, 7),
     c => { c.controle.points.L = ['inter', 'B', 'K', 'M', 'K']; });
 
+  // ══ LA SÉANCE 10 ═══════════════════════════════════════════════════════
+  //
+  // ── التمرين 1 — deux nombres si petits que la calculette les confond ───
+  //
+  // La PREMIÈRE est la plus importante de la séance : elle rejoue le
+  // dénominateur (2 - √3) tel qu'il est IMPRIMÉ dans le livre. Si le
+  // validateur l'accepte, alors la onzième coquille n'a jamais été trouvée —
+  // c'est la correction elle-même qui serait invérifiée.
+  pousse("b avec le 1/(2 - √3) imprime dans le livre", parQuestion(101, 0),
+    c => { c.controle.env.b = "1/(2 - √3) - 3/(2 + √3) + 1"; });
+  pousse("√24 sorti en 3√6", parQuestion(101, 0),
+    c => { c.etapes[1][1] = "√24 = 3√6"; });
+  pousse("a decale d une unite", parQuestion(101, 0),
+    c => { c.controle.claims[0][1] = "8 - 4√3"; });
+  pousse("le produit ab decale", parQuestion(101, 1),
+    c => { c.controle.claims[0][1] = "26√3 - 44"; });
+  pousse("48 et 49 compares a l envers", parQuestion(101, 1),
+    c => { c.etapes[3][1] = "49 < 48"; });
+  pousse("b - a lu 6√3 - 11", parQuestion(101, 2),
+    c => { c.controle.claims[0][1] = "6√3 - 11"; });
+  pousse("b - 1 confondu avec b lui-meme", parQuestion(101, 2),
+    c => { c.controle.claims[1][1] = "2√3 - 3"; });
+  pousse("a²b et ab² echanges", parQuestion(101, 3),
+    c => { c.etapes[4][1] = "a × b^2 < a^2 × b"; });
+  pousse("a²b decale d une unite", parQuestion(101, 3),
+    c => { c.controle.claims[0][1] = "362√3 - 626"; });
+  pousse("b/a mal rationalise", parQuestion(101, 4),
+    c => { c.controle.claims[0][1] = "3 - 2√3"; });
+  pousse("a/b ecrit sans le 3 du denominateur", parQuestion(101, 4),
+    c => { c.controle.claims[1][1] = "2√3 - 3"; });
+  pousse("a + b decale", parQuestion(101, 5),
+    c => { c.controle.claims[1][1] = "4 - 3√3"; });
+  pousse("le cote du carre pris egal a √3 + 1", parQuestion(101, 5),
+    c => { c.controle.claims[2][0] = "(√3 + 1)^2"; });
+  pousse("les deux denominateurs compares a l envers", parQuestion(101, 6),
+    c => { c.etapes[8][1] = "4 - 3b < 2 - 3a"; });
+  pousse("2 - 3a calcule sans le 2", parQuestion(101, 6),
+    c => { c.controle.claims[0][1] = "12√3 - 21"; });
+  pousse("b/a annonce 3 - 2√3 au dernier volet", parQuestion(101, 7),
+    c => { c.controle.claims[0][1] = "3 - 2√3"; });
+
+  // ── التمرين 3 — l'expression et le triangle qui la refabrique ──────────
+  pousse("x pris a l autre racine sans le signe", parQuestion(103, 0),
+    c => { c.controle.env.x = "(3√2 + √6)/2"; });
+  pousse("x² calcule sans le double produit", parQuestion(103, 0),
+    c => { c.controle.claims[1][1] = "6"; });
+  pousse("9/2 remplace par 7/2 : le carre ne se ferme plus", parQuestion(103, 1),
+    c => { c.controle.claims[0][1] = "(x + √6/2)^2 - 7/2"; });
+  pousse("factorisation avec le second facteur mal signe", parQuestion(103, 2),
+    c => { c.controle.claims[0][1] = "(x + (√6 - 3√2)/2)(x - (√6 + 3√2)/2)"; });
+  pousse("le produit des racines annonce +3", parQuestion(103, 3),
+    c => { c.controle.claims[1][1] = "3"; });
+  pousse("B deplace : AB ne vaut plus √3", parQuestion(103, 4),
+    c => { c.controle.points.B = ['point', '√2', '0']; });
+  pousse("AH annonce √3", parQuestion(103, 4),
+    c => { c.controle.faits[0][3] = '√3'; });
+  pousse("M confondue avec C : le majorant du cadre tombe", parQuestion(103, 5),
+    c => { c.controle.env.x = "√6"; });
+  pousse("MK pris egal a AH", parQuestion(103, 6),
+    c => { c.controle.faits[2][3] = '√2'; });
+  pousse("K pris comme projete de M sur (AB)", parQuestion(103, 6),
+    c => { c.controle.points.K = ['proj', 'M', 'A', 'B']; });
+  pousse("BK² ecrit sans le tiers", parQuestion(103, 7),
+    c => { c.controle.faits[1][3] = '2x^2 + 2√6 × x + 3'; });
+  pousse("BK annonce √6", parQuestion(103, 7),
+    c => { c.controle.faits[2][3] = '√6'; });
+
+  // ── التمرين 4 — l'équilatéral qui devient rectangle ────────────────────
+  pousse("le carre de -√3 pris negatif", parQuestion(104, 0),
+    c => { c.controle.claims[1][1] = "-3"; });
+  pousse("A decale d une unite", parQuestion(104, 0),
+    c => { c.controle.claims[0][1] = "3 + (10/3)√3"; });
+  pousse("25/9 laisse en 16/9 dans la completion", parQuestion(104, 1),
+    c => { c.controle.claims[0][1] = "(x - 5/3)^2 - 25/9"; });
+  pousse("un facteur decale", parQuestion(104, 2),
+    c => { c.controle.claims[0][1] = "(x - 3)(x - 1/2)"; });
+  // AH pris égal au côté : le triangle cesse d'être équilatéral, et c'est
+  // TOUTE la question 3 qui s'écroule — AB = 2x - 2 n'a plus de raison d'être.
+  pousse("AH pris egal au cote : ABD n est plus equilateral", parQuestion(104, 3),
+    c => { c.controle.env.h = "2x - 2"; });
+  pousse("AB annonce 2x - 1", parQuestion(104, 3),
+    c => { c.controle.faits[0][3] = '2x - 1'; });
+  pousse("C pris au milieu de [BD] au lieu du symetrique de B", parQuestion(104, 4),
+    c => { c.controle.points.C = ['milieu', 'B', 'D']; });
+  pousse("BC annonce 4", parQuestion(104, 4),
+    c => { c.controle.faits[5][3] = '4'; });
+  pousse("AC lu √3(x - 1)", parQuestion(104, 5),
+    c => { c.controle.faits[0][3] = '√3(x - 1)'; });
+  pousse("la racine 1/3 acceptee malgre x > 1", parQuestion(104, 5),
+    c => { c.etapes[7][1] = "1 < 1/3"; });
+
+  // ── التمرين 5 — le nombre d'or, et Thalès qui le retrouve ──────────────
+  pousse("(√5 - 1)² developpe sans le double produit", parQuestion(105, 0),
+    c => { c.controle.claims[0][1] = "6"; });
+  pousse("b lu (√5 - 1)/2", parQuestion(105, 1),
+    c => { c.controle.claims[0][1] = "(√5 - 1)/2"; });
+  pousse("le carre sous le radical pris a l envers", parQuestion(105, 1),
+    c => { c.controle.claims[1][1] = "((√5 + 1)/2)^2"; });
+  pousse("((√10 - √2)/2)² pris egal a 3 + √5", parQuestion(105, 2),
+    c => { c.controle.claims[1][1] = "3 + √5"; });
+  pousse("le conjugue mal choisi", parQuestion(105, 2),
+    c => { c.controle.claims[2][1] = "(√5 - 1)/4"; });
+  pousse("ab annonce 2", parQuestion(105, 3),
+    c => { c.controle.claims[0][1] = "2"; });
+  pousse("a et b declares opposes au lieu d inverses", parQuestion(105, 3),
+    c => { c.controle.claims[1][1] = "-b"; });
+  pousse("a declare plus grand que 1", parQuestion(105, 4),
+    c => { c.etapes[4][1] = "1 < a"; });
+  pousse("a² annonce (3 + √5)/2", parQuestion(105, 5),
+    c => { c.controle.claims[0][1] = "(3 + √5)/2"; });
+  pousse("b - a² annonce √5 + 1", parQuestion(105, 5),
+    c => { c.controle.claims[1][1] = "√5 + 1"; });
+  pousse("a + b lu 2√5", parQuestion(105, 6),
+    c => { c.controle.claims[0][1] = "2√5"; });
+  pousse("a² et 1 - √5a declares egaux au lieu d opposes", parQuestion(105, 7),
+    c => { c.controle.claims[2][1] = "1 - √5 × a"; });
+  // p pris égal à a : la figure NE PROTESTE PAS — a est l'autre racine de
+  // p² - √5 p + 1 = 0, donc Thalès tient encore. C'est la condition p > 1 qui
+  // tranche, et c'est elle que la falsification doit faire tomber.
+  pousse("p pris egal a a, l autre racine", parQuestion(105, 8),
+    c => { c.controle.env.p = "(√5 - 1)/2"; });
+  pousse("J place a AJ = 2 : le parallelisme tombe", parQuestion(105, 8),
+    c => { c.controle.points.J = ['point', '0', '2']; });
+  pousse("AI annonce p - √5", parQuestion(105, 8),
+    c => { c.controle.faits[6][3] = 'p - √5'; });
+
   // ── les garde-fous du contrat « figure » ───────────────────────────────
   pousse("figure sans aucune fait a controler", parQuestion(23, 0),
     c => { c.controle.faits = []; });

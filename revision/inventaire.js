@@ -191,7 +191,7 @@
       // COMPTÉ, pas estimé : le plus grand numéro d'exercice atteint dans chaque
       // séance, lu sur la couche de texte. La séance 2 en donne 5, et la lecture
       // l'a confirmé exactement.
-      etat: 'en cours', exercices: 72,
+      etat: 'en cours', exercices: 76,
       titre: 'امتحان شهادة ختم التعليم الأساسي — مراجعة (جوان 2025)',
       chapitres: ['arith9', 'divisibilite8', 'diviseurs7', 'premiers7', 'thales9', 'reel9', 'radic9'],
       // Le livre est organisé en TREIZE SÉANCES. Le squelette ci-dessous sort
@@ -218,7 +218,10 @@
           sujet: 'une expression puis la chaîne des trois moyennes · UN DOUBLON de la séance 5 · un équilatéral qui devient rectangle · une pyramide · deux valeurs absolues et une factorisation cachée' },
         { seance: 9, pages: '30-32', exercices: 4, vu: true,
           sujet: 'radicaux, encadrements et une inéquation · trapèze rectangle et deux médianes · UN DOUBLON de la séance 7 · trapèze où l\'angle droit se propage' },
-        { seance: 10, pages: '33-36', exercices: 2, sujet: 'géométrie — deux longs exercices seulement' },
+        { seance: 10, pages: '33-36', exercices: 6, vu: true,
+          // COMPTAGE CORRIGÉ : 6 et non 2, comme pour la séance 4. Et DEUX de
+          // ces six sont des reprises mot pour mot d'autres séances.
+          sujet: 'deux nombres microscopiques et un carré qui les somme · UN DOUBLON de la séance 3 · une expression et un triangle rectangle qui la refabrique · un équilatéral qui devient rectangle · le nombre d\'or retrouvé par Thalès · UN DOUBLON de la séance 9' },
         { seance: 11, pages: '37-39', exercices: 6, sujet: 'mixte — arithmétique, algèbre et géométrie' },
         { seance: 12, pages: '40-43', exercices: 6, sujet: 'géométrie, espace et STATISTIQUES — la plus longue' },
         { seance: 13, pages: '44-47', exercices: 6, sujet: 'géométrie, repère et statistiques — la séance de clôture' }
@@ -518,7 +521,52 @@
                     'orthocentre', 'cercle de diamètre'],
           sort: 'bibliothèque', ou: 'brevet ex94 — huit volets',
           pourquoi: 'BI = BJ n\'est pas une donnée libre : dès que I et J sont les milieux, '
-                  + 'les deux longueurs sont égales. Le « = 4 » ne fixe que AN = 4√2' }
+                  + 'les deux longueurs sont égales. Le « = 4 » ne fixe que AN = 4√2' },
+
+        // ── SÉANCE 10 — quatre exercices neufs, et deux reprises ─────────────
+        { n: '10.1', questions: 8,
+          notions: ['sortir un carré d\'un radical', 'rationaliser par le conjugué',
+                    'comparer par les carrés', 'signe d\'un produit',
+                    'multiplier une inégalité par un positif', 'ordonner des racines',
+                    'côté d\'un carré d\'aire donnée', 'inverser deux fractions'],
+          sort: 'bibliothèque', ou: 'brevet ex101 — huit volets',
+          pourquoi: 'a = 7−4√3 ≈ 0,072 et b = 2√3−3 ≈ 0,464 : la calculette ne les '
+                  + 'sépare pas de 0. Tout se fait par les carrés — 48 < 49 donne a > 0, '
+                  + '100 < 108 donne a < b. Et a+b = 4−2√3 = (√3−1)² ferme le carré' },
+        { n: '10.2', questions: 6, notions: ['Thalès quatre fois sur une figure'],
+          sort: 'bibliothèque', ou: 'brevet ex31 — c\'est EXACTEMENT l\'exercice 1 de la séance 3',
+          pourquoi: 'mêmes données (AB = 3, AC = 5, BC = 6, BM = 1), mêmes questions, '
+                  + 'et jusqu\'à la même numérotation cassée 2, 3, 4, 5. On ne double pas la page' },
+        { n: '10.3', questions: 8,
+          notions: ['forme canonique', 'différence de deux carrés', 'équation produit nul',
+                    'relation métrique AH×BC = AB×AC', 'encadrement d\'un point mobile',
+                    'Thalès entre deux hauteurs', 'Pythagore deux fois',
+                    'une longueur qui redonne l\'équation'],
+          sort: 'bibliothèque', ou: 'brevet ex103 — huit volets',
+          pourquoi: 'E = x²+√6x−3 et le triangle le refabriquent : BK = √3 équivaut à '
+                  + 'E = 0. Curiosité vérifiée par la machine : à la racine, MK = AM = x' },
+        { n: '10.4', questions: 6,
+          notions: ['valeur numérique en −√3', 'forme canonique', 'factorisation',
+                    'hauteur d\'un équilatéral', 'symétrique et cercle de diamètre',
+                    'Pythagore qui redonne l\'équation'],
+          sort: 'bibliothèque', ou: 'brevet ex104 — six volets',
+          pourquoi: 'C symétrique de B par rapport à D fait de D le centre du cercle '
+                  + 'circonscrit à ABD : A voit [BC] sous un angle droit sans qu\'on le '
+                  + 'demande. Puis Pythagore avec AC = √3(x+1) donne 9A = 0' },
+        { n: '10.5', questions: 9,
+          notions: ['identité remarquable sous un radical', 'rationaliser',
+                    'deux nombres inverses', 'comparer à 1', 'somme et produit',
+                    'nombres opposés', 'Thalès qui refabrique une équation'],
+          sort: 'bibliothèque', ou: 'brevet ex105 — neuf volets',
+          pourquoi: 'tout tient dans (√5−1)² = 6−2√5 ; a et b sont les racines de '
+                  + 'x²−√5x+1, et Thalès donne à p la MÊME équation. C\'est la condition '
+                  + 'p > 1 qui choisit b' },
+        { n: '10.6', questions: 8,
+          notions: ['trapèze rectangle', 'segment des milieux', 'centre de gravité',
+                    'orthocentre', 'cercle de diamètre'],
+          sort: 'bibliothèque', ou: 'brevet ex94 — c\'est EXACTEMENT l\'exercice 4 de la séance 9',
+          pourquoi: 'mêmes données (MN = 6√2, AB = 2√2, BI = BJ = 4), mêmes six questions. '
+                  + 'L\'énoncé renvoie lui-même « الشكل المرافق (الصفحة 3) »' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
@@ -529,7 +577,8 @@
                 + 'engendrées (milieu, symétrique, distance, nature d\'un quadrilatère, '
                 + 'alignement, directions, quatrième sommet, cercle circonscrit)',
                 'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
-                'les onze autres séances restent à ouvrir'],
+                'les statistiques (séances 12 et 13) n\'ont aucun chapitre',
+                'restent les séances 11, 12 et 13'],
       // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
       // chaines/brevet/README.md, et trois falsifications les rejouent.
       coquilles: [
@@ -570,7 +619,14 @@
         + 'Le 5 est un 2.',
         '6.4 : l\'en-tête « التمرين رقم 4 » ne porte AUCUN énoncé — il est suivi '
         + 'immédiatement du suivant. Et deux exercices de la séance portent le '
-        + 'numéro 5.'
+        + 'numéro 5.',
+        '10.1 : b = 1/(2−√3) − 3/(2+√3) + 1 vaut 4√3−3 ≈ 3,93 — et la question 3 '
+        + 'du MÊME énoncé demande de montrer que b < 1. L\'énoncé se contredit '
+        + 'lui-même. Avec 1/(2+√3) on retrouve exactement le 2√3−3 annoncé par la '
+        + 'question 1, et les huit questions s\'enchaînent. Le − est un +.',
+        '10.3 q2)ب : « CM/CA = MK/MH ». MH n\'existe pas dans la figure — c\'est '
+        + 'AH. Le rapport de Thalès compare les deux hauteurs, celle du petit '
+        + 'triangle CMK et celle du grand CAH.'
       ]
     },
 

@@ -165,6 +165,40 @@ Deux choses que ces exercices cachent :
   `B` qui en résulte se propage ensuite dans toute la figure, parce que `J` est
   sur `[BM]` : l'angle `IBM` est le même que l'angle `IBJ`.
 
+## Séance 10 — quatre exercices neufs, deux reprises
+
+Le comptage automatique disait 2 ; la lecture en a trouvé **six**, comme pour
+la séance 4 — la couche de texte des pages intérieures ne porte pas les
+en-têtes. Et deux de ces six sont des **reprises mot pour mot**.
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex101.html` | التمرين 1 | 8 | deux nombres **microscopiques** · comparer par les carrés · signe d'un produit · multiplier une inégalité par `ab` · ordonner `√(a/b)`, `1`, `√(b/a)` · `a+b = 4−2√3 = (√3−1)²` · inverser deux fractions |
+| — | التمرين 2 | — | **doublon exact de la séance 3, exercice 1** — mêmes données (`AB = 3`, `AC = 5`, `BC = 6`, `BM = 1`) et jusqu'à la même numérotation cassée 2, 3, 4, 5. `ex31` le porte déjà. |
+| `ex103.html` | التمرين 3 | 8 | `E = x² + √6x − 3` · forme canonique · différence de deux carrés · relation métrique `AH×BC = AB×AC` · Thalès entre deux hauteurs · et `BK = √3` qui **redonne** `E = 0` |
+| `ex104.html` | التمرين 4 | 6 | `A = x² − (10/3)x + 1` · hauteur d'un équilatéral lue à l'envers · le symétrique qui fait un cercle de diamètre · Pythagore qui **redonne** `9A = 0` |
+| `ex105.html` | التمرين 5 | 9 | le nombre d'or · `(√5−1)² = 6−2√5` sous le radical · `ab = 1` et `a+b = √5` · `a²` et `1−√5a` opposés · Thalès qui **redonne** `p² − √5p + 1 = 0` |
+| — | التمرين 6 | — | **doublon exact de la séance 9, exercice 4** — mêmes données (`MN = 6√2`, `AB = 2√2`, `BI = BJ = 4`), et l'énoncé renvoie lui-même « الشكل المرافق (الصفحة 3) ». `ex94` le porte déjà. |
+
+Trois choses que ces exercices cachent :
+
+- **ex101** — `a ≈ 0,072` et `b ≈ 0,464`. La calculette ne les sépare pas de
+  zéro, et c'est le sujet : tout se démontre par les **carrés**. `48 < 49`
+  donne `a > 0`, `100 < 108` donne `a < b`, `972 < 1024` ordonne les deux
+  dénominateurs de la question 7.
+- **ex104** — `C` symétrique de `B` par rapport à `D` fait de `D` le centre du
+  cercle circonscrit à `ABD` **et** le milieu de `[BC]` : `A` voit `[BC]` sous
+  un angle droit sans qu'on ait rien à démontrer d'autre. Et la question ج) est
+  celle qui referme tout : Pythagore avec `AC = √3(x+1)` donne `9x² − 30x + 9 = 0`,
+  c'est-à-dire `9A = 0`, et la factorisation de la question 2 livre `x = 3`.
+- **ex105** — la figure **ne proteste pas** si l'on prend `p = a`. C'est normal :
+  `a` est l'autre racine de `p² − √5p + 1 = 0`, donc Thalès tient encore. Seule
+  la condition `p > 1` tranche. Une falsification le vérifie explicitement.
+
+Et une curiosité que la machine a trouvée seule : dans **ex103**, à la racine
+`x = (3√2−√6)/2`, on a `MK = AM = x`. Le point mobile est exactement à la
+distance de `(BC)` qu'il est de `A`.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
@@ -198,13 +232,13 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 11 040 questions, 184 600 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 432/432
+    node verifier.js 120            # 36 840 questions, 631 080 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 485/485
     node _build.js .                # régénérer les pages
 
-## Dix coquilles du livre, relevées par le calcul
+## Douze coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Dix énoncés ne se
+Le validateur ne lit pas une intention : il recalcule. Douze énoncés ne se
 referment pas sur eux-mêmes.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -269,7 +303,18 @@ referment pas sur eux-mêmes.
     `1/5 + √5/2`, et non `(√5+1)/2` comme l'énoncé le demande lui-même. Avec
     `1/2` à la place de `1/5`, on tombe juste. **Le 5 est un 2.**
 
-Ces dix corrections sont écrites dans `seances.js` et signalées au maître ;
+11. **الحصّة 10، التمرين 1** — `b = 1/(2 − √3) − 3/(2 + √3) + 1` vaut
+    `4√3 − 3 ≈ 3,93`. Or la question 3 du **même énoncé** demande de montrer
+    que `b < 1`, et la question 1 annonce `b = 2√3 − 3`. L'énoncé se contredit
+    lui-même. Avec `1/(2 + √3)` on retrouve exactement `2√3 − 3`, et les huit
+    questions s'enchaînent. **Le − est un +.** C'est la falsification qui ouvre
+    la séance : elle rejoue le dénominateur imprimé, et le validateur le rejette.
+
+12. **الحصّة 10، التمرين 3، 2)ب** — « `CM/CA = MK/MH` ». `MH` n'existe pas dans
+    la figure : c'est **`AH`**. Le rapport de Thalès compare les deux hauteurs,
+    celle du petit triangle `CMK` et celle du grand `CAH`.
+
+Ces douze corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris
@@ -281,7 +326,27 @@ la **même** droite parallèle, donc le même point. Elles ont été réarmées 
 qui porte vraiment. C'est le principe : une falsification qui passe est un
 renseignement, jamais un succès.
 
+La séance 10 en a ajouté deux qui **mordent au bon endroit sans toucher la
+figure**, et c'est instructif :
+
+- prendre `p = a` dans `ex105` laisse la figure entièrement cohérente — `AB`,
+  `AI`, le parallélisme `(IJ)//(BC)` : tout tient, parce que `a` est l'autre
+  racine de la même équation. Ce qui tombe, c'est `1 < p`. La falsification
+  mord donc sur la **condition**, pas sur la géométrie — et c'est exactement ce
+  que l'exercice demande de comprendre.
+- accepter la racine `1/3` dans `ex104` ne casse rien non plus : le triangle se
+  reconstruit à l'envers et `AC = √3(x+1)` reste vraie. C'est `1 < 1/3` qui
+  ment.
+
 ## Ce que la séance a demandé
+
+La séance 10 n'a demandé **aucune pièce neuve**. Ses trois figures se posent
+avec ce qui existait déjà — `proj`, `milieu`, `sym` — et ses paramètres passent
+par `env`, comme le `x` du carré qui glisse de la séance 5. Une seule chose a
+dû être contournée, et elle est honnête : `BM` dans `ex103` vaut `√(9 − 3√3)`,
+qui n'appartient pas à `ℚ[√d]`. Le nom `BM` n'existe donc pas, et la longueur
+se contrôle en **carré** (`longueur-carree`), là où la démonstration ne parle
+de toute façon que de `BM²`.
 
 La séance 9 n'a demandé qu'une pièce : la construction `normale` — un second
 point de la perpendiculaire à une droite menée par un point qui est **déjà
