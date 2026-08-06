@@ -93,6 +93,26 @@
     return n % q === 0n;
   };
 
+  // LA LISTE COMPLÈTE DES DIVISEURS POSITIFS, par balayage. C'est la seule
+  // façon honnête de contrôler un « les diviseurs de 15 sont 1, 3, 5 et 15 » :
+  // une chaîne qui énumère des diviseurs raisonne par essais successifs, et
+  // relire son énumération ne vérifierait rien. On balaie donc jusqu'à √n, et
+  // l'on REFUSE au-delà d'un million plutôt que de faire semblant — un contrôle
+  // qui ne peut pas aboutir doit le dire, pas rendre un résultat partiel.
+  function diviseurs(n) {
+    let m = n < 0n ? -n : n;
+    if (m === 0n) throw new Error('zéro n\'a pas de liste de diviseurs');
+    if (m > 1000000n) throw new Error('trop grand pour être balayé : ' + m);
+    const petits = [], grands = [];
+    for (let d = 1n; d * d <= m; d++) {
+      if (m % d !== 0n) continue;
+      petits.push(d);
+      if (d * d !== m) grands.push(m / d);
+    }
+    grands.reverse();
+    return petits.concat(grands);
+  }
+
   // Une relation d'égalité ou d'ordre entre deux expressions entières.
   // Rend null si le texte n'est pas une relation — le même contrat que
   // `verifierRelation` du noyau, pour que l'appelant n'ait pas à deviner.
@@ -109,6 +129,6 @@
     }
   }
 
-  const API = { evaluer, divise, verifierRelation };
+  const API = { evaluer, divise, diviseurs, verifierRelation };
   if (M) module.exports = API; else racine.Entiers = API;
 })(typeof window !== 'undefined' ? window : globalThis);

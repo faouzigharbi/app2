@@ -327,6 +327,19 @@ Trois choses que ces exercices cachent :
   de `ABE` un équilatéral de côté 8 dont le milieu de `[AE]` retombe sur le
   cercle.
 
+## Les diviseurs — le complément d'`entiers.js`
+
+L'exercice 9 de la séance 1 demande les entiers `t` pour lesquels `15/(t−3)`
+est un entier naturel. La question revient à la **liste des diviseurs de 15**,
+et la rédaction se termine par « et il n'y en a pas d'autres ». Relire cette
+liste ne vérifierait rien — c'est l'énumération de la chaîne qu'on relirait.
+`entiers.js` la **balaie** donc, jusqu'à `√n`, et refuse au-delà d'un million
+plutôt que de rendre un résultat partiel : un contrôle qui ne peut pas aboutir
+doit le dire.
+
+Le contrat s'écrit `diviseurs: [['15', '1 3 5 15']]`, et un diviseur oublié
+échoue autant qu'un diviseur inventé.
+
 ## Les grands entiers — `entiers.js`
 
 L'exercice 2 de la séance 11 affirme sept fois qu'un nombre est divisible par

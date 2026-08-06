@@ -9863,6 +9863,246 @@
   //   4 est le second point de (OH) à la distance DH de D — l'autre étant H
   //   lui-même.
   // =========================================================================
+  // =========================================================================
+  // الحصّة 1 — التمرين 9   (une lettre paire, et les diviseurs de 15)
+  //
+  //   a, b, n entiers naturels, n et b PAIRS, a − 1 = 3n. Tout part de là :
+  //   n = 2k donne a = 6k + 1, donc a + 5 = 6(k + 1) — multiple de 6 sans
+  //   qu'aucune valeur ne soit choisie. Et ab + 5b = b(a + 5) : le facteur 2
+  //   de b rencontre le facteur 6 de a + 5, et le produit est multiple de 12.
+  //
+  //   CE QUE LE VALIDATEUR FAIT ICI. Les deux premières questions ne portent
+  //   sur aucun nombre : ce sont des IDENTITÉS en k et m, et elles sont donc
+  //   testées sur trente tirages au hasard — une identité qui ne tiendrait que
+  //   pour la valeur du générateur ne serait pas une identité.
+  //
+  //   La question 2 demande les t pour lesquels 15/(t−3) est un entier naturel.
+  //   Elle revient à la liste des DIVISEURS de 15, et le validateur ne relit
+  //   pas cette liste : il la balaie. C'est pour elle que `diviseurs` a été
+  //   ajouté à entiers.js — sans quoi le « et il n'y en a pas d'autres » de la
+  //   rédaction ne serait vérifié par rien.
+  //
+  //   Et la dernière question redescend dans l'arbre de choix : les éléments de
+  //   E inférieurs à 10 sont 4, 6 et 8, et l'on en tire six nombres.
+  // =========================================================================
+  function seance1ex9() {
+    const D19 = 'a و b و n ثلاثة أعداد صحيحة طبيعية بحيث n و b عددان زوجيان و a - 1 = 3n';
+    return [
+      {
+        enonce: [D19, 'بيّن أنّ a + 5 مضاعف لـ 6'],
+        indice: 'العدد n زوجي: اكتبه 2k ثمّ عوّض في a = 3n + 1',
+        etapes: [
+          ['القاعدة', 'العدد الزوجي يُكتب 2k حيث k عدد صحيح طبيعي'],
+          ['من المعطى', 'a = 3n + 1'],
+          ['و n زوجي', 'n = 2k'],
+          ['نعوّض', 'a = 6k + 1'],
+          ['نضيف 5', 'a + 5 = 6k + 6'],
+          ['نُخرج العامل 6', '6k + 6 = 6(k + 1)'],
+          ['النتيجة', 'العدد a + 5 مضاعف للعدد 6']
+        ],
+        controle: {
+          libres: ['k'],
+          derives: { n: '2k', a: '6k + 1' },
+          claims: [['a + 5', '6(k + 1)'], ['a - 1', '3 × n'], ['a', '3 × n + 1']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ العدد ab + 5b مضاعف للعدد 12'],
+        indice: 'أخرج العامل المشترك b، ثمّ استعمل أنّ b زوجي',
+        etapes: [
+          ['القاعدة', 'جداء مضاعف لـ 2 في مضاعف لـ 6 هو مضاعف لـ 12'],
+          ['نُخرج العامل المشترك', 'a × b + 5 × b = b(a + 5)'],
+          ['و العدد b زوجي', 'b = 2m'],
+          ['و قد رأينا', 'a + 5 = 6(k + 1)'],
+          ['نضرب', 'b(a + 5) = 2m × 6(k + 1)'],
+          ['نجمع العاملين', '2 × 6 = 12'],
+          ['النتيجة', 'العدد ab + 5b مضاعف للعدد 12']
+        ],
+        controle: {
+          libres: ['k', 'm'],
+          derives: { a: '6k + 1', b: '2m' },
+          claims: [['a × b + 5 × b', '12 × m(k + 1)'],
+                   ['a × b + 5 × b', 'b(a + 5)'],
+                   ['b × (a + 5)', '12m(k + 1)']]
+        }
+      },
+      {
+        enonce: ['حدّد مجموعة E للأعداد الصحيحة الطبيعية t التي تجعل x = 15/(t - 3) '
+               + 'عددا صحيحا طبيعيا'],
+        indice: 'يجب أن يكون t - 3 قاسما موجبا للعدد 15',
+        etapes: [
+          ['القاعدة', 'الكسر 15/(t - 3) عدد صحيح طبيعي إذا كان t - 3 قاسما موجبا '
+                    + 'للعدد 15'],
+          ['قواسم 15 الموجبة', '1 × 15 = 15'],
+          ['و', '3 × 5 = 15'],
+          ['فالقيم الممكنة لـ t - 3 هي 1 و 3 و 5 و 15', '15/1 = 15'],
+          ['أي', '15/(4 - 3) = 15'],
+          ['و', '15/(6 - 3) = 5'],
+          ['و', '15/(8 - 3) = 3'],
+          ['و', '15/(18 - 3) = 1'],
+          ['النتيجة', 'المجموعة E هي 4 و 6 و 8 و 18']
+        ],
+        controle: {
+          diviseurs: [['15', '1 3 5 15']],
+          claims: [['15/(4 - 3)', '15'], ['15/(6 - 3)', '5'],
+                   ['15/(8 - 3)', '3'], ['15/(18 - 3)', '1']]
+        }
+      },
+      {
+        enonce: ['حدّد كم مجموعة الأعداد ذات ثلاثة أرقام مختلفة التي يمكن تكوينها '
+               + 'من عناصر E الأصغر من 10'],
+        indice: 'عناصر E الأصغر من 10 هي 4 و 6 و 8 : ثلاثة أرقام، و لا رقم يتكرّر',
+        etapes: [
+          ['القاعدة', 'شجرة الاختيار: عدد الفروع في كلّ مستوى ينقص بواحد لأنّ '
+                    + 'الأرقام مختلفة'],
+          ['عناصر E الأصغر من 10', 'هي 4 و 6 و 8'],
+          ['اختيار رقم المئات', '3 إمكانيات'],
+          ['ثمّ رقم العشرات من الباقيين', '3 - 1 = 2'],
+          ['ثمّ رقم الآحاد وحيد', '3 - 2 = 1'],
+          ['نضرب فروع الشجرة', '3 × 2 × 1 = 6'],
+          ['النتيجة', 'عدد هذه الأعداد هو 6']
+        ],
+        controle: {
+          ensemble: { chiffres: [4, 6, 8], distincts: true },
+          faits: [['compte', '6'],
+                  ['liste', '468 486 648 684 846 864'],
+                  ['produit', '3', '2', '1', '6'],
+                  ['ne-contient-pas', '444', '466', '468000']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 1 — التمرين 10   (six divisibilités, et une septième qui est fausse)
+  //
+  //   La clé est 1010 et non 110 : le livre numérote ses exercices à
+  //   l'intérieur de la séance, et le 110 était déjà pris par l'exercice 11.
+  //
+  //   Les deux premières questions imprimées (« 3) » et « 4) ») REPRENNENT mot
+  //   pour mot l'exercice 5 de la même séance — les restes modulo 4, puis les
+  //   nombres à trois chiffres de centaine première. `ex15` les porte déjà ;
+  //   cette page porte les six suivantes.
+  //
+  //   LA SEPTIÈME EST FAUSSE, et c'est le recalcul qui l'a dit. « x2x5x4 est
+  //   divisible par 6 quel que soit le chiffre x » : la somme de ses chiffres
+  //   vaut x + 2 + x + 5 + x + 4 = 3x + 11, qui est congrue à 2 modulo 3 POUR
+  //   TOUT x. Le nombre n'est donc JAMAIS divisible par 3, donc jamais par 6 —
+  //   121514, 222524, 323534 ne le sont pas. C'est la vingtième coquille du
+  //   livre, et elle n'est pas rattrapable par un choix de x : il faut changer
+  //   un chiffre fixe (x2x5x2, x2x6x4 et x3x5x4 marcheraient tous les trois).
+  //   Cette page ne la porte pas ; l'inventaire la nomme.
+  //
+  //   REMARQUE SUR LA QUESTION 5. Le livre imprime « 2022² 2022 − 9 » : le
+  //   2022 est dupliqué par la composition. Les deux lectures possibles sont
+  //   VRAIES toutes les deux — 2022² − 9 = 2019 × 2025 et 2022^2022 − 9 sont
+  //   l'un et l'autre divisibles par 15 —, et le validateur les vérifie
+  //   TOUTES LES DEUX, la seconde en BigInt sur un nombre de 6 685 chiffres.
+  //   On rédige la première, qui est la question d'école : a² − b².
+  // =========================================================================
+  function seance1ex10() {
+    return [
+      {
+        enonce: ['بيّن أنّ العدد 9876543210 يقبل القسمة على 15'],
+        indice: '15 = 3 × 5، و 3 و 5 أوّليان فيما بينهما: يكفي القسمة على 3 و على 5',
+        etapes: [
+          ['القاعدة', 'العدد يقبل القسمة على 15 إذا قبلها على 3 و على 5 معا'],
+          ['رقم آحاده صفر إذن يقبل القسمة على 5', '9876543210 = 5 × 1975308642'],
+          ['نجمع أرقامه', '9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1 + 0 = 45'],
+          ['و 45 يقبل القسمة على 3', '45 = 3 × 15'],
+          ['فالعدد يقبل القسمة على 3 و على 5', '9876543210 = 15 × 658436214'],
+          ['النتيجة', 'العدد 9876543210 يقبل القسمة على 15']
+        ],
+        controle: {
+          grands: true,
+          entiers: [['9876543210', '15 × 658436214'], ['9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1', '45']],
+          divisibles: [['9876543210', 15], ['9876543210', 3], ['9876543210', 5]]
+        }
+      },
+      {
+        enonce: ['حدّد باقي و خارج القسمة الإقليدية للجذاء (25^21 - 5^41) × 81 على 12'],
+        indice: 'اكتب 25^21 بأساس 5 ثمّ أخرج 5^41 عاملا مشتركا',
+        etapes: [
+          ['القاعدة', 'القوّة تُوحَّد الأساس: 25 = 5^2 إذن 25^21 = 5^42'],
+          ['نوحّد الأساس', '25^21 = 5^42'],
+          ['نُخرج العامل المشترك', '5^42 - 5^41 = 5^41 × 4'],
+          ['نضرب في 81', '5^41 × 4 × 81 = 5^41 × 324'],
+          ['و 324 مضاعف لـ 12', '324 = 12 × 27'],
+          ['فالجذاء', '(25^21 - 5^41) × 81 = 12 × 27 × 5^41'],
+          ['النتيجة', 'الباقي منعدم و الخارج هو 27 × 5^41']
+        ],
+        controle: {
+          grands: true,
+          entiers: [['(25^21 - 5^41) × 81', '12 × 27 × 5^41'],
+                    ['25^21', '5^42'], ['324', '12 × 27']],
+          divisibles: [['(25^21 - 5^41) × 81', 12]]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ العدد 2022^2 - 9 يقبل القسمة على 15'],
+        indice: 'إنّه فرق مربّعين',
+        etapes: [
+          ['القاعدة', 'فرق المربّعين: u^2 - v^2 = (u - v)(u + v)'],
+          ['نكتب 9 مربّعا', '9 = 3^2'],
+          ['نفكّك', '2022^2 - 9 = 2019 × 2025'],
+          ['و العامل الثاني مضاعف لـ 15', '2025 = 15 × 135'],
+          ['فالجذاء', '2019 × 2025 = 15 × 272565'],
+          ['النتيجة', 'العدد 2022^2 - 9 يقبل القسمة على 15']
+        ],
+        controle: {
+          grands: true,
+          entiers: [['2022^2 - 9', '2019 × 2025'], ['2025', '15 × 135'],
+                    ['2019 × 2025', '15 × 272565']],
+          // La seconde lecture du livre — celle où l'exposant est 2022 — est
+          // vraie elle aussi, et on la vérifie sur ses 6 685 chiffres.
+          divisibles: [['2022^2 - 9', 15], ['2022^2022 - 9', 15]]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ العدد 8^43 + 2^130 يقبل القسمة على 6'],
+        indice: 'وحّد الأساس: 8 قوّة للعدد 2',
+        etapes: [
+          ['القاعدة', '8 = 2^3 إذن 8^43 = 2^129'],
+          ['نوحّد الأساس', '8^43 = 2^129'],
+          ['نُخرج العامل المشترك', '2^129 + 2^130 = 2^129(1 + 2)'],
+          ['أي', '2^129 × 3 = 3 × 2^129'],
+          ['و 2^129 زوجي', '2^129 = 2 × 2^128'],
+          ['فالجذاء', '8^43 + 2^130 = 6 × 2^128'],
+          ['النتيجة', 'العدد 8^43 + 2^130 يقبل القسمة على 6']
+        ],
+        controle: {
+          grands: true,
+          entiers: [['8^43 + 2^130', '6 × 2^128'], ['8^43', '2^129'],
+                    ['2^129 + 2^130', '3 × 2^129']],
+          divisibles: [['8^43 + 2^130', 6], ['8^43 + 2^130', 3]]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ العدد 1aa7a4 يقبل القسمة على 12 مهما يكن الرقم الزوجي a'],
+        indice: '12 = 3 × 4 : اجمع الأرقام من أجل 3، و انظر إلى الرقمين الأخيرين '
+              + 'من أجل 4',
+        etapes: [
+          ['القاعدة', 'العدد يقبل القسمة على 12 إذا قبلها على 3 و على 4 معا'],
+          ['نجمع الأرقام', '1 + 7 + 4 = 12'],
+          ['فمجموع أرقام العدد', '12 + 3 × 0 = 12'],
+          ['و هو مضاعف لـ 3 مهما يكن a لأنّ 3a مضاعف لـ 3', '3 × 9 = 27'],
+          ['و الرقمان الأخيران a4 يعطيان', '10 × 0 + 4 = 4'],
+          ['و هو مضاعف لـ 4 كلّما كان a زوجيا', '84 = 4 × 21'],
+          ['النتيجة', 'العدد 1aa7a4 يقبل القسمة على 12']
+        ],
+        controle: {
+          grands: true,
+          entiers: [['100704', '12 × 8392'], ['188784', '12 × 15732']],
+          divisibles: [['100704', 12], ['122724', 12], ['144744', 12],
+                       ['166764', 12], ['188784', 12],
+                       ['100704', 3], ['188784', 4]]
+        }
+      }
+    ];
+  }
+
+
   const FIG111 = {
     O: ['point', '0', '0'], I: ['point', '1', '0'], J: ['point', '0', '1'],
     C: ['point', '0', '3√2'], M: ['point', '3', '0'], B: ['point', '6', '3√2'],
@@ -11757,7 +11997,7 @@
                 livre26seance1ex1, livre26seance1ex2, livre26seance1ex6,
                 livre26seance1ex7,
                 seance1ex1, seance1ex2, seance1ex5, seance1ex6, seance1ex7,
-                seance1ex11,
+                seance1ex9, seance1ex10, seance1ex11,
                 seance2ex1, seance2ex2, seance2ex3, seance2ex4, seance2ex5,
                 seance3ex1, seance3ex2, seance3ex3, seance3ex4, seance3ex6,
                 seance6ex1, seance6ex2, seance6ex3, seance6ex5, seance6ex6,

@@ -268,8 +268,34 @@
           sort: 'bibliothèque', ou: 'brevet ex17 — trois volets' },
         { n: '1.8', questions: 16, notions: ['QCM (7 items)', 'divisibilité', 'puissances', 'arrondis', 'arbre de choix'], sort: 'à faire',
           pourquoi: 'le plus gros exercice du livre : un QCM de 7 items puis 9 questions' },
-        { n: '1.9', questions: 3, notions: ['parité', 'multiples', 'fraction entière'], sort: 'à faire' },
-        { n: '1.10', questions: 8, notions: ['restes', 'divisibilité', 'puissances', 'nombres à chiffres littéraux'], sort: 'à faire' },
+        { n: '1.9', questions: 4,
+          notions: ['parité', 'multiples', 'identité en k', 'diviseurs de 15',
+                    'arbre de choix'],
+          sort: 'bibliothèque', ou: 'brevet ex19 — quatre volets',
+          pourquoi: 'n pair donne a = 6k+1, donc a+5 = 6(k+1) sans qu\'aucune valeur '
+                  + 'ne soit choisie — et les deux premières questions sont des '
+                  + 'IDENTITÉS en k et m, donc testées sur trente tirages. La '
+                  + 'question 2 revient à la liste des DIVISEURS de 15 : c\'est pour '
+                  + 'elle que `diviseurs` a été ajouté à entiers.js, sans quoi le '
+                  + '« et il n\'y en a pas d\'autres » ne serait vérifié par rien' },
+        { n: '1.10', questions: 8,
+          notions: ['restes', 'divisibilité', 'puissances', 'chiffres littéraux'],
+          sort: 'bibliothèque', ou: 'brevet ex1010 — cinq volets sur huit',
+          pourquoi: 'ses deux premières questions imprimées REPRENNENT mot pour mot '
+                  + 'l\'exercice 5 de la même séance (ex15 les porte déjà). Des six '
+                  + 'suivantes, CINQ sont portées — 9876543210, le quotient '
+                  + '27 × 5⁴¹, 2022²−9, 8⁴³+2¹³⁰ et le 1aa7a4. '
+                  + 'LA SEPTIÈME EST FAUSSE : « x2x5x4 est divisible par 6 quel que '
+                  + 'soit x » — la somme de ses chiffres vaut 3x+11, congrue à 2 '
+                  + 'modulo 3 POUR TOUT x, donc le nombre n\'est JAMAIS divisible '
+                  + 'par 3 (121514, 222524, 323534 ne le sont pas). Vingtième '
+                  + 'coquille, et elle n\'est pas rattrapable par un choix de x : il '
+                  + 'faut changer un chiffre fixe — x2x5x2, x2x6x4 et x3x5x4 '
+                  + 'marcheraient. Une falsification rejoue la question telle '
+                  + 'qu\'imprimée. Remarque : le livre compose « 2022² 2022 − 9 », le '
+                  + '2022 y est dupliqué — les DEUX lectures sont vraies, et le '
+                  + 'validateur les vérifie toutes les deux, la seconde en BigInt '
+                  + 'sur 6 685 chiffres' },
         { n: '1.11', questions: 8,
           notions: ['repère', 'symétrique', 'rectangle', 'parallélogramme', 'Pythagore', 'aire'],
           sort: 'bibliothèque', ou: 'brevet ex110 — huit volets',

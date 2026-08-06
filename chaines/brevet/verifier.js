@@ -143,7 +143,8 @@ function controlerClaims(c, envs) {
     }
   }
   if (!(c.claims || []).length && !(c.faits || []).length
-      && !(c.entiers || []).length && !(c.divisibles || []).length)
+      && !(c.entiers || []).length && !(c.divisibles || []).length
+      && !(c.diviseurs || []).length)
     p.push('بلا تأكيد يُراقَب');
   return p;
 }
@@ -160,6 +161,19 @@ function controlerEntiers(c) {
     catch (err) { p.push(`تعذّر « ${gauche} = ${droite} » (${err.message})`); continue; }
     controles++;
     if (g !== d) p.push(`« ${gauche} » ≠ « ${droite} »`);
+  }
+  // « les diviseurs de 15 sont 1, 3, 5, 15 » : la liste ENTIÈRE, balayée, et
+  // comparée dans l'ordre. Un diviseur oublié fait échouer autant qu'un
+  // diviseur inventé — c'est ce qui donne son sens au « et il n'y en a pas
+  // d'autres » de la rédaction.
+  for (const [expr, attendu] of (c.diviseurs || [])) {
+    let liste;
+    try { liste = E.diviseurs(E.evaluer(expr)).map(String); }
+    catch (err) { p.push(`تعذّر قواسم « ${expr} » (${err.message})`); continue; }
+    controles++;
+    const veut = String(attendu).trim().split(/\s+/);
+    if (liste.length !== veut.length || liste.some((x, i) => x !== veut[i]))
+      p.push(`قواسم « ${expr} » هي ${liste.join(' ')} لا ${veut.join(' ')}`);
   }
   for (const [expr, diviseur] of (c.divisibles || [])) {
     let n;
@@ -1959,6 +1973,59 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[0][3] = '12√3'; });
   pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
     c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
+
+  // ── الحصّة 1، التمرين 9 — une lettre paire, et les diviseurs de 15 ─────
+  pousse("le 6 sorti sans le second terme", parQuestion(19, 0),
+    c => { c.controle.claims[0][1] = "6k"; });
+  pousse("n suppose impair : a n est plus 6k + 1", parQuestion(19, 0),
+    c => { c.controle.derives.a = "6k + 2"; });
+  pousse("le facteur 2 de b oublie : 6 au lieu de 12", parQuestion(19, 1),
+    c => { c.controle.claims[0][1] = "6m(k + 1)"; });
+  pousse("b pris impair", parQuestion(19, 1),
+    c => { c.controle.derives.b = "2m + 1"; });
+  pousse("un diviseur de 15 oublie", parQuestion(19, 2),
+    c => { c.controle.diviseurs[0][1] = "1 3 5"; });
+  pousse("un diviseur de 15 invente", parQuestion(19, 2),
+    c => { c.controle.diviseurs[0][1] = "1 3 5 9 15"; });
+  pousse("t = 8 mal calcule", parQuestion(19, 2),
+    c => { c.controle.claims[2][1] = "5"; });
+  pousse("un quatrieme chiffre glisse dans l ensemble", parQuestion(19, 3),
+    c => { c.controle.ensemble.chiffres = [2, 4, 6, 8]; });
+  pousse("les chiffres autorises a se repeter", parQuestion(19, 3),
+    c => { c.controle.ensemble.distincts = false; });
+  pousse("la liste amputee d un nombre", parQuestion(19, 3),
+    c => { c.controle.faits[1][1] = "468 486 648 684 846"; });
+  pousse("l arbre compte 3 branches a chaque etage", parQuestion(19, 3),
+    c => { c.etapes[5][1] = "3 × 3 × 3 = 6"; });
+
+  // ── الحصّة 1، التمرين 10 — six divisibilités ───────────────────────────
+  pousse("le quotient par 15 decale", parQuestion(1010, 0),
+    c => { c.controle.entiers[0][1] = "15 × 658436215"; });
+  pousse("9876543210 declare divisible par 7", parQuestion(1010, 0),
+    c => { c.controle.divisibles[0] = ['9876543210', 7]; });
+  pousse("25^21 lu comme 5^41", parQuestion(1010, 1),
+    c => { c.etapes[1][1] = "25^21 = 5^41"; });
+  pousse("324 mal decompose", parQuestion(1010, 1),
+    c => { c.etapes[4][1] = "324 = 12 × 26"; });
+  pousse("la difference de carres mal fermee", parQuestion(1010, 2),
+    c => { c.etapes[2][1] = "2022^2 - 9 = 2019 × 2024"; });
+  pousse("2022^2 - 9 declare divisible par 7", parQuestion(1010, 2),
+    c => { c.controle.divisibles[0] = ['2022^2 - 9', 7]; });
+  pousse("8^43 lu comme 2^130", parQuestion(1010, 3),
+    c => { c.etapes[1][1] = "8^43 = 2^130"; });
+  pousse("le facteur 3 pris pour un 5", parQuestion(1010, 3),
+    c => { c.etapes[2][1] = "2^129 + 2^130 = 5 × 2^129"; });
+  pousse("a pris impair : a4 n est plus multiple de 4", parQuestion(1010, 4),
+    c => { c.controle.divisibles[0] = ['111714', 12]; });
+  // LA FALSIFICATION QUI PORTE LA COQUILLE. Ce n'est pas une erreur inventée :
+  // c'est la question 7 du livre, telle qu'imprimée. « x2x5x4 est divisible par
+  // 6 quel que soit x » — la somme de ses chiffres vaut 3x + 11, congrue à 2
+  // modulo 3 pour TOUT x, donc le nombre n'est jamais divisible par 3. Trois
+  // valeurs de x suffisent à le montrer, et le contrôle doit les refuser
+  // toutes les trois.
+  pousse("la question 7 du livre, telle qu imprimee : x2x5x4 divisible par 6",
+    parQuestion(1010, 4),
+    c => { c.controle.divisibles = [['121514', 6], ['222524', 6], ['323534', 6]]; });
 
   // ══ LES SOLIDES — six exercices que la machine ne savait pas tenir ═════
   //
