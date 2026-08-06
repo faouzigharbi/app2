@@ -78,10 +78,17 @@
                            sSub(sMul(deux, B.z), A.z));
   // L'isobarycentre de n points — le centre d'un carré, le centre de gravité
   // d'un triangle, le centre d'un cube. Il se calcule, il ne se pose pas.
+  // Le facteur est un RATIONNEL, pas un nombre de ℚ[√d] : il faut sEch et non
+  // sMul, sans quoi la division silencieuse rend n'importe quoi. Le premier
+  // centre de gravité à somme non nulle l'a montré — jusque-là tous les
+  // isobarycentres tombaient sur l'origine, et zéro divisé de travers reste
+  // zéro. C'est exactement le genre d'erreur qu'un contrôle qui RELIT ne
+  // trouve jamais et qu'un contrôle qui RECALCULE finit par trouver.
+  const echelle = (u, r) => pt(sEch(u.x, r), sEch(u.y, r), sEch(u.z, r));
   function centre(pts) {
     let s = pt(ZERO, ZERO, ZERO);
     for (const P of pts) s = somme(s, vect(pt(ZERO, ZERO, ZERO), P));
-    return mise(s, rat(1, pts.length));
+    return echelle(s, rat(1, pts.length));
   }
 
   // Le projeté ORTHOGONAL de M sur la droite (AB) — le pied de la hauteur.

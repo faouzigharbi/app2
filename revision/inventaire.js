@@ -310,8 +310,14 @@
           pourquoi: 'ce n\'est pas un exercice de coordonnées mais un exercice de '
                   + 'THALÈS posé dans un repère ; A y est le centre de gravité de EFC' },
         { n: '2.5', questions: 8,
-          notions: ['pyramide', 'droite ⊥ plan', 'plans parallèles', 'Thalès dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+          notions: ['tétraèdre régulier', 'droite ⊥ plan', 'plans parallèles',
+                    'Thalès dans l\'espace', 'centre de gravité'],
+          sort: 'bibliothèque', ou: 'brevet ex25 — huit volets',
+          pourquoi: 'toutes les arêtes valent 4√3 : OA = 4, SO = 4√2. E est à la '
+                  + 'MÊME hauteur que S, donc AOSE est un parallélogramme et '
+                  + '(ES)//(ABC). Et M, au tiers de [IE], est aux DEUX TIERS de la '
+                  + 'médiane [EI] du triangle EBC : c\'est son centre de gravité, '
+                  + '(MC) est la troisième médiane, et BF = EB/2 = 2√5' },
 
         // ── SÉANCE 3 — quatre exercices sur sept portés ───────────────────
         { n: '3.1', questions: 6,
@@ -356,8 +362,22 @@
                   + 'triangle À LA FOIS isocèle et rectangle. Tout est en √2, rien n\'est '
                   + 'approché, et 1/(√2+1) = √2−1 rend le changement de repère lisible' },
         { n: '3.7', questions: 10,
-          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'centre de gravité'],
+          sort: 'à arbitrer',
+          pourquoi: 'DEUX QUESTIONS NE SE REFERMENT PAS, et le recalcul le montre. '
+                  + 'Les données EF=4, HG=2 et IE=3 forcent EG=9/2 ; avec EH=3√5/2 '
+                  + 'le trapèze est ENTIÈREMENT déterminé (non isocèle, hauteur '
+                  + '√155/4) — et alors (1) la question 3 est vide : J, projeté de I '
+                  + 'sur la base, est l\'intersection des diagonales de ABCD, donc '
+                  + 'J ∈ (BD), donc (DJ) = (DB) rencontre (BC) en B lui-même et '
+                  + 'BL = 0 ; (2) la question 5أ est FAUSSE : « AIH rectangle en I » '
+                  + 'équivaut exactement à (EG) ⊥ (HF), et le produit scalaire des '
+                  + 'deux diagonales vaut −3/4, pas 0. Il manque de peu — avec '
+                  + 'EH = √43/2 au lieu de 3√5/2 les diagonales seraient bien '
+                  + 'perpendiculaires. Le reste tient : AG = √481/2, AJ = 3, M tel '
+                  + 'que H et G sont les milieux de [ME] et [MF], I centre de gravité '
+                  + 'de MEF donc N milieu de [EF], AI = √109. À faire arbitrer par le '
+                  + 'maître : c\'est la donnée EH qui est en cause' },
 
         // ── SÉANCE 4 — cinq exercices sur six ─────────────────────────────
         // (le comptage automatique donnait 2 : la couche de texte des pages 15
@@ -392,9 +412,15 @@
           sort: 'bibliothèque', ou: 'brevet ex45 — sept volets',
           pourquoi: 'un triangle isocèle qui porte un angle de 60° est ÉQUILATÉRAL — '
                   + 'c\'est de là que part toute la figure' },
-        { n: '4.6', questions: 8,
-          notions: ['pyramide régulière', 'droite ⊥ plan', 'triangle équilatéral', 'volume'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+        { n: '4.6', questions: 7,
+          notions: ['pyramide sur un coin', 'droite ⊥ plan', 'triangle équilatéral',
+                    'relation métrique', 'volume'],
+          sort: 'bibliothèque', ou: 'brevet ex46 — sept volets',
+          pourquoi: 'le mot « منتظم » de l\'énoncé est un lapsus : (AS) ⊥ (ABC) met le '
+                  + 'sommet à l\'aplomb de A. AS = AB = 4 donne SB = SD = BD = 4√2, '
+                  + 'donc SBD ÉQUILATÉRAL sans un calcul de plus. Et la dernière '
+                  + 'question fabrique la vraie pyramide régulière : M, milieu de '
+                  + '[SC], est à l\'aplomb du centre du carré, et son volume vaut 32/3' },
 
         // ── SÉANCE 5 — sept exercices sur huit ────────────────────────────
         { n: '5.1', questions: 7,
@@ -428,8 +454,16 @@
           pourquoi: 'sur ]0;1[ les deux quantités 3x−5 et x−4 sont négatives : '
                   + 'les deux valeurs absolues se lèvent de la même façon' },
         { n: '5.6', questions: 7,
-          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'triangle isocèle dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès',
+                    'médiane et demi-hypoténuse'],
+          sort: 'bibliothèque', ou: 'brevet ex56 — sept volets',
+          pourquoi: 'l\'énoncé ne donne AUCUNE longueur — que des relations. Les '
+                  + 'chaînes le restent : elles n\'écrivent que des égalités entre '
+                  + 'longueurs (CM = CD, MD = 2×CD, NB = MH/2) et pas un seul nombre. '
+                  + 'Thalès donne C milieu de [MD], BC = CD fait voir [MD] sous un '
+                  + 'angle droit depuis B, et les DEUX triangles rectangles MBH et '
+                  + 'MDH partagent l\'hypoténuse [MH] : leurs médianes sont égales, '
+                  + 'NB = ND' },
         { n: '5.7', questions: 5,
           notions: ['valeur d\'une expression', 'factoriser par un facteur commun',
                     'produit nul', 'aire d\'un trapèze', 'aire d\'un triangle équilatéral'],
@@ -473,9 +507,15 @@
           pourquoi: 'la figure est la construction classique du nombre d\'or : dans le '
                   + 'carré de côté 1, CE = a et CF = b, et BC² = CF × CE dit que ab = 1' },
         { n: '6.6', questions: 7,
-          notions: ['parallélépipède', 'droite ⊥ plan', 'triangle isocèle dans l\'espace'],
-          sort: 'hors machinerie',
-          pourquoi: 'l\'espace n\'a aucun chapitre. Le livre le numérote « 5 » lui aussi' },
+          notions: ['parallélépipède', 'droite ⊥ plan', 'médiane et demi-hypoténuse',
+                    'droite des milieux'],
+          sort: 'bibliothèque', ou: 'brevet ex66 — sept volets',
+          pourquoi: 'le livre le numérote « 5 » lui aussi. La condition « ENH isocèle » '
+                  + 'donne FN = NG, donc N est le MILIEU de [FG] — et alors '
+                  + 'EN = NH = 4 = EH : le triangle est ÉQUILATÉRAL. Le pivot est la '
+                  + 'question 4 : dans EMN la médiane [EH] vaut 4 et MN vaut 8, donc '
+                  + 'l\'angle en E est droit. Et KN = 4 se lit en redescendant dans '
+                  + 'la face carrée, où L milieu de [EH] donne LK = 2' },
 
         // ── SÉANCE 7 — LUE ET PORTÉE EN ENTIER, les quatre exercices ──────
         { n: '7.1', questions: 9,
@@ -530,8 +570,14 @@
           pourquoi: 'C est le milieu de [OA], donc [BC] est une MÉDIANE de OAB — et '
                   + 'BI = 2BC/3 fait de I son centre de gravité. Tout s\'enchaîne de là' },
         { n: '8.4', questions: 8,
-          notions: ['pyramide', 'droite ⊥ plan', 'intersection de plans', 'volume'],
-          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+          notions: ['pyramide penchée', 'droite ⊥ plan', 'intersection de plans',
+                    'Thalès', 'pyramide régulière', 'volume'],
+          sort: 'bibliothèque', ou: 'brevet ex84 — huit volets',
+          pourquoi: 'la hauteur est l\'ARÊTE [SA] elle-même : AI = 3, SA = 4, SI = 5 — '
+                  + 'le triangle 3-4-5 dressé dans l\'espace. La verticale de G est '
+                  + 'dans (SAI) et rencontre (SBC) sur leur droite d\'intersection, '
+                  + 'qui est (SI) ; Thalès donne JG = 4/3. Et JABC, lui, EST régulier : '
+                  + 'JB = 2√13/3 et son volume vaut 4√3/3' },
         { n: '8.5', questions: 6,
           notions: ['valeur absolue', 'factorisation cachée d\'un numérateur',
                     'signe', 'comparer', 'somme de trois inégalités'],
@@ -734,8 +780,15 @@
           pourquoi: 'CDH est équilatéral de côté 6√3 : B en est donc à la fois le '
                   + 'centre de gravité, l\'orthocentre ET le centre du cercle circonscrit' },
         { n: '13.4', questions: 7,
-          notions: ['pyramide régulière', 'perpendicularité dans l\'espace', 'section'],
-          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+          notions: ['pyramide régulière', 'relation métrique', 'droite ⊥ plan',
+                    'centre de gravité', 'droite des milieux'],
+          sort: 'bibliothèque', ou: 'brevet ex134 — sept volets',
+          pourquoi: 'OB = 2, SB = 2√5, puis les deux relations métriques donnent '
+                  + 'OH = 4√5/5 et BH = 2√5/5. Tout le reste tient sur (AC) ⊥ (SBD). '
+                  + 'Et la dernière question est un CENTRE DE GRAVITÉ déguisé : [SO] '
+                  + 'est une médiane de SBD, G est à ses deux tiers, donc (BG) est une '
+                  + 'autre médiane et J est le milieu de [SD] — (OJ) joint alors les '
+                  + 'milieux de [DB] et [DS], il est parallèle à (BH)' },
         { n: '13.5', questions: 8,
           notions: ['repère', 'rectangle', 'parallélogramme', 'Pythagore', 'aire'],
           sort: 'bibliothèque', ou: 'brevet ex110 — c\'est EXACTEMENT l\'exercice 11 de la séance 1',
@@ -965,8 +1018,10 @@
         { n: '3.4', questions: 12, notions: ['cercle de diamètre', 'triangle rectangle', 'Thalès', 'aire', 'trapèze isocèle'],
           sort: 'bibliothèque', ou: 'brevet ex24 — DOUBLON du 2025, séance 2 exercice 4',
           pourquoi: 'A(2 ; 0) et B(6 ; 6) — les mêmes coordonnées' },
-        { n: '3.5', questions: 8, notions: ['pyramide régulière', 'perpendicularité dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+        { n: '3.5', questions: 8,
+          notions: ['tétraèdre régulier', 'droite ⊥ plan', 'centre de gravité'],
+          sort: 'bibliothèque', ou: 'brevet ex25 — DOUBLON du 2025, séance 2 exercice 5',
+          pourquoi: 'AB = 4√3, EA = 4√2, OM/AE = IM/IE = 1/3 — mot pour mot le même' },
         { n: '4.1', questions: 4, notions: ['Thalès quatre fois'],
           sort: 'bibliothèque', ou: 'brevet ex31 — DOUBLON du 2025, séance 3 exercice 1',
           pourquoi: 'AB = 3, AC = 5, BC = 6, BM = 1 — les mêmes données' },
@@ -982,8 +1037,11 @@
           sort: 'bibliothèque', ou: 'brevet ex36 — DOUBLON du 2025, séance 3 exercice 6',
           pourquoi: 'BCE isocèle ET rectangle, BE = 2+√2, JE/JA = √2, HJ = 2, et le changement '
                   + 'de repère final dans (D ; B ; E) — le plus long exercice du livre 2025' },
-        { n: '4.7', questions: 5, notions: ['prisme droit', 'trapèze', 'espace'],
-          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+        { n: '4.7', questions: 10, notions: ['prisme droit', 'trapèze', 'droite ⊥ plan'],
+          sort: 'à arbitrer', ou: 'DOUBLON du 2025, séance 3 exercice 7',
+          pourquoi: 'HG=2, EF=4, FB=10, IE=3, EH=3√5/2 — les mêmes données, donc les '
+                  + 'MÊMES deux questions qui ne se referment pas. C\'est la quatrième '
+                  + 'coquille du 2025 reproduite telle quelle en 2026' },
 
         // ── LE BALAYAGE ARITHMÉTIQUE ET RADICAUX DES HUIT SÉANCES ───────────
         // Cinq exercices de radicaux hors séance 1, et les CINQ sont déjà dans
@@ -1157,7 +1215,7 @@
 
     { fichier: 'revision_Concours_2019_EspaceExe1C.pdf', pages: 3, texte: 'lisible',
       etat: 'non lu', exercices: 1, chapitres: ['espace'],
-      machine: ['la géométrie de l\'espace n\'a pas de chapitre'] },
+      machine: ['plus aucun obstacle : espace.js recalcule les solides'] },
 
     { fichier: 'revision1.pdf', pages: 4, texte: 'lisible', etat: 'non lu', exercices: 6 },
     { fichier: 'revision2012.pdf', pages: 3, texte: 'opaque', etat: 'non lu' },
@@ -1204,7 +1262,7 @@
 
   // ── Le compte, pour ne pas se raconter d'histoires ───────────────────────
   function bilan() {
-    let pages = 0, ex = 0, faits = 0, aFaire = 0, hors = 0;
+    let pages = 0, ex = 0, faits = 0, aFaire = 0, hors = 0, arbitrer = 0;
     for (const d of INVENTAIRE) {
       pages += d.pages || 0;
       const c = d.contenu || [];
@@ -1213,10 +1271,15 @@
         if (e.sort === 'bibliothèque') faits++;
         else if (e.sort === 'à faire') aFaire++;
         else if (e.sort === 'hors machinerie') hors++;
+        // « à arbitrer » : l'exercice est LU, recalculé, et c'est le recalcul
+        // qui refuse — une donnée de l'énoncé ne se referme pas. Ce n'est ni un
+        // manque de machine ni un travail restant : c'est une question posée au
+        // maître, et elle doit se compter à part pour ne pas se perdre.
+        else if (e.sort === 'à arbitrer') arbitrer++;
       }
     }
     return { documents: INVENTAIRE.length, pages, exercicesRecenses: ex,
-             dansLaBibliotheque: faits, aFaire, horsMachinerie: hors };
+             dansLaBibliotheque: faits, aFaire, horsMachinerie: hors, aArbitrer: arbitrer };
   }
 
   const API = { INVENTAIRE, bilan };

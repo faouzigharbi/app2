@@ -2264,6 +2264,227 @@
   //   l'origine, (BC) sur l'axe — et A n'y est pas recopié : il est CONTRAINT
   //   par AB = 3 et AC = 5, qui ne laissent qu'un point (à symétrie près).
   // =========================================================================
+  // =========================================================================
+  // الحصّة 2 — التمرين 5   (LE TÉTRAÈDRE RÉGULIER)
+  //
+  //   SABC est un tétraèdre dont TOUTES les arêtes valent 4√3 — c'est ce que
+  //   dit « كلّ أحرفه متقايسة », et c'est ce qui fait marcher tout l'exercice :
+  //   la base est équilatérale, donc O en est le centre de gravité et
+  //   OA = 2/3 × 6 = 4 ; puis SO² = 48 − 16 = 32 donne la hauteur 4√2.
+  //
+  //   LA BELLE FIN. On place E sur la perpendiculaire à la base en A, à la
+  //   distance 4√2 — c'est-à-dire à la MÊME hauteur que S. Alors AOSE est un
+  //   parallélogramme (AE→ = OS→), d'où (ES) // (ABC) et ES = OA = 4. Et
+  //   surtout : M, intersection de (EI) et (OS), est au tiers de [IE] — donc
+  //   aux DEUX TIERS de la médiane [EI] du triangle EBC depuis E. M est le
+  //   CENTRE DE GRAVITÉ de EBC, (MC) en est la troisième médiane, elle coupe
+  //   [EB] en son MILIEU, et BF = EB/2 = 2√5. Tout l'espace de cet exercice se
+  //   referme sur un centre de gravité de quatrième année.
+  //
+  //   LE PLAN DE CONTRÔLE. La base équilatérale est posée autour de l'origine
+  //   (rayon 4), O est CALCULÉ comme son centre, I comme un milieu, et M et F
+  //   comme des INTERSECTIONS de droites de l'espace — deux droites qui, dans
+  //   l'espace, ne se coupent en général pas : espace.js refuse quand elles ne
+  //   sont pas coplanaires, et ici il ne refuse pas, ce qui est déjà un
+  //   théorème vérifié.
+  // =========================================================================
+  const FIG25 = {
+    A: ['point', '4', '0', '0'],
+    B: ['point', '-2', '-2√3', '0'],
+    C: ['point', '-2', '2√3', '0'],
+    O: ['centre', 'A', 'B', 'C'],
+    I: ['milieu', 'B', 'C'],
+    S: ['point', '0', '0', '4√2'],
+    E: ['point', '4', '0', '4√2'],
+    M: ['inter', 'E', 'I', 'O', 'S'],
+    F: ['inter', 'M', 'C', 'E', 'B']
+  };
+  const DONNEES25 = 'SABC هرم كلّ أحرفه متقايسة حيث AB = 4√3، و I منتصف [BC]، و O '
+                  + 'مركز المثلّث ABC';
+
+  function seance2ex5() {
+    return [
+      {
+        enonce: [DONNEES25, 'بيّن أنّ OA = 4'],
+        indice: 'المركز في المثلّث المتقايس الأضلاع هو مركز الثقل: احسب المتوسّط '
+              + '[AI] ثمّ خذ ثلثيه',
+        etapes: [
+          ['القاعدة', 'في المثلّث المتقايس الأضلاع، المركز هو مركز الثقل، و يقع '
+                    + 'على كلّ متوسّط على ثلثيه من الرأس'],
+          ['ضلع القاعدة', 'AB = 4√3'],
+          ['و I منتصف [BC]', 'BI = 2√3'],
+          ['نطبّق فيتاغور في المثلّث ABI القائم في I', 'AI^2 = 48 - 12'],
+          ['أي', 'AI = 6'],
+          ['و OA ثلثا المتوسّط', 'OA = 2 × 6/3'],
+          ['النتيجة', 'لنا OA = 4']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['longueur', 'O', 'A', '4'], ['equilateral', 'A', 'B', 'C'],
+                  ['centre-gravite', 'O', 'A', 'B', 'C'], ['milieu', 'I', 'B', 'C'],
+                  ['longueur', 'A', 'I', '6'], ['rectangle-en', 'I', 'A', 'B'],
+                  ['pyramide-reguliere', 'S', 'O', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ SO = 4√2'],
+        indice: 'المثلّث SOA قائم في O، و SA حرف من أحرف الهرم',
+        etapes: [
+          ['القاعدة', 'الارتفاع [SO] عمودي على مستوي القاعدة، إذن على (OA)'],
+          ['و كلّ أحرف الهرم متقايسة', 'SA = 4√3'],
+          ['و قد حسبنا', 'OA = 4'],
+          ['نطبّق فيتاغور في المثلّث SOA القائم في O', 'SO^2 = 48 - 16'],
+          ['أي', 'SO^2 = 32'],
+          ['نبسّط الجذر', '√32 = 4√2'],
+          ['النتيجة', 'لنا SO = 4√2']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['longueur', 'S', 'O', '4√2'], ['longueur', 'S', 'A', '4√3'],
+                  ['longueur', 'S', 'B', '4√3'], ['longueur', 'S', 'C', '4√3'],
+                  ['rectangle-en', 'O', 'S', 'A'],
+                  ['perpendiculaire-plan', 'S', 'O', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ (BC) ⊥ (SAI)'],
+        indice: 'المثلّثان ABC و SBC متقايسا الضلعين، و [AI] و [SI] متوسّطان فيهما',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['المثلّث ABC متقايس الأضلاع و I منتصف [BC]', 'المستقيمان (BC) و (AI) '
+                                                       + 'متعامدان'],
+          ['و المثلّث SBC متقايس الضلعين في S', 'SB = 4√3'],
+          ['فالمتوسّط [SI] ارتفاع فيه', 'المستقيمان (BC) و (SI) متعامدان'],
+          ['و (AI) و (SI) متقاطعان في I و هما من المستوي (SAI)', 'إذن شرط '
+                                                                + 'القاعدة متحقّق'],
+          ['نتحقّق عدديا من طول [SI]', 'SI = 6'],
+          ['النتيجة', 'المستقيم (BC) عمودي على المستوي (SAI)']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['perpendiculaire-plan', 'B', 'C', 'S', 'A', 'I'],
+                  ['perpendiculaires', 'B', 'C', 'A', 'I'],
+                  ['perpendiculaires', 'B', 'C', 'S', 'I'],
+                  ['longueur', 'S', 'I', '6'], ['isocele', 'S', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['ليكن Δ المستقيم المارّ من A و العمودي على (ABC)، و E النقطة من Δ '
+               + 'حيث EA = 4√2', 'بيّن أنّ EB = EC'],
+        indice: 'المستقيم Δ عمودي على المستوي، إذن على (AB) و على (AC)',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['فالمثلّثان EAB و EAC قائمان في A', 'EA = 4√2'],
+          ['و ضلعا القاعدة', 'AB = AC'],
+          ['نطبّق فيتاغور في الأوّل', 'EB^2 = 32 + 48'],
+          ['أي', 'EB = 4√5'],
+          ['و في الثاني بنفس الأعداد', 'EC = 4√5'],
+          ['النتيجة', 'لنا EB = EC']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['longueur', 'E', 'B', '4√5'], ['longueur', 'E', 'C', '4√5'],
+                  ['longueur', 'E', 'A', '4√2'],
+                  ['perpendiculaire-plan', 'E', 'A', 'A', 'B', 'C'],
+                  ['rectangle-en', 'A', 'E', 'B'], ['isocele', 'E', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ E ∈ (SAI)'],
+        indice: 'المثلّث EBC متقايس الضلعين: ماذا يمثّل [EI] فيه ؟',
+        etapes: [
+          ['القاعدة', 'المستويان العموديان على نفس المستقيم في نفس النقطة منطبقان'],
+          ['المثلّث EBC متقايس الضلعين في E', 'EB = 4√5'],
+          ['فالمتوسّط [EI] ارتفاع فيه', 'المستقيمان (BC) و (EI) متعامدان'],
+          ['و (BC) عمودي على (AI) كذلك', 'المستقيمان (BC) و (AI) متعامدان'],
+          ['فالمستوي (EAI) عمودي على (BC) في I', 'EI = 2√17'],
+          ['و المستوي (SAI) عمودي على (BC) في I أيضا', 'SI = 6'],
+          ['فالمستويان منطبقان', 'إذن (EAI) هو نفسه (SAI)'],
+          ['النتيجة', 'النقطة E تنتمي إلى المستوي (SAI)']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['dans-plan', 'E', 'S', 'A', 'I'], ['coplanaires', 'S', 'A', 'I', 'E'],
+                  ['perpendiculaires', 'B', 'C', 'E', 'I'],
+                  ['perpendiculaire-plan', 'B', 'C', 'E', 'A', 'I'],
+                  ['longueur', 'E', 'I', '2√17']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ (ES)//(ABC)'],
+        indice: 'المستقيمان (AE) و (OS) عموديان على نفس المستوي: ماذا تستنتج عن '
+              + 'الرباعي AOSE ؟',
+        etapes: [
+          ['القاعدة', 'المستقيمان العموديان على نفس المستوي متوازيان ; و الرباعي '
+                    + 'الذي فيه ضلعان متوازيان و متقايسان متوازي أضلاع'],
+          ['المستقيمان (AE) و (OS) عموديان على المستوي (ABC)', 'إذن (AE) يوازي (OS)'],
+          ['و الطول الأوّل', 'AE = 4√2'],
+          ['و الثاني', 'OS = 4√2'],
+          ['فالرباعي AOSE متوازي أضلاع', 'ES = OA'],
+          ['أي', 'ES = 4'],
+          ['و (OA) مستقيم من المستوي (ABC)', 'إذن (ES) يوازي (OA)'],
+          ['النتيجة', 'المستقيم (ES) يوازي المستوي (ABC)']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['parallele-plan', 'E', 'S', 'A', 'B', 'C'],
+                  ['parallelogramme', 'A', 'O', 'S', 'E'],
+                  ['paralleles', 'E', 'S', 'O', 'A'], ['longueur', 'E', 'S', '4'],
+                  ['perpendiculaire-plan', 'A', 'E', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['لتكن M نقطة تقاطع (EI) و (OS)', 'بيّن أنّ OM/AE = IM/IE = 1/3'],
+        indice: 'المستقيمان (OM) و (AE) عموديان على المستوي (ABC): طالس في '
+              + 'المثلّث IAE',
+        etapes: [
+          ['القاعدة', 'طالس: إذا وازى (OM) الضلع (AE) في المثلّث IAE فإنّ '
+                    + 'IO/IA = IM/IE = OM/AE'],
+          ['المستقيمان (OM) و (AE) عموديان على المستوي (ABC)', 'إذن (OM) يوازي (AE)'],
+          ['و O من [IA] حيث', 'IO = 2'],
+          ['و', 'IA = 6'],
+          ['فالنسبة الأولى', 'IO/IA = 1/3'],
+          ['نحسب OM', 'OM = 4√2/3'],
+          ['و AE', 'AE = 4√2'],
+          ['النتيجة', 'لنا OM/AE = 1/3']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['rapport', 'O', 'M', 'A', 'E', '1/3'],
+                  ['rapport', 'I', 'M', 'I', 'E', '1/3'],
+                  ['rapport', 'I', 'O', 'I', 'A', '1/3'],
+                  ['paralleles', 'O', 'M', 'A', 'E'], ['alignes', 'E', 'M', 'I'],
+                  ['alignes', 'O', 'M', 'S'], ['longueur', 'O', 'M', '4√2/3']]
+        }
+      },
+      {
+        enonce: ['المستقيم (MC) يقطع [EB] في F', 'أحسب BF'],
+        indice: 'النقطة M على المتوسّط [EI] للمثلّث EBC، و على أيّ بعد من E ؟',
+        etapes: [
+          ['القاعدة', 'مركز ثقل مثلّث يقع على كلّ متوسّط على ثلثيه من الرأس، و '
+                    + 'كلّ متوسّط يمرّ بمنتصف الضلع المقابل'],
+          ['النقطة I منتصف [BC]', 'إذن [EI] متوسّط في المثلّث EBC'],
+          ['و M عليه حيث', 'IM/IE = 1/3'],
+          ['أي على ثلثي المتوسّط من E', 'EM/EI = 2/3'],
+          ['فالنقطة M هي مركز ثقل المثلّث EBC', 'إذن (MC) متوسّط ثالث فيه'],
+          ['فهو يمرّ بمنتصف [EB]', 'EB = 4√5'],
+          ['و BF نصفه', 'BF = 4√5/2'],
+          ['النتيجة', 'لنا BF = 2√5']
+        ],
+        controle: {
+          espace: FIG25,
+          faits: [['longueur', 'B', 'F', '2√5'], ['milieu', 'F', 'E', 'B'],
+                  ['centre-gravite', 'M', 'E', 'B', 'C'],
+                  ['rapport', 'E', 'M', 'E', 'I', '2/3'],
+                  ['alignes', 'M', 'C', 'F'], ['coplanaires', 'E', 'B', 'C', 'M']]
+        }
+      }
+    ];
+  }
+
+
   const FIG31 = {
     B: ['point', '0', '0'], C: ['point', '6', '0'], A: ['point', '5/3', '2√14/3'],
     M: ['point', '1', '0'],
@@ -4650,6 +4871,922 @@
           faits: [['longueur', 'C', 'E', '6√3'], ['longueur', 'C', 'D', '6√3'],
                   ['milieu', 'C', 'E', 'H'], ['perpendiculaires', 'D', 'E', 'D', 'H'],
                   ['alignes', 'C', 'H', 'E']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 4 — التمرين 6   (une pyramide POSÉE SUR UN COIN)
+  //
+  //   Le mot « منتظم » de l'énoncé est un lapsus : (AS) ⊥ (ABC) met le sommet
+  //   à la VERTICALE DE A, pas du centre. Ce n'est donc pas une pyramide
+  //   régulière — et c'est la dernière question qui en fabrique une : M, point
+  //   où la verticale de O rencontre (SC), est le MILIEU de [SC], il est à
+  //   l'aplomb du centre du carré, et MABCD, lui, est régulier.
+  //
+  //   Le fil est court et net : AS = AB = 4 donne ABS rectangle isocèle en A,
+  //   d'où SB = SD = 4√2 = BD et SBD ÉQUILATÉRAL sans un calcul de plus. Puis
+  //   (BD) ⊥ (ASC) — les diagonales du carré, plus la hauteur —, ce qui rend
+  //   (BO) perpendiculaire à tout le plan (ASC) et met le triangle BOK debout
+  //   sur son angle droit en O : BK² = BO² + OK².
+  // =========================================================================
+  const FIG46 = {
+    A: ['point', '0', '0', '0'], B: ['point', '4', '0', '0'],
+    C: ['point', '4', '4', '0'], D: ['point', '0', '4', '0'],
+    S: ['point', '0', '0', '4'],
+    O: ['milieu', 'A', 'C'],
+    Z: ['translate', 'O', 'A', 'S'],
+    K: ['proj', 'A', 'O', 'S'],
+    M: ['inter', 'O', 'Z', 'S', 'C']
+  };
+  const DONNEES46 = 'SABCD هرم قاعدته المربّع ABCD حيث AB = AS = 4 و (AS) ⊥ (ABC)، '
+                  + 'و I منتصف [CD]';
+
+  function seance4ex6() {
+    return [
+      {
+        enonce: [DONNEES46, 'بيّن أنّ ABS قائم في A'],
+        indice: 'المستقيم (AS) عمودي على مستوي القاعدة، و (AB) مستقيم من هذا المستوي',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['المعطى', 'AS = 4'],
+          ['و ضلع المربّع', 'AB = 4'],
+          ['فالمثلّث ABS قائم في A، و فيتاغور يعطي', 'SB^2 = 16 + 16'],
+          ['نبسّط الجذر', '√32 = 4√2'],
+          ['النتيجة', 'المثلّث ABS قائم الزاوية في A، و SB = 4√2']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['rectangle-en', 'A', 'B', 'S'], ['carre', 'A', 'B', 'C', 'D'],
+                  ['longueur', 'S', 'B', '4√2'], ['longueur', 'A', 'S', '4'],
+                  ['perpendiculaire-plan', 'A', 'S', 'A', 'B', 'C'],
+                  ['isocele', 'A', 'B', 'S']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ SBD مثلّث متقايس الأضلاع'],
+        indice: 'احسب الأضلاع الثلاثة: اثنان بفيتاغور، و الثالث قطر المربّع',
+        etapes: [
+          ['القاعدة', 'المثلّث الذي أضلاعه الثلاثة متقايسة متقايس الأضلاع'],
+          ['من السؤال السابق', 'SB = 4√2'],
+          ['و بنفس البرهان مع (AD)', 'SD = 4√2'],
+          ['و [BD] قطر المربّع ضلعه 4', 'BD = 4√2'],
+          ['فالأضلاع الثلاثة متقايسة', 'SB = BD'],
+          ['النتيجة', 'المثلّث SBD متقايس الأضلاع ضلعه 4√2']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['equilateral', 'S', 'B', 'D'], ['longueur', 'S', 'D', '4√2'],
+                  ['longueur', 'B', 'D', '4√2'], ['rectangle-en', 'A', 'D', 'S']]
+        }
+      },
+      {
+        enonce: ['لتكن O منتصف [AC]', 'بيّن أنّ (BD) ⊥ (ASC)'],
+        indice: 'أوجد مستقيمين متقاطعين من المستوي (ASC) يكون (BD) عموديا على '
+              + 'كلّ منهما',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['قطرا المربّع متعامدان', 'المستقيمان (BD) و (AC) متعامدان'],
+          ['و (AS) عمودي على مستوي القاعدة', 'المستقيمان (BD) و (AS) متعامدان'],
+          ['و (AC) و (AS) متقاطعان في A و هما من المستوي (ASC)', 'إذن شرط '
+                                                                + 'القاعدة متحقّق'],
+          ['نتحقّق عدديا من التماثل', 'SB = SD'],
+          ['و', 'OB = OD'],
+          ['النتيجة', 'المستقيم (BD) عمودي على المستوي (ASC)']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['perpendiculaire-plan', 'B', 'D', 'A', 'S', 'C'],
+                  ['milieu', 'O', 'A', 'C'], ['milieu', 'O', 'B', 'D'],
+                  ['perpendiculaires', 'B', 'D', 'A', 'C'],
+                  ['longueur', 'O', 'B', '2√2']]
+        }
+      },
+      {
+        enonce: ['لتكن K المسقط العمودي لـ A على (OS)', 'أحسب BK'],
+        indice: 'العلاقة المترية في المثلّث AOS القائم في A تعطي OK ; ثمّ فيتاغور '
+              + 'في المثلّث BOK',
+        etapes: [
+          ['القاعدة', 'في مثلّث قائم، مربّع ضلع القائمة يساوي جداء الوتر في مسقط '
+                    + 'ذلك الضلع عليه'],
+          ['المثلّث AOS قائم في A حيث', 'AO = 2√2'],
+          ['و', 'AS = 4'],
+          ['فالوتر', 'OS = 2√6'],
+          ['و العلاقة المترية تعطي', 'OK = AO^2/OS'],
+          ['أي', 'OK = 2√6/3'],
+          ['و (BD) عمودي على (ASC) و K منه', 'المثلّث BOK قائم في O'],
+          ['نطبّق فيتاغور', 'BK^2 = 8 + 8/3'],
+          ['أي', 'BK^2 = 32/3'],
+          ['النتيجة', 'لنا BK = 4√6/3']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['longueur', 'B', 'K', '4√6/3'], ['projete-droite', 'K', 'A', 'O', 'S'],
+                  ['longueur', 'O', 'K', '2√6/3'], ['longueur', 'O', 'S', '2√6'],
+                  ['rectangle-en', 'O', 'B', 'K'], ['longueur', 'A', 'K', '4√3/3']]
+        }
+      },
+      {
+        enonce: ['ليكن Δ المستقيم المارّ من O و العمودي على (ABC)', 'بيّن أنّ Δ ⊂ (ASC)'],
+        indice: 'المستقيمان Δ و (AS) عموديان على نفس المستوي ; و أين تقع O ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم الموازي لمستو و له نقطة منه يكون محتوى فيه'],
+          ['المستقيمان Δ و (AS) عموديان على المستوي (ABC)', 'إذن Δ يوازي (AS)'],
+          ['و (AS) مستقيم من المستوي (ASC)', 'إذن Δ يوازي المستوي (ASC)'],
+          ['و O منتصف [AC] حيث', 'OA = 2√2'],
+          ['و', 'OC = 2√2'],
+          ['فالنقطة O من المستقيم (AC) إذن من المستوي (ASC)', 'إذن لـ Δ نقطة منه'],
+          ['النتيجة', 'المستقيم Δ محتوى في المستوي (ASC)']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['dans-plan', 'O', 'A', 'S', 'C'], ['dans-plan', 'Z', 'A', 'S', 'C'],
+                  ['paralleles', 'O', 'Z', 'A', 'S'], ['alignes', 'A', 'O', 'C'],
+                  ['perpendiculaire-plan', 'O', 'Z', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['المستقيم Δ يقطع (SC) في M', 'بيّن أنّ الهرم MABCD منتظم'],
+        indice: 'أين تسقط M عموديا على القاعدة ؟ و ما هي O بالنسبة للمربّع ؟',
+        etapes: [
+          ['القاعدة', 'الهرم منتظم إذا كانت قاعدته منتظمة و سقط رأسه عموديا على '
+                    + 'مركزها'],
+          ['النقطة M من Δ', 'إذن (OM) عمودي على مستوي القاعدة'],
+          ['و O مركز المربّع ABCD حيث', 'OA = OB'],
+          ['و', 'OC = OD'],
+          ['فالرأس M يسقط عموديا على مركز القاعدة', 'MA = 2√3'],
+          ['و', 'MB = 2√3'],
+          ['النتيجة', 'الهرم MABCD منتظم']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['pyramide-reguliere', 'M', 'O', 'A', 'B', 'C', 'D'],
+                  ['milieu', 'M', 'S', 'C'], ['longueur', 'M', 'A', '2√3'],
+                  ['longueur', 'M', 'C', '2√3'], ['longueur', 'O', 'M', '2'],
+                  ['perpendiculaire-plan', 'O', 'M', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['أحسب حجم الهرم MABCD'],
+        indice: 'ثلث جداء مساحة القاعدة في الارتفاع [OM]',
+        etapes: [
+          ['القاعدة', 'حجم الهرم يساوي ثلث جداء مساحة القاعدة في الارتفاع'],
+          ['ضلع المربّع', 'AB = 4'],
+          ['فمساحة القاعدة', '4 × 4 = 16'],
+          ['و الارتفاع', 'OM = 2'],
+          ['نضرب ثمّ نقسم على 3', '16 × 2/3 = 32/3'],
+          ['النتيجة', 'حجم الهرم MABCD يساوي 32/3']
+        ],
+        controle: {
+          espace: FIG46,
+          faits: [['volume', 'M', 'A', 'B', 'C', 'D', '32/3'],
+                  ['aire', 'A', 'B', 'C', 'D', '16'],
+                  ['longueur', 'O', 'M', '2'],
+                  ['volume', 'S', 'A', 'B', 'C', 'D', '64/3']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 5 — التمرين 6   (un prisme droit, et PAS UN SEUL NOMBRE)
+  //
+  //   L'énoncé ne donne AUCUNE longueur — que des relations : la base est un
+  //   trapèze de bases [BC] et [AD] avec BC = CD, et I est sur [BC] avec
+  //   IC = AD/2. Tout l'exercice est qualitatif, et les chaînes le restent :
+  //   elles ne calculent jamais un nombre, elles écrivent des ÉGALITÉS ENTRE
+  //   LONGUEURS — CM = CD, MD = 2 × CD, NB = MH/2 — que le validateur
+  //   recalcule sur une figure concrète sans qu'aucune de ces valeurs
+  //   n'apparaisse devant l'élève.
+  //
+  //   LE FIL. Thalès dans le triangle MAD donne MC/MD = IC/AD = 1/2, donc C
+  //   est le MILIEU de [MD] ; avec BC = CD = CM, B voit [MD] sous un angle
+  //   droit. Puis (BM) ⊥ (BF) et (BM) ⊥ (BD) mettent (BM) perpendiculaire à
+  //   tout le plan (FBD) — qui contient H —, et le triangle MBH est rectangle
+  //   en B. Enfin MDH est rectangle en D parce que (DH) est une arête latérale :
+  //   les deux triangles rectangles PARTAGENT l'hypoténuse [MH], donc leurs
+  //   deux médianes valent la même chose, NB = ND = MH/2.
+  //
+  //   La figure de contrôle : AD = 6, BC = CD = 5, hauteur 4, arête latérale 6.
+  //   Elle n'est qu'un témoin — l'exercice tient pour tout trapèze de ce type.
+  // =========================================================================
+  const FIG56 = {
+    A: ['point', '0', '0', '0'], D: ['point', '6', '0', '0'],
+    B: ['point', '-2', '4', '0'], C: ['point', '3', '4', '0'],
+    E: ['point', '0', '0', '6'], H: ['point', '6', '0', '6'],
+    F: ['point', '-2', '4', '6'], G: ['point', '3', '4', '6'],
+    I: ['point', '0', '4', '0'],
+    M: ['inter', 'A', 'I', 'C', 'D'],
+    N: ['milieu', 'M', 'H']
+  };
+  const DONNEES56 = 'ABCDEFGH موشور قائم قاعدته شبه المنحرف ABCD ذو القاعدتين [BC] '
+                  + 'و [AD] حيث BC = CD، و I نقطة من [BC] حيث IC = AD/2، و (AI) '
+                  + 'يقطع (CD) في M';
+
+  function seance5ex6() {
+    return [
+      {
+        enonce: [DONNEES56, 'بيّن أنّ (BF) ⊥ (ABC)'],
+        indice: 'ما هو وضع الأحرف الجانبية في موشور قائم ؟',
+        etapes: [
+          ['القاعدة', 'في الموشور القائم، الأحرف الجانبية عمودية على القاعدتين'],
+          ['الحرف [BF] حرف جانبي مثل [AE]', 'BF = AE'],
+          ['و مثل [CG]', 'BF = CG'],
+          ['و مثل [DH]', 'BF = DH'],
+          ['النتيجة', 'المستقيم (BF) عمودي على المستوي (ABC)']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['perpendiculaire-plan', 'B', 'F', 'A', 'B', 'C'],
+                  ['perpendiculaire-plan', 'A', 'E', 'A', 'B', 'C'],
+                  ['paralleles', 'B', 'F', 'D', 'H'], ['paralleles', 'A', 'D', 'B', 'C'],
+                  ['coplanaires', 'A', 'B', 'C', 'D', 'I', 'M']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ (BF) ⊥ (MB)'],
+        indice: 'أين تقع النقطة M ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['النقطة M من (CD) و (CD) من مستوي القاعدة', 'إذن M من المستوي (ABC)'],
+          ['و (BF) عمودي على هذا المستوي', 'BF = AE'],
+          ['نتحقّق من وضع M', 'MC = CD'],
+          ['و', 'MD = 2 × CD'],
+          ['النتيجة', 'المستقيمان (BF) و (MB) متعامدان']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['perpendiculaires', 'B', 'F', 'M', 'B'],
+                  ['dans-plan', 'M', 'A', 'B', 'C'], ['alignes', 'M', 'C', 'D'],
+                  ['alignes', 'A', 'I', 'M']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ H ∈ (FBD)'],
+        indice: 'الحرفان [BF] و [DH] جانبيان: ماذا يجمعهما ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم الموازي لمستقيم من مستو و له نقطة منه يكون '
+                    + 'محتوى فيه'],
+          ['الحرفان [BF] و [DH] جانبيان في موشور قائم', 'إذن (DH) يوازي (BF)'],
+          ['و طولاهما متقايسان', 'DH = BF'],
+          ['و D من المستوي (FBD)', 'إذن (DH) محتوى في المستوي (FBD)'],
+          ['نتحقّق: الرباعي BDHF متوازي أضلاع', 'FH = BD'],
+          ['النتيجة', 'النقطة H تنتمي إلى المستوي (FBD)']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['dans-plan', 'H', 'F', 'B', 'D'], ['parallelogramme', 'B', 'D', 'H', 'F'],
+                  ['paralleles', 'D', 'H', 'B', 'F'], ['coplanaires', 'F', 'B', 'D', 'H']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ C منتصف [MD]'],
+        indice: 'المستقيمان (IC) و (AD) متوازيان: طالس في المثلّث MAD',
+        etapes: [
+          ['القاعدة', 'طالس: إذا وازى (IC) الضلع (AD) في المثلّث MAD فإنّ '
+                    + 'MC/MD = IC/AD'],
+          ['القاعدتان [BC] و [AD] متوازيتان', 'إذن (IC) يوازي (AD)'],
+          ['و المعطى', 'IC = AD/2'],
+          ['فالنسبة', 'MC/MD = 1/2'],
+          ['أي', 'MD = 2 × MC'],
+          ['النتيجة', 'النقطة C هي منتصف [MD]']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['milieu', 'C', 'M', 'D'], ['rapport', 'M', 'C', 'M', 'D', '1/2'],
+                  ['rapport', 'I', 'C', 'A', 'D', '1/2'], ['alignes', 'B', 'I', 'C'],
+                  ['paralleles', 'I', 'C', 'A', 'D']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ المثلّث MBD قائم الزاوية في B'],
+        indice: 'كم يبعد B عن منتصف [MD] ؟',
+        etapes: [
+          ['القاعدة', 'كلّ نقطة تبعد عن منتصف قطعة بنصف طولها ترى تلك القطعة تحت '
+                    + 'زاوية قائمة'],
+          ['النقطة C منتصف [MD]', 'MD = 2 × CD'],
+          ['و المعطى', 'BC = CD'],
+          ['فالبعد من B إلى منتصف [MD] نصفه', 'CB = MD/2'],
+          ['نتحقّق بفيتاغور', 'MB^2 + BD^2 = MD^2'],
+          ['النتيجة', 'المثلّث MBD قائم الزاوية في B']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['rectangle-en', 'B', 'M', 'D'], ['longueur-carree', 'M', 'D', '100'],
+                  ['isocele', 'C', 'B', 'D'], ['isocele', 'C', 'M', 'B']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ (BM) و (BH) متعامدان'],
+        indice: 'اجمع السؤالين 2 و 5: (BM) عمودي على مستقيمين متقاطعين من (FBD)',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['من السؤال 2', 'المستقيمان (BM) و (BF) متعامدان'],
+          ['و من السؤال 5', 'المستقيمان (BM) و (BD) متعامدان'],
+          ['و (BF) و (BD) متقاطعان في B و هما من المستوي (FBD)', 'إذن (BM) عمودي '
+                                                               + 'على هذا المستوي'],
+          ['و H من المستوي (FBD)', 'BH^2 = 116'],
+          ['نتحقّق بفيتاغور', 'MH^2 = MB^2 + BH^2'],
+          ['النتيجة', 'المستقيمان (BM) و (BH) متعامدان']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['perpendiculaires', 'B', 'M', 'B', 'H'],
+                  ['perpendiculaire-plan', 'B', 'M', 'F', 'B', 'D'],
+                  ['rectangle-en', 'B', 'M', 'H'], ['longueur-carree', 'B', 'H', '116']]
+        }
+      },
+      {
+        enonce: ['لتكن N منتصف [MH]', 'بيّن أنّ المثلّث NBD متقايس الضلعين'],
+        indice: 'المثلّثان MBH و MDH قائمان و لهما نفس الوتر [MH]',
+        etapes: [
+          ['القاعدة', 'في مثلّث قائم، المتوسّط الصادر من الرأس القائم يساوي نصف '
+                    + 'الوتر'],
+          ['المثلّث MBH قائم في B و N منتصف وتره', 'NB = MH/2'],
+          ['و (DH) حرف جانبي إذن عمودي على (MD)', 'المثلّث MDH قائم في D'],
+          ['و N منتصف وتره أيضا', 'ND = MH/2'],
+          ['فالطولان متقايسان', 'NB = ND'],
+          ['نتحقّق', 'MH^2 = 136'],
+          ['النتيجة', 'المثلّث NBD متقايس الضلعين في N']
+        ],
+        controle: {
+          espace: FIG56,
+          faits: [['isocele', 'N', 'B', 'D'], ['milieu', 'N', 'M', 'H'],
+                  ['rectangle-en', 'D', 'M', 'H'], ['longueur-carree', 'M', 'H', '136'],
+                  ['longueur-carree', 'N', 'B', '34'], ['longueur-carree', 'N', 'D', '34']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 6 — التمرين 5 (le SECOND de ce numéro)   (un parallélépipède)
+  //
+  //   AEHD est un carré de côté 4 — c'est une FACE, pas la base — et AB = 2√3
+  //   est la troisième dimension. N est sur [FG] avec ENH isocèle : EN et NH
+  //   se calculent par Pythagore dans les faces, EN² = 12 + FN² et
+  //   NH² = 12 + NG², donc EN = NH équivaut à FN = NG. N est le MILIEU de
+  //   [FG] — et alors EN = NH = 4 = EH : le triangle n'est pas seulement
+  //   isocèle, il est ÉQUILATÉRAL.
+  //
+  //   LE PIVOT est la question 4. Dans le triangle EMN, [EH] est la médiane
+  //   issue de E et vaut 4, tandis que MN = 2 × NH = 8 : la médiane vaut la
+  //   MOITIÉ du côté opposé, donc l'angle en E est droit. C'est le théorème de
+  //   quatrième année, appliqué à un triangle de l'espace.
+  //
+  //   Et la fin est un joli détour : (IJ) joint les milieux de [AN] et [AM],
+  //   donc coupe la médiane [AH] en son milieu K ; puis on redescend dans la
+  //   face carrée AEHD, où L, milieu de [EH], donne (NL) ⊥ face et LK = 2 —
+  //   du centre du carré au milieu d'un côté. KN² = 12 + 4, KN = 4.
+  // =========================================================================
+  const FIG66 = {
+    E: ['point', '0', '0', '0'], F: ['point', '2√3', '0', '0'],
+    G: ['point', '2√3', '4', '0'], H: ['point', '0', '4', '0'],
+    A: ['point', '0', '0', '4'], B: ['point', '2√3', '0', '4'],
+    C: ['point', '2√3', '4', '4'], D: ['point', '0', '4', '4'],
+    N: ['milieu', 'F', 'G'],
+    I: ['milieu', 'A', 'N'],
+    Z: ['translate', 'A', 'I', 'H'],
+    M: ['inter', 'A', 'Z', 'N', 'H'],
+    J: ['milieu', 'A', 'M'],
+    K: ['inter', 'I', 'J', 'A', 'H'],
+    L: ['milieu', 'E', 'H']
+  };
+  const DONNEES66 = 'ABCDEFGH متوازي مستطيلات حيث AEHD مربّع قيس ضلعه 4 و AB = 2√3، '
+                  + 'و N نقطة من [FG] بحيث ENH مثلّث متقايس الضلعين';
+
+  function seance6ex6() {
+    return [
+      {
+        enonce: [DONNEES66, 'بيّن أنّ (AE) ⊥ (EFH)'],
+        indice: 'الحرف [AE] عمودي على حرفين متقاطعين من الوجه EFGH',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['الوجه AEHD مربّع ضلعه', 'AE = 4'],
+          ['و', 'EH = 4'],
+          ['و الوجه ABFE مستطيل', 'EF = 2√3'],
+          ['فالحرف [AE] عمودي على (EF) و على (EH)', 'المستقيمان (AE) و (EF) متعامدان'],
+          ['و هما متقاطعان في E و من المستوي (EFH)', 'إذن شرط القاعدة متحقّق'],
+          ['النتيجة', 'المستقيم (AE) عمودي على المستوي (EFH)']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['perpendiculaire-plan', 'A', 'E', 'E', 'F', 'H'],
+                  ['carre', 'A', 'E', 'H', 'D'], ['rectangle', 'A', 'B', 'F', 'E'],
+                  ['longueur', 'E', 'F', '2√3'], ['longueur', 'A', 'E', '4']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ (EN) ⊥ (AE)'],
+        indice: 'أين تقع N ؟ و ابدأ بتحديدها من الشرط ENH متقايس الضلعين',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['نحدّد N: المثلّثان EFN و NGH قائمان في F و في G و', 'EF = GH'],
+          ['فالشرط EN = NH يعطي', 'FN = NG'],
+          ['أي N منتصف [FG]، و فيتاغور يعطي', 'EN^2 = 12 + 4'],
+          ['أي', 'EN = 4'],
+          ['و N من (FG) إذن من المستوي (EFH)', 'إذن (EN) مستقيم من هذا المستوي'],
+          ['النتيجة', 'المستقيمان (EN) و (AE) متعامدان']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['perpendiculaires', 'E', 'N', 'A', 'E'], ['milieu', 'N', 'F', 'G'],
+                  ['longueur', 'E', 'N', '4'], ['longueur', 'N', 'H', '4'],
+                  ['equilateral', 'E', 'N', 'H'], ['dans-plan', 'N', 'E', 'F', 'H']]
+        }
+      },
+      {
+        enonce: ['لتكن I منتصف [AN]، و المستقيم الموازي لـ (IH) و المارّ من A يقطع '
+               + '(NH) في M', 'بيّن أنّ H منتصف [MN]'],
+        indice: 'في المثلّث NAM، ما الذي يمرّ من منتصف [NA] موازيا لـ (AM) ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم المارّ من منتصف ضلع و الموازي لضلع ثان يقطع '
+                    + 'الضلع الثالث في منتصفه'],
+          ['النقطة I منتصف [AN]', 'AI = IN'],
+          ['و (IH) يوازي (AM) بالإنشاء', 'إذن نحن في المثلّث NAM'],
+          ['فالمستقيم (IH) يقطع [NM] في منتصفه', 'MH = NH'],
+          ['أي', 'MN = 2 × NH'],
+          ['نتحقّق', 'MN = 8'],
+          ['النتيجة', 'النقطة H هي منتصف [MN]']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['milieu', 'H', 'M', 'N'], ['milieu', 'I', 'A', 'N'],
+                  ['paralleles', 'I', 'H', 'A', 'M'], ['longueur', 'M', 'N', '8'],
+                  ['alignes', 'M', 'H', 'N'], ['rapport', 'I', 'H', 'A', 'M', '1/2']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ (EN) ⊥ (AEM)'],
+        indice: '[EH] متوسّط في المثلّث EMN: قارنه بنصف [MN]',
+        etapes: [
+          ['القاعدة', 'إذا كان المتوسّط الصادر من رأس يساوي نصف الضلع المقابل '
+                    + 'فإنّ المثلّث قائم في ذلك الرأس'],
+          ['في المثلّث EMN، H منتصف [MN] إذن [EH] متوسّط، و', 'EH = 4'],
+          ['و', 'MN = 8'],
+          ['فالمتوسّط نصف الضلع المقابل', 'EH = MN/2'],
+          ['إذن المثلّث EMN قائم في E', 'المستقيمان (EN) و (EM) متعامدان'],
+          ['و من السؤال 2', 'المستقيمان (EN) و (AE) متعامدان'],
+          ['و (AE) و (EM) متقاطعان في E و هما من المستوي (AEM)', 'إذن شرط '
+                                                                + 'القاعدة متحقّق'],
+          ['النتيجة', 'المستقيم (EN) عمودي على المستوي (AEM)']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['perpendiculaire-plan', 'E', 'N', 'A', 'E', 'M'],
+                  ['rectangle-en', 'E', 'M', 'N'], ['longueur', 'E', 'M', '4√3'],
+                  ['longueur', 'E', 'H', '4']]
+        }
+      },
+      {
+        enonce: ['أحسب AH'],
+        indice: 'AEHD مربّع: و [AH] أحد قطريه',
+        etapes: [
+          ['القاعدة', 'المثلّث AEH قائم في E لأنّ AEHD مربّع'],
+          ['الضلع الأوّل', 'AE = 4'],
+          ['و الثاني', 'EH = 4'],
+          ['نطبّق فيتاغور', 'AH^2 = 16 + 16'],
+          ['أي', 'AH^2 = 32'],
+          ['نبسّط الجذر', '√32 = 4√2'],
+          ['النتيجة', 'لنا AH = 4√2']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['longueur', 'A', 'H', '4√2'], ['longueur-carree', 'A', 'H', '32'],
+                  ['rectangle-en', 'E', 'A', 'H'], ['carre', 'A', 'E', 'H', 'D']]
+        }
+      },
+      {
+        enonce: ['لتكن J منتصف [AM]', 'بيّن أنّ (IJ) ⊂ (AMN)'],
+        indice: 'أين تقع I و أين تقع J بالنسبة للمثلّث AMN ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم المارّ بنقطتين من مستو يكون محتوى فيه'],
+          ['النقطة I منتصف [AN]', 'AI = IN'],
+          ['و J منتصف [AM]', 'AJ = JM'],
+          ['فكلتاهما من المستوي (AMN)، و [IJ] رابط بين منتصفي ضلعين', 'IJ = MN/2'],
+          ['أي', 'IJ = 4'],
+          ['و هو يوازي الضلع الثالث', 'إذن (IJ) يوازي (MN)'],
+          ['النتيجة', 'المستقيم (IJ) محتوى في المستوي (AMN)']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['dans-plan', 'I', 'A', 'M', 'N'], ['dans-plan', 'J', 'A', 'M', 'N'],
+                  ['milieu', 'J', 'A', 'M'], ['paralleles', 'I', 'J', 'M', 'N'],
+                  ['longueur', 'I', 'J', '4']]
+        }
+      },
+      {
+        enonce: ['المستقيم (IJ) يقطع (AH) في K', 'أحسب KN'],
+        indice: 'ما الذي يمثّل [AH] في المثلّث AMN ؟ ثمّ انزل إلى الوجه المربّع '
+              + 'AEHD عبر منتصف [EH]',
+        etapes: [
+          ['القاعدة', 'القطعة الرابطة بين منتصفي ضلعين تقطع كلّ قطعة صادرة من '
+                    + 'الرأس الثالث في منتصفها'],
+          ['المستقيم (IJ) يربط منتصفي [AN] و [AM]', 'IJ = 4'],
+          ['و [AH] صادر من A نحو منتصف [MN]', 'AH = 4√2'],
+          ['فـ K منتصف [AH]', 'AK = 2√2'],
+          ['و لتكن L منتصف [EH] : الرباعي EFNL مستطيل', 'NL = 2√3'],
+          ['و (NL) عمودي على الوجه AEHD', 'المثلّث NLK قائم في L'],
+          ['و [LK] يربط منتصف ضلع المربّع بمركزه', 'LK = 2'],
+          ['نطبّق فيتاغور', 'KN^2 = 12 + 4'],
+          ['النتيجة', 'لنا KN = 4']
+        ],
+        controle: {
+          espace: FIG66,
+          faits: [['longueur', 'K', 'N', '4'], ['milieu', 'K', 'A', 'H'],
+                  ['milieu', 'L', 'E', 'H'], ['longueur', 'N', 'L', '2√3'],
+                  ['longueur', 'L', 'K', '2'], ['rectangle-en', 'L', 'N', 'K'],
+                  ['perpendiculaire-plan', 'N', 'L', 'A', 'E', 'H'],
+                  ['rectangle', 'E', 'F', 'N', 'L']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 8 — التمرين 4   (une pyramide penchée qui en engendre une droite)
+  //
+  //   SABC : base équilatérale de côté 2√3, centre de gravité G, et la hauteur
+  //   est l'ARÊTE [SA] elle-même — le sommet est à l'aplomb de A, pas de G.
+  //   AI = 3 (médiane d'un équilatéral de côté 2√3), SA = 4, donc SI = 5 : le
+  //   triangle 3-4-5, dressé dans l'espace.
+  //
+  //   La verticale de G est dans le plan (SAI) — elle est parallèle à (SA) et
+  //   G est sur [AI]. Elle rencontre donc (SBC) sur la DROITE D'INTERSECTION
+  //   des deux plans, qui est (SI). D'où J sur [SI], et Thalès dans le
+  //   triangle SAI : JG/SA = IG/IA = 1/3, JG = 4/3.
+  //
+  //   Alors JABC, lui, est régulier : J est à l'aplomb de G, centre de la base.
+  //   Son arête latérale vaut √(JG² + GB²) = √(16/9 + 4) = 2√13/3, et son
+  //   volume 3√3 × (4/3)/3 = 4√3/3.
+  // =========================================================================
+  const FIG84 = {
+    A: ['point', '0', '0', '0'],
+    B: ['point', '3', '√3', '0'], C: ['point', '3', '-√3', '0'],
+    I: ['milieu', 'B', 'C'],
+    G: ['centre', 'A', 'B', 'C'],
+    S: ['point', '0', '0', '4'],
+    Z: ['translate', 'G', 'A', 'S'],
+    J: ['inter', 'G', 'Z', 'S', 'I']
+  };
+  const DONNEES84 = 'SABC هرم ثلاثي قمّته S و قاعدته ABC مثلّث متقايس الأضلاع مركز '
+                  + 'ثقله G، و [SA] ارتفاع الهرم حيث AB = 2√3 و SA = 4، و I منتصف '
+                  + '[BC]';
+
+  function seance8ex4() {
+    return [
+      {
+        enonce: [DONNEES84, 'بيّن أنّ SAI مثلّث قائم في A'],
+        indice: 'الارتفاع [SA] عمودي على مستوي القاعدة، و (AI) مستقيم منه',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['القطعة [SA] ارتفاع الهرم', 'SA = 4'],
+          ['و I منتصف [BC] في مثلّث متقايس الأضلاع', 'BI = √3'],
+          ['فالمتوسّط [AI] ارتفاع، و فيتاغور يعطي', 'AI^2 = 12 - 3'],
+          ['أي', 'AI = 3'],
+          ['النتيجة', 'المثلّث SAI قائم الزاوية في A']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['rectangle-en', 'A', 'S', 'I'], ['equilateral', 'A', 'B', 'C'],
+                  ['milieu', 'I', 'B', 'C'], ['longueur', 'A', 'I', '3'],
+                  ['perpendiculaire-plan', 'S', 'A', 'A', 'B', 'C'],
+                  ['centre-gravite', 'G', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ SI = 5'],
+        indice: 'المثلّث 3 — 4 — 5',
+        etapes: [
+          ['القاعدة', 'المساواة الفيتاغورية في المثلّث القائم في A'],
+          ['الضلع الأوّل', 'SA = 4'],
+          ['و الثاني', 'AI = 3'],
+          ['نربّع و نجمع', 'SI^2 = 16 + 9'],
+          ['أي', 'SI^2 = 25'],
+          ['النتيجة', 'لنا SI = 5']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['longueur', 'S', 'I', '5'], ['longueur-carree', 'S', 'I', '25'],
+                  ['longueur', 'S', 'B', '2√7'], ['isocele', 'S', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['المستقيم المارّ من G و العمودي على (ABC) يقطع المستوي (SBC) في J',
+                 'بيّن أنّ (SAI) ∩ (SBC) = (SI)'],
+        indice: 'ما هما النقطتان المشتركتان بين المستويين ؟',
+        etapes: [
+          ['القاعدة', 'مستويان متمايزان لهما نقطتان مشتركتان يتقاطعان في '
+                    + 'المستقيم المارّ بهما'],
+          ['النقطة S قمّة الهرم', 'إذن S من المستويين معا'],
+          ['و I منتصف [BC] إذن من (BC)', 'BI = IC'],
+          ['فهي من المستوي (SBC) و من المستوي (SAI)', 'SI = 5'],
+          ['و المستويان متمايزان لأنّ A ليست من (SBC)', 'إذن لهما مستقيم تقاطع '
+                                                       + 'واحد'],
+          ['النتيجة', 'تقاطع المستويين (SAI) و (SBC) هو المستقيم (SI)']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['dans-plan', 'I', 'S', 'B', 'C'], ['dans-plan', 'I', 'S', 'A', 'I'],
+                  ['non-coplanaires', 'S', 'A', 'B', 'C'],
+                  ['hors-plan', 'A', 'S', 'B', 'C'], ['alignes', 'B', 'I', 'C']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ J ∈ (SI)'],
+        indice: 'المستقيم المارّ من G عمودي على القاعدة مثل (SA): أين يقع إذن ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم الموازي لمستقيم من مستو و له نقطة منه يكون '
+                    + 'محتوى فيه'],
+          ['المستقيمان المارّ من G و (SA) عموديان على المستوي (ABC)', 'إذن هما '
+                                                                     + 'متوازيان'],
+          ['و G مركز ثقل المثلّث إذن من [AI]', 'IG = 1'],
+          ['فالمستقيم المارّ من G محتوى في المستوي (SAI)', 'IA = 3'],
+          ['و J منه و من المستوي (SBC)', 'إذن J من تقاطع المستويين'],
+          ['النتيجة', 'النقطة J تنتمي إلى المستقيم (SI)']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['alignes', 'S', 'J', 'I'], ['dans-plan', 'J', 'S', 'A', 'I'],
+                  ['dans-plan', 'J', 'S', 'B', 'C'], ['alignes', 'A', 'G', 'I'],
+                  ['paralleles', 'G', 'J', 'A', 'S'], ['longueur', 'I', 'G', '1']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ JG = 4/3'],
+        indice: 'طالس في المثلّث SAI مع (JG) الموازي لـ (SA)',
+        etapes: [
+          ['القاعدة', 'طالس: إذا وازى (JG) الضلع (SA) في المثلّث ISA فإنّ '
+                    + 'IG/IA = JG/SA'],
+          ['النقطة G مركز الثقل على ثلث المتوسّط من I', 'IG = 1'],
+          ['و المتوسّط', 'IA = 3'],
+          ['فالنسبة', 'IG/IA = 1/3'],
+          ['و الارتفاع', 'SA = 4'],
+          ['نضرب', 'JG = 4/3'],
+          ['النتيجة', 'لنا JG = 4/3']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['longueur', 'J', 'G', '4/3'], ['rapport', 'I', 'G', 'I', 'A', '1/3'],
+                  ['rapport', 'J', 'G', 'S', 'A', '1/3'],
+                  ['rapport', 'I', 'J', 'I', 'S', '1/3'],
+                  ['perpendiculaire-plan', 'J', 'G', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ JABC هرم ثلاثي منتظم قمّته J'],
+        indice: 'أين تسقط J عموديا على القاعدة ؟',
+        etapes: [
+          ['القاعدة', 'الهرم منتظم إذا كانت قاعدته منتظمة و سقط رأسه عموديا على '
+                    + 'مركزها'],
+          ['القاعدة ABC متقايسة الأضلاع', 'AB = 2√3'],
+          ['و', 'BC = 2√3'],
+          ['و G مركز ثقلها إذن مركزها', 'GA = 2'],
+          ['و', 'GB = 2'],
+          ['و (JG) عمودي على مستوي القاعدة بالإنشاء', 'إذن J تسقط على G'],
+          ['النتيجة', 'الهرم JABC ثلاثي منتظم قمّته J']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['pyramide-reguliere', 'J', 'G', 'A', 'B', 'C'],
+                  ['longueur', 'G', 'A', '2'], ['longueur', 'G', 'C', '2'],
+                  ['projete-plan', 'G', 'J', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['أحسب حرفه الجانبي JB'],
+        indice: 'المثلّث JGB قائم في G',
+        etapes: [
+          ['القاعدة', 'المستقيم (JG) عمودي على مستوي القاعدة إذن على (GB)'],
+          ['نصف قطر القاعدة', 'GB = 2'],
+          ['و الارتفاع', 'JG = 4/3'],
+          ['نطبّق فيتاغور', 'JB^2 = 4 + 16/9'],
+          ['أي', 'JB^2 = 52/9'],
+          ['نبسّط الجذر', '√52 = 2√13'],
+          ['النتيجة', 'لنا JB = 2√13/3']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['longueur', 'J', 'B', '2√13/3'], ['longueur', 'J', 'A', '2√13/3'],
+                  ['longueur-carree', 'J', 'B', '52/9'], ['rectangle-en', 'G', 'J', 'B']]
+        }
+      },
+      {
+        enonce: ['أحسب حجم الهرم JABC'],
+        indice: 'ثلث جداء مساحة المثلّث المتقايس الأضلاع في الارتفاع [JG]',
+        etapes: [
+          ['القاعدة', 'مساحة المثلّث نصف جداء القاعدة في الارتفاع، و حجم الهرم '
+                    + 'ثلث جداء مساحة القاعدة في الارتفاع'],
+          ['قاعدة المثلّث', 'BC = 2√3'],
+          ['و ارتفاعه', 'AI = 3'],
+          ['فمساحته', '2√3 × 3/2 = 3√3'],
+          ['و ارتفاع الهرم', 'JG = 4/3'],
+          ['نضرب ثمّ نقسم على 3', '3√3 × 4/9 = 4√3/3'],
+          ['النتيجة', 'حجم الهرم JABC يساوي 4√3/3']
+        ],
+        controle: {
+          espace: FIG84,
+          faits: [['volume', 'J', 'A', 'B', 'C', '4√3/3'],
+                  ['aire', 'A', 'B', 'C', '3√3'],
+                  ['volume', 'S', 'A', 'B', 'C', '4√3']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
+  // الحصّة 13 — التمرين 4   (la pyramide régulière, et un centre de gravité)
+  //
+  //   SABCD régulière, SO = 4, AB = 2√2 : la diagonale du carré vaut 4, donc
+  //   OB = 2 et SB = 2√5. H est le pied de la hauteur issue de O dans le
+  //   triangle SOB rectangle en O, d'où OH = SO × OB/SB = 4√5/5 et
+  //   BH = OB²/SB = 2√5/5 par la relation métrique.
+  //
+  //   Ensuite tout tient sur (AC) ⊥ (SBD) : le plan (SBD) contient (OH), donc
+  //   OC ⊥ OH et CH² = 4 + 16/5 = 36/5. Puis (BH) est perpendiculaire à (OH)
+  //   ET à (AC) — deux droites sécantes du plan (AHC), car O est le milieu de
+  //   [AC] —, donc (BH) ⊥ (AHC).
+  //
+  //   LA DERNIÈRE QUESTION est un centre de gravité déguisé. G est sur [SO]
+  //   avec SG = 2 × OG, et [SO] est une MÉDIANE du triangle SBD puisque O est
+  //   le milieu de [BD] : G en est donc le centre de gravité, (BG) est une
+  //   autre médiane, et J est le MILIEU de [SD]. Alors (OJ) joint les milieux
+  //   de [DB] et [DS] : il est parallèle à (BS), donc à (BH), donc
+  //   perpendiculaire à (AHC).
+  // =========================================================================
+  const FIG134 = {
+    O: ['point', '0', '0', '0'],
+    A: ['point', '2', '0', '0'], B: ['point', '0', '2', '0'],
+    C: ['point', '-2', '0', '0'], D: ['point', '0', '-2', '0'],
+    S: ['point', '0', '0', '4'],
+    H: ['proj', 'O', 'S', 'B'],
+    G: ['sur', 'O', 'S', '1/3'],
+    J: ['inter', 'B', 'G', 'S', 'D']
+  };
+  const DONNEES134 = 'SABCD هرم منتظم ارتفاعه SO = 4 و قاعدته المربّع ABCD مركزه O '
+                   + 'حيث AB = 2√2';
+
+  function seance13ex4() {
+    return [
+      {
+        enonce: [DONNEES134, 'أحسب OB'],
+        indice: 'قطر المربّع يساوي الضلع مضروبا في √2، و O منتصفه',
+        etapes: [
+          ['القاعدة', 'قطرا المربّع متقايسان و يتناصفان، و طول القطر يساوي الضلع '
+                    + 'مضروبا في √2'],
+          ['ضلع القاعدة', 'AB = 2√2'],
+          ['فالقطر', 'BD = 4'],
+          ['و O منتصفه', 'OB = BD/2'],
+          ['النتيجة', 'لنا OB = 2']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['longueur', 'O', 'B', '2'], ['carre', 'A', 'B', 'C', 'D'],
+                  ['longueur', 'B', 'D', '4'], ['milieu', 'O', 'B', 'D'],
+                  ['pyramide-reguliere', 'S', 'O', 'A', 'B', 'C', 'D'],
+                  ['longueur', 'S', 'O', '4']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ SOB قائم الزاوية و استنتج أنّ SB = 2√5'],
+        indice: 'الارتفاع [SO] عمودي على مستوي القاعدة',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['الارتفاع', 'SO = 4'],
+          ['و', 'OB = 2'],
+          ['فالمثلّث SOB قائم في O، و فيتاغور يعطي', 'SB^2 = 16 + 4'],
+          ['نبسّط الجذر', '√20 = 2√5'],
+          ['النتيجة', 'المثلّث SOB قائم في O و SB = 2√5']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['rectangle-en', 'O', 'S', 'B'], ['longueur', 'S', 'B', '2√5'],
+                  ['longueur', 'S', 'D', '2√5'], ['longueur', 'S', 'A', '2√5'],
+                  ['perpendiculaire-plan', 'S', 'O', 'A', 'B', 'C']]
+        }
+      },
+      {
+        enonce: ['لتكن H المسقط العمودي لـ O على [SB]', 'بيّن أنّ OH = 4√5/5 و BH = 2√5/5'],
+        indice: 'العلاقتان المتريتان في المثلّث القائم: جداء ضلعي القائمة، ثمّ '
+              + 'مربّع الضلع',
+        etapes: [
+          ['القاعدة', 'في مثلّث قائم، جداء ضلعي القائمة يساوي جداء الوتر في '
+                    + 'الارتفاع، و مربّع ضلع القائمة يساوي جداء الوتر في مسقطه'],
+          ['ضلعا القائمة', 'SO = 4'],
+          ['و', 'OB = 2'],
+          ['و الوتر', 'SB = 2√5'],
+          ['فالارتفاع', 'OH = SO × OB/SB'],
+          ['أي', 'OH = 4√5/5'],
+          ['و المسقط', 'BH = OB^2/SB'],
+          ['النتيجة', 'لنا BH = 2√5/5']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['longueur', 'O', 'H', '4√5/5'], ['longueur', 'B', 'H', '2√5/5'],
+                  ['projete-droite', 'H', 'O', 'S', 'B'],
+                  ['rectangle-en', 'H', 'O', 'B'], ['alignes', 'S', 'H', 'B']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ (AC) عمودي على (SBD)'],
+        indice: 'قطرا المربّع، ثمّ الارتفاع',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['قطرا المربّع متعامدان', 'المستقيمان (AC) و (BD) متعامدان'],
+          ['و الارتفاع (SO) عمودي على مستوي القاعدة', 'المستقيمان (AC) و (SO) '
+                                                     + 'متعامدان'],
+          ['و (BD) و (SO) متقاطعان في O و هما من المستوي (SBD)', 'إذن شرط '
+                                                                + 'القاعدة متحقّق'],
+          ['نتحقّق عدديا', 'SA = SC'],
+          ['و', 'BA = BC'],
+          ['النتيجة', 'المستقيم (AC) عمودي على المستوي (SBD)']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['perpendiculaire-plan', 'A', 'C', 'S', 'B', 'D'],
+                  ['perpendiculaires', 'A', 'C', 'B', 'D'],
+                  ['dans-plan', 'H', 'S', 'B', 'D'], ['hors-plan', 'A', 'S', 'B', 'D'],
+                  ['milieu', 'O', 'A', 'C']]
+        }
+      },
+      {
+        enonce: ['أحسب CH'],
+        indice: 'النقطة H من المستوي (SBD) و (AC) عمودي عليه',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['النقطة H من [SB] إذن من المستوي (SBD)', 'إذن (OH) مستقيم من هذا المستوي'],
+          ['و (AC) عمودي عليه', 'المثلّث OCH قائم في O'],
+          ['الضلع الأوّل', 'OC = 2'],
+          ['و الثاني', 'OH = 4√5/5'],
+          ['نطبّق فيتاغور', 'CH^2 = 4 + 16/5'],
+          ['أي', 'CH^2 = 36/5'],
+          ['النتيجة', 'لنا CH = 6√5/5']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['longueur', 'C', 'H', '6√5/5'], ['longueur-carree', 'C', 'H', '36/5'],
+                  ['rectangle-en', 'O', 'C', 'H'], ['longueur', 'A', 'H', '6√5/5']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ (BH) عمودي على (AHC)'],
+        indice: 'المستقيم (BH) عمودي على (OH) و على (AC): و أين تقع O ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['النقطة H مسقط O على [SB]', 'المستقيمان (BH) و (OH) متعامدان'],
+          ['و (AC) عمودي على المستوي (SBD) الذي يحوي (BH)', 'المستقيمان (BH) و '
+                                                           + '(AC) متعامدان'],
+          ['و O منتصف [AC] إذن من المستوي (AHC)', 'OA = OC'],
+          ['فالمستقيمان (OH) و (AC) متقاطعان في O و هما من المستوي (AHC)', 'OH = 4√5/5'],
+          ['النتيجة', 'المستقيم (BH) عمودي على المستوي (AHC)']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['perpendiculaire-plan', 'B', 'H', 'A', 'H', 'C'],
+                  ['perpendiculaires', 'B', 'H', 'O', 'H'],
+                  ['perpendiculaires', 'B', 'H', 'A', 'C'],
+                  ['dans-plan', 'O', 'A', 'H', 'C'], ['isocele', 'H', 'A', 'C']]
+        }
+      },
+      {
+        enonce: ['لتكن G نقطة من [SO] حيث SG/2 = OG/1، و (BG) يقطع [SD] في J',
+                 'بيّن أنّ (OJ) عمودي على المستوي (AHC)'],
+        indice: 'ما الذي تمثّله [SO] في المثلّث SBD ؟ و أين يقع G عليها ؟',
+        etapes: [
+          ['القاعدة', 'مركز ثقل مثلّث يقع على كلّ متوسّط على ثلثيه من الرأس، و '
+                    + 'القطعة الرابطة بين منتصفي ضلعين توازي الضلع الثالث'],
+          ['النقطة O منتصف [BD]', 'إذن [SO] متوسّط في المثلّث SBD'],
+          ['و G عليه حيث', 'SG = 2 × OG'],
+          ['أي على ثلثي المتوسّط من S', 'SG/SO = 2/3'],
+          ['فـ G مركز ثقل المثلّث SBD، و (BG) متوسّط ثان', 'إذن J منتصف [SD]'],
+          ['فالقطعة [OJ] تربط منتصفي [DB] و [DS]', 'OJ = SB/2'],
+          ['أي أنّها توازي (BS) و منه (BH)', 'إذن (OJ) يوازي (BH)'],
+          ['و (BH) عمودي على المستوي (AHC)', 'OJ = √5'],
+          ['النتيجة', 'المستقيم (OJ) عمودي على المستوي (AHC)']
+        ],
+        controle: {
+          espace: FIG134,
+          faits: [['perpendiculaire-plan', 'O', 'J', 'A', 'H', 'C'],
+                  ['milieu', 'J', 'S', 'D'], ['centre-gravite', 'G', 'S', 'B', 'D'],
+                  ['paralleles', 'O', 'J', 'B', 'S'], ['longueur', 'O', 'J', '√5'],
+                  ['alignes', 'B', 'G', 'J'], ['alignes', 'S', 'G', 'O']]
         }
       }
     ];
@@ -10621,20 +11758,20 @@
                 livre26seance1ex7,
                 seance1ex1, seance1ex2, seance1ex5, seance1ex6, seance1ex7,
                 seance1ex11,
-                seance2ex1, seance2ex2, seance2ex3, seance2ex4,
+                seance2ex1, seance2ex2, seance2ex3, seance2ex4, seance2ex5,
                 seance3ex1, seance3ex2, seance3ex3, seance3ex4, seance3ex6,
-                seance6ex1, seance6ex2, seance6ex3, seance6ex5,
+                seance6ex1, seance6ex2, seance6ex3, seance6ex5, seance6ex6,
                 seance7ex1, seance7ex2, seance7ex3, seance7ex4,
-                seance4ex1, seance4ex2, seance4ex3, seance4ex4, seance4ex5,
+                seance4ex1, seance4ex2, seance4ex3, seance4ex4, seance4ex5, seance4ex6,
                 seance5ex1, seance5ex2, seance5ex3, seance5ex4, seance5ex5,
-                seance5ex7, seance5ex8,
-                seance8ex1, seance8ex3, seance8ex5,
+                seance5ex6, seance5ex7, seance5ex8,
+                seance8ex1, seance8ex3, seance8ex4, seance8ex5,
                 seance9ex1, seance9ex2, seance9ex4,
                 seance10ex1, seance10ex3, seance10ex4, seance10ex5,
                 seance11ex1, seance11ex2, seance11ex3, seance11ex4, seance11ex5,
                 seance11ex6,
                 seance12ex1, seance12ex2, seance12ex3, seance12ex4, seance12ex5,
                 seance12ex6,
-                seance13ex1, seance13ex2, seance13ex3, seance13ex6 };
+                seance13ex1, seance13ex2, seance13ex3, seance13ex4, seance13ex6 };
   if (M) module.exports = API; else racine.Seances = API;
 })(typeof window !== 'undefined' ? window : globalThis);

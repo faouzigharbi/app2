@@ -104,7 +104,7 @@ falsification rejoue le 48.
 | `ex23.html` | التمرين 3 | 13 | rectangle · symétrique · isocèle · projection · losange · Thalès · deux milieux · GN · repère (B;E;G) |
 | `ex24.html` | التمرين 4 | 12 | C · ABC rectangle · AC, BC, AB · CP · BC/OE · E · milieu · N≡P · aire · K deux fois · AF/AL · trapèze isocèle |
 
-Seul l'exercice 5 manque : c'est de la **géométrie de l'espace** (pyramide
+L'exercice 5 est un **tétraèdre régulier** (pyramide
 `SABC`), qui n'a aucun chapitre.
 
 ## Séance 3 — quatre exercices sur sept
@@ -128,7 +128,7 @@ final, où huit points doivent être relus dans `(D, B, E)`.
 
 Deux exercices restent : le **5** (sa partie I est de l'arithmétique, sa
 partie II demande l'**arbre de choix**, qui n'a aucun chapitre) et le **7**, un
-prisme droit, donc de l'espace.
+prisme droit — porté sous la clé `ex56`, et sans un seul nombre.
 
 ## Séance 4 — cinq exercices sur six
 
@@ -145,7 +145,7 @@ de 72 à **76**.
 | `ex44.html` | التمرين 4 | 7 | `a` et `b` sont les deux racines de `u²−3u+1` : somme 3, produit 1. L'énoncé ne le dit pas, mais tout en découle |
 | `ex45.html` | التمرين 5 | 7 | un triangle isocèle qui porte un angle de **60°** est équilatéral — c'est de là que part toute la figure |
 
-L'exercice 6 est une **pyramide régulière** — de l'espace, sans chapitre.
+L'exercice 6 est une **pyramide posée sur un coin** — porté sous `ex46`.
 
 ## Séance 5 — sept exercices sur huit
 
@@ -159,7 +159,7 @@ L'exercice 6 est une **pyramide régulière** — de l'espace, sans chapitre.
 | `ex57.html` | التمرين 7 | 5 | la partie II **refabrique** l'équation de la partie I : `S₁ = √3 S₂` donne `5+2x = 3x²`, c'est-à-dire `M = 0` |
 | `ex58.html` | التمرين 8 | 7 | `x² + (4−x)² = 2(x−2)² + 8` : le minimum 8 est atteint au milieu |
 
-L'exercice 6 est un **prisme droit** — de l'espace, sans chapitre.
+L'exercice 6 est un **prisme droit sans aucun nombre** — porté sous `ex56`.
 
 L'exercice 3 mérite un mot : ce sont **littéralement les mêmes deux nombres**
 que la séance 7, exercice 1, partie 2, où ils s'appellent `s` et `t`. On garde
@@ -180,7 +180,7 @@ suivi immédiatement du suivant —, et **deux exercices y portent le numéro 5*
 | `ex63.html` | التمرين 3 | 8 | `BM = 6,4` n'est pas choisi : c'est `OB²/AB = 64/10`, la valeur qui fait de `M` le **pied de la hauteur** issue de `O` |
 | `ex65.html` | التمرين 5 (منزه) | 7 | la construction classique du **nombre d'or** : dans le carré de côté 1, `CE = a`, `CF = b`, et `BC² = CF × CE` dit que `ab = 1` |
 
-Le dernier exercice est un **parallélépipède** — de l'espace, sans chapitre.
+Le dernier exercice est un **parallélépipède** — porté sous `ex66`.
 
 ## Séance 7 — entière, les quatre exercices
 
@@ -218,7 +218,7 @@ Trois choses que ces exercices disent et que l'énoncé tait :
 | `ex83.html` | التمرين 3 | 9 | `C` est le milieu de `[OA]`, donc `[BC]` est une **médiane** de `OAB` — et `BI = 2BC/3` fait de `I` son centre de gravité. Tout s'enchaîne de là, jusqu'à quatre points concycliques |
 | `ex85.html` | التمرين 5 | 6 | le numérateur de `b` ne se réduit pas, il se **factorise** : `3(1−√3) + √6 − 3√2 = (1−√3)(3+√6)`, et le dénominateur s'en va |
 
-L'exercice 4 est une **pyramide** — de l'espace, sans chapitre.
+L'exercice 4 est une **pyramide penchée** — portée sous `ex84`.
 
 L'exercice 1 a demandé une pièce au validateur : `c.positifs`, un tirage
 **strictement positif** pour les lettres qui passent sous un radical. Sans lui,
@@ -370,7 +370,7 @@ Deux choses que ces exercices cachent :
 
 **Deux exercices ne sont pas portés, et les raisons sont nommées :**
 
-- **l'exercice 4** est une pyramide régulière — de l'espace, sans chapitre ;
+- **l'exercice 4** est une pyramide régulière — portée sous `ex134` ;
 - **l'exercice 5** renvoie à « الرسم المصاحب » pour lire les coordonnées de `C`,
   `B` et `M`, et ce dessin est absent **de cette page**. ~~À redemander au
   maître.~~ **EXCLUSION LEVÉE** : c'est le même exercice que le **11 de la
@@ -451,6 +451,31 @@ du livre : la séance 12 donne `AB = 3√2`, et rien ne se referme dessus (on
 trouverait `SA = 3√2` là où le د\ demande 6). Avec `AB = 6`, tout tombe juste
 et **rien d'autre ne change** : `OA = 3√2`, `SO = OA`, `SA = 6`, `OK = 3`,
 `CK = 3√3`. Le `3√2` du brouillon est celui de `OA`, il a glissé d'une ligne.
+
+### Les huit solides
+
+`espace.js` a ouvert d'un coup une famille entière, écartée depuis le début :
+
+| page | exercice | ce qui s'y joue |
+|---|---|---|
+| `ex25.html` | 2025 · séance 2, ex 5 | **tétraèdre régulier** d'arête 4√3 · `OA = 4`, `SO = 4√2` · `AOSE` parallélogramme donc `(ES)//(ABC)` · `M` centre de gravité de `EBC`, `BF = 2√5` |
+| `ex46.html` | 2025 · séance 4, ex 6 | pyramide **posée sur un coin** — le « منتظم » de l'énoncé est un lapsus · `SBD` équilatéral · `BK = 4√6/3` · `M`, milieu de `[SC]`, engendre la vraie pyramide régulière, volume `32/3` |
+| `ex56.html` | 2025 · séance 5, ex 6 | prisme droit **sans un seul nombre** — les chaînes n'écrivent que des égalités entre longueurs · `C` milieu de `[MD]` · `MBH` et `MDH` partagent l'hypoténuse, donc `NB = ND` |
+| `ex66.html` | 2025 · séance 6, ex 5 (bis) | parallélépipède · `ENH` isocèle ⇒ `N` milieu de `[FG]` ⇒ `ENH` **équilatéral** · la médiane `[EH]` vaut `MN/2`, donc angle droit en `E` · `KN = 4` |
+| `ex84.html` | 2025 · séance 8, ex 4 | pyramide **penchée** — le 3-4-5 dressé dans l'espace · la verticale de `G` tombe sur `(SI)` · `JG = 4/3`, et `JABC` est régulier, volume `4√3/3` |
+| `ex126.html` | 2025 · séance 12, ex 6 | pyramide régulière · `(AC) ⊥ (SBD)` · `OK = 3`, `CK = 3√3` — **coquille n° 19** sur `AB` |
+| `ex134.html` | 2025 · séance 13, ex 4 | pyramide régulière · les deux relations métriques · `(OJ)` perpendiculaire par un **centre de gravité** déguisé |
+
+Deux exercices restent dehors, et pour une raison qui n'est plus la machine :
+la séance 3 exercice 7 du 2025 — reprise à l'identique en 2026, séance 4
+exercice 7 — a **deux questions qui ne se referment pas**. Les données `EF = 4`,
+`HG = 2` et `IE = 3` forcent `EG = 9/2` ; avec `EH = 3√5/2` le trapèze est
+entièrement déterminé, et alors la question 3 est **vide** (`J` tombe sur `(BD)`,
+donc `(DJ) = (DB)` rencontre `(BC)` en `B` et `BL = 0`) tandis que la question
+5أ est **fausse** (« `AIH` rectangle en `I` » équivaut exactement à
+`(EG) ⊥ (HF)`, et le produit scalaire des diagonales vaut `−3/4`). Il s'en faut
+de peu : avec `EH = √43/2` les diagonales seraient perpendiculaires. C'est la
+donnée `EH` qui est en cause, et c'est au maître de trancher.
 
 Dix-huit falsifications le mettent à l'épreuve — et **la plus instructive a
 refusé de mordre**. En allongeant `[OB]`, la base cesse d'être un carré et la

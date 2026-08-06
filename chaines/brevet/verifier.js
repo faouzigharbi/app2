@@ -1960,6 +1960,98 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
     c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
 
+  // ══ LES SOLIDES — six exercices que la machine ne savait pas tenir ═════
+  //
+  // Chacun de ces exercices a été écarté pendant des mois, non pas parce qu'il
+  // était difficile mais parce qu'aucune pièce ne savait le CONTREDIRE. Les
+  // falsifications ci-dessous sont donc la vraie preuve du travail : elles
+  // déplacent un sommet, changent une hauteur, prennent un projeté sur la
+  // mauvaise arête — et le contrôle doit refuser.
+
+  // ── الحصّة 2، التمرين 5 — le tétraèdre régulier ────────────────────────
+  pousse("le sommet abaisse : les aretes ne sont plus toutes egales",
+    parQuestion(25, 1), c => { c.controle.espace.S = ['point', '0', '0', '4']; });
+  pousse("OA pris egal a la mediane entiere au lieu de ses deux tiers",
+    parQuestion(25, 0), c => { c.etapes[5][1] = "OA = 6"; });
+  pousse("la base retrecie : le cote n est plus 4√3", parQuestion(25, 0),
+    c => { c.controle.espace.A = ['point', '3', '0', '0']; });
+  pousse("E place a la hauteur du cote au lieu de 4√2", parQuestion(25, 3),
+    c => { c.controle.espace.E = ['point', '4', '0', '4√3']; });
+  pousse("E ramene sur l axe, ou il se confond avec S", parQuestion(25, 5),
+    c => { c.controle.espace.E = ['point', '0', '0', '4√2']; });
+  pousse("M pris milieu de [EI] au lieu du tiers", parQuestion(25, 6),
+    c => { c.controle.espace.M = ['milieu', 'E', 'I']; });
+  pousse("F pris milieu de [EC] : ce n est plus la troisieme mediane",
+    parQuestion(25, 7), c => { c.controle.espace.F = ['milieu', 'E', 'C']; });
+  pousse("BF pris egal a EB tout entier", parQuestion(25, 7),
+    c => { c.etapes[6][1] = "BF = 4√5"; });
+
+  // ── الحصّة 4، التمرين 6 — la pyramide posée sur un coin ────────────────
+  pousse("l arete AS raccourcie a 3", parQuestion(46, 0),
+    c => { c.controle.espace.S = ['point', '0', '0', '3']; });
+  pousse("O pris milieu de [AB] au lieu de [AC]", parQuestion(46, 2),
+    c => { c.controle.espace.O = ['milieu', 'A', 'B']; });
+  pousse("K projete sur (OC) au lieu de (OS)", parQuestion(46, 3),
+    c => { c.controle.espace.K = ['proj', 'A', 'O', 'C']; });
+  pousse("la relation metrique ecrite avec le mauvais denominateur",
+    parQuestion(46, 3), c => { c.etapes[4][1] = "OK = AO^2/AS"; });
+  pousse("M pris milieu de [SB] : il n est plus a l aplomb du centre",
+    parQuestion(46, 5), c => { c.controle.espace.M = ['milieu', 'S', 'B']; });
+  pousse("le volume calcule sans le tiers", parQuestion(46, 6),
+    c => { c.controle.faits[0][6] = '32'; });
+
+  // ── الحصّة 5، التمرين 6 — le prisme SANS AUCUN NOMBRE ──────────────────
+  // Ici les étapes ne portent que des égalités entre longueurs : il n'y a rien
+  // à fausser dans une constante, tout se joue sur la FIGURE.
+  pousse("I place ailleurs sur [BC] : IC ne vaut plus AD/2", parQuestion(56, 3),
+    c => { c.controle.espace.I = ['point', '1', '4', '0']; });
+  pousse("le trapeze deforme : BC ne vaut plus CD", parQuestion(56, 4),
+    c => { c.controle.espace.C = ['point', '2', '4', '0']; });
+  pousse("le rapport de Thales pris a 1/3", parQuestion(56, 3),
+    c => { c.etapes[4][1] = "MD = 3 × MC"; });
+  pousse("N pris milieu de [MB] au lieu de [MH]", parQuestion(56, 6),
+    c => { c.controle.espace.N = ['milieu', 'M', 'B']; });
+
+  // ── الحصّة 6، التمرين 5 (le parallélépipède) ───────────────────────────
+  pousse("N deplace sur [FG] : ENH n est plus isocele", parQuestion(66, 1),
+    c => { c.controle.espace.N = ['point', '2√3', '3', '0']; });
+  pousse("AB pris egal a 4 : la face n est plus celle du livre",
+    parQuestion(66, 0), c => { c.controle.espace.F = ['point', '4', '0', '0']; });
+  pousse("MN pris egal a NH : la mediane ne vaut plus la moitie",
+    parQuestion(66, 2), c => { c.etapes[4][1] = "MN = NH"; });
+  pousse("√32 sorti en 4√3", parQuestion(66, 4),
+    c => { c.etapes[5][1] = "√32 = 4√3"; });
+  pousse("L pris milieu de [EF] au lieu de [EH]", parQuestion(66, 6),
+    c => { c.controle.espace.L = ['milieu', 'E', 'F']; });
+
+  // ── الحصّة 8، التمرين 4 — la pyramide penchée ──────────────────────────
+  pousse("la hauteur SA ramenee a 3", parQuestion(84, 1),
+    c => { c.controle.espace.S = ['point', '0', '0', '3']; });
+  pousse("G pris milieu de [AI] au lieu du centre de gravite",
+    parQuestion(84, 4), c => { c.controle.espace.G = ['milieu', 'A', 'I']; });
+  pousse("Pythagore additionne au lieu de soustraire", parQuestion(84, 0),
+    c => { c.etapes[3][1] = "AI^2 = 12 + 3"; });
+  pousse("JG pris aux deux tiers de la hauteur", parQuestion(84, 4),
+    c => { c.etapes[5][1] = "JG = 8/3"; });
+  pousse("le volume calcule sans le tiers", parQuestion(84, 7),
+    c => { c.controle.faits[0][5] = '4√3'; });
+
+  // ── الحصّة 13، التمرين 4 — la pyramide régulière et son centre de gravité
+  pousse("la hauteur portee a 5", parQuestion(134, 1),
+    c => { c.controle.espace.S = ['point', '0', '0', '5']; });
+  pousse("H projete sur (SD) au lieu de (SB)", parQuestion(134, 2),
+    c => { c.controle.espace.H = ['proj', 'O', 'S', 'D']; });
+  pousse("la relation metrique du projete ecrite sur SO", parQuestion(134, 2),
+    c => { c.etapes[6][1] = "BH = OB^2/SO"; });
+  pousse("OH oublie a moitie dans le calcul de CH", parQuestion(134, 4),
+    c => { c.etapes[5][1] = "CH^2 = 4 + 4/5"; });
+  pousse("G pris au tiers depuis S : ce n est plus le centre de gravite",
+    parQuestion(134, 6), c => { c.controle.espace.G = ['sur', 'O', 'S', '2/3']; });
+
+  // ── le garde-fou du contrat « solide » ─────────────────────────────────
+  pousse("solide sans aucune fait a controler", parQuestion(126, 0),
+    c => { c.controle.faits = []; c.controle.claims = []; });
+
   // ── le garde-fou du contrat « série » ──────────────────────────────────
   pousse("serie sans aucune fait a controler", parQuestion(136, 0),
     c => { c.controle.faits = []; });
