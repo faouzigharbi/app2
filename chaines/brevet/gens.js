@@ -152,6 +152,17 @@
   // La séance 13 porte LE SEUL exercice de statistiques du livre — et c'est
   // pour lui que chaines/stat9 a été ouvert. Le noyau statistique est copié
   // ici (stat.js) comme repere.js l'a été pour la géométrie.
+  // Deux exercices de la séance 13 ne sont PAS portés, et les raisons sont
+  // nommées : l'exercice 4 est une pyramide (espace, sans chapitre) et
+  // l'exercice 5 renvoie à « الرسم المصاحب » — un dessin ABSENT du document,
+  // sans lequel les coordonnées de C, B et M sont inconnaissables. La partie II
+  // de l'exercice 2 ne se referme pas non plus ; le détail est dans le README.
+  page(131, 'الحصّة 13 — التمرين 1 — ', 'معلم، و متوازي أضلاع يغلقه',
+       S.seance13ex1, 8);
+  page(132, 'الحصّة 13 — التمرين 2 — ', 'العدد الذهبي، و حصر يرفع قيمتين مطلقتين',
+       S.seance13ex2, 6);
+  page(133, 'الحصّة 13 — التمرين 3 — ', 'متقايس الأضلاع مخبّأ في نصف مثلّث',
+       S.seance13ex3, 7);
   page(136, 'الحصّة 13 — التمرين 6 — ', 'خمسون سيارة، و تكراران مجهولان',
        S.seance13ex6, 6);
 })(typeof window !== 'undefined' ? window : globalThis);

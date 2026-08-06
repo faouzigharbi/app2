@@ -1598,6 +1598,75 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("la probabilite ecrite comme un effectif", parQuestion(136, 5),
     c => { c.controle.faits.find(f => f[0] === 'probabilite')[2] = '27'; });
 
+  // ── التمرين 1 — le repère et le parallélogramme ────────────────────────
+  pousse("E place sur (OI) au lieu de (OJ)", parQuestion(131, 0),
+    c => { c.controle.points.E = ['inter', 'B', 'W', 'O', 'I']; });
+  pousse("BE annonce 5, le ordonnee de B", parQuestion(131, 1),
+    c => { c.controle.faits[0][3] = '5'; });
+  pousse("A pris sur (DB) au lieu de (BE) : on retombe sur J", parQuestion(131, 2),
+    c => { c.controle.points.A = ['inter', 'D', 'B', 'I', 'J']; });
+  pousse("l abscisse de A lue +4", parQuestion(131, 3),
+    c => { c.controle.faits[0][2] = '4'; });
+  pousse("AJ calcule sans le radical", parQuestion(131, 4),
+    c => { c.controle.faits[0][3] = '32'; });
+  // J + (B - A) est ALGÉBRIQUEMENT le même point que B + (J - A) : viser
+  // « AJBF » par là ne changeait rien. On construit le sommet de l'autre
+  // parallélogramme, ABFJ, qui lui est bien ailleurs.
+  pousse("F construit pour ABFJ au lieu de AJFB", parQuestion(131, 5),
+    c => { c.controle.points.F = ['translate', 'A', 'J', 'B']; });
+  pousse("H projete selon (OI) au lieu de (OJ)", parQuestion(131, 6),
+    c => { c.controle.points.V = ['translate', 'B', 'O', 'I']; });
+  pousse("les deux aires annoncees differentes", parQuestion(131, 7),
+    c => { c.controle.faits[1][4] = '4'; });
+
+  // ── التمرين 2 — le nombre d'or et les deux valeurs absolues ────────────
+  pousse("a et b echanges", parQuestion(132, 0),
+    c => { c.controle.claims[0][1] = "(3 + √5)/2"; });
+  pousse("le carre (1+√5)² developpe sans le double produit", parQuestion(132, 0),
+    c => { c.controle.claims[2][1] = "6"; });
+  pousse("√12 lu 3√3", parQuestion(132, 0),
+    c => { c.controle.claims[3][1] = "3√3"; });
+  pousse("5 declare plus grand que 9", parQuestion(132, 1),
+    c => { c.etapes[5][1] = "9 < 5"; });
+  pousse("le cadre de a decale", parQuestion(132, 2),
+    c => { c.etapes[3][1] = "a ≤ 1/4"; });
+  pousse("la premiere valeur absolue laissee negative", parQuestion(132, 3),
+    c => { c.controle.claims[0][1] = "3 - √5"; });
+  pousse("a² annonce (7 + 3√5)/2", parQuestion(132, 4),
+    c => { c.controle.claims[0][1] = "(7 + 3√5)/2"; });
+  pousse("2b = (7 - 3√5)a", parQuestion(132, 5),
+    c => { c.controle.claims[0][1] = "(7 - 3√5)a"; });
+  pousse("b² - 3√5/2 annonce 5/2", parQuestion(132, 5),
+    c => { c.controle.claims[1][1] = "5/2"; });
+
+  // ── التمرين 3 — l'équilatéral caché ────────────────────────────────────
+  pousse("D place a 60° mal lu : l angle devient 45°", parQuestion(133, 0),
+    c => { c.controle.points.D = ['point', '6', '6']; });
+  pousse("AD annonce 6, comme le cote", parQuestion(133, 0),
+    c => { c.controle.faits[1][3] = '6'; });
+  pousse("G place a BG = 3 au lieu de 2", parQuestion(133, 1),
+    c => { c.controle.points.G = ['point', '9/2', '3√3/2']; });
+  pousse("I pris projete de B sur (AD)", parQuestion(133, 1),
+    c => { c.controle.points.I = ['proj', 'B', 'A', 'D']; });
+  pousse("H pris symetrique de C par rapport a A", parQuestion(133, 2),
+    c => { c.controle.points.H = ['sym', 'C', 'A']; });
+  pousse("ACBH declare carre", parQuestion(133, 2),
+    c => { c.controle.faits[0] = ['carre', 'A', 'C', 'B', 'H']; });
+  pousse("CH annonce 6, le cote du losange", parQuestion(133, 3),
+    c => { c.controle.faits[0][3] = '6'; });
+  pousse("B declare orthocentre de ACD", parQuestion(133, 4),
+    c => { c.controle.faits[0] = ['orthocentre', 'B', 'A', 'C', 'D']; });
+  // B et C sont tous deux sur (BC), qui est PERPENDICULAIRE à (DH) : ils se
+  // projettent au même endroit. Viser C ne mordait donc pas — et c'était la
+  // preuve, pas l'échec, que B, C et K sont alignés. On vise le milieu de
+  // [DC], qui n'a aucune raison d'être sur (DH).
+  pousse("K pris au milieu de [DC]", parQuestion(133, 5),
+    c => { c.controle.points.K = ['milieu', 'D', 'C']; });
+  pousse("CE annonce 12√3, la longueur de [HE]", parQuestion(133, 6),
+    c => { c.controle.faits[0][3] = '12√3'; });
+  pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
+    c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
+
   // ── le garde-fou du contrat « série » ──────────────────────────────────
   pousse("serie sans aucune fait a controler", parQuestion(136, 0),
     c => { c.controle.faits = []; });

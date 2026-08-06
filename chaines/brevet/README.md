@@ -274,7 +274,42 @@ Deux choses que ces exercices cachent :
   **exactement** les deux côtés du triangle de la partie II. `(√7+1)² + (√7−1)²`
   vaut 16 parce que les `2√7` se compensent, et `AH = (√7+1)(√7−1)/4 = 3/2`.
 
-## Séance 13 — l'exercice de statistiques
+## Séance 13 — quatre exercices sur six
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex131.html` | التمرين 1 | 8 | un repère · `(IJ) : x + y = 1` · un parallélogramme · une projection selon une direction · deux aires égales |
+| `ex132.html` | التمرين 2 | 6 | le nombre d'or · un encadrement qui **lève deux valeurs absolues d'un coup** · `b² − 3√5/2 = 7/2` est rationnel |
+| `ex133.html` | التمرين 3 | 7 | un équilatéral **caché dans un demi-triangle** · losange · orthocentre · cercle de diamètre |
+| `ex136.html` | التمرين 6 | 6 | **le seul exercice de statistiques du livre** |
+
+**Deux exercices ne sont pas portés, et les raisons sont nommées :**
+
+- **l'exercice 4** est une pyramide régulière — de l'espace, sans chapitre ;
+- **l'exercice 5** renvoie à « الرسم المصاحب » pour lire les coordonnées de `C`,
+  `B` et `M`, et **ce dessin est absent du document**. Sans lui, aucune des
+  sept questions n'a de données. À redemander au maître.
+
+**La partie II de l'exercice 2 ne se referme pas non plus.** Avec les données
+imprimées — `AB = 1`, `AC = 1/2`, l'angle droit en `C`, `BD = 3/2` — on obtient
+`BC = √(1 − 1/4) = √3/2`, puis `DC = 3/2 − √3/2 = (3−√3)/2`. Or l'énoncé demande
+`DC = a`, qui vaut `(3−√5)/2`. Il faudrait `BC = √5/2`, ce qui rendrait
+`AC² = 1 − 5/4` **négatif**. La partie I (six volets) est portée ; la partie II
+attend l'arbitrage du maître.
+
+Deux choses que ces exercices cachent :
+
+- **ex131** — le `xA < 0` de l'énoncé n'est pas décoratif : sur `(IJ)`, **deux**
+  points sont à la distance 4 de `E(0 ; 5)`, et le second est `J` lui-même. La
+  condition est ce qui les départage. (Deux remarques pour le maître : l'énoncé
+  fait couper « `(AB)` et `(IJ)` » en `A`, alors que `A` est justement ce qu'on
+  cherche — la droite est `(BE)`, celle du 1)أ, et tout se referme avec elle ;
+  et le point `D(2 ; 3)`, donné en tête, n'est utilisé par **aucune** question.)
+- **ex133** — `CDH` est **équilatéral** de côté `6√3`. `B` en est donc à la fois
+  le centre de gravité, l'orthocentre *et* le centre du cercle circonscrit —
+  c'est pourquoi la question 3)ج tombe sans calcul.
+
+### L'exercice de statistiques
 
 `ex136.html` — six volets. C'est **le seul exercice de statistiques du livre**,
 et c'est pour lui que [`../stat9`](../stat9) a été ouvert ; son noyau
@@ -324,8 +359,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 120            # 47 040 questions, 874 200 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 617/617
+    node verifier.js 120            # 49 560 questions, 887 040 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 645/645
     node _build.js .                # régénérer les pages
 
 ## Dix-huit coquilles du livre, relevées par le calcul

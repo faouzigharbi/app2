@@ -666,7 +666,39 @@
           notions: ['pyramide régulière', 'section', 'perpendicularité dans l\'espace'],
           sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
 
-        // ── SÉANCE 13 — le seul exercice de statistiques du livre ────────────
+        // ── SÉANCE 13 — quatre exercices portés sur six ──────────────────────
+        { n: '13.1', questions: 8,
+          notions: ['repère', 'parallèle à un axe', 'équation de (IJ)',
+                    'distance entre deux points', 'parallélogramme',
+                    'projection selon une direction', 'aires comparées'],
+          sort: 'bibliothèque', ou: 'brevet ex131 — huit volets',
+          pourquoi: 'le xA < 0 de l\'énoncé n\'est pas décoratif : J lui-même est à '
+                  + 'la distance 4 de E, et c\'est lui que la condition écarte' },
+        { n: '13.2', questions: 6,
+          notions: ['rationaliser', 'sortir un carré d\'un radical', 'encadrement',
+                    'valeur absolue levée par l\'encadrement', 'nombres inverses',
+                    'nombre rationnel'],
+          sort: 'bibliothèque', ou: 'brevet ex132 — six volets, PARTIE I seulement',
+          pourquoi: 'la partie II ne se referme pas : avec AB = 1, AC = 1/2, l\'angle '
+                  + 'droit en C et BD = 3/2, on obtient BC = √3/2 puis DC = (3−√3)/2, '
+                  + 'et non a = (3−√5)/2. Il faudrait BC = √5/2, ce qui rendrait '
+                  + 'AC² = 1 − 5/4 négatif. À arbitrer par le maître' },
+        { n: '13.3', questions: 7,
+          notions: ['triangle équilatéral', 'médiane de l\'hypoténuse', 'alignement',
+                    'losange', 'symétrique', 'orthocentre', 'cercle de diamètre',
+                    'angle de 30° dans un triangle rectangle'],
+          sort: 'bibliothèque', ou: 'brevet ex133 — sept volets',
+          pourquoi: 'CDH est équilatéral de côté 6√3 : B en est donc à la fois le '
+                  + 'centre de gravité, l\'orthocentre ET le centre du cercle circonscrit' },
+        { n: '13.4', questions: 7,
+          notions: ['pyramide régulière', 'perpendicularité dans l\'espace', 'section'],
+          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+        { n: '13.5', questions: 7,
+          notions: ['repère', 'rectangle', 'parallélogramme', 'aire'],
+          sort: 'hors machinerie',
+          pourquoi: 'l\'énoncé renvoie à « الرسم المصاحب » pour lire les coordonnées de '
+                  + 'C, B et M — et CE DESSIN EST ABSENT du document. Sans lui, aucune '
+                  + 'des sept questions n\'a de données. À redemander au maître' },
         { n: '13.6', questions: 6,
           notions: ['série continue', 'effectifs inconnus', 'fréquence cumulée croissante',
                     'cumuls', 'étendue', 'classe modale', 'moyenne par les centres',
