@@ -34,6 +34,15 @@
   // gravité de B, C et D. À faire arbitrer par le maître.
   page(2626, '2026 · الحصّة 2 — التمرين 6 — ', 'معلم حيث كلّ شيء يسقط على معيّن',
        S.livre26seance2ex6, 6);
+  // La séance 3 du 2026 est ENTIÈREMENT faite de reprises : son exercice 1 est
+  // ex21, son 3 est ex23, son 4 est ex24 — mêmes coordonnées —, et son 5 est
+  // une pyramide. Rien à porter.
+  //
+  // La séance 4 : son 1 est ex31, ses 3 et 4 sont ex33 et ex34, son 6 est le
+  // « نموذجية مدنين » d'ex36, et son 7 est un prisme. Seul son exercice 2 est
+  // neuf.
+  page(2642, '2026 · الحصّة 4 — التمرين 2 — ', 'معيّن يكفي قطراه للتعرّف عليه',
+       S.livre26seance4ex2, 6);
 
   // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
   // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce

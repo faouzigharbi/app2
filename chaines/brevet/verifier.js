@@ -1468,6 +1468,23 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[2][3] = '8'; });
 
   // ══ LE LIVRE 2026 ══════════════════════════════════════════════════════
+  pousse("C place a (3 ; -2) : (AC) n est plus verticale", parQuestion(2642, 0),
+    c => { c.controle.points.C = ['point', '3', '-2']; });
+  pousse("K place sur (OJ) au lieu de (OI)", parQuestion(2642, 1),
+    c => { c.controle.points.K = ['inter', 'A', 'C', 'O', 'J']; });
+  pousse("L pris symetrique de A par rapport a O", parQuestion(2642, 2),
+    c => { c.controle.points.L = ['sym', 'A', 'O']; });
+  pousse("AOLB declare carre", parQuestion(2642, 2),
+    c => { c.controle.faits[0] = ['carre', 'A', 'O', 'L', 'B']; });
+  pousse("l aire du losange comptee sans le demi", parQuestion(2642, 3),
+    c => { c.controle.claims[0][1] = '8√2'; });
+  pousse("T pris sur la parallele a (OI)", parQuestion(2642, 4),
+    c => { c.controle.points.W = ['translate', 'B', 'O', 'I']; });
+  pousse("l abscisse de T lue 2", parQuestion(2642, 4),
+    c => { c.controle.faits[0][2] = '2'; });
+  pousse("la longueur du segment annoncee 2", parQuestion(2642, 5),
+    c => { c.controle.faits[5][3] = '2'; });
+
   pousse("A place a (-2 ; 4) : AC n est plus 3√5", parQuestion(2626, 0),
     c => { c.controle.points.A = ['point', '-2', '4']; });
   pousse("AM confondu avec AB", parQuestion(2626, 0),

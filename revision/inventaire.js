@@ -855,10 +855,11 @@
           sujet: 'arithmétique : arbre de choix, restes, divisibilité, puissances · deux QCM' },
         { seance: 2, pages: '5-6', exercices: 6, vu: true,
           sujet: 'une chaîne d\'encadrements qui se referme · une expression et un nombre à sept chiffres · deux triangles rectangles · le nombre d\'or au carré · deux repères' },
-        { seance: 3, pages: '7-9', exercices: 5, vu: 'partiellement',
-          sujet: 'son exercice 1 est le 1 de la séance 2 du livre 2025 — DOUBLON' },
-        { seance: 4, pages: '10-14', exercices: 7, vu: 'partiellement',
-          sujet: 'ses deux exercices de radicaux (3 et 4) sont les 3 et 4 de la séance 3 du 2025 — DOUBLONS' },
+        { seance: 3, pages: '7-9', exercices: 5, vu: true,
+          // ENTIÈREMENT faite de reprises, plus une pyramide. Rien à porter.
+          sujet: 'ex1 = ex21, ex3 = ex23, ex4 = ex24 (mêmes coordonnées) — TROIS DOUBLONS · ex5 est une pyramide' },
+        { seance: 4, pages: '10-14', exercices: 7, vu: true,
+          sujet: 'ex1 = ex31, ex3 = ex33, ex4 = ex34, ex6 = ex36 (« نموذجية مدنين ») — QUATRE DOUBLONS · ex7 est un prisme · SEUL ex2 est neuf' },
         { seance: 5, pages: '15-17', exercices: 3, sujet: 'à lire — géométrie' },
         { seance: 6, pages: '15-21', exercices: 8, vu: 'partiellement',
           sujet: 'ses exercices 1 et 3 sont ceux des séances 5 et 7 du 2025 — DOUBLONS' },
@@ -919,6 +920,32 @@
                   + 'au-dessus de I(1 ; 0). Son symétrique par rapport à I donne alors un '
                   + 'losange dont les diagonales se coupent en leur milieu ET '
                   + 'perpendiculairement, sans mesurer un seul côté' },
+
+        { n: '3.3', questions: 13, notions: ['rectangle', 'symétrique', 'isocèle', 'projection', 'losange', 'Thalès'],
+          sort: 'bibliothèque', ou: 'brevet ex23 — DOUBLON du 2025, séance 2 exercice 3',
+          pourquoi: 'A(2 ; 0) et B(2 ; 1) — les mêmes coordonnées, relues dans le code' },
+        { n: '3.4', questions: 12, notions: ['cercle de diamètre', 'triangle rectangle', 'Thalès', 'aire', 'trapèze isocèle'],
+          sort: 'bibliothèque', ou: 'brevet ex24 — DOUBLON du 2025, séance 2 exercice 4',
+          pourquoi: 'A(2 ; 0) et B(6 ; 6) — les mêmes coordonnées' },
+        { n: '3.5', questions: 8, notions: ['pyramide régulière', 'perpendicularité dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+        { n: '4.1', questions: 4, notions: ['Thalès quatre fois'],
+          sort: 'bibliothèque', ou: 'brevet ex31 — DOUBLON du 2025, séance 3 exercice 1',
+          pourquoi: 'AB = 3, AC = 5, BC = 6, BM = 1 — les mêmes données' },
+        { n: '4.2', questions: 6,
+          notions: ['repère', 'droite verticale', 'symétrique', 'losange par les diagonales',
+                    'aire', 'parallèle', 'ensemble de points'],
+          sort: 'bibliothèque', ou: 'brevet ex2642 — six volets',
+          pourquoi: '(AC) est VERTICALE — A et C ont la même abscisse —, donc K(2 ; 0) est '
+                  + 'à la fois le milieu de [AL] et celui de [OB] : AOLB est un losange sans '
+                  + 'qu\'on mesure un côté, et son aire est le demi-produit des diagonales, 4√2. '
+                  + 'L\'énoncé numérote 1, 2, 3, 5 — la question 4 manque' },
+        { n: '4.6', questions: 20, notions: ['« نموذجية مدنين »', 'repère', 'changement de repère'],
+          sort: 'bibliothèque', ou: 'brevet ex36 — DOUBLON du 2025, séance 3 exercice 6',
+          pourquoi: 'BCE isocèle ET rectangle, BE = 2+√2, JE/JA = √2, HJ = 2, et le changement '
+                  + 'de repère final dans (D ; B ; E) — le plus long exercice du livre 2025' },
+        { n: '4.7', questions: 5, notions: ['prisme droit', 'trapèze', 'espace'],
+          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
 
         // ── LE BALAYAGE ARITHMÉTIQUE ET RADICAUX DES HUIT SÉANCES ───────────
         // Cinq exercices de radicaux hors séance 1, et les CINQ sont déjà dans
