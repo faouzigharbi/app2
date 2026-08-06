@@ -363,6 +363,27 @@ point par une **distance** et non par une intersection ; la propriété qui le
 caractérise — la longueur, l'appartenance au cercle — est ensuite recalculée
 comme un fait.
 
+## La règle du maître — on corrige, on ne se contente pas de nommer
+
+Le jour où le `51` de la séance 1 a été confirmé comme une faute de frappe, la
+consigne est devenue :
+
+> « chaque fois que tu trouves une erreur tu corriges »
+
+Elle remplace la règle qui valait jusque-là — nommer la coquille et laisser
+l'exercice de côté. Désormais :
+
+- quand la correction est **déterminée** (une seule valeur referme l'exercice),
+  la chaîne porte la valeur juste et le commentaire dit ce que le livre
+  imprimait ;
+- quand **plusieurs** corrections referment l'exercice, on en retient une, on
+  dit laquelle et pourquoi, et on nomme les autres ;
+- quand **aucune** ne le referme — la question 3 du prisme de la séance 3, qui
+  est structurellement vide —, l'exercice reste « à arbitrer ».
+
+Et dans tous les cas **la version imprimée est rejouée par une falsification**.
+C'est ce qui garantit que la correction n'est pas une opinion mais un calcul.
+
 ## Les nombres à chiffres littéraux — le motif
 
 `x = 583c2ba`, `m = 29a4b`, `A = 35a3b` : la séance 1 en est pleine. Ce ne sont

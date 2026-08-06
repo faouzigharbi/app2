@@ -1974,6 +1974,61 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
     c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
 
+  // ── الحصّة 1، التمرين 8 — sept lignes de QCM, puis neuf questions ──────
+  pousse("le contre-exemple des irrationnels fausse", parQuestion(18, 0),
+    c => { c.controle.claims[0][1] = "2√2"; });
+  pousse("2 × 25^159 pris pour 5^318 seul", parQuestion(18, 1),
+    c => { c.controle.entiers[1][1] = "5^318 × 31"; });
+  pousse("la somme des trois chiffres d unites mal faite", parQuestion(18, 1),
+    c => { c.etapes[3][1] = "0 + 5 + 5 = 5"; });
+  pousse("le nombre declare impair", parQuestion(18, 1),
+    c => { c.controle.divisibles[0] = ['2 × 25^159 + 5^320 + 5^319 + 1', 10]; });
+  pousse("la centaine autorisee impaire", parQuestion(18, 2),
+    c => { c.controle.ensemble.centaines = 'impair'; });
+  pousse("l arbre compte 10 dizaines au lieu de 8", parQuestion(18, 2),
+    c => { c.etapes[4][1] = "4 × 5 × 10 = 160"; });
+  pousse("le quotient annonce 3n", parQuestion(18, 3),
+    c => { c.controle.claims[0][1] = "3(3n) + 2"; });
+  pousse("9^22 lu comme 3^22", parQuestion(18, 4),
+    c => { c.etapes[1][1] = "9^22 = 3^22"; });
+  pousse("3^45 + 9^22 declare divisible par 15", parQuestion(18, 4),
+    c => { c.controle.divisibles[0] = ['3^45 + 9^22', 15]; });
+  pousse("la periode prise de longueur 3", parQuestion(18, 5),
+    c => { c.controle.entiers[0][1] = "3 × 1737"; });
+  pousse("l encadrement de la valeur approchee inverse", parQuestion(18, 6),
+    c => { c.etapes[2][1] = "7511/999 < 75185/10000"; });
+  pousse("la dizaine prise multiple de 3 au lieu de premiere", parQuestion(18, 7),
+    c => { c.controle.ensemble.dizaines = 'multiple-de-3'; });
+  pousse("29a4b teste sur 60 au lieu de 120", parQuestion(18, 8),
+    c => { c.controle.ensemble.divisiblePar = 60; });
+  pousse("n + 2 annonce multiple de 5 seulement", parQuestion(18, 9),
+    c => { c.controle.claims[2][1] = "3(q + 2)"; });
+  pousse("n pris a 130 au lieu de 133", parQuestion(18, 10),
+    c => { c.controle.entiers[0][1] = "130"; });
+  pousse("125^111 lu comme 5^111", parQuestion(18, 11),
+    c => { c.etapes[1][1] = "125^111 = 5^111"; });
+  // LA CORRECTION DU MAÎTRE, rejouée à l'envers : le 51 imprimé dans le livre.
+  // 2×7^121 + 3×49^60 vaut 17 × 7^120, qui n'est pas divisible par 3, donc pas
+  // par 51. Le contrôle doit refuser le 51 et accepter le 17.
+  pousse("le diviseur 51 imprime dans le livre, au lieu de 17", parQuestion(18, 12),
+    c => { c.controle.divisibles[0] = ['2 × 7^121 + 3 × 49^60', 51]; });
+  pousse("le crochet 2 × 7 + 3 mal calcule", parQuestion(18, 12),
+    c => { c.etapes[3][1] = "2 × 7 + 3 = 18"; });
+  // LA SECONDE CORRECTION, rejouée de même : l'exposant 1506 imprimé donne un
+  // crochet de 29, et 29 × 2^3012 n'est pas divisible par 44.
+  pousse("l exposant 1506 imprime dans le livre, au lieu de 1508",
+    parQuestion(18, 13),
+    c => { c.controle.divisibles[0] = ['3 × 8^1005 + 4^1506 + 2^3014', 44];
+           c.controle.divisibles[1] = ['3 × 8^1005 + 4^1506 + 2^3014', 11]; });
+  pousse("le crochet 3 × 8 + 16 + 4 annonce 40", parQuestion(18, 13),
+    c => { c.etapes[4][1] = "3 × 8 + 16 + 4 = 40"; });
+  pousse("24xy teste sur 5 au lieu de 15", parQuestion(18, 14),
+    c => { c.controle.ensemble.divisiblePar = 5; });
+  pousse("3x5y teste sur 2 au lieu de 6", parQuestion(18, 15),
+    c => { c.controle.ensemble.divisiblePar = 2; });
+  pousse("x35y teste sur 4 au lieu de 12", parQuestion(18, 16),
+    c => { c.controle.ensemble.divisiblePar = 4; });
+
   // ── الحصّة 1، التمرين 3 — trois arbres et un motif ─────────────────────
   pousse("la contrainte de divisibilite commune oubliee", parQuestion(13, 0),
     c => { c.controle.ensemble.relations = []; });
@@ -2123,17 +2178,21 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.etapes[1][1] = "8^43 = 2^130"; });
   pousse("le facteur 3 pris pour un 5", parQuestion(1010, 3),
     c => { c.etapes[2][1] = "2^129 + 2^130 = 5 × 2^129"; });
-  pousse("a pris impair : a4 n est plus multiple de 4", parQuestion(1010, 4),
+  pousse("a pris impair : a4 n est plus multiple de 4", parQuestion(1010, 5),
     c => { c.controle.divisibles[0] = ['111714', 12]; });
+  pousse("le 6 du motif corrige ramene a 5, comme dans le livre",
+    parQuestion(1010, 4),
+    c => { c.controle.divisibles = [['121514', 6], ['222524', 6], ['323534', 6]]; });
+  pousse("le dernier chiffre rendu impair", parQuestion(1010, 4),
+    c => { c.controle.divisibles[0] = ['121615', 6]; });
   // LA FALSIFICATION QUI PORTE LA COQUILLE. Ce n'est pas une erreur inventée :
   // c'est la question 7 du livre, telle qu'imprimée. « x2x5x4 est divisible par
   // 6 quel que soit x » — la somme de ses chiffres vaut 3x + 11, congrue à 2
   // modulo 3 pour TOUT x, donc le nombre n'est jamais divisible par 3. Trois
   // valeurs de x suffisent à le montrer, et le contrôle doit les refuser
   // toutes les trois.
-  pousse("la question 7 du livre, telle qu imprimee : x2x5x4 divisible par 6",
-    parQuestion(1010, 4),
-    c => { c.controle.divisibles = [['121514', 6], ['222524', 6], ['323534', 6]]; });
+  pousse("la question 8 du livre avec un a impair", parQuestion(1010, 5),
+    c => { c.controle.divisibles[4] = ['133734', 12]; });
 
   // ══ LES SOLIDES — six exercices que la machine ne savait pas tenir ═════
   //

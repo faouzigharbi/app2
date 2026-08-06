@@ -284,8 +284,21 @@
           notions: ['chiffres consécutifs', 'arbre de choix', 'divisibilité par 6',
                     'mise en facteur d\'une puissance'],
           sort: 'bibliothèque', ou: 'brevet ex17 — trois volets' },
-        { n: '1.8', questions: 16, notions: ['QCM (7 items)', 'divisibilité', 'puissances', 'arrondis', 'arbre de choix'], sort: 'à faire',
-          pourquoi: 'le plus gros exercice du livre : un QCM de 7 items puis 9 questions' },
+        { n: '1.8', questions: 17,
+          notions: ['QCM (7 items)', 'irrationnels', 'chiffre des unités',
+                    'division euclidienne littérale', 'divisibilité', 'puissances',
+                    'écriture décimale périodique', 'valeur approchée par excès',
+                    'arbre de choix', 'motif littéral'],
+          sort: 'bibliothèque', ou: 'brevet ex18 — dix-sept volets',
+          pourquoi: 'le plus gros exercice de la séance. DEUX CORRECTIONS FAITES, et '
+                  + 'non pas seulement signalées : (5) le livre imprime « divisible '
+                  + 'par 51 » alors que 2×7¹²¹ + 3×49⁶⁰ = 17 × 7¹²⁰ n\'est pas '
+                  + 'divisible par 3 — le maître a confirmé la faute de frappe, le '
+                  + 'diviseur est 17 ; (6) le livre imprime 3×8¹⁰⁰⁵ + 4¹⁵⁰⁶ + 2³⁰¹⁴, '
+                  + 'dont le crochet vaut 3×8 + 1 + 4 = 29 et qui n\'est pas divisible '
+                  + 'par 44 — avec 4¹⁵⁰⁸ le crochet vaut 3×8 + 16 + 4 = 44 EXACTEMENT, '
+                  + 'et c\'est visiblement ce que l\'énoncé visait. Les deux versions '
+                  + 'imprimées sont rejouées par une falsification, qui les refuse' },
         { n: '1.9', questions: 4,
           notions: ['parité', 'multiples', 'identité en k', 'diviseurs de 15',
                     'arbre de choix'],
@@ -298,7 +311,7 @@
                   + '« et il n\'y en a pas d\'autres » ne serait vérifié par rien' },
         { n: '1.10', questions: 8,
           notions: ['restes', 'divisibilité', 'puissances', 'chiffres littéraux'],
-          sort: 'bibliothèque', ou: 'brevet ex1010 — cinq volets sur huit',
+          sort: 'bibliothèque', ou: 'brevet ex1010 — six volets sur huit',
           pourquoi: 'ses deux premières questions imprimées REPRENNENT mot pour mot '
                   + 'l\'exercice 5 de la même séance (ex15 les porte déjà). Des six '
                   + 'suivantes, CINQ sont portées — 9876543210, le quotient '
@@ -308,9 +321,12 @@
                   + 'modulo 3 POUR TOUT x, donc le nombre n\'est JAMAIS divisible '
                   + 'par 3 (121514, 222524, 323534 ne le sont pas). Vingtième '
                   + 'coquille, et elle n\'est pas rattrapable par un choix de x : il '
-                  + 'faut changer un chiffre fixe — x2x5x2, x2x6x4 et x3x5x4 '
-                  + 'marcheraient. Une falsification rejoue la question telle '
-                  + 'qu\'imprimée. Remarque : le livre compose « 2022² 2022 − 9 », le '
+                  + 'faut changer un chiffre FIXE. Trois corrections referment la '
+                  + 'question — x2x5x2, x2x6x4 et x3x5x4 — et l\'on retient x2x6x4, la '
+                  + 'seule qui laisse intacts les deux chiffres portant l\'argument (le '
+                  + '2 du début, le 4 final qui donne la parité). LA QUESTION EST DONC '
+                  + 'PORTÉE, corrigée, et la version imprimée est rejouée par une '
+                  + 'falsification qui la refuse. Remarque : le livre compose « 2022² 2022 − 9 », le '
                   + '2022 y est dupliqué — les DEUX lectures sont vraies, et le '
                   + 'validateur les vérifie toutes les deux, la seconde en BigInt '
                   + 'sur 6 685 chiffres' },
