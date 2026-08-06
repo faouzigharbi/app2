@@ -855,12 +855,15 @@
           sujet: 'arithmétique : arbre de choix, restes, divisibilité, puissances · deux QCM' },
         { seance: 2, pages: '5-6', exercices: 6, vu: true,
           sujet: 'une chaîne d\'encadrements qui se referme · une expression et un nombre à sept chiffres · deux triangles rectangles · le nombre d\'or au carré · deux repères' },
-        { seance: 3, pages: '9-12', exercices: 5, sujet: 'à lire' },
-        { seance: 4, pages: '13-17', exercices: 7, sujet: 'à lire' },
-        { seance: 5, pages: '18-21', exercices: 3, sujet: 'à lire' },
-        { seance: 6, pages: '22-26', exercices: 8, sujet: 'à lire' },
-        { seance: 7, pages: '27-30', exercices: 3, sujet: 'à lire' },
-        { seance: 8, pages: '31-38', exercices: 6, sujet: 'à lire' }
+        { seance: 3, pages: '7-9', exercices: 5, vu: 'partiellement',
+          sujet: 'son exercice 1 est le 1 de la séance 2 du livre 2025 — DOUBLON' },
+        { seance: 4, pages: '10-14', exercices: 7, vu: 'partiellement',
+          sujet: 'ses deux exercices de radicaux (3 et 4) sont les 3 et 4 de la séance 3 du 2025 — DOUBLONS' },
+        { seance: 5, pages: '15-17', exercices: 3, sujet: 'à lire — géométrie' },
+        { seance: 6, pages: '15-21', exercices: 8, vu: 'partiellement',
+          sujet: 'ses exercices 1 et 3 sont ceux des séances 5 et 7 du 2025 — DOUBLONS' },
+        { seance: 7, pages: '22-25', exercices: 3, sujet: 'à lire — géométrie' },
+        { seance: 8, pages: '26-38', exercices: 6, sujet: 'à lire — PAGES SCANNÉES, aucune couche de texte' }
       ],
       contenu: [
         { n: '1.1', questions: 1,
@@ -908,9 +911,53 @@
                   + 'quatre points A(1;2), B, C, D ne donne un parallélogramme — les trois '
                   + 'couples de milieux de diagonales diffèrent. Le A imprimé ne referme pas '
                   + 'la question 1' },
-        { n: '2.6', questions: 6, notions: ['repère', 'alignement', 'losange', 'aire', 'projection'], sort: 'à faire' }
+        { n: '2.6', questions: 6, notions: ['repère', 'alignement', 'losange', 'aire', 'projection'], sort: 'à faire' },
+
+        // ── LE BALAYAGE ARITHMÉTIQUE ET RADICAUX DES HUIT SÉANCES ───────────
+        // Cinq exercices de radicaux hors séance 1, et les CINQ sont déjà dans
+        // la bibliothèque. Chaque identification est un RECALCUL, pas une
+        // ressemblance : les nombres coïncident au chiffre près.
+        { n: '3.1', questions: 7,
+          notions: ['rationaliser', 'nombres inverses', '2a×c = √3', 'nombre صمّ'],
+          sort: 'bibliothèque', ou: 'brevet ex21 — DOUBLON du 2025, séance 2 exercice 1',
+          pourquoi: 'a = 2√3−3, b = (2√3+3)/3, c = 1+√3/2, ab = 1 et 2ac = √3 — '
+                  + 'identiques. ET LA COQUILLE EST REPRODUITE : le livre 2026 imprime '
+                  + 'encore (3√3−1)(4−5√3), qui vaut 17√3−49, là où la déduction exige '
+                  + '(2√3−1)(4−5√3) = 13√3−34. La correction n\'a pas été reportée' },
+        { n: '4.3', questions: 5,
+          notions: ['deux nombres négatifs', 'comparer par les carrés', 'b/a > 1'],
+          sort: 'bibliothèque', ou: 'brevet ex33 — DOUBLON du 2025, séance 3 exercice 3',
+          pourquoi: 'a = 2√6−5 et b = 3√2−7, avec 24 < 25 et 18 < 49 — les mêmes '
+                  + 'quatre nombres. Le 2026 ajoute une question de distance MN sur '
+                  + 'un axe gradué' },
+        { n: '4.4', questions: 5,
+          notions: ['(a−b)² = ab', 'nombres inverses', '1/b − 1/a = 1/(a−b)'],
+          sort: 'bibliothèque', ou: 'brevet ex34 — DOUBLON du 2025, séance 3 exercice 4',
+          pourquoi: 'a = 4−2√5, b = 1−√5, (a−b)² = ab = 14−6√5 et 1/b − 1/a = 1/(a−b) '
+                  + '= (3+√5)/4 — identiques' },
+        { n: '6.1', questions: 6,
+          notions: ['a = (3−2√2)²', 'a inverse de b²', 'ordonner des inverses'],
+          sort: 'bibliothèque', ou: 'brevet ex51 — DOUBLON du 2025, séance 5 exercice 1',
+          pourquoi: 'a = 17−12√2 et b = 3+2√2, avec a = 1/b² — identiques. Le 2026 '
+                  + 'ajoute quatre questions : c = a−b, l\'ordre de 1/a, 1/b, 1/c, la '
+                  + 'comparaison de 1/(a²+a) et 1/(b²+b), et (1−a⁻²)/b² + 24√2, qui '
+                  + 'vaut exactement 0' },
+        { n: '6.3', questions: 3,
+          notions: ['comparer 7√3 et 11', 'un produit à quatre termes'],
+          sort: 'bibliothèque', ou: 'brevet ex71 — DOUBLON du 2025, séance 7 exercice 1 (partie 2)',
+          pourquoi: 'b = (√11−5)(1−√3) vaut 5√3+√11−5−√33 — exactement le t de ex71, '
+                  + 'celui dont les QUATRE termes avaient montré la limite honnête du '
+                  + 'noyau (la division par conjugué s\'arrête à deux termes)' }
       ],
-      machine: ['les séances 2 à 8 restent à ouvrir — 38 exercices',
+      machine: ['BALAYAGE ARITHMÉTIQUE ET RADICAUX FAIT sur les huit séances : les '
+                + 'CINQ exercices de radicaux repérés hors séance 1 sont TOUS des '
+                + 'reprises du livre 2025, confirmées au chiffre près par recalcul. '
+                + 'La couche « radicaux » de la nouvelle édition est donc recyclée ; '
+                + 'ce qui est neuf est ailleurs — l\'arithmétique de la séance 1 et '
+                + 'la géométrie',
+                'les pages 26 à 38 (séance 8) n\'ont AUCUNE couche de texte : elles '
+                + 'sont scannées, et demandent une lecture visuelle page à page',
+                'restent les exercices de GÉOMÉTRIE des séances 2 à 8',
                 'denombrer.js a gagné les nombres à QUATRE chiffres pour ce livre, '
                 + 'et trois relations de plus (diviseur commun, unité divise centaine, '
                 + 'dizaine sous centaine)'],

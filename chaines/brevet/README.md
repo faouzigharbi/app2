@@ -12,6 +12,43 @@ C'est une **partie à part** de la bibliothèque, pas un chapitre de plus : une
 seule séance mêle radicaux, factorisation, équations, inéquations et relation
 métrique. La ranger sous « العمليات في ℝ » la rendrait introuvable.
 
+## Le livre 2026 — et ce que le balayage des radicaux a trouvé
+
+`Revision_9eme_2026.pdf` n'est **pas une réédition** : 38 pages contre 47, huit
+séances contre treize, une quarantaine d'exercices contre 76. Les clés du 2026
+commencent par `26` (`2611` = 2026, séance 1, exercice 1) ; rien ne bouge des
+pages du 2025.
+
+Sa **séance 1 est neuve** et cinq exercices en sont portés (`ex2611`, `ex2612`,
+`ex2616`, `ex2617`) plus `ex2621` de la séance 2.
+
+Mais le balayage de **l'arithmétique et des radicaux sur les huit séances** a
+donné un résultat net : **les cinq exercices de radicaux repérés hors séance 1
+sont tous déjà dans la bibliothèque.** Chaque identification est un
+**recalcul**, pas une ressemblance — les nombres coïncident au chiffre près :
+
+| 2026 | vaut | déjà porté par |
+|---|---|---|
+| séance 3, ex 1 | `a = 2√3−3`, `b = (2√3+3)/3`, `ab = 1`, `2ac = √3` | `ex21` |
+| séance 4, ex 3 | `a = 2√6−5`, `b = 3√2−7` (24 < 25, 18 < 49) | `ex33` |
+| séance 4, ex 4 | `a = 4−2√5`, `b = 1−√5`, `(a−b)² = ab = 14−6√5` | `ex34` |
+| séance 6, ex 1 | `a = 17−12√2 = (3−2√2)²`, inverse de `b²` | `ex51` |
+| séance 6, ex 3 | `b = 5√3+√11−5−√33` — le `t` à quatre termes | `ex71` |
+
+**La couche « radicaux » de la nouvelle édition est donc recyclée.** Ce qui est
+neuf est ailleurs : l'arithmétique de la séance 1, et la géométrie.
+
+Deux choses relevées au passage :
+
+- **La coquille n° 1 n'a pas été corrigée.** Le livre 2026 imprime encore
+  `(3√3−1)(4−5√3)`, qui vaut `17√3−49`, là où la déduction exige
+  `(2√3−1)(4−5√3) = 13√3−34`.
+- Le 2026 **ajoute des questions** à ses reprises : la séance 6 exercice 1 en
+  gagne quatre, dont `(1−a⁻²)/b² + 24√2`, qui vaut exactement **0**.
+
+Et une limite matérielle : **les pages 26 à 38 (séance 8) n'ont aucune couche
+de texte** — elles sont scannées, et demandent une lecture visuelle page à page.
+
 ## Séance 1 — six exercices sur douze, et l'arbre de choix
 
 La plus longue du livre, et la **dernière ouverte** — parce qu'elle vit
