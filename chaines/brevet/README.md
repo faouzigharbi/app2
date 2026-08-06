@@ -327,6 +327,42 @@ Trois choses que ces exercices cachent :
   de `ABE` un équilatéral de côté 8 dont le milieu de `[AE]` retombe sur le
   cercle.
 
+## L'exercice 12 de la séance 1 — le nombre d'or que l'énoncé ne nomme pas
+
+Dix-sept volets, le plus long de la séance. `x` et `y` n'y sont donnés que par
+leurs **carrés** et leur **produit** — `x² = 36 − 16√5`, `y² = 6 − 2√5`,
+`xy = 14 − 6√5` — et les cinq premières questions ne les connaissent pas.
+
+`x² + y² = 42 − 18√5 = 3xy` est la clé : elle donne `x/y + y/x = 3`, donc
+`z² = 3 − 2 = 1`, et comme `z < 0`, **`z = −1`**. Le nombre d'or est là, caché :
+`√(x/y) = (√5−1)/2` et `√(y/x) = (√5+1)/2`, deux nombres de différence `−1` et
+de produit `1`. L'énoncé ne le nomme jamais.
+
+Puis `(a−b)² = ab = (3−√5)²`, `(a+b)² = 5ab`, et le système somme/différence
+rend `a = 2√5 − 4` et `b = √5 − 1`. **La fin construit `b − a` à la règle** :
+comme `(CA) ⊥ (CD)`, le pied de la perpendiculaire menée du centre du cercle de
+diamètre `[MN]` est `C` lui-même ; la corde est donc centrée en `C` et sa
+demi-longueur vaut `√(ab) = 3 − √5`. Tout tient au **« لا تنتمي إلى [MC] »** de
+l'énoncé : avec `N` du bon côté de `C`, le cercle ne toucherait même pas `(AC)`
+— son centre en serait à `(a+b)/2` pour un rayon `(b−a)/2`. Une falsification
+rejoue précisément cette erreur.
+
+**Deux coquilles**, la 21ᵉ et la 22ᵉ :
+
+- le 5)أ imprime `a + b = 3√5 + 5`. C'est `3√5 − 5` : le carré de `3√5 − 5` vaut
+  bien `70 − 30√5 = 5ab`, et `a + b ≈ 1,7` quand `3√5 + 5 ≈ 11,7` ;
+- le 5)ب pose `a − b = t'` puis demande `a = (t − t')/2`. Avec ce `t'` la formule
+  rend `b`, pas `a`. Elle n'est juste qu'avec `t' = b − a` — précisément ce que
+  la question 4)ج vient de calculer.
+
+Les deux sont **rejouées telles qu'imprimées** par une falsification.
+
+Une construction a été ajoutée à `repere.js` pour cet exercice : `sur`, le point
+de `(AB)` tel que `AM→ = k·AB→` avec `k` exact. Elle sert quand l'énoncé place un
+point par une **distance** et non par une intersection ; la propriété qui le
+caractérise — la longueur, l'appartenance au cercle — est ensuite recalculée
+comme un fait.
+
 ## Les diviseurs — le complément d'`entiers.js`
 
 L'exercice 9 de la séance 1 demande les entiers `t` pour lesquels `15/(t−3)`

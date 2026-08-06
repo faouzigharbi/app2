@@ -1974,6 +1974,56 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("E pris sur la perpendiculaire menee par H", parQuestion(133, 6),
     c => { c.controle.points.W = ['normale', 'H', 'H', 'D']; });
 
+  // ── الحصّة 1، التمرين 12 — le plus long, et le nombre d'or dedans ──────
+  pousse("x^2 + y^2 annonce 2xy", parQuestion(1012, 0),
+    c => { c.controle.claims[3][1] = "2 × x × y"; });
+  pousse("x/y + y/x annonce 2", parQuestion(1012, 1),
+    c => { c.controle.claims[0][1] = "2"; });
+  pousse("le quotient x/y pris a l envers", parQuestion(1012, 4),
+    c => { c.controle.claims[0][1] = "(3 + √5)/2"; });
+  pousse("les deux racines echangees : z devient +1", parQuestion(1012, 5),
+    c => { c.controle.env.r = "(√5 + 1)/2"; c.controle.env.s = "(√5 - 1)/2"; });
+  pousse("z^2 pris egal a 3 au lieu de 1", parQuestion(1012, 5),
+    c => { c.etapes[3][1] = "z^2 = 3 - 0"; });
+  pousse("le double produit du carre mal calcule", parQuestion(1012, 6),
+    c => { c.controle.claims[0][1] = "14 - 4√5"; });
+  pousse("(a - b)^2 annonce 2ab", parQuestion(1012, 7),
+    c => { c.controle.claims[0][1] = "2 × a × b"; });
+  pousse("b - a pris a l envers", parQuestion(1012, 8),
+    c => { c.controle.claims[0][1] = "√5 - 3"; });
+  // LA COQUILLE DU LIVRE, rejouée telle qu'imprimée. Le 5)أ écrit
+  // « a + b = 3√5 + 5 » ; le carré de ce nombre vaut 70 + 30√5, pas 70 − 30√5.
+  pousse("a + b = 3√5 + 5, le nombre imprime dans le livre", parQuestion(1012, 9),
+    c => { c.controle.claims[1][1] = "3√5 + 5"; });
+  pousse("(a + b)^2 annonce 3ab", parQuestion(1012, 9),
+    c => { c.controle.claims[0][1] = "3 × a × b"; });
+  // LA SECONDE COQUILLE. Le 5)ب pose « a − b = t' » et demande a = (t − t')/2 ;
+  // avec ce t' la formule rend b, pas a. Elle n'est juste qu'avec t' = b − a.
+  pousse("t' pris egal a a - b, comme l imprime le livre", parQuestion(1012, 10),
+    c => { c.controle.env.u = "a - b"; });
+  pousse("a annonce 2√5 + 4", parQuestion(1012, 10),
+    c => { c.controle.claims[2][1] = "2√5 + 4"; });
+  pousse("b annonce √5 + 1", parQuestion(1012, 11),
+    c => { c.controle.claims[0][1] = "√5 + 1"; });
+  pousse("BC pris egal a 3 : AC n est plus 2√5", parQuestion(1012, 12),
+    c => { c.controle.points.C = ['point', '3', '0']; });
+  pousse("D place a l interieur de [AB]", parQuestion(1012, 12),
+    c => { c.controle.points.D = ['point', '0', '1']; });
+  pousse("le carre du plus grand cote mal compare", parQuestion(1012, 13),
+    c => { c.etapes[4][1] = "20 + 5 = 24"; });
+  pousse("M pris milieu de [CD]", parQuestion(1012, 14),
+    c => { c.controle.points.M = ['milieu', 'C', 'D']; });
+  // CELLE-CI EST LE CŒUR DE L'EXERCICE. L'énoncé insiste : N est sur [MC) mais
+  // N'APPARTIENT PAS à [MC]. Si on la place du bon côté de C, tout le reste
+  // tombe : le cercle de diamètre [MN] ne touche même plus la droite (AC), car
+  // son centre en est alors à la distance (a+b)/2 pour un rayon (b−a)/2.
+  pousse("N placee a l interieur de [MC], contre le « لا تنتمي » de l enonce",
+    parQuestion(1012, 16), c => { c.controle.points.N = ['sur', 'C', 'M', '(3 - √5)/2']; });
+  pousse("OC annonce b + a", parQuestion(1012, 16),
+    c => { c.controle.faits[0][3] = '3√5 - 5'; });
+  pousse("O place au mauvais rapport sur [CA]", parQuestion(1012, 16),
+    c => { c.controle.points.O = ['sur', 'C', 'A', '(3√5 - 5)/5']; });
+
   // ── الحصّة 1، التمرين 9 — une lettre paire, et les diviseurs de 15 ─────
   pousse("le 6 sorti sans le second terme", parQuestion(19, 0),
     c => { c.controle.claims[0][1] = "6k"; });

@@ -208,6 +208,13 @@
         // Le projeté ORTHOGONAL de M sur (AB) — le pied de la hauteur, le pied
         // de la perpendiculaire. Il se calcule par le produit scalaire, et le
         // repère est orthonormé, donc la formule est exacte.
+        // Le point de la droite (AB) tel que AM→ = k·AB→ — avec k EXACT, écrit
+        // en radicaux. Il sert quand l'énoncé place un point par une distance
+        // et non par une intersection : « N sur [MC) hors de [MC] avec CN = a »
+        // se pose ainsi, et la propriété qui le caractérise (la longueur, ou
+        // l'appartenance à un cercle) est ensuite RECALCULÉE comme un fait.
+        case 'sur': P[nom] = somme(P[d[1]], mise(vect(P[d[1]], P[d[2]]),
+                                                 F.analyser(String(d[3]), env))); break;
         case 'proj': {
           const A0 = P[d[2]], u = vect(A0, P[d[3]]);
           const k = sDiv(scal(vect(A0, P[d[1]]), u), scal(u, u));

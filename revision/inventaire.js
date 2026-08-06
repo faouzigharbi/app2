@@ -302,8 +302,28 @@
           pourquoi: 'c\'est EXACTEMENT l\'exercice 5 de la séance 13 — mais ici il porte '
                   + 'SA FIGURE, que la séance 13 avait perdue. C\'est lui qui lève '
                   + 'l\'exclusion notée là-bas' },
-        { n: '1.12', questions: 12, notions: ['radicaux', 'valeur absolue', 'signe', 'Pythagore', 'cercle de diamètre'], sort: 'à faire',
-          pourquoi: 'douze volets, x² = 36−16√5 et y² = 6−2√5 — pas encore écrit' },
+        { n: '1.12', questions: 17,
+          notions: ['radicaux', 'valeur absolue', 'signe', 'somme et différence',
+                    'nombre d\'or caché', 'Pythagore', 'réciproque', 'cercle de diamètre'],
+          sort: 'bibliothèque', ou: 'brevet ex1012 — dix-sept volets',
+          pourquoi: 'x et y ne sont donnés QUE par leurs carrés et leur produit, et '
+                  + 'les cinq premières questions ne les connaissent pas. '
+                  + 'x²+y² = 42−18√5 = 3xy donne x/y + y/x = 3, donc z² = 3−2 = 1 et '
+                  + 'z = −1 : LE NOMBRE D\'OR est là, caché — √(x/y) = (√5−1)/2 et '
+                  + '√(y/x) = (√5+1)/2, de différence −1 et de produit 1, et l\'énoncé '
+                  + 'ne le nomme jamais. Puis (a−b)² = ab = (3−√5)², (a+b)² = 5ab, et '
+                  + 'le système somme/différence rend a = 2√5−4 et b = √5−1. '
+                  + 'LA FIN CONSTRUIT b−a À LA RÈGLE : (CA) ⊥ (CD), donc le pied de '
+                  + 'la perpendiculaire menée du centre du cercle de diamètre [MN] '
+                  + 'est C lui-même, la corde est centrée en C et sa demi-longueur '
+                  + 'vaut √(ab) = 3−√5. Tout tient au « لا تنتمي إلى [MC] » : avec N '
+                  + 'du bon côté de C le cercle ne toucherait même pas (AC). '
+                  + 'DEUX COQUILLES — la 21ᵉ, « a+b = 3√5+5 » au lieu de 3√5−5 (le '
+                  + 'carré de 3√5−5 vaut bien 70−30√5, et a+b ≈ 1,7 quand 3√5+5 ≈ '
+                  + '11,7) ; la 22ᵉ, « a−b = t\' » suivi de a = (t−t\')/2, formule '
+                  + 'qui rend b et non a — elle n\'est juste qu\'avec t\' = b−a, '
+                  + 'précisément ce que la question 4)ج vient de calculer. Les deux '
+                  + 'sont rejouées telles qu\'imprimées par une falsification' },
 
         // ── SÉANCE 2 — lue en entier, et portée pour ses deux premiers tiers ──
         // Le chapitre d'accueil est « brevet » : une séance mêle radicaux,
