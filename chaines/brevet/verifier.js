@@ -18,6 +18,7 @@
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
 const R = require('./repere.js');
+const E = require('./entiers.js');
 require('./seances.js');
 require('./gens.js');
 
@@ -103,7 +104,32 @@ function controlerClaims(c, envs) {
       }
     }
   }
-  if (!(c.claims || []).length && !(c.faits || []).length) p.push('بلا تأكيد يُراقَب');
+  if (!(c.claims || []).length && !(c.faits || []).length
+      && !(c.entiers || []).length && !(c.divisibles || []).length)
+    p.push('بلا تأكيد يُراقَب');
+  return p;
+}
+
+// Le contrôle des GRANDS ENTIERS — l'exercice 2 de la séance 11 affirme sept
+// fois qu'un nombre de deux mille chiffres est divisible par 3, par 21, par 42.
+// En flottants la question n'a pas de sens : `243^1001` déborde. On recalcule
+// donc en BigInt, et une divisibilité qui n'est pas vraie ne le devient pas.
+function controlerEntiers(c) {
+  const p = [];
+  for (const [gauche, droite] of (c.entiers || [])) {
+    let g, d;
+    try { g = E.evaluer(gauche); d = E.evaluer(droite); }
+    catch (err) { p.push(`تعذّر « ${gauche} = ${droite} » (${err.message})`); continue; }
+    controles++;
+    if (g !== d) p.push(`« ${gauche} » ≠ « ${droite} »`);
+  }
+  for (const [expr, diviseur] of (c.divisibles || [])) {
+    let n;
+    try { n = E.evaluer(expr); }
+    catch (err) { p.push(`تعذّر « ${expr} » (${err.message})`); continue; }
+    controles++;
+    if (!E.divise(n, diviseur)) p.push(`« ${expr} » لا يقبل القسمة على ${diviseur}`);
+  }
   return p;
 }
 
@@ -116,13 +142,24 @@ function verifierBrut(brut) {
   brut.etapes.forEach(([label, math], i) => {
     if (typeof math !== 'string' || F.ARABE.test(math)) return;
     let bon = 0, souci = null;
-    for (const env of envs) {
+    // `grands` bascule TOUTE la chaîne sur l'arithmétique entière exacte : les
+    // étapes y parlent de 3^5000, que le flottant ne sait pas écrire.
+    if (c.grands) {
       try {
-        const r = F.verifierRelation(String(math).replace(/×/g, '*'), env);
-        if (r === null) { souci = `« ${math} » ليست علاقة`; break; }
-        if (r) { souci = souci || r; continue; }
-        bon++; relations++;
-      } catch (e) { souci = `تعذّر « ${math} » (${e.message})`; break; }
+        const r = E.verifierRelation(String(math));
+        if (r === null) souci = `« ${math} » ليست علاقة`;
+        else if (r) souci = r;
+        else { bon = envs.length; relations++; }
+      } catch (e) { souci = `تعذّر « ${math} » (${e.message})`; }
+    } else {
+      for (const env of envs) {
+        try {
+          const r = F.verifierRelation(String(math).replace(/×/g, '*'), env);
+          if (r === null) { souci = `« ${math} » ليست علاقة`; break; }
+          if (r) { souci = souci || r; continue; }
+          bon++; relations++;
+        } catch (e) { souci = `تعذّر « ${math} » (${e.message})`; break; }
+      }
     }
     if (bon < envs.length) probs.push(`م${i + 1}: ${souci || 'لا تتحقّق'}`);
     verifiees++;
@@ -134,6 +171,13 @@ function verifierBrut(brut) {
   // ne se contente pas de la lire : on la vérifie, dans tous les environnements.
   for (const e of brut.enonce) {
     if (typeof e !== 'string' || F.ARABE.test(e)) continue;
+    if (c.grands) {
+      try {
+        const r = E.verifierRelation(e);
+        if (r) probs.push(`نصّ الوضعية فاسد: ${r}`); else if (r === false) relations++;
+      } catch (err) { probs.push(`نصّ غير قابل للتحليل « ${e} » (${err.message})`); }
+      continue;
+    }
     const src = e.replace(/×/g, '*');
     for (const env of envs) {
       try {
@@ -150,6 +194,7 @@ function verifierBrut(brut) {
 
   if (verifiees < 2) probs.push('عدد المراحل القابلة للتحقق قليل جدا');
   probs.push(...controlerClaims(c, envs));
+  probs.push(...controlerEntiers(c));
   // LES FAITS DE LA FIGURE — « OABJ est un rectangle », « E est le milieu de
   // [GM] », « N et P sont confondues » : recalculés sur les seules coordonnées.
   // C'est ici que l'énoncé d'un exercice de repère se fait contredire.
@@ -1219,6 +1264,178 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.points.J = ['point', '0', '2']; });
   pousse("AI annonce p - √5", parQuestion(105, 8),
     c => { c.controle.faits[6][3] = 'p - √5'; });
+
+  // ══ LA SÉANCE 11 ═══════════════════════════════════════════════════════
+  //
+  // ── التمرين 1 — les couples de chiffres ────────────────────────────────
+  pousse("3240 remplace par 3260, qui n est plus multiple de 15", parQuestion(111, 0),
+    c => { c.controle.claims[2][0] = "3260/15"; });
+  pousse("la somme des chiffres decalee", parQuestion(111, 0),
+    c => { c.controle.claims[0][1] = "8 + a"; });
+  pousse("un a de trop dans le cas b = 5 : 3245 n est pas multiple de 15",
+    parQuestion(111, 0), c => { c.controle.claims[5][0] = "3245/15"; });
+  pousse("36084 lu 36088", parQuestion(111, 1),
+    c => { c.controle.claims[4][0] = "36088/12"; });
+  pousse("la somme du 36a8b decalee", parQuestion(111, 1),
+    c => { c.controle.claims[0][1] = "18 + a + b"; });
+  pousse("82 pris pour un multiple de 4 : 36182 accepte", parQuestion(111, 1),
+    c => { c.controle.claims[1][0] = "36182/12"; });
+  pousse("3150 lu 3152", parQuestion(111, 2),
+    c => { c.controle.claims[1][0] = "3152/6"; });
+  pousse("un impair accepte : 3153 declare multiple de 6", parQuestion(111, 2),
+    c => { c.controle.claims[2][0] = "3153/6"; });
+  pousse("la somme du 3a5b decalee", parQuestion(111, 2),
+    c => { c.controle.claims[0][1] = "9 + a + b"; });
+
+  // ── التمرين 2 — les grands entiers ─────────────────────────────────────
+  //
+  // LA PLUS IMPORTANTE DE LA SÉANCE : elle rejoue le 3^204 IMPRIMÉ. Le
+  // nombre vaut alors 82 × 3^200, et 82 = 2 × 41 ne contient pas de 7 — 42
+  // ne divise pas. Si le validateur l'acceptait, c'est qu'il déborderait en
+  // silence au lieu de calculer, et la treizième coquille serait invisible.
+  pousse("le 3^204 imprime dans le livre, declare divisible par 42", parQuestion(112, 5),
+    c => { c.controle.divisibles[0][0] = "9^100 + 3^204"; });
+  pousse("le facteur annonce 82 au lieu de 28", parQuestion(112, 5),
+    c => { c.controle.entiers[1][1] = "82 × 3^200"; });
+  pousse("1 + 27 lu 26", parQuestion(112, 5),
+    c => { c.etapes[3][1] = "1 + 27 = 26"; });
+  pousse("25^50 lu 5^50", parQuestion(112, 0),
+    c => { c.controle.entiers[0][1] = "5^50"; });
+  pousse("le facteur commun mal sorti : 125 - 2 devient 121", parQuestion(112, 0),
+    c => { c.controle.entiers[1][1] = "121 × 5^100"; });
+  pousse("le nombre declare divisible par 7", parQuestion(112, 0),
+    c => { c.controle.divisibles[0][1] = 7; });
+  pousse("243 lu 3^4", parQuestion(112, 1),
+    c => { c.etapes[1][1] = "243 = 3^4"; });
+  pousse("l exposant de 243^1001 decale", parQuestion(112, 1),
+    c => { c.controle.entiers[1][1] = "3^5006"; });
+  pousse("le nombre declare divisible par 4", parQuestion(112, 1),
+    c => { c.controle.divisibles[0][1] = 4; });
+  pousse("8^666 lu 2^1332", parQuestion(112, 2),
+    c => { c.controle.entiers[0][1] = "2^1332"; });
+  pousse("1 + 20 lu 20", parQuestion(112, 2),
+    c => { c.etapes[4][1] = "1 + 20 = 20"; });
+  // 8 divise évidemment 21 × 2^1998 — viser 8 ne disait rien. Le facteur qui
+  // MANQUE est le 5.
+  pousse("le nombre declare divisible par 5", parQuestion(112, 2),
+    c => { c.controle.divisibles[1][1] = 5; });
+  // 45 divise bien 10 × 3^2013 (le 9 vient de 3^2013, le 5 de 10) : viser 45
+  // ne mordait pas. Le 10 ne porte qu'UN seul facteur 2, donc pas 4.
+  pousse("3^2013 + 3^2015 declare divisible par 4", parQuestion(112, 3),
+    c => { c.controle.divisibles[0][1] = 4; });
+  pousse("le facteur 10 lu 4", parQuestion(112, 3),
+    c => { c.controle.entiers[0][1] = "4 × 3^2013"; });
+  pousse("9^1020 lu 3^1020", parQuestion(112, 4),
+    c => { c.controle.entiers[0][1] = "3^1020"; });
+  pousse("125 + 7 lu 130", parQuestion(112, 6),
+    c => { c.etapes[4][1] = "125 + 7 = 130"; });
+  pousse("le nombre declare divisible par 13", parQuestion(112, 6),
+    c => { c.controle.divisibles[0][1] = 13; });
+
+  // ── التمرين 3 — l'expression et le triangle 4, 2√5, 6 ──────────────────
+  pousse("a decale d une unite en 4 - √5", parQuestion(113, 0),
+    c => { c.controle.claims[0][1] = "1"; });
+  pousse("le double produit du carre oublie", parQuestion(113, 0),
+    c => { c.controle.claims[1][1] = "21"; });
+  pousse("la difference a - (x² + 3) lue 8x - 8", parQuestion(113, 1),
+    c => { c.controle.claims[0][1] = "8x - 8"; });
+  pousse("la valeur 5/2 - √2 remplacee par 5/2 - √8, qui est plus petite que 1",
+    parQuestion(113, 2), c => { c.controle.env.x = "5/2 - √8"; });
+  pousse("factorisation avec les racines echangees", parQuestion(113, 3),
+    c => { c.controle.claims[0][1] = "(x - 4 - √5)(x + 4 - √5)"; });
+  pousse("la racine 4 + √5 decalee", parQuestion(113, 4),
+    c => { c.controle.env.x = "4 + √6"; });
+  pousse("AC ramene au 25 imprime : le triangle n existe plus", parQuestion(113, 5),
+    c => { c.controle.points.C = ['point', '0', '25']; });
+  pousse("le triangle declare rectangle en B", parQuestion(113, 5),
+    c => { c.controle.faits[0] = ['rectangle-en', 'B', 'A', 'C']; });
+  pousse("AN calcule sans le demi", parQuestion(113, 6),
+    c => { c.controle.faits[2][3] = '√5(4 - x)'; });
+  pousse("M place a AM = x au lieu de BM = x", parQuestion(113, 6),
+    c => { c.controle.points.M = ['point', 'x', '0']; });
+  pousse("l aire calculee sans le demi : √5/2 au lieu de √5/4", parQuestion(113, 7),
+    c => { c.controle.faits[0][4] = '(√5/2)(4 - x)^2'; });
+  pousse("N pris sur la parallele a (AB) au lieu de (BC)", parQuestion(113, 7),
+    c => { c.controle.points.Z = ['translate', 'M', 'A', 'B']; });
+  pousse("la borne superieure annoncee 5√5", parQuestion(113, 8),
+    c => { c.controle.claims[1][1] = "5√5"; });
+  pousse("le 5√5 imprime au lieu de 5√5/4", parQuestion(113, 10),
+    c => { c.controle.faits[0][4] = '5√5'; });
+
+  // ── التمرين 4 — deux expressions et leur facteur commun ────────────────
+  pousse("A developpe en 3x² + 8x + 3", parQuestion(114, 0),
+    c => { c.controle.claims[0][1] = "3x^2 + 8x + 3"; });
+  pousse("A en 2 - √3 decale", parQuestion(114, 1),
+    c => { c.controle.claims[0][1] = "34 - 21√3"; });
+  pousse("B factorise avec le mauvais second facteur", parQuestion(114, 2),
+    c => { c.controle.claims[1][1] = "(2x + 1)(x - 3)"; });
+  pousse("A factorise avec 3x + 1", parQuestion(114, 3),
+    c => { c.controle.claims[0][1] = "(x + 3)(3x + 1)"; });
+  pousse("A - B lu (x + 3)(x + 2)", parQuestion(114, 4),
+    c => { c.controle.claims[0][1] = "(x + 3)(x + 2)"; });
+  pousse("la racine -3 decalee", parQuestion(114, 5),
+    c => { c.controle.env.x = "-2"; });
+
+  // ── التمرين 5 — le rectangle et la diagonale ───────────────────────────
+  pousse("A en (√3 - 1)/2 decale", parQuestion(115, 0),
+    c => { c.controle.claims[0][1] = "4√3 - 8"; });
+  pousse("le -7 lu +9 : la forme canonique ne se ferme plus", parQuestion(115, 1),
+    c => { c.controle.claims[0][1] = "(2x + 3)^2 - 9"; });
+  pousse("un facteur decale", parQuestion(115, 2),
+    c => { c.controle.claims[0][1] = "(2x + 7)(2x + 1)"; });
+  // La hauteur du rectangle N'EST PAS une donnée : elle vaut AE = AB - EB.
+  // La poser autrement, c'est casser la donnée BC = AE de l'énoncé.
+  pousse("la hauteur prise egale a x + 1 : BC n est plus AE", parQuestion(115, 3),
+    c => { c.controle.env.h = "x + 1"; });
+  pousse("BG annonce x + 2", parQuestion(115, 3),
+    c => { c.controle.faits[0][3] = 'x + 2'; });
+  // Déplacer la perpendiculaire de B vers C ne changeait RIEN : B et C ont la
+  // même abscisse, donc c'est la même droite. On vise ce qui porte vraiment —
+  // la position de E, lue AE = x + 1 au lieu de EB = x + 1.
+  pousse("E place a AE = x + 1 au lieu de EB = x + 1", parQuestion(115, 3),
+    c => { c.controle.points.E = ['point', 'x + 1', 'h']; });
+  pousse("l aire de DCG calculee sans le demi", parQuestion(115, 4),
+    c => { c.controle.faits[1][4] = '(2x + 3)^2'; });
+  pousse("la racine -7/2 acceptee malgre x > 0", parQuestion(115, 4),
+    c => { c.controle.env.x = "-7/2"; });
+
+  // ── التمرين 6 — le diamètre et tout ce qui en découle ──────────────────
+  pousse("C place a BC = 5 : OBC n est plus equilateral", parQuestion(116, 0),
+    c => { c.controle.points.C = ['point', '15/8', '√231/8']; });
+  pousse("le rayon annonce 8", parQuestion(116, 0),
+    c => { c.controle.faits[1][3] = '8'; });
+  pousse("AH annonce 2 : H confondu avec le milieu de [AO]", parQuestion(116, 1),
+    c => { c.controle.faits[0][3] = '2'; });
+  pousse("H pris projete de C sur (OC) : la hauteur disparait", parQuestion(116, 1),
+    c => { c.controle.points.H = ['proj', 'C', 'O', 'C']; });
+  pousse("le triangle declare rectangle en A", parQuestion(116, 2),
+    c => { c.controle.faits[0] = ['rectangle-en', 'A', 'C', 'B']; });
+  pousse("AC² annonce 64 : le BC² oublie", parQuestion(116, 3),
+    c => { c.controle.faits[1][3] = '64'; });
+  pousse("D pris sur la perpendiculaire menee par A", parQuestion(116, 4),
+    c => { c.controle.points.W = ['normale', 'A', 'A', 'B']; });
+  pousse("BD calcule avec le rapport inverse", parQuestion(116, 5),
+    c => { c.controle.faits[0][3] = '8√3/4'; });
+  pousse("E pris symetrique de C par rapport a B", parQuestion(116, 6),
+    c => { c.controle.points.E = ['sym', 'C', 'B']; });
+  pousse("le triangle OEB declare rectangle en B", parQuestion(116, 6),
+    c => { c.controle.faits[0] = ['rectangle-en', 'B', 'O', 'E']; });
+  pousse("G declare centre de gravite de OBE", parQuestion(116, 7),
+    c => { c.controle.faits[0] = ['centre-gravite', 'G', 'O', 'B', 'E']; });
+  pousse("le rapport GA/GC annonce 1/2", parQuestion(116, 7),
+    c => { c.controle.faits[3][5] = '1/2'; });
+  pousse("AE annonce 4√3, la longueur de AC", parQuestion(116, 8),
+    c => { c.controle.faits[1][3] = '4√3'; });
+  pousse("F pris sur (OG) au lieu de (BG)", parQuestion(116, 9),
+    c => { c.controle.points.F = ['inter', 'O', 'G', 'A', 'E']; });
+  pousse("OF annonce 8", parQuestion(116, 9),
+    c => { c.controle.faits[2][3] = '8'; });
+
+  // ── les garde-fous du contrat « grands entiers » ───────────────────────
+  pousse("exercice en grands entiers sans aucun controle", parQuestion(112, 0),
+    c => { c.controle.entiers = []; c.controle.divisibles = []; });
+  pousse("expression entiere non analysable", parQuestion(112, 0),
+    c => { c.controle.entiers[0][0] = "25^50 +"; });
 
   // ── les garde-fous du contrat « figure » ───────────────────────────────
   pousse("figure sans aucune fait a controler", parQuestion(23, 0),

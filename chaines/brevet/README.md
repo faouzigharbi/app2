@@ -199,6 +199,57 @@ Et une curiosité que la machine a trouvée seule : dans **ex103**, à la racine
 `x = (3√2−√6)/2`, on a `MK = AM = x`. Le point mobile est exactement à la
 distance de `(BC)` qu'il est de `A`.
 
+## Séance 11 — la première séance ENTIÈRE du livre
+
+Six exercices, six portés. Ni doublon, ni exercice d'espace, ni statistiques —
+c'est la première fois.
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex111.html` | التمرين 1 | 3 | `3a4b` par 15, `36a8b` par 12, `3a5b` par 6 · casser le diviseur en deux critères indépendants · **trente-trois divisions posées**, pas une annoncée |
+| `ex112.html` | التمرين 2 | 7 | sept nombres de **deux mille chiffres** · un seul geste : unifier la base, sortir la plus petite puissance · et la 13ᵉ coquille |
+| `ex113.html` | التمرين 3 | 11 | `a = x² − 8x + 11` · forme canonique · Pythagore réciproque · Thalès · une **aire** qui redonne l'équation |
+| `ex114.html` | التمرين 4 | 6 | `A = (x+3)(3x−1)` et `B = (2x+1)(x+3)` · le facteur commun rend `A − B` sans rien développer |
+| `ex115.html` | التمرين 5 | 5 | `A = (2x+7)(2x−1)` · un rectangle, une diagonale qui sort du cadre · l'aire de `DCG` redonne `A = 0` |
+| `ex116.html` | التمرين 6 | 10 | un diamètre, et **tout** en découle : `OBC` équilatéral, `AH = 6`, `AC = 4√3`, `ABE` équilatéral, `F` sur le cercle |
+
+Trois choses que ces exercices cachent :
+
+- **ex111** — trente-trois solutions en tout, et chacune est **divisée**. Écrire
+  « `a ∈ {2;5;8}` » sans poser les trois divisions, ce serait demander à
+  l'élève de croire un résultat au lieu de le vérifier.
+- **ex113** — l'énoncé imprime `AC = 25`. Avec `AB = 4` et `BC = 6` cela ne fait
+  même pas un triangle. C'est `2√5`, dont le radical n'a pas survécu à la mise
+  en page : `4² + (2√5)² = 16 + 20 = 36 = 6²`, et le triangle est rectangle en
+  `A` — ce que la question suivante demande justement de montrer.
+- **ex116** — `BC = 4` sur un cercle de **rayon** 4 : `OB`, `OC` et `BC` sont
+  égaux, donc `OBC` est équilatéral. Tout le reste n'est que la lecture de
+  cette figure — `H` est le milieu de `[OB]` donc `AH = 6`, `CH = 2√3` est la
+  hauteur de l'équilatéral, et `E`, symétrique de `B` par rapport à `C`, fait
+  de `ABE` un équilatéral de côté 8 dont le milieu de `[AE]` retombe sur le
+  cercle.
+
+## Les grands entiers — `entiers.js`
+
+L'exercice 2 de la séance 11 affirme sept fois qu'un nombre est divisible par
+3, par 21, par 42. Ces nombres ont **deux mille chiffres** : `243^1001` ne
+tient pas dans un flottant, `3^40` y est déjà faux d'une centaine d'unités, et
+une vérification qui déborde répond « vrai » sans avoir rien calculé. C'est
+exactement ce que cette machine refuse.
+
+`entiers.js` est donc un évaluateur minuscule, en **BigInt** : des entiers,
+`+`, `−`, `×`, `^` et des parenthèses. Rien d'autre — pas de fraction, pas de
+radical ; dès qu'une division apparaîtrait, elle ne serait plus entière, et le
+module refuse au lieu d'arrondir.
+
+Le validateur l'active par le drapeau `grands` : toute la chaîne bascule alors
+sur l'arithmétique entière, et deux contrôles neufs s'y ajoutent — `entiers`
+(une égalité exacte) et `divisibles` (un reste nul, pas un reste approché).
+
+C'est ce qui a permis de trouver la treizième coquille. Et c'est la
+falsification qui ouvre la séance : rejouer le `3^204` imprimé, et vérifier que
+`42` **ne** divise **pas**.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
@@ -232,13 +283,13 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 120            # 36 840 questions, 631 080 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 485/485
+    node verifier.js 120            # 41 880 questions, 822 120 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 556/556
     node _build.js .                # régénérer les pages
 
-## Douze coquilles du livre, relevées par le calcul
+## Quinze coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Douze énoncés ne se
+Le validateur ne lit pas une intention : il recalcule. Quinze énoncés ne se
 referment pas sur eux-mêmes.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -314,7 +365,25 @@ referment pas sur eux-mêmes.
     la figure : c'est **`AH`**. Le rapport de Thalès compare les deux hauteurs,
     celle du petit triangle `CMK` et celle du grand `CAH`.
 
-Ces douze corrections sont écrites dans `seances.js` et signalées au maître ;
+13. **الحصّة 11، التمرين 2، 6** — « `9^100 + 3^204` divisible par 42 ». Ce
+    nombre vaut `82 × 3^200`, et `82 = 2 × 41` ne contient **pas** de 7 : 42 ne
+    divise pas. Avec `3^203` on obtient `28 × 3^200 = 4 × 7 × 3^200`, et 42
+    divise. **Le 4 est un 3.** C'est la seule des sept affirmations de
+    l'exercice qui ne se referme pas — les six autres sont exactes, vérifiées
+    en BigInt.
+
+14. **الحصّة 11، التمرين 3، II** — « `AC = 25` » avec `AB = 4` et `BC = 6`. Ces
+    trois longueurs ne font même pas un triangle. C'est `2√5`, dont le radical
+    n'a pas survécu à la mise en page : `16 + 20 = 36`, et le triangle est
+    rectangle en `A`.
+
+15. **الحصّة 11، التمرين 3، II 4)أ** — « `S_AMN = 5√5` ». La question 2)ت vient
+    de faire montrer que l'aire ne dépasse pas `4√5 ≈ 8,94` ; or `5√5 ≈ 11,18`.
+    Avec `5√5/4`, la condition donne exactement `(4 − x)² = 5`, c'est-à-dire
+    `x² − 8x + 11 = 0` — l'équation de la partie I —, puis `x = 4 − √5` et
+    `AN = 5/2`. **Le `/4` est tombé.**
+
+Ces quinze corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris
@@ -339,6 +408,22 @@ figure**, et c'est instructif :
   ment.
 
 ## Ce que la séance a demandé
+
+La séance 11 a demandé une pièce entière : **`entiers.js`**, l'arithmétique
+BigInt décrite plus haut. C'est la deuxième fois que le livre force une pièce
+neuve, et c'est la même raison qu'au repère — non pas une difficulté
+mathématique, mais un **domaine de nombres** que le noyau ne portait pas.
+Elle resservira : la séance 1, encore entièrement « à faire », est pleine
+d'arithmétique de ce genre.
+
+Elle a aussi appris quelque chose sur la façon de viser une falsification :
+trois d'entre elles ont d'abord refusé de mordre, et **les trois disaient une
+vérité**. `8^666 + 5×2^2000 = 21 × 2^1998` est bien divisible par 8 ;
+`3^2013 + 3^2015 = 10 × 3^2013` est bien divisible par 45 ; et déplacer la
+perpendiculaire de `B` vers `C` dans `ex115` donne la **même** droite, puisque
+les deux points ont la même abscisse. Il a fallu viser le facteur qui *manque*
+(5 dans le premier, 4 dans le second) et, pour le troisième, la position de
+`E` — ce qui porte réellement l'exercice.
 
 La séance 10 n'a demandé **aucune pièce neuve**. Ses trois figures se posent
 avec ce qui existait déjà — `proj`, `milieu`, `sym` — et ses paramètres passent

@@ -222,7 +222,10 @@
           // COMPTAGE CORRIGÉ : 6 et non 2, comme pour la séance 4. Et DEUX de
           // ces six sont des reprises mot pour mot d'autres séances.
           sujet: 'deux nombres microscopiques et un carré qui les somme · UN DOUBLON de la séance 3 · une expression et un triangle rectangle qui la refabrique · un équilatéral qui devient rectangle · le nombre d\'or retrouvé par Thalès · UN DOUBLON de la séance 9' },
-        { seance: 11, pages: '37-39', exercices: 6, sujet: 'mixte — arithmétique, algèbre et géométrie' },
+        { seance: 11, pages: '37-39', exercices: 6, vu: true,
+          // LA PREMIÈRE SÉANCE ENTIÈRE du livre : six exercices, six portés.
+          // Ni doublon, ni exercice d'espace, ni statistiques.
+          sujet: 'deux chiffres à trouver trois fois · sept nombres de deux mille chiffres · une expression et un triangle qui la redonne · deux expressions et leur facteur commun · un rectangle et une diagonale qui sort du cadre · un diamètre dont tout le reste découle' },
         { seance: 12, pages: '40-43', exercices: 6, sujet: 'géométrie, espace et STATISTIQUES — la plus longue' },
         { seance: 13, pages: '44-47', exercices: 6, sujet: 'géométrie, repère et statistiques — la séance de clôture' }
       ],
@@ -566,7 +569,56 @@
                     'orthocentre', 'cercle de diamètre'],
           sort: 'bibliothèque', ou: 'brevet ex94 — c\'est EXACTEMENT l\'exercice 4 de la séance 9',
           pourquoi: 'mêmes données (MN = 6√2, AB = 2√2, BI = BJ = 4), mêmes six questions. '
-                  + 'L\'énoncé renvoie lui-même « الشكل المرافق (الصفحة 3) »' }
+                  + 'L\'énoncé renvoie lui-même « الشكل المرافق (الصفحة 3) »' },
+
+        // ── SÉANCE 11 — LA PREMIÈRE ENTIÈRE : six exercices, six portés ──────
+        { n: '11.1', questions: 3,
+          notions: ['critère de divisibilité par 3', 'par 5', 'par 4', 'par 2',
+                    'décomposer un diviseur en facteurs premiers entre eux',
+                    'énumérer des couples de chiffres'],
+          sort: 'bibliothèque', ou: 'brevet ex111 — trois volets',
+          pourquoi: 'sept couples, puis dix, puis seize — et les trente-trois divisions '
+                  + 'sont posées. Annoncer « a ∈ {2;5;8} » sans les poser, ce serait '
+                  + 'demander à l\'élève de croire' },
+        { n: '11.2', questions: 7,
+          notions: ['unifier la base de deux puissances', 'facteur commun',
+                    'divisibilité par 3, 21, 42, 15, 11'],
+          sort: 'bibliothèque', ou: 'brevet ex112 — sept volets',
+          pourquoi: 'un seul geste sept fois : ramener au même base, sortir la plus '
+                  + 'petite puissance. Ces nombres ne tiennent PAS dans un flottant '
+                  + '(243^1001 déborde) : il a fallu écrire entiers.js, en BigInt exact' },
+        { n: '11.3', questions: 11,
+          notions: ['valeur numérique en 4−√5', 'comparer deux expressions',
+                    'forme canonique et différence de deux carrés', 'équation produit nul',
+                    'Pythagore réciproque', 'Thalès', 'aire d\'un triangle rectangle',
+                    'encadrement d\'une aire', 'une aire qui redonne l\'équation'],
+          sort: 'bibliothèque', ou: 'brevet ex113 — onze volets',
+          pourquoi: 'demander l\'aire égale à 5√5/4 redonne EXACTEMENT x²−8x+11 = 0, '
+                  + 'dont la seule racine de [0;4] est 4−√5 — celle de la question I.5' },
+        { n: '11.4', questions: 6,
+          notions: ['développer deux carrés', 'différence de deux carrés',
+                    'facteur commun', 'factoriser une différence sans développer',
+                    'équation produit nul'],
+          sort: 'bibliothèque', ou: 'brevet ex114 — six volets',
+          pourquoi: 'le facteur (x+3) est dans A et dans B : leur différence se '
+                  + 'factorise sans rien développer, et A = B se résout à vue' },
+        { n: '11.5', questions: 5,
+          notions: ['forme canonique', 'différence de deux carrés', 'rectangle',
+                    'Thalès', 'aire d\'un triangle rectangle',
+                    'une aire qui redonne l\'équation'],
+          sort: 'bibliothèque', ou: 'brevet ex115 — cinq volets',
+          pourquoi: 'la hauteur du rectangle n\'est pas une donnée : elle vaut '
+                  + 'AE = AB − EB = x+2, et c\'est BC = AE qui la fixe. L\'aire de DCG '
+                  + 'vaut (2x+3)²/2, et l\'exiger égale à 8 donne A = 0' },
+        { n: '11.6', questions: 10,
+          notions: ['triangle équilatéral inscrit', 'hauteur d\'un équilatéral',
+                    'cercle de diamètre ⇒ angle droit', 'Pythagore', 'Thalès',
+                    'symétrique', 'droite des milieux', 'centre de gravité',
+                    'médiane et hauteur dans un équilatéral'],
+          sort: 'bibliothèque', ou: 'brevet ex116 — dix volets',
+          pourquoi: 'BC = 4 sur un cercle de rayon 4 fait de OBC un ÉQUILATÉRAL, et '
+                  + 'tout en découle : H est le milieu de [OB] donc AH = 6, CH = 2√3 '
+                  + 'est la hauteur, et ABE finit équilatéral de côté 8' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
@@ -576,9 +628,13 @@
                 'LE CHAPITRE DU REPÈRE EST FAIT — chaines/repere9 : huit familles '
                 + 'engendrées (milieu, symétrique, distance, nature d\'un quadrilatère, '
                 + 'alignement, directions, quatrième sommet, cercle circonscrit)',
+                'LES GRANDS ENTIERS SONT FAITS — chaines/brevet/entiers.js : un '
+                + 'évaluateur BigInt exact (+, −, ×, ^) pour les puissances que le '
+                + 'flottant ne peut pas porter. La séance 1 est pleine d\'arithmétique '
+                + 'de ce genre : il resservira',
                 'la géométrie de l\'espace — une pyramide par séance, semble-t-il',
                 'les statistiques (séances 12 et 13) n\'ont aucun chapitre',
-                'restent les séances 11, 12 et 13'],
+                'restent les séances 12 et 13'],
       // TROIS COQUILLES RELEVÉES PAR LE CALCUL, séance 2 — détail dans
       // chaines/brevet/README.md, et trois falsifications les rejouent.
       coquilles: [
@@ -626,7 +682,19 @@
         + 'question 1, et les huit questions s\'enchaînent. Le − est un +.',
         '10.3 q2)ب : « CM/CA = MK/MH ». MH n\'existe pas dans la figure — c\'est '
         + 'AH. Le rapport de Thalès compare les deux hauteurs, celle du petit '
-        + 'triangle CMK et celle du grand CAH.'
+        + 'triangle CMK et celle du grand CAH.',
+        '11.2 q6 : « 9^100 + 3^204 يقبل القسمة على 42 ». Ce nombre vaut '
+        + '82 × 3^200, et 82 = 2 × 41 ne contient pas de 7 : 42 ne divise pas. '
+        + 'Avec 3^203 on obtient 28 × 3^200 = 4 × 7 × 3^200, et 42 divise. '
+        + 'Le 4 est un 3. Vérifié en BigInt exact, pas en flottant.',
+        '11.3 II : « AC = 25 » avec AB = 4 et BC = 6 — ces trois longueurs ne '
+        + 'font même pas un triangle. C\'est 2√5 dont le radical n\'a pas '
+        + 'survécu à la mise en page : 4² + (2√5)² = 16 + 20 = 36 = 6², et le '
+        + 'triangle est rectangle en A, ce que la question suivante demande.',
+        '11.3 II q4)أ : « S_AMN = 5√5 ». La question 2)ت vient de faire montrer '
+        + 'que S ne dépasse pas 4√5 ≈ 8,94 ; or 5√5 ≈ 11,18. Avec 5√5/4 la '
+        + 'condition donne exactement (4−x)² = 5, c\'est-à-dire x²−8x+11 = 0, '
+        + 'et x = 4−√5 puis AN = 5/2. Le /4 est tombé.'
       ]
     },
 

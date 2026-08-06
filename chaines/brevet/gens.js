@@ -118,4 +118,21 @@
        S.seance10ex4, 6);
   page(105, 'الحصّة 10 — التمرين 5 — ', 'العدد الذهبي، و طالس يعثر عليه',
        S.seance10ex5, 9);
+
+  // La séance 11 est la première ENTIÈRE du livre : ses six exercices sont
+  // portés, sans doublon ni exercice d'espace. Son exercice 2 a demandé une
+  // pièce neuve — `entiers.js` —, parce que 243^1001 ne tient pas dans un
+  // flottant, et qu'une vérification qui déborde ne vérifie rien.
+  page(111, 'الحصّة 11 — التمرين 1 — ', 'رقمان يُبحث عنهما، ثلاث مرّات',
+       S.seance11ex1, 3);
+  page(112, 'الحصّة 11 — التمرين 2 — ', 'سبعة أعداد من ألفي رقم',
+       S.seance11ex2, 7);
+  page(113, 'الحصّة 11 — التمرين 3 — ', 'عبارة، ثمّ مثلّث يعيدها كاملة',
+       S.seance11ex3, 11);
+  page(114, 'الحصّة 11 — التمرين 4 — ', 'عبارتان، و عامل مشترك يجمعهما',
+       S.seance11ex4, 6);
+  page(115, 'الحصّة 11 — التمرين 5 — ', 'مستطيل، و قطر يخرج من الإطار',
+       S.seance11ex5, 5);
+  page(116, 'الحصّة 11 — التمرين 6 — ', 'قطر واحد، و كلّ الباقي يتبعه',
+       S.seance11ex6, 10);
 })(typeof window !== 'undefined' ? window : globalThis);
