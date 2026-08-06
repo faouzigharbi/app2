@@ -35,6 +35,18 @@
   page(36, 'الحصّة 3 — التمرين 6 — ', 'نموذجية مدنين — أطول تمرين في الكتاب',
        S.seance3ex6, 20);
 
+  // La séance 4 : son exercice 6 est une pyramide — de l'espace, sans chapitre.
+  page(41, 'الحصّة 4 — التمرين 1 — ', 'عبارة، ثمّ شبه منحرف يعيد تكوين معادلتها',
+       S.seance4ex1, 6);
+  page(42, 'الحصّة 4 — التمرين 2 — ', 'معلم، و نقطة A تلعب ثلاثة أدوار',
+       S.seance4ex2, 8);
+  page(43, 'الحصّة 4 — التمرين 3 — ', 'العدد الذهبي و مقلوبه',
+       S.seance4ex3, 4);
+  page(44, 'الحصّة 4 — التمرين 4 — ', 'نحصر بدل أن نحسب',
+       S.seance4ex4, 7);
+  page(45, 'الحصّة 4 — التمرين 5 — ', 'زاوية 60° تصنع مثلّثا متقايس الأضلاع',
+       S.seance4ex5, 7);
+
   // La séance 5 : son exercice 6 est un prisme droit — de l'espace, sans chapitre.
   page(51, 'الحصّة 5 — التمرين 1 — ', 'عدد صغير جدّا، و مقلوبه هائل',
        S.seance5ex1, 7);

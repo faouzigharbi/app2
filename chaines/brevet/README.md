@@ -47,6 +47,23 @@ Deux exercices restent : le **5** (sa partie I est de l'arithmétique, sa
 partie II demande l'**arbre de choix**, qui n'a aucun chapitre) et le **7**, un
 prisme droit, donc de l'espace.
 
+## Séance 4 — cinq exercices sur six
+
+Mon comptage automatique annonçait **deux** exercices pour cette séance. Il y
+en a **six** : la couche de texte des pages 15 et 16 est trop abîmée pour
+porter les en-têtes, et seule la lecture les a vus. Le total du livre passe
+de 72 à **76**.
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex41.html` | التمرين 1 | 6 | la question 5 **refabrique** l'équation : `x/8 = 4/(4+x)` donne `x²+4x−32 = 0` — la figure n'existe que pour `x = 4` |
+| `ex42.html` | التمرين 2 | 8 | `H(3+√5 ; 3+√5)` a ses **deux coordonnées égales** — c'est tout ce qu'il faut pour l'angle de 45°. Puis `A` est sommet, centre de gravité **et** milieu |
+| `ex43.html` | التمرين 3 | 4 | `a` et `b` sont le **nombre d'or** et son inverse : `ab = 1`, donc `a/b = a²`, et l'identité se déroule sans un calcul de radical |
+| `ex44.html` | التمرين 4 | 7 | `a` et `b` sont les deux racines de `u²−3u+1` : somme 3, produit 1. L'énoncé ne le dit pas, mais tout en découle |
+| `ex45.html` | التمرين 5 | 7 | un triangle isocèle qui porte un angle de **60°** est équilatéral — c'est de là que part toute la figure |
+
+L'exercice 6 est une **pyramide régulière** — de l'espace, sans chapitre.
+
 ## Séance 5 — sept exercices sur huit
 
 | page | exercice | volets | ce qui s'y joue |
@@ -148,15 +165,14 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 7 600 questions, 108 360 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 307/307
+    node verifier.js 40             # 8 880 questions, 126 160 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 357/357
     node _build.js .                # régénérer les pages
 
-## Sept coquilles du livre, relevées par le calcul
+## Huit coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Sept énoncés ne se
-referment pas sur eux-mêmes, et **sept falsifications le prouvent** — chacune
-remet le nombre du livre et se fait rejeter.
+Le validateur ne lit pas une intention : il recalcule. Huit énoncés ne se
+referment pas sur eux-mêmes.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
    `17√3 − 49`. Or la question suivante demande d'en **déduire** `a`, dont le
@@ -205,7 +221,13 @@ remet le nombre du livre et se fait rejeter.
    (À `x = 2` on obtient l'autre cerf-volant, d'axe `(HE)`.) La page conclut
    ainsi, et laisse le maître arbitrer.
 
-Ces sept corrections sont écrites dans `seances.js` et signalées au maître ;
+8. **الحصّة 4، التمرين 4، 5** — « بيّن أن DC = a », avec `a = (3−√5)/2`. Avec
+   `AB = 1`, `AC = 1/2` et l'angle droit en `C`, on obtient `BC = √3/2` puis
+   `DC = (3−√3)/2` — un `√3` et non un `√5`. Pour que `DC` vaille `a` il
+   faudrait `BC = √5/2`, ce qui rendrait `AC² = 1 − 5/4` négatif. **La question
+   5 n'est donc pas portée** ; les quatre premières le sont.
+
+Ces huit corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris

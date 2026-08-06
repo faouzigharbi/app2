@@ -203,7 +203,10 @@
                + 'huit fois · deux exercices de repère · une pyramide' },
         { seance: 3, pages: '10-13', exercices: 7, vu: true,
           sujet: 'Thalès quatre fois sur une figure · un losange dans un repère · deux exercices de radicaux négatifs · arithmétique et arbre de choix · le plus long repère du livre · un prisme' },
-        { seance: 4, pages: '14-16', exercices: 2, sujet: 'géométrie pure — Thalès et métrique, une entrée dans l’espace' },
+        { seance: 4, pages: '14-16', exercices: 6, vu: true,
+          // COMPTAGE CORRIGÉ : 6 et non 2. Les en-têtes des pages 15 et 16 ne
+          // survivent pas à l'extraction ; seule la lecture les a vus.
+          sujet: 'une expression et un trapèze qui la refabrique · un repère où A joue trois rôles · le nombre d\'or · encadrer plutôt que calculer · un 60° qui fait un équilatéral · une pyramide' },
         { seance: 5, pages: '17-20', exercices: 8, vu: true,
           sujet: 'un nombre minuscule et son inverse énorme · un rectangle où la relation métrique donne tout · deux exercices d\'encadrement · un prisme · une aire qui refabrique une équation · un carré qui glisse' },
         { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
@@ -304,6 +307,43 @@
                   + 'approché, et 1/(√2+1) = √2−1 rend le changement de repère lisible' },
         { n: '3.7', questions: 10,
           notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'Thalès dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+
+        // ── SÉANCE 4 — cinq exercices sur six ─────────────────────────────
+        // (le comptage automatique donnait 2 : la couche de texte des pages 15
+        //  et 16 est trop abîmée pour porter les en-têtes. Il y en a SIX.)
+        { n: '4.1', questions: 6,
+          notions: ['forme canonique', 'différence de deux carrés', 'Thalès dans un trapèze',
+                    'ligne des milieux', 'aire d\'un trapèze'],
+          sort: 'bibliothèque', ou: 'brevet ex41 — six volets',
+          pourquoi: 'la question 5 REFABRIQUE l\'équation : x/8 = 4/(4+x) donne '
+                  + 'x²+4x−32 = 0. La figure n\'existe donc que pour x = 4' },
+        { n: '4.2', questions: 8,
+          notions: ['repère', 'angle de 45°', 'Thalès', 'centre de gravité',
+                    'symétrique', 'milieu', 'perpendicularité par le produit scalaire'],
+          sort: 'bibliothèque', ou: 'brevet ex42 — huit volets',
+          pourquoi: 'H(3+√5 ; 3+√5) a ses DEUX coordonnées égales — c\'est tout ce qu\'il '
+                  + 'faut pour l\'angle de 45°. Puis A est sommet, centre de gravité et milieu' },
+        { n: '4.3', questions: 4,
+          notions: ['rationaliser', 'nombres inverses', 'identité algébrique',
+                    'racine d\'un carré et valeur absolue'],
+          sort: 'bibliothèque', ou: 'brevet ex43 — quatre volets',
+          pourquoi: 'a et b sont le NOMBRE D\'OR et son inverse : ab = 1, donc a/b = a², '
+                  + 'et l\'identité de la question 3 se déroule sans un calcul de radical' },
+        { n: '4.4', questions: 7,
+          notions: ['rationaliser par le conjugué', 'encadrement', 'valeur absolue',
+                    'ranger des carrés', 'nombre rationnel'],
+          sort: 'bibliothèque', ou: 'brevet ex44 — sept volets',
+          pourquoi: 'a et b sont les deux racines de u²−3u+1 : leur somme vaut 3 et leur '
+                  + 'produit 1. L\'énoncé ne le dit pas, mais tout en découle' },
+        { n: '4.5', questions: 7,
+          notions: ['angle de 60°', 'triangle équilatéral', 'médiane de l\'hypoténuse',
+                    'losange', 'orthocentre', 'cercle de diamètre', 'milieu de l\'hypoténuse'],
+          sort: 'bibliothèque', ou: 'brevet ex45 — sept volets',
+          pourquoi: 'un triangle isocèle qui porte un angle de 60° est ÉQUILATÉRAL — '
+                  + 'c\'est de là que part toute la figure' },
+        { n: '4.6', questions: 8,
+          notions: ['pyramide régulière', 'droite ⊥ plan', 'triangle équilatéral', 'volume'],
           sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
 
         // ── SÉANCE 5 — sept exercices sur huit ────────────────────────────
@@ -447,7 +487,12 @@
         + 'pour AUCUNE valeur de x : HC = CE donne x = 8/3, et à cette valeur '
         + 'AH = 8√2/3 tandis que HC = 4√5/3. Ce que x = 8/3 donne, c\'est '
         + 'AH = EA et HC = CE — un CERF-VOLANT d\'axe (CA). (À x = 2 on obtient '
-        + 'l\'autre cerf-volant, d\'axe (HE).) À arbitrer par le maître.'
+        + 'l\'autre cerf-volant, d\'axe (HE).) À arbitrer par le maître.',
+        '4.4 q5 : « بيّن أن DC = a » (a = (3−√5)/2). Avec AB = 1, AC = 1/2 et '
+        + 'l\'angle droit en C, on obtient BC = √3/2 puis DC = (3−√3)/2 — un √3 '
+        + 'et non un √5. Pour que DC vaille a il faudrait BC = √5/2, ce qui rend '
+        + 'AC² = 1 − 5/4 négatif. La question 5 n\'est donc pas portée ; les '
+        + 'quatre premières le sont.'
       ]
     },
 

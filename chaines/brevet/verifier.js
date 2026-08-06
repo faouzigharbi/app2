@@ -476,6 +476,104 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("les coordonnees de J dans (D,B,E) faussees", parQuestion(36, 19),
     c => { c.controle.faits[7][6] = '√2 + 1'; });
 
+  // ══ LA SÉANCE 4 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — le trapèze qui refabrique l'équation ───────────────────
+  pousse("M en √2 - 1/2 decale", parQuestion(41, 0),
+    c => { c.controle.claims[0][1] = '3√2 - 127/2'; });
+  pousse("le 36 remplace par 34 : le carre ne se ferme plus", parQuestion(41, 1),
+    c => { c.controle.claims[0][0] = 'M + 34'; });
+  pousse("factorisation de M avec les racines echangees", parQuestion(41, 2),
+    c => { c.controle.claims[0][1] = '(x + 4)(x - 8)'; });
+  pousse("le rapport de Thales pris a 1/3", parQuestion(41, 3),
+    c => { c.controle.faits[2][5] = '1/3'; });
+  pousse("un sommet deplace : (IJ) ne parallelise plus (CD)", parQuestion(41, 3),
+    c => { c.controle.points.I = ['point', '9', '2√15']; });
+  pousse("I declare milieu de [AB]", parQuestion(41, 4),
+    c => { c.controle.faits[0] = ['milieu', 'I', 'A', 'B']; });
+  pousse("l equation en x faussee", parQuestion(41, 4),
+    c => { c.controle.claims[0][1] = '16'; });
+  pousse("la ligne des milieux annoncee 16", parQuestion(41, 5),
+    c => { c.controle.faits[0][3] = '16'; });
+  pousse("l aire du trapeze faussee", parQuestion(41, 5),
+    c => { c.controle.faits[3][6] = '8√15'; });
+
+  // ── التمرين 2 — A joue trois rôles ─────────────────────────────────────
+  pousse("SR annonce 2√5 - 2", parQuestion(42, 0), c => { c.controle.faits[0][3] = '2√5 - 2'; });
+  pousse("OR pris positif dans le mauvais sens", parQuestion(42, 0),
+    c => { c.controle.faits[1][3] = '1 - √5'; });
+  pousse("l ordonnee de H differente de son abscisse", parQuestion(42, 1),
+    c => { c.controle.faits[1][2] = '3 - √5'; });
+  pousse("H pris sur (RI) au lieu de (RJ)", parQuestion(42, 1),
+    c => { c.controle.points.H = ['inter', 'R', 'I', 'S', 'W']; });
+  pousse("AB et CD echanges", parQuestion(42, 2), c => { c.controle.faits[0][3] = '6'; });
+  pousse("le parallelisme annonce avec l axe des ordonnees", parQuestion(42, 3),
+    c => { c.controle.faits[1] = ['paralleles', 'A', 'B', 'O', 'J']; });
+  pousse("le rapport de Thales inverse", parQuestion(42, 4),
+    c => { c.controle.faits[2][5] = '3/2'; });
+  pousse("M pris sur (AC) au lieu de (AD)", parQuestion(42, 4),
+    c => { c.controle.points.M = ['inter', 'B', 'C', 'A', 'C']; });
+  pousse("N pris symetrique de M par rapport a D", parQuestion(42, 5),
+    c => { c.controle.points.N = ['sym', 'M', 'D']; });
+  pousse("le centre de gravite annonce en T", parQuestion(42, 5),
+    c => { c.controle.faits[0] = ['centre-gravite', 'T', 'M', 'N', 'P']; });
+  pousse("A declare milieu de [PM]", parQuestion(42, 6),
+    c => { c.controle.faits[0] = ['milieu', 'A', 'P', 'M']; });
+  pousse("AE annonce 5", parQuestion(42, 7), c => { c.controle.faits[1][3] = '5'; });
+  pousse("F pris sur la parallele a (AB) par D", parQuestion(42, 7),
+    c => { c.controle.points.Zd = ['translate', 'D', 'A', 'B']; });
+
+  // ── التمرين 3 — le nombre d'or et son inverse ──────────────────────────
+  pousse("a decale", parQuestion(43, 0), c => { c.controle.claims[0][1] = '(√5 - 1)/2'; });
+  pousse("c mal developpe", parQuestion(43, 0), c => { c.controle.claims[2][1] = '14 + 6√5'; });
+  pousse("le produit ab annonce 2", parQuestion(43, 1),
+    c => { c.controle.claims[0][1] = '2'; });
+  pousse("a/b pris egal a a au lieu de a^2", parQuestion(43, 2),
+    c => { c.controle.claims[1][1] = 'a'; });
+  pousse("l identite du developpement faussee", parQuestion(43, 2),
+    c => { c.controle.claims[0][1] = 'a^4 + a^3 + a - 1'; });
+  pousse("la valeur absolue levee a l envers", parQuestion(43, 3),
+    c => { c.controle.claims[1][1] = 'x - 2'; });
+  pousse("la racine de 14 - 6√5 faussee", parQuestion(43, 3),
+    c => { c.controle.claims[0][1] = '√5 - 3'; });
+
+  // ── التمرين 4 — encadrer plutôt que calculer ───────────────────────────
+  pousse("a et b echanges", parQuestion(44, 0), c => { c.controle.claims[0][1] = '(3 + √5)/2'; });
+  pousse("la somme a + b annoncee 5", parQuestion(44, 0),
+    c => { c.controle.claims[2][1] = '5'; });
+  pousse("le carre de 3 faux", parQuestion(44, 1), c => { c.controle.claims[1][1] = '6'; });
+  pousse("l encadrement de b decale", parQuestion(44, 2),
+    c => { c.controle.claims[1][1] = '(3 - √5)/2'; });
+  pousse("E annonce 2√5 - 4", parQuestion(44, 3), c => { c.controle.claims[0][1] = '2√5 - 4'; });
+  pousse("la premiere valeur absolue levee sans changer de signe", parQuestion(44, 3),
+    c => { c.controle.claims[1][1] = '(√5 - 2)/2'; });
+  pousse("le carre de a faux", parQuestion(44, 4), c => { c.controle.claims[0][1] = '(7 + 3√5)/2'; });
+  pousse("le produit des carres annonce different de 1", parQuestion(44, 4),
+    c => { c.controle.claims[2][1] = '2'; });
+  pousse("le coefficient 7 + 3√5 faux", parQuestion(44, 5),
+    c => { c.controle.claims[0][1] = '(7 - 3√5)a'; });
+  pousse("le rationnel final faux", parQuestion(44, 6),
+    c => { c.controle.claims[0][1] = '7'; });
+
+  // ── التمرين 5 — le 60° qui fabrique un équilatéral ─────────────────────
+  pousse("D deplace : le triangle ABC n est plus equilateral", parQuestion(45, 0),
+    c => { c.controle.points.D = ['point', '0', '8√3']; });
+  pousse("AD annonce 6", parQuestion(45, 0), c => { c.controle.faits[4][3] = '6'; });
+  pousse("I declare milieu de [AB]", parQuestion(45, 1),
+    c => { c.controle.faits[1] = ['milieu', 'I', 'A', 'B']; });
+  pousse("G place a 3 de B", parQuestion(45, 1), c => { c.controle.faits[2][3] = '3'; });
+  pousse("ACBH declare losange dans le mauvais ordre", parQuestion(45, 2),
+    c => { c.controle.faits[0] = ['losange', 'A', 'B', 'C', 'H']; });
+  pousse("H pris symetrique de C par rapport a B", parQuestion(45, 2),
+    c => { c.controle.points.H = ['sym', 'C', 'B']; });
+  pousse("CH annonce 6", parQuestion(45, 3), c => { c.controle.faits[0][3] = '6'; });
+  pousse("B declare orthocentre du mauvais triangle", parQuestion(45, 4),
+    c => { c.controle.faits[0] = ['orthocentre', 'B', 'A', 'D', 'H']; });
+  pousse("K pris projete de B sur (CH)", parQuestion(45, 5),
+    c => { c.controle.points.K = ['proj', 'B', 'C', 'H']; });
+  pousse("CE annonce 3√3", parQuestion(45, 6), c => { c.controle.faits[0][3] = '3√3'; });
+  pousse("C declare milieu de [DH]", parQuestion(45, 6),
+    c => { c.controle.faits[2] = ['milieu', 'C', 'D', 'H']; });
+
   // ══ LA SÉANCE 5 ════════════════════════════════════════════════════════
   // ── التمرين 1 — a est l'inverse de b², et a vaut à peine 0,03 ──────────
   pousse("a decale", parQuestion(51, 0), c => { c.controle.claims[0][1] = '17 + 12√2'; });
