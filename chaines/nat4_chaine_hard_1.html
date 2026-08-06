@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <title>الجداء: العامل المشترك — سلسلة — صعب</title>
+</head>
+<body>
+
+<header>
+  <h1 id="title">الجداء: العامل المشترك — سلسلة — صعب</h1>
+  <p id="meta"></p>
+</header>
+
+<main>
+  <div class="card">
+    <div class="row">
+      <span class="badge">🔗 سلسلة برهان</span>
+      <a class="badge" href="nat_index.html">↩ الفهرس</a>
+    </div>
+    <hr style="border:none;border-top:1px solid #e8ecf2;margin:10px 0"/>
+    <div class="op" id="operation"></div>
+    <div class="columns" style="margin-top:14px">
+      <div>
+        <div class="col-title"><b>المراحل (غير مرتبة)</b> <small>انقر أو اسحب</small></div>
+        <div class="list" id="pool"></div>
+      </div>
+      <div>
+        <div class="col-title"><b>ترتيبك</b> <small>رتّب المراحل</small></div>
+        <div class="list" id="target"></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn secondary" id="btnReset">🔁 إعادة</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn secondary" id="btnHint">💡 مساعدة</button>
+        <button class="btn" id="btnCheck">✅ تحقق</button>
+      </div>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</main>
+
+<script src="nat4_chaine_hard_1.js"></script>
+
+<script>
+(function(){
+  const data = window.exerciceData;
+  let currentQ = 0;
+  const total = data.questions.length;
+  let score = 0;
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function loadQuestion() {
+    const q = data.questions[currentQ];
+    document.getElementById('title').innerHTML = data.title;
+    document.getElementById('meta').textContent = 'السؤال ' + (currentQ+1) + '/' + total + ' — النتيجة: ' + score + '/' + total;
+    document.getElementById('operation').innerHTML = q.operation || '';
+    document.getElementById('hint').textContent = '';
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+
+    const pool = document.getElementById('pool');
+    const target = document.getElementById('target');
+    pool.innerHTML = '';
+    target.innerHTML = '';
+
+    shuffle(q.steps).forEach(function(step, i) {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.draggable = true;
+      item.innerHTML = step;
+      item.dataset.text = step;
+
+      item.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', i);
+        item.classList.add('dragging');
+      });
+      item.addEventListener('dragend', function() {
+        item.classList.remove('dragging');
+      });
+      item.addEventListener('click', function() {
+        if (item.parentElement === pool) target.appendChild(item);
+        else pool.appendChild(item);
+      });
+      pool.appendChild(item);
+    });
+
+    [pool, target].forEach(function(zone) {
+      zone.addEventListener('dragover', function(e) { e.preventDefault(); });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const dragging = document.querySelector('.dragging');
+        if (dragging) zone.appendChild(dragging);
+      });
+    });
+  }
+
+  document.getElementById('btnCheck').addEventListener('click', function() {
+    const q = data.questions[currentQ];
+    const userOrder = Array.from(document.getElementById('target').querySelectorAll('.item'))
+      .map(function(el) { return el.dataset.text; });
+    const fb = document.getElementById('feedback');
+
+    if (userOrder.length !== q.steps.length) {
+      fb.className = 'feedback bad';
+      fb.textContent = '⚠️ ضع جميع المراحل في منطقة الترتيب أولاً!';
+      return;
+    }
+
+    let correct = true;
+    for (let i = 0; i < q.steps.length; i++) {
+      if (userOrder[i] !== q.steps[i]) { correct = false; break; }
+    }
+
+    if (correct) {
+      score++;
+      fb.className = 'feedback good';
+      fb.innerHTML = '✅ ممتاز! الترتيب صحيح!';
+    } else {
+      fb.className = 'feedback bad';
+      fb.innerHTML = '❌ ليس تماماً — الترتيب الصحيح:<br>' + q.steps.map(function(s, i) { return '<b>' + (i+1) + '.</b> ' + s; }).join('<br>');
+    }
+
+    document.getElementById('meta').textContent = 'السؤال ' + (currentQ+1) + '/' + total + ' — النتيجة: ' + score + '/' + total;
+
+    if (currentQ < total - 1) {
+      setTimeout(function() { currentQ++; loadQuestion(); }, 2500);
+    } else {
+      setTimeout(function() {
+        const pct = Math.round(score/total*100);
+        const msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 60 ? '👍 جيد!' : '📚 حاول مرة أخرى';
+        fb.className = 'feedback good';
+        fb.innerHTML = msg + ' — النتيجة النهائية: <b>' + score + '/' + total + '</b> (' + pct + '%)';
+      }, 2500);
+    }
+  });
+
+  document.getElementById('btnReset').addEventListener('click', loadQuestion);
+
+  document.getElementById('btnHint').addEventListener('click', function() {
+    const q = data.questions[currentQ];
+    document.getElementById('hint').innerHTML = '💡 ' + (q.hint || q.steps[0]);
+  });
+
+  window.onload = loadQuestion;
+})();
+</script>
+
+<script src="impression.js"></script>
+</body>
+</html>

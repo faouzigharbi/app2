@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <title>أولوية العمليات — اختيارات — صعب</title>
+</head>
+<body>
+
+<h3>أولوية العمليات — اختيارات — صعب</h3>
+
+<div class="card">
+  <div class="score-bar" id="scoreBar"></div>
+  <div id="p"></div>
+  <div id="s"></div>
+  <div id="o"></div>
+  <div id="fb" class="fb"></div>
+</div>
+
+
+
+<script src="prio_qcm_hard_1.js"></script>
+
+<script>
+(function(){
+  const data = window.quizData;
+  let idx = 0, score = 0;
+  const total = data.questions.length;
+
+  function updateScore() {
+    document.getElementById('scoreBar').innerHTML =
+      '<span class="score">النتيجة: ' + score + '/' + total + '</span>' +
+      '<span class="progress">السؤال ' + (idx+1) + '/' + total + '</span>';
+  }
+
+  function show() {
+    const q = data.questions[idx];
+    document.getElementById('p').innerHTML = q.prompt;
+
+    // Steps display (for erreur type) or empty
+    const sEl = document.getElementById('s');
+    if (q.steps && q.steps.length > 0) {
+      sEl.style.display = 'block';
+      sEl.innerHTML = q.steps.map((x, j) => '<b>L' + (j+1) + '</b> : ' + x).join('<br>');
+    } else {
+      sEl.style.display = 'none';
+    }
+
+    const o = document.getElementById('o');
+    o.innerHTML = '';
+    document.getElementById('fb').innerHTML = '';
+    document.getElementById('fb').className = 'fb';
+    updateScore();
+
+    q.options.forEach((x, j) => {
+      const d = document.createElement('div');
+      d.className = 'opt';
+      d.innerHTML = x;
+      d.onclick = function() {
+        o.querySelectorAll('.opt').forEach(el => {
+          el.style.pointerEvents = 'none';
+          el.style.opacity = '0.6';
+        });
+        d.style.opacity = '1';
+
+        const fb = document.getElementById('fb');
+        if (j === q.correct) {
+          score++;
+          fb.className = 'fb good';
+          fb.innerHTML = '✅ صحيح! ' + q.explanation;
+          d.style.borderColor = '#27ae60';
+          d.style.background = '#edfff3';
+        } else {
+          fb.className = 'fb bad';
+          fb.innerHTML = '❌ خطأ — الإجابة الصحيحة: <b>' + q.options[q.correct] + '</b><br>' + q.explanation;
+          d.style.borderColor = '#e74c3c';
+          d.style.background = '#fff5f5';
+          // Highlight correct
+          o.children[q.correct].style.borderColor = '#27ae60';
+          o.children[q.correct].style.background = '#edfff3';
+        }
+        updateScore();
+
+        if (idx < total - 1) {
+          setTimeout(function(){ idx++; show(); }, 2200);
+        } else {
+          setTimeout(function(){
+            const pct = Math.round(score/total*100);
+            let msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 60 ? '👍 جيد!' : '📚 حاول مرة أخرى';
+            fb.className = 'fb good';
+            fb.innerHTML = msg + ' — النتيجة النهائية: <b>' + score + '/' + total + '</b> (' + pct + '%)';
+          }, 2200);
+        }
+      };
+      o.appendChild(d);
+    });
+  }
+
+  window.onload = show;
+})();
+</script>
+
+
+<script src="impression.js"></script>
+</body>
+</html>
