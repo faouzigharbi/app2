@@ -83,6 +83,22 @@ que la séance 7, exercice 1, partie 2, où ils s'appellent `s` et `t`. On garde
 les deux pages, parce que le découpage diffère — quatre questions là-bas, huit
 ici — et que **le découpage est la leçon**.
 
+## Séance 6 — quatre exercices portés
+
+Cette séance a deux singularités de numérotation, et je les note plutôt que de
+les lisser : l'en-tête **« التمرين رقم 4 » ne porte aucun énoncé** — il est
+suivi immédiatement du suivant —, et **deux exercices y portent le numéro 5**
+(celui de منزه et celui de l'espace).
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex61.html` | التمرين 1 | 8 | `MK² + 2S = 100` : la diagonale et l'aire **se compensent exactement**, parce que `x² + (10−x)² + 2x(10−x) = (x + 10 − x)²` |
+| `ex62.html` | التمرين 2 | 8 | `ab = 25 − 24 = 1` : `F` vaut `√(a²+b²−2ab) = |b−a| = 4√6`, **sans aucune racine à extraire** |
+| `ex63.html` | التمرين 3 | 8 | `BM = 6,4` n'est pas choisi : c'est `OB²/AB = 64/10`, la valeur qui fait de `M` le **pied de la hauteur** issue de `O` |
+| `ex65.html` | التمرين 5 (منزه) | 7 | la construction classique du **nombre d'or** : dans le carré de côté 1, `CE = a`, `CF = b`, et `BC² = CF × CE` dit que `ab = 1` |
+
+Le dernier exercice est un **parallélépipède** — de l'espace, sans chapitre.
+
 ## Séance 7 — entière, les quatre exercices
 
 | page | exercice | volets | ce qui s'y joue |
@@ -165,13 +181,13 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 8 880 questions, 126 160 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 357/357
+    node verifier.js 40             # 10 120 questions, 155 360 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 398/398
     node _build.js .                # régénérer les pages
 
-## Huit coquilles du livre, relevées par le calcul
+## Dix coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Huit énoncés ne se
+Le validateur ne lit pas une intention : il recalcule. Dix énoncés ne se
 referment pas sur eux-mêmes.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -227,7 +243,16 @@ referment pas sur eux-mêmes.
    faudrait `BC = √5/2`, ce qui rendrait `AC² = 1 − 5/4` négatif. **La question
    5 n'est donc pas portée** ; les quatre premières le sont.
 
-Ces huit corrections sont écrites dans `seances.js` et signalées au maître ;
+9. **الحصّة 6، التمرين 2، 6)ت** — « `√((1−d²)/d) + m` ». Sous le radical,
+   `(1−d²)/d` vaut `3√5/2 − 5`, un nombre **négatif** : la racine n'existe pas.
+   Avec `c` à la place de `d`, la même expression vaut exactement **4**, et la
+   racine vaut 2. C'est un `c`.
+
+10. **الحصّة 6، التمرين 5 (منزه)، 1** — `b = 1/5 − (6 − (1+√5)²)/4` donne
+    `1/5 + √5/2`, et non `(√5+1)/2` comme l'énoncé le demande lui-même. Avec
+    `1/2` à la place de `1/5`, on tombe juste. **Le 5 est un 2.**
+
+Ces dix corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris

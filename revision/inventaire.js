@@ -209,7 +209,9 @@
           sujet: 'une expression et un trapèze qui la refabrique · un repère où A joue trois rôles · le nombre d\'or · encadrer plutôt que calculer · un 60° qui fait un équilatéral · une pyramide' },
         { seance: 5, pages: '17-20', exercices: 8, vu: true,
           sujet: 'un nombre minuscule et son inverse énorme · un rectangle où la relation métrique donne tout · deux exercices d\'encadrement · un prisme · une aire qui refabrique une équation · un carré qui glisse' },
-        { seance: 6, pages: '21-23', exercices: 5, sujet: 'géométrie — Thalès, un peu de repère' },
+        { seance: 6, pages: '21-23', exercices: 6, vu: true,
+          // Le livre y numérote DEUX exercices « 5 », et son en-tête « 4 » est vide.
+          sujet: 'un rectangle qui glisse et un 100 qui ne bouge pas · deux inverses et quatre expressions qui s\'effondrent · le triangle 6-8-10 dans un repère · un en-tête VIDE · le nombre d\'or dessiné par un carré · un parallélépipède' },
         { seance: 7, pages: '24-26', exercices: 4, vu: true,
           sujet: 'radicaux et ORDRE · deux cercles emboîtés jusqu\'à l\'orthocentre · intervalles et aire d\'un carré découpé · relation métrique et triangle équilatéral' },
         { seance: 8, pages: '27-29', exercices: 5, sujet: 'géométrie et ESPACE — la plus chargée en solides' },
@@ -392,6 +394,41 @@
           sort: 'bibliothèque', ou: 'brevet ex58 — sept volets',
           pourquoi: 'x² + (4−x)² = 2(x−2)² + 8 : le minimum 8 est atteint au milieu' },
 
+        // ── SÉANCE 6 — quatre exercices portés ; un en-tête VIDE, un espace ─
+        { n: '6.1', questions: 8,
+          notions: ['aire d\'un rectangle', 'trois écritures d\'un même trinôme',
+                    'produit nul', 'valeur absolue et intervalle', 'Pythagore',
+                    'forme canonique', 'ensemble de points'],
+          sort: 'bibliothèque', ou: 'brevet ex61 — huit volets',
+          pourquoi: 'MK² + 2S = 100 : la diagonale et l\'aire se compensent exactement, '
+                  + 'parce que x² + (10−x)² + 2x(10−x) = (x + 10 − x)²' },
+        { n: '6.2', questions: 8,
+          notions: ['rationaliser', 'nombres inverses', 'carré d\'un entier',
+                    'quatre expressions qui se réduisent', 'valeur absolue'],
+          sort: 'bibliothèque', ou: 'brevet ex62 — huit volets',
+          pourquoi: 'ab = 25 − 24 = 1 : F vaut √(a²+b²−2ab) = |b−a| = 4√6, sans '
+                  + 'aucune racine à extraire' },
+        { n: '6.3', questions: 8,
+          notions: ['repère', 'Pythagore', 'Thalès', 'relation métrique', 'rectangle',
+                    'cercle de diamètre', 'symétrique', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex63 — huit volets',
+          pourquoi: 'BM = 6,4 n\'est pas choisi : c\'est OB²/AB = 64/10, la valeur qui '
+                  + 'fait de M le pied de la hauteur issue de O' },
+        { n: '6.4', questions: 0, notions: [],
+          sort: 'hors machinerie',
+          pourquoi: 'L\'EN-TÊTE « التمرين رقم 4 » NE PORTE AUCUN ÉNONCÉ dans le livre : '
+                  + 'il est suivi immédiatement du suivant. Rien à porter' },
+        { n: '6.5', questions: 7,
+          notions: ['nombre d\'or', 'nombres inverses', 'nombre rationnel',
+                    'ranger des carrés', 'cercle de diamètre', 'relation métrique'],
+          sort: 'bibliothèque', ou: 'brevet ex65 — sept volets « منزه »',
+          pourquoi: 'la figure est la construction classique du nombre d\'or : dans le '
+                  + 'carré de côté 1, CE = a et CF = b, et BC² = CF × CE dit que ab = 1' },
+        { n: '6.6', questions: 7,
+          notions: ['parallélépipède', 'droite ⊥ plan', 'triangle isocèle dans l\'espace'],
+          sort: 'hors machinerie',
+          pourquoi: 'l\'espace n\'a aucun chapitre. Le livre le numérote « 5 » lui aussi' },
+
         // ── SÉANCE 7 — LUE ET PORTÉE EN ENTIER, les quatre exercices ──────
         { n: '7.1', questions: 9,
           notions: ['rationaliser sous le radical', 'réduire pour comparer',
@@ -492,7 +529,16 @@
         + 'l\'angle droit en C, on obtient BC = √3/2 puis DC = (3−√3)/2 — un √3 '
         + 'et non un √5. Pour que DC vaille a il faudrait BC = √5/2, ce qui rend '
         + 'AC² = 1 − 5/4 négatif. La question 5 n\'est donc pas portée ; les '
-        + 'quatre premières le sont.'
+        + 'quatre premières le sont.',
+        '6.2 q6)ت : « √((1−d²)/d) + m ». Sous le radical, (1−d²)/d vaut 3√5/2 − 5, '
+        + 'un nombre NÉGATIF — la racine n\'existe pas. Avec c à la place de d, '
+        + 'la même expression vaut exactement 4, et la racine vaut 2. C\'est un c.',
+        '6.5 q1 : b = 1/5 − (6 − (1+√5)²)/4 donne 1/5 + √5/2, et non (√5+1)/2 '
+        + 'comme l\'énoncé le demande. Avec 1/2 à la place de 1/5 on tombe juste. '
+        + 'Le 5 est un 2.',
+        '6.4 : l\'en-tête « التمرين رقم 4 » ne porte AUCUN énoncé — il est suivi '
+        + 'immédiatement du suivant. Et deux exercices de la séance portent le '
+        + 'numéro 5.'
       ]
     },
 

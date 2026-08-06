@@ -699,6 +699,86 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("le cerf-volant declare sur le mauvais axe", parQuestion(58, 6),
     c => { c.controle.faits[4] = ['perpendiculaires', 'H', 'C', 'E', 'A']; });
 
+  // ══ LA SÉANCE 6 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — le rectangle qui glisse ────────────────────────────────
+  pousse("l aire prise comme somme au lieu de produit", parQuestion(61, 0),
+    c => { c.controle.claims[0][1] = '10x + x^2'; });
+  pousse("S en 5 + √2 decale", parQuestion(61, 1), c => { c.controle.claims[0][1] = '25'; });
+  pousse("la seconde ecriture de S faussee", parQuestion(61, 2),
+    c => { c.controle.claims[0][1] = '9 - (x - 9)(x + 1)'; });
+  pousse("une racine de S = 9 mal verifiee", parQuestion(61, 3),
+    c => { c.controle.claims[0][1] = '10'; });
+  pousse("la borne de l intervalle faussee", parQuestion(61, 4),
+    c => { c.controle.claims[0][1] = '2'; });
+  pousse("le carre parfait de MK^2 + 2S faux", parQuestion(61, 5),
+    c => { c.controle.claims[0][1] = '10'; });
+  pousse("la forme canonique de S faussee", parQuestion(61, 6),
+    c => { c.controle.claims[0][1] = '25 + (x - 5)^2'; });
+  pousse("le carre de 2√17 faux", parQuestion(61, 7), c => { c.controle.claims[0][1] = '34'; });
+
+  // ── التمرين 2 — deux inverses ──────────────────────────────────────────
+  pousse("a decale", parQuestion(62, 0), c => { c.controle.claims[0][1] = '5 + 2√6'; });
+  pousse("le produit ab annonce 49", parQuestion(62, 0),
+    c => { c.controle.claims[2][1] = '49'; });
+  pousse("la difference des inverses faussee", parQuestion(62, 1),
+    c => { c.controle.claims[0][1] = '8√6'; });
+  pousse("le carre parfait annonce 9", parQuestion(62, 2),
+    c => { c.controle.claims[0][1] = '9'; });
+  pousse("a et b declares non inverses", parQuestion(62, 3),
+    c => { c.controle.claims[0][1] = '-1'; });
+  pousse("E decale", parQuestion(62, 4), c => { c.controle.claims[0][1] = '480 - 196√6'; });
+  pousse("le radicande de F pris comme somme de carres", parQuestion(62, 4),
+    c => { c.controle.claims[1][1] = '(b + a)^2'; });
+  pousse("c decale", parQuestion(62, 5), c => { c.controle.claims[0][1] = '2 - √5'; });
+  pousse("d decale", parQuestion(62, 5), c => { c.controle.claims[1][1] = '1 + √5'; });
+  pousse("c declare inverse de d et non de 2d", parQuestion(62, 6),
+    c => { c.controle.claims[2][1] = '1/d'; });
+  // LA COQUILLE DU LIVRE : sous le radical, (1 - d²)/d est NÉGATIF.
+  pousse("le d du livre a la place du c", parQuestion(62, 7),
+    c => { c.controle.claims[0][0] = '(1 - d^2)/d'; });
+  pousse("le carre de c faux", parQuestion(62, 7), c => { c.controle.claims[1][1] = '9 + 4√5'; });
+
+  // ── التمرين 3 — le 6-8-10 dans un repère ───────────────────────────────
+  pousse("M deplace : il n est plus le pied de la hauteur", parQuestion(63, 2),
+    c => { c.controle.points.M = ['point', '3', '4']; });
+  pousse("AM annonce 32/5", parQuestion(63, 0), c => { c.controle.faits[1][3] = '32/5'; });
+  pousse("OM annonce 5", parQuestion(63, 1), c => { c.controle.faits[0][3] = '5'; });
+  pousse("H pris projete sur (OJ)", parQuestion(63, 1),
+    c => { c.controle.points.H = ['proj', 'M', 'O', 'J']; });
+  pousse("le carre de OM faux", parQuestion(63, 2), c => { c.controle.faits[3][3] = '576/5'; });
+  pousse("P declare milieu de [HM]", parQuestion(63, 3),
+    c => { c.controle.faits[1] = ['milieu', 'P', 'H', 'M']; });
+  pousse("E pris milieu de [AM]", parQuestion(63, 3),
+    c => { c.controle.points.E = ['milieu', 'A', 'M']; });
+  pousse("le cercle annonce de diametre [OB]", parQuestion(63, 4),
+    c => { c.controle.faits[0] = ['sur-cercle-diametre', 'Q', 'O', 'B']; });
+  pousse("LH annonce 96/25", parQuestion(63, 5), c => { c.controle.faits[0][3] = '96/25'; });
+  pousse("l aire de OBE faussee", parQuestion(63, 5),
+    c => { c.controle.faits[2][5] = '96/25'; });
+  pousse("G pris symetrique par rapport a (OI)", parQuestion(63, 6),
+    c => { c.controle.points.G = ['point', '-48/25', '136/25']; });
+  pousse("L declare milieu de [EF]", parQuestion(63, 7),
+    c => { c.controle.faits[1] = ['milieu', 'L', 'E', 'F']; });
+
+  // ── التمرين « 5 » منزه — le nombre d'or ────────────────────────────────
+  // LA COQUILLE DU LIVRE : « 1/5 » au lieu de « 1/2 » dans le premier terme de b.
+  pousse("le 1/5 du livre a la place du 1/2", parQuestion(65, 0),
+    c => { c.controle.env.b = '1/5 - (6 - (1 + √5)^2)/4'; });
+  pousse("a decale", parQuestion(65, 0), c => { c.controle.claims[0][1] = '(√5 + 1)/2'; });
+  pousse("le produit ab annonce 4", parQuestion(65, 1),
+    c => { c.controle.claims[0][1] = '4'; });
+  pousse("le rationnel final faux", parQuestion(65, 2),
+    c => { c.controle.claims[0][1] = '5/2'; });
+  pousse("les deux carres echanges", parQuestion(65, 3),
+    c => { c.controle.claims[0][1] = '(3 + √5)/2'; });
+  pousse("le carre agrandi : CE ne vaut plus a", parQuestion(65, 4),
+    c => { c.controle.points.B = ['point', '1', '2']; });
+  pousse("le rayon annonce 1", parQuestion(65, 4), c => { c.controle.faits[2][3] = '1'; });
+  pousse("I n est plus le milieu : F mal place", parQuestion(65, 5),
+    c => { c.controle.points.F = ['point', '-√5/2', '0']; });
+  pousse("CF annonce a au lieu de b", parQuestion(65, 6),
+    c => { c.controle.faits[0][3] = '√5/2 - 1/2'; });
+
   // ══ LA SÉANCE 7 ════════════════════════════════════════════════════════
   // ── التمرين 1 — réduire pour COMPARER : on vise le sens des inégalités ──
   pousse("le levier 6√(3/2) rendu egal a 6√6", parQuestion(71, 0),
