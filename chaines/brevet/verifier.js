@@ -1468,6 +1468,18 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[2][3] = '8'; });
 
   // ══ LE LIVRE 2026 ══════════════════════════════════════════════════════
+  pousse("a et b compares a l envers", parQuestion(2621, 0),
+    c => { c.controle.claims[0][1] = "4√5 - 9"; });
+  pousse("(4√5)² lu 20", parQuestion(2621, 0),
+    c => { c.controle.claims[1][1] = "20"; });
+  pousse("le produit ac annonce 101", parQuestion(2621, 1),
+    c => { c.controle.claims[0][1] = "101"; });
+  pousse("bc calcule sans le double produit", parQuestion(2621, 2),
+    c => { c.controle.claims[0][1] = "54√5"; });
+  pousse("270² et (121√5)² compares a l envers", parQuestion(2621, 3),
+    c => { c.controle.claims[2][1] = "72205"; });
+  pousse("1/a lu b/61", parQuestion(2621, 4),
+    c => { c.controle.claims[0][1] = "b/61"; });
   pousse("le diviseur commun ramene a un simple diviseur", parQuestion(2611, 0),
     c => { c.controle.ensemble.relations = ['unite-divise-centaine']; });
   pousse("le compte annonce le produit brut 12", parQuestion(2611, 0),

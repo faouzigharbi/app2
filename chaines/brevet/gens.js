@@ -27,6 +27,9 @@
   page(2617, '2026 · الحصّة 1 — التمرين 7 — ', 'شجرة اختيار، ثمّ باق منعدم',
        S.livre26seance1ex7, 2);
 
+  page(2621, '2026 · الحصّة 2 — التمرين 1 — ', 'سلسلة حصر تنغلق على نفسها',
+       S.livre26seance2ex1, 5);
+
   // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
   // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce
   // manquait ; c'est `denombrer.js`, et il compte en parcourant les mille

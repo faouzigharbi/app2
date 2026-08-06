@@ -853,7 +853,8 @@
       structure: [
         { seance: 1, pages: '2-5', exercices: 10, vu: true,
           sujet: 'arithmétique : arbre de choix, restes, divisibilité, puissances · deux QCM' },
-        { seance: 2, pages: '6-8', exercices: 6, sujet: 'à lire' },
+        { seance: 2, pages: '5-6', exercices: 6, vu: true,
+          sujet: 'une chaîne d\'encadrements qui se referme · une expression et un nombre à sept chiffres · deux triangles rectangles · le nombre d\'or au carré · deux repères' },
         { seance: 3, pages: '9-12', exercices: 5, sujet: 'à lire' },
         { seance: 4, pages: '13-17', exercices: 7, sujet: 'à lire' },
         { seance: 5, pages: '18-21', exercices: 3, sujet: 'à lire' },
@@ -889,7 +890,25 @@
                   + 'le reste est NUL' },
         { n: '1.8', questions: 1, notions: ['dénombrement à trois contraintes croisées'], sort: 'à faire' },
         { n: '1.9', questions: 3, notions: ['fraction entière', 'triangle et périmètre'], sort: 'à faire' },
-        { n: '1.10', questions: 3, notions: ['QCM : quotient d\'une puissance', 'dénombrement à 4 chiffres', 'écriture décimale périodique'], sort: 'à faire' }
+        { n: '1.10', questions: 3, notions: ['QCM : quotient d\'une puissance', 'dénombrement à 4 chiffres', 'écriture décimale périodique'], sort: 'à faire' },
+
+        // ── SÉANCE 2 du livre 2026 ─────────────────────────────────────────
+        { n: '2.1', questions: 5,
+          notions: ['comparer par les carrés', 'conjugués et produit', 'multiplier une inégalité',
+                    'comparer deux fractions par produit en croix', 'inverser'],
+          sort: 'bibliothèque', ou: 'brevet ex2621 — cinq volets',
+          pourquoi: 'ac = 61 donne 1/a = c/61, et c\'est cette égalité qui porte la '
+                  + 'dernière question ; puis 72900 < 73205 ferme la chaîne' },
+        { n: '2.2', questions: 6, notions: ['E = (x−2)(x+2)', 'nombre à sept chiffres', 'restes modulo 12'], sort: 'à faire' },
+        { n: '2.3', questions: 4, notions: ['radicaux', 'triangle rectangle LPK', 'centre de gravité', 'projection'], sort: 'à faire' },
+        { n: '2.4', questions: 5, notions: ['le nombre d\'or au carré', 'puissances conjuguées', 'figure ABC/H/E'], sort: 'à faire' },
+        { n: '2.5', questions: 6, notions: ['repère', 'parallélogramme', 'centre de gravité', 'cercle'], sort: 'à faire',
+          pourquoi: 'À VÉRIFIER AVEC LE MAÎTRE : la question 2 se referme (I(1;0) est bien '
+                  + 'le centre de gravité de B(1;−4), C(2;0), D(0;4)), mais AUCUN ordre des '
+                  + 'quatre points A(1;2), B, C, D ne donne un parallélogramme — les trois '
+                  + 'couples de milieux de diagonales diffèrent. Le A imprimé ne referme pas '
+                  + 'la question 1' },
+        { n: '2.6', questions: 6, notions: ['repère', 'alignement', 'losange', 'aire', 'projection'], sort: 'à faire' }
       ],
       machine: ['les séances 2 à 8 restent à ouvrir — 38 exercices',
                 'denombrer.js a gagné les nombres à QUATRE chiffres pour ce livre, '
