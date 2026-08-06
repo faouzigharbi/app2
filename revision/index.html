@@ -64,7 +64,13 @@
   .exo-btn .t { font-size:.95em; line-height:1.6 }
   .exo-btn .b { font-size:.8em; color:#8798ab }
   button.rub { width:100%; text-align:right; font:inherit; cursor:pointer;
-               background:transparent; border:0 }
+               display:flex; align-items:center; gap:10px;
+               background:#16202c; border:1px solid #22303f; color:#cfd9e4;
+               border-radius:8px; padding:10px 12px; line-height:1.7 }
+  button.rub:hover { border-color:var(--accent); background:#1b2a3a }
+  button.rub .n { flex:none; font-size:.85em; color:#8798ab;
+                  background:#0e1621; border-radius:20px; padding:1px 9px }
+  button.rub > span:first-of-type { flex:1; min-width:0 }
   label.rub input { accent-color:var(--accent); width:17px; height:17px; cursor:pointer }
   label.rub.coche { border-color:var(--accent); background:#f5f4ff }
   label.rub .n { margin-inline-start:auto; color:var(--muet); font-size:.82em;
@@ -255,7 +261,6 @@
     dedans.forEach(c => {
       const d = document.createElement('details');
       d.innerHTML = '<summary>' + c.nom
-        + '<span class="tout" data-c="' + c.cle + '">الكلّ</span>'
         + '<span class="n">' + c.n + '</span></summary>'
         + '<div class="rubriques">' + c.rubriques.map(r =>
           '<button class="rub" data-c="' + c.cle
@@ -267,19 +272,6 @@
       sec.appendChild(d);
     });
     zone.appendChild(sec);
-  });
-
-  // « الكلّ » coche ou décoche tout un chapitre d'un geste — et n'ouvre ni ne
-  // ferme le dépliant au passage.
-  zone.addEventListener('click', e => {
-    const t = e.target.closest('.tout');
-    if (!t) return;
-    e.preventDefault(); e.stopPropagation();
-    const boites = [...zone.querySelectorAll('.rub input[data-c="' + t.dataset.c + '"]')];
-    const cocher = boites.some(b => !b.checked);
-    boites.forEach(b => { b.checked = cocher;
-                          b.closest('.rub').classList.toggle('coche', cocher); });
-    etat();
   });
 
   // ── Les puces : une seule choisie pour le nombre et le corrigé, plusieurs
@@ -294,13 +286,7 @@
       etat();
     });
   }
-  puces('niv', false); puces('nb', true); puces('cor', true);
-  document.addEventListener('change', e => {
-    if (e.target.matches('.rub input')) {
-      e.target.closest('.rub').classList.toggle('coche', e.target.checked);
-      etat();
-    }
-  });
+  puces('cor', true);
 
   // On retient la fiche D'ORIGINE : le regroupement est un classement pour
   // l'œil, mais les exercices, eux, portent toujours leur ancien chapitre.
