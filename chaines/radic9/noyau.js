@@ -224,9 +224,35 @@
   const rendreMath = s => (s && typeof s === 'object' && s.brut) ? s.brut
     : (ARABE.test(String(s)) ? isoMixte(s) : bloc(s));
 
+  // L'ÉNONCÉ COMPLET — chaque volet doit porter tout ce qui le précède.
+  //
+  // Sur la feuille du maître, un exercice est UN SEUL énoncé suivi de ses
+  // questions : les données sont posées une fois, en tête, et la dernière
+  // question les suppose encore là. Chaque volet, lui, est une page autonome.
+  // Tant que chaque page n'affichait que SA ligne, l'élève lisait « استنتج أنّ
+  // BEHI متوازي أضلاع » sans savoir ni ce que sont B, E, H et I, ni où ils
+  // sont. Ce n'était pas un exercice, c'était un débris.
+  //
+  // La règle d'écriture était pourtant déjà la bonne : dans chaque volet, la
+  // DERNIÈRE ligne de `enonce` est la question, et toutes celles d'avant
+  // POSENT quelque chose — les données, une figure qui arrive, une lettre
+  // qu'on introduit en cours de route. Il suffisait de les garder.
+  //
+  // `enonce` reste intact pour le validateur : chaque ligne n'est vérifiée
+  // qu'une fois, dans le volet qui l'introduit.
+  function contextualiser(volets) {
+    const pose = [];
+    return volets.map(v => {
+      const lignes = (v.enonce || []).slice();
+      const question = lignes.pop();
+      for (const l of lignes) if (pose.indexOf(l) < 0) pose.push(l);
+      return Object.assign({}, v, { enonceComplet: pose.concat([question]) });
+    });
+  }
+
   function rendre(brut) {
     return {
-      operation: brut.enonce.map(rendreMath).join(' '),
+      operation: (brut.enonceComplet || brut.enonce).map(rendreMath).join(' '),
       steps: brut.etapes.map(e => e[0] + ': ' + rendreMath(e[1])),
       hint: brut.indice,
       // LA PROVENANCE VOYAGE AVEC L'EXERCICE — voir ci-dessus.
@@ -270,7 +296,7 @@
     return {
       id: 'ex' + n,
       title: 'التمرين ' + n + ' — ' + PROBLEMES[n].titre,
-      questions: tirer(n).map(rendre)
+      questions: contextualiser(tirer(n)).map(rendre)
     };
   }
 
