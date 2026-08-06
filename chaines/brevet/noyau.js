@@ -511,19 +511,20 @@
     const dessin = (typeof require === 'function' && typeof module !== 'undefined')
       ? require('./figure.js') : racine.Figure;
     if (!dessin) return null;
-    let decl = null, env = {};
+    let decl = null, env = {}, espace = false;
     const faits = [];
     for (const v of volets) {
       const c = v.controle || {};
-      if (!c.points) continue;
-      if (!decl) { decl = c.points;
+      if (!c.points && !c.espace) continue;
+      if (!decl) { decl = c.points || c.espace; espace = !c.points;
         for (const n in (c.env || {})) { try { env[n] = analyser(c.env[n], env); }
                                         catch (e) {} } }
       for (const f of (c.faits || [])) faits.push(f);
     }
     if (!decl) return null;
     let svg = null;
-    try { svg = dessin.dessiner(decl, faits, env); } catch (e) { return null; }
+    try { svg = espace ? dessin.dessinerEspace(decl, faits, env)
+                       : dessin.dessiner(decl, faits, env); } catch (e) { return null; }
     return svg ? { brut: svg } : null;
   }
 
@@ -546,7 +547,9 @@
       }
       // Le dessin se glisse au premier volet qui pose la figure ; le contexte
       // le transporte ensuite tout seul.
-      if (svg && !posee && (v.controle || {}).points) { pose.push(svg); posee = true; }
+      if (svg && !posee && ((v.controle || {}).points || (v.controle || {}).espace)) {
+        pose.push(svg); posee = true;
+      }
       return Object.assign({}, v, {
         enonceComplet: pose.concat(tetes, [question]),
         // La feuille imprimée en a besoin séparément : l'énoncé une fois, puis

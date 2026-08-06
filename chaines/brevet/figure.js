@@ -17,8 +17,10 @@
 // sort de ce qui a été vérifié un million de fois. Une figure dessinée à la
 // main serait une seconde source de vérité, donc une source d'erreur.
 //
-// Ce module ne dessine QUE le plan (`controle.points`). L'espace viendra
-// ensuite : seul le calcul des coordonnées écran changera.
+// Le plan (`controle.points`) et l'ESPACE (`controle.espace`) passent par la
+// même table de faits et le même tracé : seule la PROJECTION change. Les
+// solides se dessinent en perspective cavalière — la profondeur part en biais
+// et se raccourcit —, ce qui est la convention du dessin au tableau.
 (function (racine) {
   'use strict';
   const M = (typeof module !== 'undefined' && module.exports);
@@ -102,10 +104,56 @@
       XY[n] = [x, y];
     }
 
+    return tracer(XY, vus, faits, TRAITS);
+  }
+
+  // ── L'ESPACE ────────────────────────────────────────────────────────────
+  //
+  // Même principe, même table de faits : seule la PROJECTION change. On dessine
+  // en perspective cavalière — la profondeur part en biais et se raccourcit —,
+  // ce qui est exactement la convention du dessin au tableau. Le z du solide
+  // monte à l'écran, le y s'enfonce.
+  const ESPACE = Object.assign({}, TRAITS, {
+    'perpendiculaire-plan': a => ({ seg: [[a[0], a[1]], [a[2], a[3]], [a[3], a[4]],
+                                          [a[4], a[2]]] }),
+    'projete-droite':       a => ({ seg: [[a[1], a[0]], [a[2], a[3]]],
+                                    droit: [[a[0], a[1], a[2]]] }),
+    'projete-plan':         a => ({ seg: [[a[1], a[0]]] }),
+    'pyramide-reguliere':   a => { const b = a.slice(2), t = [];
+                                   for (let i = 0; i < b.length; i++)
+                                     t.push([b[i], b[(i + 1) % b.length]], [a[0], b[i]]);
+                                   return { seg: t }; },
+    volume: a => { const b = a.slice(1, -1), t = [];
+                   for (let i = 1; i < b.length; i++)
+                     t.push([b[i], b[i % (b.length - 1) + 1]], [b[0], b[i]]);
+                   return { seg: t }; },
+    coplanaires: () => ({}), 'dans-plan': () => ({}), 'hors-plan': () => ({}),
+    'non-coplanaires': () => ({}), 'non-alignes': () => ({})
+  });
+
+  function dessinerEspace(decl, faits, env) {
+    const E = M ? require('./espace.js') : racine.Espace;
+    if (!E) return null;
+    let P;
+    try { P = E.figure(decl, env || {}); } catch (e) { return null; }
+    const vus = Object.keys(P).filter(n => /^[A-Z]$/.test(n));
+    if (vus.length < 4) return null;
+    const XY = {}, K = 0.45;
+    for (const n of vus) {
+      const x = F.sVal(P[n].x), y = F.sVal(P[n].y), z = F.sVal(P[n].z);
+      if (!isFinite(x) || !isFinite(y) || !isFinite(z)) return null;
+      XY[n] = [x + y * K, z + y * K * 0.75];
+    }
+    return tracer(XY, vus, faits, ESPACE);
+  }
+
+  function tracer(XY, vus, faits, TABLE) {
     // Le cadrage : on met la figure à l'échelle sans la déformer, et l'écran
     // descend là où le plan monte — d'où l'ordonnée retournée.
     const m0 = metre();
     for (const n of vus) m0.pt(XY[n][0], XY[n][1], 0, 0);
+    const b00 = m0.boite();
+    if (!(isFinite(b00.x0) && isFinite(b00.y0))) return null;
     const b0 = m0.boite();
     const ECH = Math.min(240 / Math.max(b0.x1 - b0.x0, 0.001),
                          190 / Math.max(b0.y1 - b0.y0, 0.001), 60);
@@ -115,7 +163,7 @@
     // le même segment, il ne se trace qu'une fois.
     const seg = new Set(), droite = new Set(), tic = [], droit = [], rond = [];
     for (const f of (faits || [])) {
-      const regle = TRAITS[f[0]];
+      const regle = TABLE[f[0]];
       if (!regle) continue;
       const args = f.slice(1);
       if (args.some(a => typeof a === 'string' && /^[A-Z]$/.test(a) && !XY[a])) continue;
@@ -201,6 +249,6 @@
       + out.join('') + '</g></svg>';
   }
 
-  const API = { dessiner, TRAITS };
+  const API = { dessiner, dessinerEspace, TRAITS, ESPACE };
   if (M) module.exports = API; else racine.Figure = API;
 })(typeof window !== 'undefined' ? window : globalThis);
