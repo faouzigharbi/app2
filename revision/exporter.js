@@ -119,10 +119,27 @@ function couper(etape) {
 // On tire jusqu'à ce que la page cesse de se renouveler : les familles pauvres
 // s'épuisent vite, les riches méritent qu'on insiste. Sans ce garde-fou, une
 // case de six énoncés ferait tourner la boucle mille fois pour rien.
+// LE BUDGET SE COMPTE EN QUESTIONS, PAS EN EXERCICES.
+//
+// Le jour où l'on a cessé de découper les exercices, le poids des
+// bibliothèques a QUADRUPLÉ — 16 Mo pour 5 872 questions, puis 64 Mo pour
+// 5 344 exercices. La cause est mécanique : on dédoublonnait la question, on
+// dédoublonne maintenant le tirage entier, donc deux tirages qui ne diffèrent
+// que par un nombre sont gardés tous les deux, avec leurs vingt questions et
+// leurs vingt corrigés.
+//
+// Demander « trois variantes par rubrique » n'a donc plus de sens : trois
+// variantes d'un exercice à vingt questions, c'est soixante questions pour une
+// seule rubrique. On vise un BUDGET DE QUESTIONS : un exercice long se sert
+// une fois, un exercice court se sert plusieurs fois. La variété reste là où
+// elle coûte peu, et disparaît là où elle ne servait qu'à peser.
+const BUDGET = 14;
+
 function moissonner(construire, n, parCase) {
   const vus = new Map();
-  let sec = 0;
-  for (let tour = 0; tour < 60 && sec < 8 && vus.size < parCase; tour++) {
+  let sec = 0, questions = 0;
+  for (let tour = 0; tour < 60 && sec < 8 && vus.size < parCase
+                     && questions < BUDGET; tour++) {
     const avant = vus.size;
     let page;
     try { page = construire(n); } catch (e) { break; }
@@ -132,7 +149,7 @@ function moissonner(construire, n, parCase) {
     // La clé est le TIRAGE ENTIER : un exercice se sert entier ou pas du tout,
     // donc c'est l'exercice qu'on dédoublonne, jamais la question isolée.
     const cle = qs.map(q => q.operation).join('§');
-    if (!vus.has(cle)) vus.set(cle, qs);
+    if (!vus.has(cle)) { vus.set(cle, qs); questions += qs.length; }
     sec = (vus.size === avant) ? sec + 1 : 0;
   }
   return [...vus.values()].slice(0, parCase);
