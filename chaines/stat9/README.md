@@ -19,8 +19,8 @@ capable de compter **exactement**.
 | `ex3.html` | التكرارات المتراكمة | croissant (« au plus ») et décroissant (« au moins »), avec le contrôle `Cₖ = N` |
 | `ex4.html` | التواتر و النسب و الزوايا | une seule proportion, **trois échelles** : part de 1, de 100, de 360 |
 | `ex5.html` | موسّط سلسلة متقطّعة | rang `(N+1)/2` si `N` impair ; demi-somme des rangs `N/2` et `N/2+1` s'il est pair |
-| `ex7.html` | **موسّط سلسلة متّصلة** | **la pièce centrale** — voir ci-dessous |
 | `ex6.html` | مركز الفئة و المعدّل | la classe remplacée par son centre : la seule approximation de la leçon, et elle est nommée |
+| `ex7.html` | **موسّط سلسلة متّصلة** | **la pièce centrale** — on trace le polygone et on **lit** ; voir ci-dessous |
 | `ex8.html` | الاحتمال | cas favorables sur effectif total, le seuil pris sur une **borne** |
 
 ## La médiane d'une série continue — la règle, prise au mot
@@ -38,21 +38,49 @@ cumulées croissantes ; seule l'échelle verticale change :
 | effectifs cumulés | `N/2` |
 
 Le polygone joint les points (borne **supérieure** de la classe ; cumul), en
-partant de (première borne ; 0). Entre deux sommets il est un **segment** :
-l'abscisse cherchée sort donc d'une interpolation affine, exacte en rationnels.
+partant de (première borne ; 0). L'élève **trace**, puis **lit** :
+
+1. il dresse le tableau des cumuls croissants ;
+2. il place les points et les joint ;
+3. il calcule `N/2` ;
+4. il trace l'horizontale à cette hauteur ;
+5. il **lit l'abscisse** du point d'intersection.
+
+C'est tout. Rien d'autre n'est demandé, et rien d'autre n'apparaît dans les
+chaînes.
+
+### La formule d'interpolation est celle du VALIDATEUR, pas celle de l'élève
+
+Entre deux sommets le polygone est un segment, et l'abscisse cherchée s'écrit
 
 ```
 Me = bᵢ₋₁ + (h − Cᵢ₋₁) × (bᵢ − bᵢ₋₁) / (Cᵢ − Cᵢ₋₁)
 ```
 
-Le maître lit `Me ≈ 31` au crayon sur son graphique. La machine, elle, répond
-`220/7`, et **c'est ce nombre-là qu'elle compare**. La lecture graphique n'est
-pas contredite — elle est simplement rendue exacte.
+**Cette formule est hors programme en 9ᵉ, et elle n'est écrite nulle part dans
+un énoncé ni dans une étape.** Elle vit uniquement dans `stat.js`, où elle sert
+à *contrôler* que la valeur lue sur le graphique est la bonne. La distinction
+est la même que partout ailleurs dans ce dossier : la machine a le droit de
+calculer plus que l'élève, à condition de ne jamais le lui montrer.
 
-La variante `(N+1)/2` est fournie aussi (`medianeN1`), parce que le maître la
-nomme. Sur une série continue elle déplace la lecture d'un demi-effectif, donc
-d'autant moins que `N` est grand — sur la série de population du corrigé
-(`N = 1000`), `220/7 ≈ 31,429` contre `1541/49 ≈ 31,449` : deux centièmes.
+### Une médiane qui se lit vraiment
+
+Une conséquence directe, et elle contraint le générateur : la médiane doit être
+un nombre **lisible**. Une réponse valant `237/5` obligerait l'élève à
+interpoler — c'est-à-dire à sortir du programme pour retrouver le résultat
+affiché.
+
+`serieMediane()` ne rend donc que des séries dont la médiane est un **entier**
+tombant **strictement à l'intérieur** d'une classe. La lecture graphique et la
+valeur exacte coïncident alors, et il n'y a plus d'écart à expliquer.
+
+### La variante `(N+1)/2`
+
+Elle est fournie dans le noyau (`medianeN1`) parce que vous la nommez, mais
+elle ne sert à aucune question : sur une série continue elle déplace la lecture
+d'un demi-effectif, donc d'autant moins que `N` est grand. Sur la série de
+population du corrigé (`N = 1000`) : `220/7 ≈ 31,429` contre
+`1541/49 ≈ 31,449` — deux centièmes, invisibles au crayon.
 
 ## Ce que le noyau refuse plutôt que d'arrondir
 
@@ -64,6 +92,20 @@ d'autant moins que `N` est grand — sur la série de population du corrigé
   triées ; une série en désordre lève une erreur au lieu de rendre un nombre.
 - **Un palier horizontal.** Une classe d'effectif nul ne peut pas porter la
   médiane — on ne divise pas par zéro en silence.
+
+## Ce qui est resté hors des chaînes, volontairement
+
+Le programme de 9ᵉ fixe la limite, et le dossier s'y tient :
+
+| dans le noyau, pour contrôler | jamais dans une étape |
+|---|---|
+| l'interpolation affine sur le polygone | l'élève **lit**, il ne calcule pas de pente |
+| `effectifSous` à un seuil quelconque | les seuils des questions tombent toujours sur une **borne** |
+| la variante `(N+1)/2` | aucune question ne s'en sert |
+
+Une première version de la famille 7 affichait la ligne
+`Me = 40 + (58,5 − 40) × 20/50`. C'était juste, et c'était hors programme :
+retiré.
 
 ## Le décimal, et un piège qu'il a fallu retirer du noyau
 

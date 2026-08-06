@@ -61,17 +61,30 @@
     const effectifs = Array.from({ length: k }, () => ent(min, max));
     return { bornes, effectifs };
   }
-  // Une série continue dont la médiane tombe dans une classe d'effectif non
-  // nul et STRICTEMENT à l'intérieur — sinon l'interpolation ne dit rien.
+  // Une série continue dont la médiane se LIT sur le graphique.
+  //
+  // Deux conditions, et la seconde est la vraie : la médiane doit tomber
+  // STRICTEMENT à l'intérieur d'une classe (sinon il n'y a rien à lire, la
+  // réponse est une borne), et elle doit être un ENTIER.
+  //
+  // Cette seconde condition n'est pas un confort d'affichage. En 9ᵉ la médiane
+  // d'une série continue se LIT sur le polygone — on trace l'horizontale à
+  // N/2 et on lit l'abscisse. Une médiane qui vaudrait 237/5 ne serait pas
+  // lisible, et l'élève n'aurait d'autre issue que d'interpoler, c'est-à-dire
+  // de sortir du programme. On ne tire donc que des séries où la lecture
+  // graphique donne la réponse exacte.
   function serieMediane(k, pas, depart, min, max) {
-    for (;;) {
+    for (let essai = 0; essai < 4000; essai++) {
       const d = serieContinue(k, pas, depart, min, max);
       const s = T.serie(d);
       const i = T.classeMediane(s);
       const Me = T.mediane(s);
       if (F.sEgaux(Me, s.bornes[i]) || F.sEgaux(Me, s.bornes[i + 1])) continue;
+      const r = F.versRat(Me);
+      if (!r || r.d !== 1) continue;          // une médiane qu'on ne lirait pas
       return d;
     }
+    throw new Error('aucune série à médiane lisible en 4000 tirages');
   }
 
   // =========================================================================
@@ -351,7 +364,7 @@
          'الفئة: ' + lignes(d.bornes),
          'التكرار: ' + liste(d.effectifs),
          'كوّن جدول التكرارات المتراكمة الصاعدة، ثمّ حدّد موسّط هذه السلسلة'],
-        'الموسّط هو فاصلة النقطة من مضلّع التكرارات المتراكمة الصاعدة التي ترتيبها N/2',
+        'ارسم المضلّع، ثمّ ارسم المستقيم الأفقي ذا الترتيب N/2 و اقرأ الفاصلة',
         [
           ['القاعدة', 'مضلّع التكرارات المتراكمة الصاعدة يصل النقط (طرف الفئة '
                     + 'الأعلى ؛ التراكم)، انطلاقا من (الطرف الأوّل ؛ 0) ; و '
@@ -361,16 +374,13 @@
           ['نحسب التكرار الجملي', 'N = ' + S(N)],
           ['نكوّن التراكم الصاعد', 'ca = ' + S(c[0])],
           ['و نواصل إلى الأخير', 'c' + RANG[c.length - 1] + ' = N'],
+          ['نضع النقط في معلم ثمّ نصلها', 'النقط هي (طرف كلّ فئة الأعلى ؛ تراكمها)، '
+                                        + 'و أوّلها (' + S(s.bornes[0]) + ' ؛ 0)'],
           ['نحسب نصف التكرار الجملي', 'N/2 = ' + S(h)],
-          ['نبحث عن الفئة التي يعبرها هذا الارتفاع', 'الفئة الموسّطية هي '
-            + classe(S(s.bornes[i]), S(s.bornes[i + 1]))],
-          ['التراكم قبل هذه الفئة', 'الارتفاع عند طرفها الأدنى يساوي ' + S(avant)],
-          ['و التراكم إلى نهايتها', 'الارتفاع عند طرفها الأعلى يساوي ' + S(c[i])],
-          ['المضلّع قطعة مستقيم بين هاتين النقطتين، فنُقحم خطّيا',
-           'Me = ' + S(s.bornes[i]) + ' + (' + S(h) + ' - ' + S(avant) + ') × ('
-             + S(s.bornes[i + 1]) + ' - ' + S(s.bornes[i]) + ')/(' + S(c[i])
-             + ' - ' + S(avant) + ')'],
-          ['أي', 'Me = ' + S(Me)],
+          ['نرسم المستقيم الأفقي ذا الترتيب N/2', 'يقطع المضلّع في نقطة واحدة'],
+          ['نقرأ فاصلة نقطة التقاطع', 'القراءة تقع داخل الفئة '
+            + classe(S(s.bornes[i]), S(s.bornes[i + 1])) + '، بين التراكمين '
+            + S(avant) + ' و ' + S(c[i])],
           ['النتيجة', 'الموسّط هو Me = ' + S(Me) + '، و هو فاصلة النقطة التي '
                      + 'ترتيبها ' + S(h) + ' على المضلّع الصاعد']
         ],
