@@ -1467,6 +1467,45 @@ if (process.env.CONTRE_EXEMPLES) {
   pousse("OF annonce 8", parQuestion(116, 9),
     c => { c.controle.faits[2][3] = '8'; });
 
+  // ══ LE LIVRE 2026 ══════════════════════════════════════════════════════
+  pousse("le diviseur commun ramene a un simple diviseur", parQuestion(2611, 0),
+    c => { c.controle.ensemble.relations = ['unite-divise-centaine']; });
+  pousse("le compte annonce le produit brut 12", parQuestion(2611, 0),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '12'; });
+  pousse("440 declare dans l ensemble : les chiffres se repetent",
+    parQuestion(2611, 0), c => { delete c.controle.ensemble.distincts; });
+  pousse("le reste de x sur 3 annonce 2", parQuestion(2612, 0),
+    c => { c.controle.claims[1][1] = '2'; });
+  // y = 951108 EST divisible par 4 : viser 4 ne disait rien. Le facteur qui
+  // manque est le 5 — le nombre se termine par 8.
+  pousse("y declare divisible par 5", parQuestion(2612, 1),
+    c => { c.controle.divisibles[0][1] = 5; });
+  pousse("3^9 lu 6561", parQuestion(2612, 2),
+    c => { c.controle.entiers[1][1] = '6561'; });
+  // Le nombre EST divisible par 3^10 : 951108 porte exactement un facteur 3,
+  // donc sa puissance dixième en porte dix, et 475551^9 bien davantage. C'est
+  // à 3^11 que la chaîne s'arrête — et c'est là qu'il faut viser.
+  pousse("le nombre declare divisible par 3^11", parQuestion(2612, 3),
+    c => { c.controle.divisibles[0][1] = 177147; });
+  pousse("x - 1 lu 475552", parQuestion(2612, 3),
+    c => { c.controle.entiers[0][1] = '475552'; });
+  pousse("le reste de X sur 3 annonce 1", parQuestion(2616, 0),
+    c => { c.controle.claims[1][1] = '1'; });
+  pousse("81 lu 3^5", parQuestion(2616, 1),
+    c => { c.controle.entiers[0][1] = '3^1000'; });
+  pousse("Y - 1 declare divisible par 5", parQuestion(2616, 1),
+    c => { c.controle.divisibles[0][1] = 5; });
+  pousse("X pris a 575554 : le compte de chiffres est faux", parQuestion(2616, 2),
+    c => { c.controle.divisibles[1][0] = '81^200 + 3^799 + 1 + 575554'; });
+  pousse("les nombres impairs acceptes dans l arbre", parQuestion(2617, 0),
+    c => { c.controle.ensemble.unites = [0, 2, 3, 5]; });
+  pousse("le compte des pairs annonce 12", parQuestion(2617, 0),
+    c => { c.controle.faits.find(f => f[0] === 'compte')[1] = '12'; });
+  pousse("8^64 lu 2^64", parQuestion(2617, 1),
+    c => { c.controle.entiers[0][1] = '2^64'; });
+  pousse("le reste sur 20 declare non nul", parQuestion(2617, 1),
+    c => { c.controle.entiers[3][1] = '20 × 2^188 + 1'; });
+
   // ══ LA SÉANCE 1 — l'arbre de choix ═════════════════════════════════════
   //
   // LA PLUS IMPORTANTE de la séance rejoue le PRODUIT BRUT 48 là où le compte

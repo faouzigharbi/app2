@@ -14,6 +14,19 @@
   const page = (n, entete, titre, f, questions) =>
     F.enregistrer(n, { entete, titre, f, questions });
 
+  // ── LE LIVRE 2026 — une REFONTE, pas une réédition ──────────────────────
+  // 38 pages, HUIT séances, une quarantaine d'exercices — contre 47 pages,
+  // treize séances et 76 exercices en 2025. Ses exercices sont en grande
+  // majorité NEUFS. Les clés commencent par 26 : 2611 = 2026, séance 1, ex 1.
+  page(2611, '2026 · الحصّة 1 — التمرين 1 — ', 'ثلاث عائلات، و قاسم مشترك يربطها',
+       S.livre26seance1ex1, 1);
+  page(2612, '2026 · الحصّة 1 — التمرين 2 — ', 'باق واحد يعبر قوّتين',
+       S.livre26seance1ex2, 4);
+  page(2616, '2026 · الحصّة 1 — التمرين 6 — ', 'باقيان يكمّل أحدهما الآخر',
+       S.livre26seance1ex6, 3);
+  page(2617, '2026 · الحصّة 1 — التمرين 7 — ', 'شجرة اختيار، ثمّ باق منعدم',
+       S.livre26seance1ex7, 2);
+
   // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
   // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce
   // manquait ; c'est `denombrer.js`, et il compte en parcourant les mille

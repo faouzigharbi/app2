@@ -839,6 +839,66 @@
     },
 
     // ═══════════════════════════════════════════════════════════════════
+    // LE LIVRE 2026 — une REFONTE, pas une réédition
+    // ═══════════════════════════════════════════════════════════════════
+    {
+      fichier: 'Revision_9eme_2026.pdf', pages: 38, texte: 'lisible',
+      etat: 'en cours', exercices: 48,
+      titre: 'امتحان شهادة ختم التعليم الأساسي العام — مراجعة (جوان 2026)',
+      chapitres: ['brevet'],
+      // CE N'EST PAS UN SUR-ENSEMBLE du livre 2025 : huit séances au lieu de
+      // treize, 38 pages au lieu de 47, une quarantaine d'exercices au lieu de
+      // 76 — et ses exercices sont en grande majorité NEUFS. Les deux livres
+      // coexistent donc ; les clés du 2026 commencent par 26.
+      structure: [
+        { seance: 1, pages: '2-5', exercices: 10, vu: true,
+          sujet: 'arithmétique : arbre de choix, restes, divisibilité, puissances · deux QCM' },
+        { seance: 2, pages: '6-8', exercices: 6, sujet: 'à lire' },
+        { seance: 3, pages: '9-12', exercices: 5, sujet: 'à lire' },
+        { seance: 4, pages: '13-17', exercices: 7, sujet: 'à lire' },
+        { seance: 5, pages: '18-21', exercices: 3, sujet: 'à lire' },
+        { seance: 6, pages: '22-26', exercices: 8, sujet: 'à lire' },
+        { seance: 7, pages: '27-30', exercices: 3, sujet: 'à lire' },
+        { seance: 8, pages: '31-38', exercices: 6, sujet: 'à lire' }
+      ],
+      contenu: [
+        { n: '1.1', questions: 1,
+          notions: ['carré parfait', 'multiple de 4', 'diviseur commun aux deux autres chiffres'],
+          sort: 'bibliothèque', ou: 'brevet ex2611',
+          pourquoi: 'première contrainte qui lie les TROIS chiffres d\'un coup : '
+                  + 'l\'arbre de choix n\'y suffit plus, il faut descendre branche '
+                  + 'par branche. Treize solutions' },
+        { n: '1.2', questions: 4,
+          notions: ['reste modulo 3 par la somme des chiffres', 'divisibilité par 6',
+                    'puissance d\'un multiple', 'reconnaître un cas particulier'],
+          sort: 'bibliothèque', ou: 'brevet ex2612 — quatre volets',
+          pourquoi: 'la question 2)ب donne les nombres : a = 5 fait x = 475552, donc '
+                  + 'x−1 = 475551 et y = 951108 — exactement ceux de l\'énoncé' },
+        { n: '1.3', questions: 5, notions: ['n = 6p+5', 'multiples', 'arbre de choix à 4 chiffres'], sort: 'à faire' },
+        { n: '1.4', questions: 5, notions: ['arbre de choix', 'restes croisés'], sort: 'à faire' },
+        { n: '1.5', questions: 2, notions: ['QCM : divisibilité par 12 et 15', 'parité de n²+n'], sort: 'à faire' },
+        { n: '1.6', questions: 3,
+          notions: ['reste modulo 3', 'unifier la base d\'une puissance', 'restes qui se complètent'],
+          sort: 'bibliothèque', ou: 'brevet ex2616 — trois volets',
+          pourquoi: 'X ≡ 2 [3] et Y ≡ 1 [3] : les deux restes se complètent, et la '
+                  + 'somme tombe juste' },
+        { n: '1.7', questions: 2,
+          notions: ['arbre de choix', 'nombres pairs', 'reste modulo 20'],
+          sort: 'bibliothèque', ou: 'brevet ex2617 — deux volets',
+          pourquoi: '8^64 + 4^95 = 5 × 2^190 porte à la fois le 4 et le 5 de 20 : '
+                  + 'le reste est NUL' },
+        { n: '1.8', questions: 1, notions: ['dénombrement à trois contraintes croisées'], sort: 'à faire' },
+        { n: '1.9', questions: 3, notions: ['fraction entière', 'triangle et périmètre'], sort: 'à faire' },
+        { n: '1.10', questions: 3, notions: ['QCM : quotient d\'une puissance', 'dénombrement à 4 chiffres', 'écriture décimale périodique'], sort: 'à faire' }
+      ],
+      machine: ['les séances 2 à 8 restent à ouvrir — 38 exercices',
+                'denombrer.js a gagné les nombres à QUATRE chiffres pour ce livre, '
+                + 'et trois relations de plus (diviseur commun, unité divise centaine, '
+                + 'dizaine sous centaine)'],
+      etatFinal: 'EN COURS — séance 1 : quatre exercices portés sur dix'
+    },
+
+    // ═══════════════════════════════════════════════════════════════════
     // LES STATISTIQUES — trois fiches, et le chapitre qui manquait
     // ═══════════════════════════════════════════════════════════════════
     {

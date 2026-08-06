@@ -34,7 +34,13 @@
     // Les trois chiffres deux à deux distincts — la contrainte la plus fréquente.
     distincts: (c, d, u) => c !== d && c !== u && d !== u,
     pair: (c, d, u, n) => n % 2 === 0,
-    impair: (c, d, u, n) => n % 2 === 1
+    impair: (c, d, u, n) => n % 2 === 1,
+    // « رقم مئاته قاسما مشتركا لرقمي آحاده و عشراته »
+    'centaine-diviseur-commun': (c, d, u) => c !== 0 && d % c === 0 && u % c === 0,
+    // « رقم آحاده قاسما لرقم مئاته »
+    'unite-divise-centaine': (c, d, u) => u !== 0 && c % u === 0,
+    // « رقم عشراته أصغر قطعا من رقم مئاته »
+    'dizaine-sous-centaine': (c, d) => d < c
   };
 
   const PREMIERS = [2, 3, 5, 7];
@@ -64,7 +70,12 @@
   // L'ÉNUMÉRATION. On ne construit pas les nombres « intelligemment » : on les
   // parcourt tous, et l'on garde ceux qui passent. C'est lent et c'est le but —
   // aucune ruse ne peut s'y glisser.
+  //
+  // `longueur` vaut 3 par défaut. À 4, on balaie les neuf mille nombres de
+  // quatre chiffres, et les positions se nomment alors milliers/centaines/
+  // dizaines/unites — les relations, elles, ne parlent que des trois dernières.
   function liste(c) {
+    if (c.longueur === 4) return liste4(c);
     const chiffres = jeu(c.chiffres, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
     const cent = jeu(c.centaines, chiffres).filter(x => chiffres.indexOf(x) >= 0);
     const diz = jeu(c.dizaines, chiffres).filter(x => chiffres.indexOf(x) >= 0);
@@ -78,6 +89,33 @@
       if (cent.indexOf(a) < 0 || diz.indexOf(b) < 0 || uni.indexOf(e) < 0) continue;
       if (c.distincts && !RELATIONS.distincts(a, b, e, x)) continue;
       if (c.divisiblePar !== undefined && x % c.divisiblePar !== 0) continue;
+      let bon = true;
+      for (const nom of (c.relations || []))
+        if (!RELATIONS[nom](a, b, e, x)) { bon = false; break; }
+      if (bon) out.push(x);
+    }
+    return out;
+  }
+
+  // Les nombres à QUATRE chiffres. Même principe, même balayage exhaustif.
+  function liste4(c) {
+    const chiffres = jeu(c.chiffres, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const mil = jeu(c.milliers, chiffres).filter(x => chiffres.indexOf(x) >= 0);
+    const cent = jeu(c.centaines, chiffres).filter(x => chiffres.indexOf(x) >= 0);
+    const diz = jeu(c.dizaines, chiffres).filter(x => chiffres.indexOf(x) >= 0);
+    const uni = jeu(c.unites, chiffres).filter(x => chiffres.indexOf(x) >= 0);
+    for (const nom of (c.relations || []))
+      if (!RELATIONS[nom]) throw new Error('relation inconnue : ' + nom);
+    const out = [];
+    for (let x = 1000; x <= 9999; x++) {
+      const m = Math.floor(x / 1000), a = Math.floor(x / 100) % 10;
+      const b = Math.floor(x / 10) % 10, e = x % 10;
+      if (mil.indexOf(m) < 0 || cent.indexOf(a) < 0
+          || diz.indexOf(b) < 0 || uni.indexOf(e) < 0) continue;
+      if (c.distincts && new Set([m, a, b, e]).size !== 4) continue;
+      if (c.divisiblePar !== undefined && x % c.divisiblePar !== 0) continue;
+      if (c.min !== undefined && x <= c.min) continue;
+      if (c.max !== undefined && x >= c.max) continue;
       let bon = true;
       for (const nom of (c.relations || []))
         if (!RELATIONS[nom](a, b, e, x)) { bon = false; break; }
