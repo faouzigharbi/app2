@@ -588,6 +588,47 @@ sert de `(AC) ⊥ (BD)` et de `(AC) ⊥ (SO)`, et un cerf-volant les garde tous 
 deux. La bonne falsification n'était pas d'abîmer le carré, c'était de **sortir
 B de l'axe**.
 
+## Les figures — le chantier suivant
+
+Les exercices de repère et d'espace n'ont **pas de dessin**, et l'énoncé d'un
+exercice de géométrie n'est complet qu'avec sa figure. C'est le dernier manque
+nommé.
+
+**La machinerie existe déjà**, dans `../thales9/noyau.js` : `dessiner(fig)`
+fait le cadrage automatique, retourne l'ordonnée (l'écran descend, le plan
+monte), marque les angles droits et place les étiquettes sans les couper. Mais
+il attend un `P.xy(point)` propre à `thales9`, alors que le brevet tient ses
+points dans `repere.js` sous forme exacte `{x, y}` sur ℚ[√d]. Il faut donc un
+adaptateur : construire la figure par `R.figure(c.points, env)`, puis passer
+chaque coordonnée à `F.sVal` pour obtenir le flottant que le dessin réclame.
+
+**LE POINT DE CONCEPTION, et il n'est pas négociable : la figure se déduit des
+`faits`, elle ne se dessine pas à la main.** Chaque exercice déclare déjà ce
+que le validateur recalcule :
+
+```js
+faits: [['longueur','A','C','2√5'], ['rectangle-en','C','A','D'],
+        ['alignes','A','B','D'],   ['milieu','D','B','E']]
+```
+
+Tout le dessin y est : `longueur A C` est un segment, `alignes A B D` une
+droite, `rectangle-en C A D` une marque d'angle droit, `milieu D B E` un tiret
+double sur les deux moitiés. Une figure tirée de là **ne peut pas contredire
+l'exercice** — elle sort de ce qui a été vérifié un million de fois. Une figure
+dessinée à la main, elle, serait une seconde source de vérité, donc une source
+d'erreur.
+
+Ordre de travail proposé :
+
+1. `figure.js` — l'adaptateur et la table `fait → trait`, pour le plan
+   (`c.points`) d'abord ;
+2. le brancher dans `rendre` : la figure entre dans l'énoncé du volet qui pose
+   la figure, comme le fait `thales9` ;
+3. vérifier avec `node ../../revision/verif-page.js` que les 81 pages s'ouvrent
+   toujours ;
+4. l'espace (`c.espace`) ensuite — une projection cavalière, où seul le calcul
+   des coordonnées écran change.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
