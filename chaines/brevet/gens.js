@@ -192,8 +192,9 @@
   page(116, 'الحصّة 11 — التمرين 6 — ', 'قطر واحد، و كلّ الباقي يتبعه',
        S.seance11ex6, 10);
 
-  // La séance 12 : son exercice 6 est une pyramide régulière — de l'espace,
-  // sans chapitre. Les cinq autres sont portés entiers.
+  // La séance 12 est portée ENTIÈRE, exercice 6 compris — c'est la première
+  // pyramide de la bibliothèque, et elle n'a pu entrer que le jour où
+  // espace.js a donné au vérificateur des coordonnées en trois dimensions.
   page(121, 'الحصّة 12 — التمرين 1 — ', 'اختيار من متعدّد، و سؤال بلا جواب صحيح',
        S.seance12ex1, 3);
   page(122, 'الحصّة 12 — التمرين 2 — ', 'عبارة، ثمّ معلم يعيد تكوين معادلتها',
@@ -204,6 +205,8 @@
        S.seance12ex4, 7);
   page(125, 'الحصّة 12 — التمرين 5 — ', 'متقايس الأضلاع، و مناظرته',
        S.seance12ex5, 9);
+  page(126, 'الحصّة 12 — التمرين 6 — ', 'هرم منتظم، و مستقيم عمودي على مستو',
+       S.seance12ex6, 7);
 
   // La séance 13 porte LE SEUL exercice de statistiques du livre — et c'est
   // pour lui que chaines/stat9 a été ouvert. Le noyau statistique est copié

@@ -661,7 +661,7 @@
                   + 'tout en découle : H est le milieu de [OB] donc AH = 6, CH = 2√3 '
                   + 'est la hauteur, et ABE finit équilatéral de côté 8' },
 
-        // ── SÉANCE 12 — cinq exercices portés, un de l'espace ────────────────
+        // ── SÉANCE 12 — SIX exercices portés, la pyramide comprise ──────────
         { n: '12.1', questions: 3,
           notions: ['comparer des radicaux par les carrés', 'mode d\'une série discrète',
                     'diagonale de face d\'un cube'],
@@ -697,9 +697,17 @@
           sort: 'bibliothèque', ou: 'brevet ex125 — neuf volets',
           pourquoi: 'A milieu de [OB] et AC = 6 = OB/2 : OBC est rectangle en C sans '
                   + 'autre calcul, et [CA] en devient une médiane' },
-        { n: '12.6', questions: 8,
-          notions: ['pyramide régulière', 'section', 'perpendicularité dans l\'espace'],
-          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+        { n: '12.6', questions: 7,
+          notions: ['pyramide régulière', 'droite ⊥ plan', 'relation métrique',
+                    'projeté orthogonal', 'Pythagore dans l\'espace'],
+          sort: 'bibliothèque', ou: 'brevet ex126 — sept volets',
+          pourquoi: 'LE PREMIER SOLIDE de la bibliothèque, entré le jour où espace.js '
+                  + 'a donné au vérificateur des coordonnées en trois dimensions. '
+                  + 'COQUILLE : l\'énoncé donne AB = 3√2 et rien ne se referme — on '
+                  + 'trouverait SA = 3√2 là où le د\\ demande 6. Avec AB = 6 tout tombe '
+                  + 'juste et rien d\'autre ne change : OA = 3√2, SO = OA, SA = 6, '
+                  + 'OK = 3, CK = 3√3. Le 3√2 du brouillon est celui de OA, il a glissé '
+                  + 'd\'une ligne' },
 
         // ── SÉANCE 13 — quatre exercices portés sur six ──────────────────────
         { n: '13.1', questions: 8,

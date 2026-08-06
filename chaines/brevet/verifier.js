@@ -18,6 +18,7 @@
 //      générateur ne serait pas une identité.
 const F = require('./noyau.js');
 const R = require('./repere.js');
+const G = require('./espace.js');
 const E = require('./entiers.js');
 const T = require('./stat.js');
 const N = require('./denombrer.js');
@@ -85,6 +86,22 @@ function environnements(c) {
     const e = Object.assign(R.nommer(P), avant);
     for (const nom in apres) e[nom] = F.analyser(apres[nom], e);
     e.__points = P;
+    return [e];
+  }
+  // UN SOLIDE. Même contrat que la figure du plan, en trois coordonnées : le
+  // sommet d'une pyramide est POSÉ, le centre de sa base et le pied de ses
+  // hauteurs sont CALCULÉS. Les noms disponibles aux étapes en sortent seuls —
+  // xS, yS, zS, et les longueurs SA, OK, CK dans les deux ordres.
+  if (c.espace) {
+    const avant = {}, apres = {};
+    for (const nom in (c.env || {})) {
+      try { avant[nom] = F.analyser(c.env[nom], avant); }
+      catch (err) { apres[nom] = c.env[nom]; }
+    }
+    const P = G.figure(c.espace, avant);
+    const e = Object.assign(G.nommer(P), avant);
+    for (const nom in apres) e[nom] = F.analyser(apres[nom], e);
+    e.__espace = P;
     return [e];
   }
   if (c.libres) {
@@ -225,6 +242,16 @@ function verifierBrut(brut) {
     const p = R.verifierFaits(c.faits, P, envs[0]);
     controles += (c.faits || []).length;
     probs.push(...p);
+  }
+  // LES FAITS DU SOLIDE — « SABCD est une pyramide régulière », « (AC) est
+  // perpendiculaire au plan (SBD) », « SA = 6 ». Recalculés sur les seules
+  // coordonnées des sommets, exactement comme dans le plan : c'est ici que
+  // l'énoncé d'un exercice d'espace se fait contredire, et il s'en fait
+  // contredire — le « SA = 6 » de la séance 12 vaut 3√2.
+  if (c.espace) {
+    if (!(c.faits || []).length) probs.push('مجسّم بلا واقعة تُراقَب');
+    probs.push(...G.verifierFaits(c.faits, envs[0].__espace, envs[0]));
+    controles += (c.faits || []).length;
   }
   // LES FAITS DE L'ENSEMBLE — le compte et la liste, obtenus en parcourant les
   // mille nombres à trois chiffres un par un. La chaîne, elle, a multiplié des
@@ -1780,6 +1807,62 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[0] = ['carre', 'A', 'M', 'C', 'I']; });
   pousse("D pris sur la parallele a (AC)", parQuestion(125, 8),
     c => { c.controle.points.Z = ['translate', 'C', 'A', 'C']; });
+
+  // ── التمرين 6 — LA PYRAMIDE, le premier solide contredit ───────────────
+  //
+  // Ce sont les falsifications qui disent si espace.js sert à quelque chose :
+  // un module de contrôle qui ne saurait pas refuser une pyramide fausse ne
+  // vaudrait pas mieux que la recopie de l'énoncé qu'il remplace. On vise donc
+  // CE QUI PORTE l'exercice — le côté de la base, la hauteur, la nature du
+  // projeté, la perpendicularité au plan — et non des détails d'écriture.
+  pousse("le cote 3√2 du livre, avec lequel SA ne vaut plus 6", parQuestion(126, 0),
+    c => { c.controle.espace.A = ['point', '3', '0', '0'];
+           c.controle.espace.B = ['point', '0', '3', '0'];
+           c.controle.espace.C = ['point', '-3', '0', '0'];
+           c.controle.espace.D = ['point', '0', '-3', '0']; });
+  pousse("OA pris egal au cote au lieu de la moitie du diagonale", parQuestion(126, 0),
+    c => { c.etapes[3][1] = "OA = AC"; });
+  pousse("la base rendue rectangle : ce n est plus un hexaedre regulier",
+    parQuestion(126, 0), c => { c.controle.espace.D = ['point', '0', '-4√2', '0']; });
+  pousse("le sommet decale hors de l axe : la pyramide n est plus reguliere",
+    parQuestion(126, 1), c => { c.controle.espace.S = ['point', '1', '0', '3√2']; });
+  pousse("S ramene dans le plan de la base", parQuestion(126, 1),
+    c => { c.controle.espace.S = ['point', '0', '0', '0']; });
+  pousse("la hauteur allongee : l hypothese SA = √2 × SO tombe", parQuestion(126, 2),
+    c => { c.controle.espace.S = ['point', '0', '0', '6']; });
+  pousse("le carre de l hypothese oublie", parQuestion(126, 2),
+    c => { c.etapes[2][1] = "SA^2 = 2 × SO"; });
+  pousse("SA = 6√2, le double du bon", parQuestion(126, 3),
+    c => { c.etapes[4][1] = "SA = √2 × 3√2 × 2"; });
+  pousse("√2 × 3√2 simplifie en 3√2", parQuestion(126, 3),
+    c => { c.etapes[5][1] = "√2 × 3√2 = 3√2"; });
+  pousse("K projete sur (SA) au lieu de (SB)", parQuestion(126, 4),
+    c => { c.controle.espace.K = ['proj', 'O', 'S', 'A']; });
+  pousse("K pris milieu de [SO]", parQuestion(126, 4),
+    c => { c.controle.espace.K = ['milieu', 'S', 'O']; });
+  pousse("la relation metrique ecrite avec le mauvais denominateur",
+    parQuestion(126, 4), c => { c.etapes[4][1] = "OK = SO × OB/OA"; });
+  pousse("(AC) declaree perpendiculaire au plan de la base", parQuestion(126, 5),
+    c => { c.controle.faits[0] = ['perpendiculaire-plan', 'A', 'C', 'A', 'B', 'D']; });
+  // CELLE-CI A REFUSÉ DE MORDRE, et c'est elle qui a le plus appris. En
+  // allongeant [OB] — B(0 ; 4√2 ; 0) — la base cesse d'être un carré et la
+  // pyramide cesse d'être régulière ; le contrôle, lui, PASSE. La raison est
+  // que la question 3أ ne se sert ni du carré ni de la régularité : elle se
+  // sert de deux faits seulement, (AC) ⊥ (BD) et (AC) ⊥ (SO). Un cerf-volant
+  // les garde tous les deux. La bonne falsification n'est donc pas d'abîmer
+  // le carré, c'est de sortir B de l'axe — alors (AC) et (BD) cessent d'être
+  // perpendiculaires, et la conclusion tombe.
+  pousse("B sorti de l axe : les diagonales ne sont plus perpendiculaires",
+    parQuestion(126, 5), c => { c.controle.espace.B = ['point', '√2', '3√2', '0']; });
+  pousse("le plan (SBD) remplace par (SAB), qui contient (AC) au lieu de lui "
+       + "etre perpendiculaire", parQuestion(126, 5),
+    c => { c.controle.faits[0] = ['perpendiculaire-plan', 'A', 'C', 'S', 'A', 'B']; });
+  pousse("CK calcule en oubliant OK", parQuestion(126, 6),
+    c => { c.etapes[6][1] = "CK^2 = 18"; });
+  pousse("OK repris a 3√2 comme OC", parQuestion(126, 6),
+    c => { c.etapes[5][1] = "OK^2 = 18"; });
+  pousse("√27 sorti en 9√3", parQuestion(126, 6),
+    c => { c.etapes[7][1] = "√27 = 9√3"; });
 
   // ══ LA SÉANCE 13 — l'exercice de STATISTIQUES ══════════════════════════
   //

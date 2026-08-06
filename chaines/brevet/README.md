@@ -333,11 +333,13 @@ C'est ce qui a permis de trouver la treizième coquille. Et c'est la
 falsification qui ouvre la séance : rejouer le `3^204` imprimé, et vérifier que
 `42` **ne** divise **pas**.
 
-## Séance 12 — cinq exercices, et un QCM sans bonne réponse
+## Séance 12 — six exercices, et un QCM sans bonne réponse
 
 Elle ne porte **aucune statistique**, contrairement à ce que l'estimation
-annonçait. Son exercice 6 est une pyramide régulière — de l'espace, sans
-chapitre. Les cinq autres sont portés entiers.
+annonçait. Elle est portée **entière**, exercice 6 compris : c'est la première
+**pyramide** de la bibliothèque, et elle n'a pu entrer que le jour où
+[`espace.js`](#lespace--espacejs) a donné au vérificateur des coordonnées en
+trois dimensions.
 
 | page | exercice | volets | ce qui s'y joue |
 |---|---|---|---|
@@ -409,6 +411,54 @@ falsification rejoue cette lecture-là.)
 Et la médiane tombe juste : cumuls 15, 23, 43, 50, moitié 25, donc la lecture
 sur le polygone donne **exactement 62**. Rien à interpoler — c'est tout ce que
 le programme de 9ᵉ demande ici.
+
+## L'espace — `espace.js`
+
+Pendant tout le dépouillement des deux livres, une dizaine d'exercices ont été
+écartés sous le même motif : « la géométrie de l'espace n'a aucun chapitre ».
+Le motif était honnête, mais il ne portait pas sur les mathématiques — il
+portait sur la **machine**. `repere.js` ne connaît que des couples `(x ; y)` ;
+un sommet de pyramide n'y entre pas. Et la règle du projet est de ne jamais
+porter ce qu'on ne sait pas **recalculer**.
+
+`espace.js` supprime le motif. Un point est un **triplet** de nombres de ℚ[√d],
+et tout le reste suit :
+
+- le **produit scalaire** donne l'orthogonalité de deux droites ;
+- le **produit vectoriel** donne l'alignement, et la direction normale d'un
+  plan ;
+- le **déterminant** des trois vecteurs donne la coplanarité — donc
+  « ces quatre points sont dans un même plan » se recalcule ;
+- le **volume** d'un tétraèdre est le sixième de ce déterminant, donc exact,
+  sans passer par une hauteur qui ne tomberait pas toujours dans ℚ[√d].
+
+Les faits contrôlés sont ceux que l'énoncé prononce, et la liste est **fermée**
+comme celle du plan : `perpendiculaire-plan` (« (AC) ⊥ (SBD) » — le fait
+central de tous ces exercices), `parallele-plan`, `dans-plan`, `hors-plan`,
+`coplanaires`, `pyramide-reguliere` (le sommet se projette **exactement** sur
+le centre de la base, et les sommets de la base sont **équidistants** de ce
+centre), `projete-droite`, `projete-plan`, `volume`, `aire`, plus toutes les
+règles du plan qui gardent un sens en dimension 3.
+
+Il ne rédige RIEN, et c'est encore plus vrai qu'en dimension 2 : **l'élève de
+neuvième ne pose pas de coordonnées dans l'espace**. Il applique « une droite
+perpendiculaire à un plan est perpendiculaire à toute droite de ce plan », puis
+Pythagore dans un triangle qu'il a su placer. Les coordonnées ne servent qu'à
+**contredire**.
+
+Et elles ont contredit dès le premier exercice — la **dix-neuvième coquille**
+du livre : la séance 12 donne `AB = 3√2`, et rien ne se referme dessus (on
+trouverait `SA = 3√2` là où le د\ demande 6). Avec `AB = 6`, tout tombe juste
+et **rien d'autre ne change** : `OA = 3√2`, `SO = OA`, `SA = 6`, `OK = 3`,
+`CK = 3√3`. Le `3√2` du brouillon est celui de `OA`, il a glissé d'une ligne.
+
+Dix-huit falsifications le mettent à l'épreuve — et **la plus instructive a
+refusé de mordre**. En allongeant `[OB]`, la base cesse d'être un carré et la
+pyramide cesse d'être régulière ; le contrôle **passe**. La raison est que la
+question « (AC) ⊥ (SBD) » ne se sert ni du carré ni de la régularité : elle se
+sert de `(AC) ⊥ (BD)` et de `(AC) ⊥ (SO)`, et un cerf-volant les garde tous les
+deux. La bonne falsification n'était pas d'abîmer le carré, c'était de **sortir
+B de l'axe**.
 
 ## Le repère — `repere.js`
 
@@ -624,4 +674,4 @@ Rien de neuf au noyau : `ℚ[√d]` de `revision2` suffisait, y compris pour la
 division par conjugué de `(−34 + 13√3)/(4 − 5√3)` et pour les identités en `x`
 testées sur trente tirages. Une seule pièce a dû être écrite — `repere.js` —,
 et elle sert déjà bien au-delà de cette séance : le livre pose un exercice de
-repère par séance. Il ne reste que l'**espace**.
+repère par séance. Il ne restait que l'**espace** — et `espace.js` l'a levé.

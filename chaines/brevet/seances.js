@@ -9767,6 +9767,203 @@
 
 
   // =========================================================================
+  // الحصّة 12 — التمرين 6   (LA PREMIÈRE PYRAMIDE — de l'espace)
+  //
+  //   Cet exercice a été écarté dix fois, toujours pour la même raison : « la
+  //   géométrie de l'espace n'a aucun chapitre ». La raison ne portait pas sur
+  //   les mathématiques, elle portait sur la machine — repere.js ne connaît que
+  //   des couples (x ; y). espace.js lève la limite, et l'exercice entre comme
+  //   les autres : ses affirmations sont RECALCULÉES sur les coordonnées des
+  //   cinq sommets, et l'énoncé se fait contredire dès la première ligne.
+  //
+  //   LA COQUILLE — la dix-neuvième du livre. L'énoncé donne AB = 3√2, et le
+  //   reste de l'exercice ne se referme pas dessus : avec AB = 3√2 on trouve
+  //   OA = 3, puis SO = 3, puis SA = 3√2 — alors que le د\ demande de conclure
+  //   SA = 6. Avec AB = 6 tout tombe juste et RIEN d'autre ne change :
+  //   OA = 3√2, SO = OA = 3√2, SA = 6, OK = 3, CK = 3√3. C'est donc la donnée
+  //   AB qui porte l'erreur — le 3√2 du brouillon est celui de OA, et il a
+  //   glissé d'une ligne. On porte l'exercice avec AB = 6.
+  //
+  //   LE PLAN DE CONTRÔLE. La base est un carré de côté 6 posé dans le plan
+  //   z = 0, O est CALCULÉ comme son centre, S est posé sur l'axe et K est le
+  //   PROJETÉ de O sur (SB) — aucune des grandeurs demandées n'est recopiée.
+  //   L'hypothèse elle-même — SA = √2 × SO — est vérifiée sur la figure, si
+  //   bien qu'un S déplacé la casse au lieu de passer.
+  //
+  //   CE QUE L'ÉLÈVE ÉCRIT, LUI, n'a pas une coordonnée : il applique « une
+  //   droite perpendiculaire à un plan est perpendiculaire à toute droite de
+  //   ce plan », puis Pythagore dans un triangle qu'il a su placer. Les
+  //   coordonnées ne servent qu'à la vérification.
+  //
+  //   UNE REMARQUE POUR LE MAÎTRE : puisque SO = OB, le pied K de la hauteur
+  //   issue de O dans le triangle SOB rectangle isocèle est EXACTEMENT le
+  //   milieu de [SB]. La question 2 peut donc se traiter aussi par « la
+  //   médiane relative à l'hypoténuse », et les deux chemins donnent OK = 3.
+  // =========================================================================
+  const FIG126 = {
+    A: ['point', '3√2', '0', '0'], B: ['point', '0', '3√2', '0'],
+    C: ['point', '-3√2', '0', '0'], D: ['point', '0', '-3√2', '0'],
+    O: ['centre', 'A', 'B', 'C', 'D'],
+    S: ['point', '0', '0', '3√2'],
+    K: ['proj', 'O', 'S', 'B']
+  };
+  const DONNEES126 = 'SABCD هرم منتظم قمّته S و O مركز قاعدته المربّع ABCD و [SO] '
+                   + 'ارتفاعه، حيث AB = 6 و SA = √2 × SO';
+
+  function seance12ex6() {
+    return [
+      {
+        enonce: [DONNEES126, 'أحسب البعد OA'],
+        indice: 'في المربّع، القطر يساوي الضلع مضروبا في √2، و المركز منتصف القطر',
+        etapes: [
+          ['القاعدة', 'قطرا المربّع متقايسان و يتناصفان، و طول القطر يساوي الضلع '
+                    + 'مضروبا في √2'],
+          ['ضلع القاعدة', 'AB = 6'],
+          ['نحسب القطر', 'AC = 6√2'],
+          ['و O منتصف [AC]', 'OA = AC/2'],
+          ['النتيجة', 'لنا OA = 3√2']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['longueur', 'O', 'A', '3√2'], ['carre', 'A', 'B', 'C', 'D'],
+                  ['longueur', 'A', 'B', '6'], ['longueur', 'A', 'C', '6√2'],
+                  ['milieu', 'O', 'A', 'C'], ['centre', 'O', 'A', 'B', 'C', 'D'],
+                  ['pyramide-reguliere', 'S', 'O', 'A', 'B', 'C', 'D']],
+          claims: [['SA', '√2 × SO']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ المثلّث SAO قائم في O'],
+        indice: 'ما هو وضع الارتفاع [SO] بالنسبة إلى مستوي القاعدة ؟ و أين يقع (OA) ؟',
+        etapes: [
+          ['القاعدة', 'إذا كان مستقيم عموديا على مستو فإنّه عمودي على كلّ مستقيم '
+                    + 'من ذلك المستوي'],
+          ['القطعة [SO] ارتفاع الهرم', 'المستقيم (SO) عمودي على المستوي (ABC)'],
+          ['و (OA) مستقيم من مستوي القاعدة', 'النقطتان O و A من المستوي (ABC)'],
+          ['فالمستقيمان متعامدان في O', 'SO = 3√2'],
+          ['و الضلع الآخر للقائمة', 'OA = 3√2'],
+          ['نتحقّق من مجموع المربّعين', 'SO^2 + OA^2 = 36'],
+          ['النتيجة', 'المثلّث SAO قائم الزاوية في O']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['rectangle-en', 'O', 'S', 'A'], ['perpendiculaire-plan', 'S', 'O', 'A', 'B', 'C'],
+                  ['dans-plan', 'O', 'A', 'B', 'C'], ['hors-plan', 'S', 'A', 'B', 'C'],
+                  ['longueur', 'S', 'O', '3√2']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ SO = OA'],
+        indice: 'اكتب المساواة الفيتاغورية في المثلّث القائم في O ثمّ عوّض المعطى',
+        etapes: [
+          ['القاعدة', 'المساواة الفيتاغورية في المثلّث القائم في O تعطي '
+                    + 'SA^2 = SO^2 + OA^2'],
+          ['المعطى', 'SA = √2 × SO'],
+          ['نربّع طرفيه', 'SA^2 = 2 × SO^2'],
+          ['نعوّض في المساواة الفيتاغورية', '2 × SO^2 = SO^2 + OA^2'],
+          ['نطرح SO^2 من الطرفين', 'SO^2 = OA^2'],
+          ['و الطولان موجبان', 'SO = OA'],
+          ['النتيجة', 'لنا SO = 3√2']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['longueur', 'S', 'O', '3√2'], ['longueur', 'O', 'A', '3√2'],
+                  ['longueur-carree', 'S', 'O', '18'], ['rectangle-en', 'O', 'S', 'A'],
+                  ['isocele', 'O', 'S', 'A']],
+          claims: [['SA', '√2 × SO'], ['SO^2', 'OA^2']]
+        }
+      },
+      {
+        enonce: ['استنتج أنّ SA = 6'],
+        indice: 'عوّض SO في المعطى SA = √2 × SO',
+        etapes: [
+          ['القاعدة', 'يكفي التعويض في المعطى'],
+          ['من السؤال السابق', 'SO = OA'],
+          ['و قد حسبنا', 'OA = 3√2'],
+          ['فالارتفاع', 'SO = 3√2'],
+          ['نعوّض في المعطى', 'SA = √2 × 3√2'],
+          ['نبسّط', '√2 × 3√2 = 6'],
+          ['النتيجة', 'لنا SA = 6']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['longueur', 'S', 'A', '6'], ['longueur', 'S', 'B', '6'],
+                  ['longueur', 'S', 'C', '6'], ['longueur', 'S', 'D', '6'],
+                  ['longueur-carree', 'S', 'A', '36']]
+        }
+      },
+      {
+        enonce: ['لتكن K المسقط العمودي للنقطة O على [SB]', 'أحسب البعد OK'],
+        indice: 'المثلّث SOB قائم في O مثل SAO: استعمل العلاقة المترية جداء ضلعي '
+              + 'القائمة يساوي جداء الوتر في الارتفاع',
+        etapes: [
+          ['القاعدة', 'في مثلّث قائم، جداء ضلعي القائمة يساوي جداء الوتر في '
+                    + 'الارتفاع الصادر من الرأس القائم'],
+          ['المثلّث SOB قائم في O لنفس السبب', 'OB = 3√2'],
+          ['و الضلع الآخر', 'SO = 3√2'],
+          ['و الوتر', 'SB = 6'],
+          ['نطبّق العلاقة', 'OK = SO × OB/SB'],
+          ['نحسب البسط', 'SO × OB = 18'],
+          ['النتيجة', 'لنا OK = 3']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['longueur', 'O', 'K', '3'], ['projete-droite', 'K', 'O', 'S', 'B'],
+                  ['rectangle-en', 'O', 'S', 'B'], ['longueur', 'O', 'B', '3√2'],
+                  ['rectangle-en', 'K', 'O', 'S'], ['milieu', 'K', 'S', 'B']]
+        }
+      },
+      {
+        enonce: ['بيّن أنّ المستقيم (AC) عمودي على المستوي (SBD)'],
+        indice: 'أوجد مستقيمين متقاطعين من المستوي (SBD) يكون (AC) عموديا على '
+              + 'كلّ منهما',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستقيمين متقاطعين من مستو يكون '
+                    + 'عموديا على ذلك المستوي'],
+          ['قطرا المربّع ABCD متعامدان', 'المستقيمان (AC) و (BD) متعامدان'],
+          ['و الارتفاع (SO) عمودي على مستوي القاعدة', 'المستقيم (SO) عمودي على '
+                                                    + 'المستقيم (AC)'],
+          ['و المستقيمان (BD) و (SO) متقاطعان في O و هما من المستوي (SBD)',
+           'إذن شرط القاعدة متحقّق'],
+          ['نتحقّق عدديا: النقطة B على بعد واحد من A و C', 'BA = BC'],
+          ['و كذلك القمّة S', 'SA = SC'],
+          ['النتيجة', 'المستقيم (AC) عمودي على المستوي (SBD)']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['perpendiculaire-plan', 'A', 'C', 'S', 'B', 'D'],
+                  ['perpendiculaires', 'A', 'C', 'B', 'D'],
+                  ['perpendiculaires', 'A', 'C', 'S', 'O'],
+                  ['dans-plan', 'O', 'S', 'B', 'D'], ['hors-plan', 'A', 'S', 'B', 'D']]
+        }
+      },
+      {
+        enonce: ['استنتج حسابا للبعد CK'],
+        indice: 'النقطة K من المستوي (SBD): ماذا تستنتج بالنسبة إلى المثلّث OCK ؟',
+        etapes: [
+          ['القاعدة', 'المستقيم العمودي على مستو يكون عموديا على كلّ مستقيم من '
+                    + 'ذلك المستوي'],
+          ['النقطة K من [SB] إذن من المستوي (SBD)', 'إذن (OK) مستقيم من المستوي (SBD)'],
+          ['و (AC) عمودي على هذا المستوي', 'إذن المثلّث OCK قائم في O'],
+          ['نطبّق فيتاغور', 'CK^2 = OC^2 + OK^2'],
+          ['و', 'OC^2 = 18'],
+          ['و', 'OK^2 = 9'],
+          ['نجمع', 'CK^2 = 27'],
+          ['نبسّط الجذر', '√27 = 3√3'],
+          ['النتيجة', 'لنا CK = 3√3']
+        ],
+        controle: {
+          espace: FIG126,
+          faits: [['longueur', 'C', 'K', '3√3'], ['longueur-carree', 'C', 'K', '27'],
+                  ['rectangle-en', 'O', 'C', 'K'], ['dans-plan', 'K', 'S', 'B', 'D'],
+                  ['longueur', 'O', 'C', '3√2']]
+        }
+      }
+    ];
+  }
+
+
+  // =========================================================================
   // الحصّة 13 — التمرين 1   (un repère, et un parallélogramme)
   //
   //   La parallèle à (OI) menée par B(4 ; 5) est la droite y = 5 ; elle coupe
@@ -10437,6 +10634,7 @@
                 seance11ex1, seance11ex2, seance11ex3, seance11ex4, seance11ex5,
                 seance11ex6,
                 seance12ex1, seance12ex2, seance12ex3, seance12ex4, seance12ex5,
+                seance12ex6,
                 seance13ex1, seance13ex2, seance13ex3, seance13ex6 };
   if (M) module.exports = API; else racine.Seances = API;
 })(typeof window !== 'undefined' ? window : globalThis);
