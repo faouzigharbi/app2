@@ -22,6 +22,21 @@
 // il est VIDE au chargement et se remplit ensuite. On ne les réécrit pas —
 // on les relit, et l'on prend ce qui répond.
 const fs = require('fs');
+// LES NOTIONS. Elles ne s'inventent pas ici : l'inventaire les porte déjà,
+// courtes et lisibles — « Thalès », « centre de gravité », « droite ⊥ plan » —
+// à côté de la clé de l'exercice (« brevet ex1012 — dix-sept volets »).
+const NOTIONS = (() => {
+  const m = {};
+  try {
+    const inv = require('./inventaire.js').INVENTAIRE;
+    for (const d of inv) for (const e of (d.contenu || [])) {
+      const k = /\b([a-z0-9]+)\s+(ex\d+)/.exec(String(e.ou || ''));
+      if (k && e.notions) (m[k[1] + '|' + k[2]] = m[k[1] + '|' + k[2]] || []).push(...e.notions);
+    }
+  } catch (err) {}
+  for (const k in m) m[k] = [...new Set(m[k])];
+  return m;
+})();
 const path = require('path');
 
 const CHAINES = path.resolve(__dirname, '..', 'chaines');
@@ -111,13 +126,43 @@ function moissonner(construire, n, parCase) {
     const avant = vus.size;
     let page;
     try { page = construire(n); } catch (e) { break; }
-    for (const q of (page && page.questions) || []) {
-      if (!q || !q.operation || !q.steps || !q.steps.length) continue;
-      if (!vus.has(q.operation)) vus.set(q.operation, q);
-    }
+    const qs = ((page && page.questions) || [])
+      .filter(q => q && q.operation && q.steps && q.steps.length);
+    if (!qs.length) { sec++; continue; }
+    // La clé est le TIRAGE ENTIER : un exercice se sert entier ou pas du tout,
+    // donc c'est l'exercice qu'on dédoublonne, jamais la question isolée.
+    const cle = qs.map(q => q.operation).join('§');
+    if (!vus.has(cle)) vus.set(cle, qs);
     sec = (vus.size === avant) ? sec + 1 : 0;
   }
   return [...vus.values()].slice(0, parCase);
+}
+
+// ── UN EXERCICE SE SERT ENTIER ───────────────────────────────────────────
+//
+// C'est la règle du maître, et elle est absolue : « jamais de troncature
+// d'exercice ». Un tirage devient donc UN bloc — l'énoncé écrit une fois en
+// tête, puis ses questions numérotées, et les données d'une partie II
+// insérées À LEUR PLACE, entre deux questions, exactement comme sur la
+// feuille.
+//
+// Ce qui est neuf à chaque volet, c'est ce que `pose` a gagné depuis le volet
+// d'avant : le reste est déjà écrit plus haut, et le réécrire encombrerait.
+function bloc(qs) {
+  const lignes = [];
+  const corr = [];
+  let avant = [];
+  qs.forEach((q, i) => {
+    const pose = (q.pose ? q.pose.split('<br>') : []).filter(Boolean);
+    for (const l of pose) if (avant.indexOf(l) < 0) lignes.push(l);
+    avant = pose;
+    const numero = qs.length > 1 ? (i + 1) + ') ' : '';
+    lignes.push('<span class="q">' + numero + '</span>' + (q.question || q.operation));
+    if (qs.length > 1) corr.push({ quoi: '', math: '<b>' + (i + 1) + ')</b>' });
+    for (const e of q.steps) corr.push(couper(e));
+  });
+  return { enonce: normaliser(lignes.join('<br>')), correction: corr,
+           indice: (qs[0] && qs[0].hint) || '' };
 }
 
 // ── Le niveau et le nom, lus sur la fiche ────────────────────────────────
@@ -160,25 +205,23 @@ function exporter(dossier, nom, niveau, parCase) {
     // « famille — مستوى صعب » : on coupe au niveau, pas au premier tiret venu,
     // sinon « نفس الأسّ — أساسان » perd la moitié de son nom.
     const rubriqueNom = String(def.titre || ('التمرين ' + n)).split(' — مستوى')[0].trim();
-    for (const [i, q] of moissonner(f.construire, n, parCase).entries()) {
+    const cleRub = def.famille || ('ex' + n);
+    const notions = NOTIONS[dossier + '|' + cleRub] || [];
+    for (const [i, qs] of moissonner(f.construire, n, parCase).entries()) {
       total++;
+      const b = bloc(qs);
       lignes.push('  { id: ' + JSON.stringify(dossier + '-' + n + '-' + i)
         + ', chapitre: ' + JSON.stringify(dossier)
         + ', chapitreNom: ' + JSON.stringify(nom)
         + ', niveau: ' + niveau
-        + ',\n    rubrique: ' + JSON.stringify(def.famille || ('ex' + n))
+        + ',\n    rubrique: ' + JSON.stringify(cleRub)
         + ', rubriqueNom: ' + JSON.stringify(rubriqueNom)
-        // La difficulté n'est déclarée que par les fiches qui la connaissent.
-        // Ailleurs elle est VIDE, et une case vide se tire à tous les niveaux :
-        // mieux vaut ne rien dire que d'inventer un niveau.
-        // La difficulté vient de l'EXERCICE quand il la connaît — elle se lit
-        // sur sa correction — et de la fiche seulement à défaut.
-        + ', difficulte: ' + JSON.stringify(q.difficulte || def.difficulte || '')
-        + ',\n    enonce: ' + JSON.stringify(normaliser(q.operation))
-        + ',\n    correction: ' + JSON.stringify(q.steps.map(couper))
-        + ',\n    indice: ' + JSON.stringify(q.hint || '')
-        // La feuille d'origine, quand la fiche la connaît : « RevisBeja ex3 ».
-        + (q.source ? ',\n    source: ' + JSON.stringify(q.source) : '') + ' }');
+        + ', difficulte: ' + JSON.stringify(qs[0].difficulte || def.difficulte || '')
+        + (notions.length ? ',\n    notions: ' + JSON.stringify(notions) : '')
+        + ',\n    enonce: ' + JSON.stringify(b.enonce)
+        + ',\n    correction: ' + JSON.stringify(b.correction)
+        + ',\n    indice: ' + JSON.stringify(b.indice)
+        + (qs[0].source ? ',\n    source: ' + JSON.stringify(qs[0].source) : '') + ' }');
     }
   }
   if (!total) return { dossier, erreur: 'aucune question' };
