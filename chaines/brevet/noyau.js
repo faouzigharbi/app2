@@ -500,10 +500,39 @@
   // qu'une fois, dans le volet qui l'introduit.
   const IMPERATIF = /^\s*(أحسب|بيّن|بين|فكّك|فكك|حلّ|حل|استنتج|رتّب|رتب|قارن|أكتب|اكتب|أوجد|أنجز|حدّد|حدد|عيّن|عين|ابن|أعط|مثّل|مثل|إبحث|ابحث|تحقّق|تحقق|هل)\b/;
 
+  // LA FIGURE ENTRE DANS L'ÉNONCÉ, une fois, au volet qui la pose.
+  //
+  // Elle se déduit des faits de TOUS les volets — pas du seul premier : un
+  // exercice dont la première question n'affirme que des coordonnées n'a rien
+  // à tracer, alors que le dessin complet est dans la suite. On réunit donc,
+  // puis on dessine une seule fois, et l'accumulation du contexte la porte
+  // ensuite à toutes les questions suivantes.
+  function figurer(volets) {
+    const dessin = (typeof require === 'function' && typeof module !== 'undefined')
+      ? require('./figure.js') : racine.Figure;
+    if (!dessin) return null;
+    let decl = null, env = {};
+    const faits = [];
+    for (const v of volets) {
+      const c = v.controle || {};
+      if (!c.points) continue;
+      if (!decl) { decl = c.points;
+        for (const n in (c.env || {})) { try { env[n] = analyser(c.env[n], env); }
+                                        catch (e) {} } }
+      for (const f of (c.faits || [])) faits.push(f);
+    }
+    if (!decl) return null;
+    let svg = null;
+    try { svg = dessin.dessiner(decl, faits, env); } catch (e) { return null; }
+    return svg ? { brut: svg } : null;
+  }
+
   function contextualiser(volets, opt) {
     const o = opt || {};
     const neuf = new Set(o.neuf || []);
     let pose = [];
+    const svg = figurer(volets);
+    let posee = false;
     return volets.map((v, i) => {
       const lignes = (v.enonce || []).slice();
       const question = lignes.pop();
@@ -515,6 +544,9 @@
         if (typeof l === 'string' && IMPERATIF.test(l)) { tetes.push(l); continue; }
         if (pose.indexOf(l) < 0) pose.push(l);
       }
+      // Le dessin se glisse au premier volet qui pose la figure ; le contexte
+      // le transporte ensuite tout seul.
+      if (svg && !posee && (v.controle || {}).points) { pose.push(svg); posee = true; }
       return Object.assign({}, v, {
         enonceComplet: pose.concat(tetes, [question]),
         // La feuille imprimée en a besoin séparément : l'énoncé une fois, puis
