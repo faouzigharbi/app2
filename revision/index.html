@@ -54,6 +54,17 @@
               border:1.5px solid var(--bord); border-radius:10px; cursor:pointer;
               background:#fcfdff; transition:.12s; font-size:.95em }
   label.rub:hover { border-color:#c3cfdd }
+.exos { grid-column:1/-1; display:flex; flex-direction:column; gap:6px;
+          margin:6px 0 10px; padding:8px; background:#0e1621; border-radius:8px }
+  .exo-btn { text-align:right; background:#16202c; border:1px solid #22303f;
+             color:#cfd9e4; border-radius:7px; padding:9px 11px; cursor:pointer;
+             display:flex; flex-direction:column; gap:3px; font:inherit }
+  .exo-btn:hover { border-color:var(--accent) }
+  .exo-btn.pris { border-color:var(--accent); background:#1b2a3a }
+  .exo-btn .t { font-size:.95em; line-height:1.6 }
+  .exo-btn .b { font-size:.8em; color:#8798ab }
+  button.rub { width:100%; text-align:right; font:inherit; cursor:pointer;
+               background:transparent; border:0 }
   label.rub input { accent-color:var(--accent); width:17px; height:17px; cursor:pointer }
   label.rub.coche { border-color:var(--accent); background:#f5f4ff }
   label.rub .n { margin-inline-start:auto; color:var(--muet); font-size:.82em;
@@ -160,20 +171,6 @@
   <div class="carte">
     <h2>الإعدادات</h2>
     <div class="rangee">
-      <div><b>المستوى</b>
-        <div class="puces" id="niv">
-          <span class="puce on" data-d="facile">سهل</span>
-          <span class="puce on" data-d="moyen">متوسّط</span>
-          <span class="puce on" data-d="difficile">صعب</span>
-        </div>
-      </div>
-      <div><b>من كلّ موضوع</b>
-        <div class="puces" id="nb">
-          <span class="puce" data-n="1">1</span>
-          <span class="puce on" data-n="2">2</span>
-          <span class="puce" data-n="3">3</span>
-        </div>
-      </div>
       <div><b>الإصلاح</b>
         <div class="puces" id="cor">
           <span class="puce on" data-c="1">مع الإصلاح</span>
@@ -261,11 +258,11 @@
         + '<span class="tout" data-c="' + c.cle + '">الكلّ</span>'
         + '<span class="n">' + c.n + '</span></summary>'
         + '<div class="rubriques">' + c.rubriques.map(r =>
-          '<label class="rub"><input type="checkbox" data-c="' + c.cle
+          '<button class="rub" data-c="' + c.cle
           + '" data-s="' + r.source + '" data-r="' + r.cle + '"><span>' + r.nom
           + (r.revision ? ' <span class="rev">مراجعة' + (r.origine ? ' · ' + r.origine : '')
              + '</span>' : '')
-          + '</span><span class="n">' + r.n + '</span></label>'
+          + '</span><span class="n">' + r.n + '</span></button>'
         ).join('') + '</div>';
       sec.appendChild(d);
     });
@@ -307,110 +304,75 @@
 
   // On retient la fiche D'ORIGINE : le regroupement est un classement pour
   // l'œil, mais les exercices, eux, portent toujours leur ancien chapitre.
-  const choisies = () => [...document.querySelectorAll('.rub input:checked')]
-    .map(i => ({ c:i.dataset.c, s:i.dataset.s, r:i.dataset.r }));
-  const niveaux = () => [...document.querySelectorAll('#niv .puce.on')].map(p => p.dataset.d);
-  const parRub  = () => Number(el('#nb .puce.on').dataset.n);
+  // ── LE CHOIX SE FAIT À LA MAIN, EXERCICE PAR EXERCICE ───────────────────
+  //
+  // Les versions d'avant tiraient au sort dans les rubriques cochées, et le
+  // maître découvrait sa feuille après coup. Ce n'est pas ainsi qu'on prépare
+  // un devoir : on VOIT les exercices, on lit ce qu'ils contiennent, et l'on
+  // prend ceux qu'on veut.
+  //
+  // Quatre niveaux, chacun ouvre le suivant :
+  //     le niveau → le chapitre → la rubrique → LES EXERCICES
+  // et chaque bouton d'exercice dit son contenu : sa première ligne, son
+  // nombre de questions, sa difficulté. Un clic le met dans la feuille, un
+  // second l'en retire.
+  const PANIER = [];
   const avecCor = () => el('#cor .puce.on').dataset.c === '1';
+  const sansBalise = t => String(t).replace(/<br>/g, ' ').replace(/<[^>]+>/g, '').trim();
+  const compteQ = x => Math.max(1, (String(x.enonce).match(/class="q"/g) || []).length);
 
-  // Combien la bibliothèque peut RÉELLEMENT en fournir. Annoncer six et en
-  // servir cinq, c'est mentir sur la feuille : on compte case par case, et
-  // l'on dit quelles rubriques sont trop maigres pour la demande.
   function etat() {
-    const sels = choisies(), n = parRub(), difficultes = niveaux();
-    el('#creer').disabled = !sels.length;
-    if (!sels.length) { el('#avis').textContent = 'لم تُختر أيّ رّبريكة بعد.'; return; }
-    let total = 0;
-    const maigres = [];
-    sels.forEach(sel => {
-      // Le compte vient du manifeste : les exercices ne sont pas encore là.
-      const ch = chapitres.find(k => k.cle === sel.c);
-      const ru = ch && ch.rubriques.find(k => k.cle === sel.r && k.source === sel.s);
-      let dispo = 0;
-      if (ru) for (const d of Object.keys(ru.diff)) {
-        // Une fiche sans difficulté déclarée se tire à tous les niveaux.
-        if (!d || difficultes.indexOf(d) >= 0) dispo += ru.diff[d];
-      }
-      total += Math.min(dispo, n);
-      if (dispo < n) {
-        const c = chapitres.find(k => k.cle === sel.c);
-        maigres.push(c.rubriques.find(k => k.cle === sel.r).nom + ' (' + dispo + ')');
-      }
-    });
-    el('#avis').textContent = sels.length + ' مواضيع مختارة → ' + total + ' تمارين'
-      + (maigres.length ? ' — لا يكفي في: ' + maigres.join('، ') : '');
-  }
-  etat();
-
-  // ── LE TIRAGE. On garde en mémoire ce qui a déjà été servi : deux feuilles
-  //    de suite ne doivent pas se ressembler. Quand une case est épuisée, on
-  //    la rouvre — mieux vaut un exercice déjà vu qu'une feuille trop courte.
-  const VU = 'devoirati.revision.vus';
-  const lus = () => { try { return new Set(JSON.parse(localStorage.getItem(VU)) || []); }
-                      catch (e) { return new Set(); } };
-  const noter = s => { try { localStorage.setItem(VU, JSON.stringify([...s].slice(-4000))); }
-                       catch (e) {} };
-
-  // Une fiche qui ne DÉCLARE pas de difficulté n'en a pas : ses exercices se
-  // tirent à tous les niveaux. Les écarter parce qu'ils ne portent pas
-  // d'étiquette reviendrait à vider dix-neuf chapitres sur vingt-deux.
-  const eligible = (x, difficultes) =>
-    !x.difficulte || difficultes.indexOf(x.difficulte) >= 0;
-
-  function tirer(sel, n, difficultes, vus) {
-    const pool = TOUT().filter(x => x.chapitre === sel.s && x.rubrique === sel.r
-                                  && eligible(x, difficultes));
-    if (!pool.length) return [];
-    let neufs = pool.filter(x => !vus.has(x.id));
-    if (neufs.length < n) { pool.forEach(x => vus.delete(x.id)); neufs = pool.slice(); }
-    const sac = [];
-    while (sac.length < n && neufs.length) {
-      const i = Math.floor(Math.random() * neufs.length);
-      sac.push(neufs.splice(i, 1)[0]);
-    }
-    sac.forEach(x => vus.add(x.id));
-    return sac;
+    el('#creer').disabled = !PANIER.length;
+    el('#imprimer').disabled = !PANIER.length;
+    el('#avis').textContent = PANIER.length
+      ? PANIER.length + ' تمارين في الورقة'
+      : 'اختر رّبريكة ثمّ تمرينا.';
   }
 
-  el('#creer').addEventListener('click', () => {
-    const sels = choisies();
-    const besoin = [...new Set([].concat(...sels.map(sel => {
-      const c = chapitres.find(k => k.cle === sel.c);
-      return (c && c.fichiers) || [];
-    })))];
-    el('#creer').disabled = true;
-    const avant = el('#avis').textContent;
-    el('#avis').textContent = 'جارٍ التحميل…';
-    charger(besoin).then(composer).catch(e => {
-      el('#avis').textContent = 'تعذّر تحميل المكتبة : ' + e.message;
-      el('#creer').disabled = false;
-    });
-    function composer() {
-    el('#creer').disabled = false;
-    el('#avis').textContent = avant;
-    const vus = lus();
-    const n = parRub(), difficultes = niveaux();
-    const exos = [];
-    choisies().forEach(sel => exos.push(...tirer(sel, n, difficultes, vus)));
-    noter(vus);
-    if (!exos.length) {
-      el('#avis').textContent = 'لا يوجد تمرين بهذا المستوى في المواضيع المختارة.';
-      return;
-    }
-    rendre(exos);
-    el('#imprimer').disabled = false;
-    el('#feuille').scrollIntoView({ behavior:'smooth' });
-    }
+  // La liste des exercices d'une rubrique, dépliée sous elle.
+  function ouvrir(bouton) {
+    const suivant = bouton.nextElementSibling;
+    if (suivant && suivant.classList.contains('exos')) { suivant.remove(); return; }
+    [...document.querySelectorAll('.exos')].forEach(n => n.remove());
+    const c = chapitres.find(k => k.cle === bouton.dataset.c);
+    const boite = document.createElement('div');
+    boite.className = 'exos';
+    boite.textContent = '…';
+    bouton.after(boite);
+    charger(c.fichiers).then(() => {
+      const liste = TOUT().filter(x => x.chapitre === bouton.dataset.s
+                                    && x.rubrique === bouton.dataset.r);
+      if (!liste.length) { boite.textContent = 'لا شيء هنا.'; return; }
+      boite.innerHTML = liste.map(x =>
+        '<button class="exo-btn' + (PANIER.indexOf(x.id) >= 0 ? ' pris' : '') + '"'
+        + ' data-id="' + x.id + '">'
+        + '<span class="t">' + sansBalise(x.enonce).slice(0, 110) + '…</span>'
+        + '<span class="b">' + compteQ(x) + ' أسئلة'
+        + (x.difficulte ? ' · ' + (DIFF[x.difficulte] || '') : '')
+        + (x.notions && x.notions.length ? ' · ' + x.notions.slice(0, 3).join('، ') : '')
+        + '</span></button>').join('');
+    }).catch(() => { boite.textContent = 'تعذّر التحميل.'; });
+  }
+
+  document.addEventListener('click', e => {
+    const r = e.target.closest('.rub');
+    if (r) { e.preventDefault(); ouvrir(r); return; }
+    const b = e.target.closest('.exo-btn');
+    if (!b) return;
+    const i = PANIER.indexOf(b.dataset.id);
+    if (i >= 0) { PANIER.splice(i, 1); b.classList.remove('pris'); }
+    else { PANIER.push(b.dataset.id); b.classList.add('pris'); }
+    etat(); feuille();
   });
 
-  el('#imprimer').addEventListener('click', () => window.print());
+  const date = (() => { const d = new Date();
+    return d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear(); })();
 
-  function rendre(exos) {
-    const d = new Date();
-    const date = d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear();
-    // Cinq chapitres nommés bout à bout font un titre de trois lignes que
-    // personne ne lit. Au-delà de deux, on nomme le NIVEAU : c'est ce qui
-    // distingue vraiment une feuille d'une autre sur un bureau.
+  // ── LA FEUILLE. Un exercice entier par bloc, jamais tronqué : son énoncé
+  //    une fois, ses questions numérotées dessous, et la place pour écrire.
+  function feuille() {
+    const exos = PANIER.map(id => TOUT().find(x => x.id === id)).filter(Boolean);
+    if (!exos.length) { el('#feuille').innerHTML = ''; return; }
     const noms = [...new Set(exos.map(x => x.chapitreNom))];
     const nivs = [...new Set(exos.map(x => x.niveau))].sort();
     const sujet = noms.length <= 2 ? noms.join(' — ')
@@ -421,9 +383,7 @@
       + '<span>التاريخ: ' + date + '</span></div></div>';
 
     exos.forEach((x, i) => {
-      // La place à écrire suit la longueur du corrigé : un exercice en six
-      // étapes ne se traite pas dans les trois lignes d'un exercice en deux.
-      const lignes = Math.max(3, x.correction.length);
+      const lignes = Math.max(4, x.correction.length);
       h += '<div class="exo"><div class="tete">'
         + '<span class="num">التمرين ' + (i + 1) + '</span>'
         + '<span class="rub">' + x.rubriqueNom
@@ -437,12 +397,16 @@
       exos.forEach((x, i) => {
         h += '<div class="corr"><span class="num">التمرين ' + (i + 1) + '</span>'
           + '<ol>' + x.correction.map(e =>
-              '<li><span class="quoi">' + e.quoi + ' — </span>' + e.math + '</li>').join('')
+              '<li><span class="quoi">' + (e.quoi ? e.quoi + ' — ' : '') + '</span>'
+              + e.math + '</li>').join('')
           + '</ol></div>';
       });
     }
     el('#feuille').innerHTML = h;
   }
+  etat();
+  el('#creer').addEventListener('click', feuille);
+  el('#imprimer').addEventListener('click', () => window.print());
 
   // LA POLICE SE DEMANDE APRÈS « load », JAMAIS AVANT.
   //
