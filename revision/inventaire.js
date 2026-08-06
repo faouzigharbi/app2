@@ -860,11 +860,16 @@
           sujet: 'ex1 = ex21, ex3 = ex23, ex4 = ex24 (mêmes coordonnées) — TROIS DOUBLONS · ex5 est une pyramide' },
         { seance: 4, pages: '10-14', exercices: 7, vu: true,
           sujet: 'ex1 = ex31, ex3 = ex33, ex4 = ex34, ex6 = ex36 (« نموذجية مدنين ») — QUATRE DOUBLONS · ex7 est un prisme · SEUL ex2 est neuf' },
-        { seance: 5, pages: '15-17', exercices: 3, sujet: 'à lire — géométrie' },
+        { seance: 5, pages: '12-14', exercices: 5, vu: true,
+          sujet: 'ex1 = ex41, ex4 = ex132, ex5 (منزه) = ex65 — TROIS DOUBLONS · ex3 est le nombre d\'or · SEUL ex2 est neuf' },
         { seance: 6, pages: '15-21', exercices: 8, vu: 'partiellement',
           sujet: 'ses exercices 1 et 3 sont ceux des séances 5 et 7 du 2025 — DOUBLONS' },
         { seance: 7, pages: '22-25', exercices: 3, sujet: 'à lire — géométrie' },
-        { seance: 8, pages: '26-38', exercices: 6, sujet: 'à lire — PAGES SCANNÉES, aucune couche de texte' }
+        { seance: 8, pages: '25-37', exercices: 6, vu: 'ouverte',
+          // CE N'EST PAS UNE SÉANCE D'EXERCICES : c'est un recueil de VRAIS
+          // SUJETS D'EXAMEN (امتحان شهادة ختم التعليم الأساسي العام), scannés,
+          // dourat 2020 et suivantes. Une source d'un autre genre.
+          sujet: 'RECUEIL DE SUJETS D\'EXAMEN OFFICIELS scannés — dourat 2020 et suivantes' }
       ],
       contenu: [
         { n: '1.1', questions: 1,
@@ -912,6 +917,31 @@
                   + 'quatre points A(1;2), B, C, D ne donne un parallélogramme — les trois '
                   + 'couples de milieux de diagonales diffèrent. Le A imprimé ne referme pas '
                   + 'la question 1' },
+        { n: '5.1', questions: 6, notions: ['M = x²+4x−32', 'trapèze', 'Thalès', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex41 — DOUBLON du 2025, séance 4 exercice 1',
+          pourquoi: 'BC = 8, AJ = 4, IB = JD = x, (IJ)//(CD) — les mêmes données' },
+        { n: '5.2', questions: 7,
+          notions: ['repère', 'angle de 45°', 'trapèze', 'Thalès', 'centre de gravité',
+                    'milieu', 'produit scalaire nul'],
+          sort: 'bibliothèque', ou: 'brevet ex2652 — sept volets',
+          pourquoi: 'H, intersection de (RJ) et de la verticale (SW), tombe en '
+                  + '(3+√5 ; 3+√5) — ses DEUX coordonnées sont égales, et c\'est tout ce '
+                  + 'qu\'il faut pour l\'angle de 45°. Le calcul passe par (1+√5)²/2 = 3+√5, '
+                  + 'l\'identité du nombre d\'or. Puis A devient le centre de gravité de MNP '
+                  + 'ET le milieu de [PB]' },
+        { n: '5.3', questions: 4, notions: ['le nombre d\'or', 'inverses', 'a⁴+a³−a−1'], sort: 'à faire' },
+        { n: '5.4', questions: 8, notions: ['a = (3−√5)/2', 'encadrement', 'valeurs absolues'],
+          sort: 'bibliothèque', ou: 'brevet ex132 — DOUBLON du 2025, séance 13 exercice 2',
+          pourquoi: 'a = 4 + 2/(√5−1) − (1+√5)²/2 et b = (√27+√15)/√12 — identiques. '
+                  + 'ET SA PARTIE II EST REPRODUITE TELLE QUELLE, avec la même donnée qui '
+                  + 'ne se referme pas : AB = 1, AC = 1/2, angle droit en C et BD = 3/2 '
+                  + 'donnent DC = (3−√3)/2, et non a = (3−√5)/2' },
+        { n: '5.5', questions: 3, notions: ['le nombre d\'or', 'inverses', 'nombre rationnel'],
+          sort: 'bibliothèque', ou: 'brevet ex65 — DOUBLON du 2025, séance 6 exercice 5 (منزه)',
+          pourquoi: 'ET LA COQUILLE N° 10 EST REPRODUITE : le livre 2026 imprime encore '
+                  + 'b = 1/5 − (6−(1+√5)²)/4, qui donne 1/5 + √5/2 et non (√5+1)/2. '
+                  + 'Le 5 devrait être un 2' },
+
         { n: '2.6', questions: 6,
           notions: ['repère', 'distances', 'alignement et rapport', 'intersection de droites',
                     'symétrique', 'losange par les diagonales', 'aire', 'projection orthogonale'],

@@ -43,6 +43,11 @@
   // neuf.
   page(2642, '2026 · الحصّة 4 — التمرين 2 — ', 'معيّن يكفي قطراه للتعرّف عليه',
        S.livre26seance4ex2, 6);
+  // La séance 5 : son ex1 est ex41, son ex4 est ex132 (et sa partie II ne se
+  // referme pas plus qu'en 2025), son ex5 « منزه » est ex65 — et le livre 2026
+  // y REPRODUIT la coquille n° 10, le 1/5 qui devrait être 1/2. Seul ex2 est neuf.
+  page(2652, '2026 · الحصّة 5 — التمرين 2 — ', 'زاوية 45° مخبّأة، ثمّ شبه منحرف ينغلق',
+       S.livre26seance5ex2, 7);
 
   // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
   // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce

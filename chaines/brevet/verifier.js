@@ -1468,6 +1468,27 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[2][3] = '8'; });
 
   // ══ LE LIVRE 2026 ══════════════════════════════════════════════════════
+  pousse("R place a (1 + √5 ; 0) : OR change", parQuestion(2652, 0),
+    c => { c.controle.points.R = ['point', '1 + √5', '0']; });
+  pousse("H pris sur (RI) au lieu de (RJ)", parQuestion(2652, 1),
+    c => { c.controle.points.H = ['inter', 'R', 'I', 'S', 'W']; });
+  pousse("l identite (1+√5)²/2 lue 3 - √5", parQuestion(2652, 1),
+    c => { c.controle.claims[0][1] = '3 - √5'; });
+  pousse("CD annonce 4, comme AB", parQuestion(2652, 2),
+    c => { c.controle.faits[1][3] = '4'; });
+  pousse("le rapport AM/DM annonce 3/2", parQuestion(2652, 3),
+    c => { c.controle.faits[2][5] = '3/2'; });
+  pousse("N pris symetrique de M par rapport a A", parQuestion(2652, 4),
+    c => { c.controle.points.N = ['sym', 'M', 'A']; });
+  pousse("A declare centre de gravite de MNB", parQuestion(2652, 4),
+    c => { c.controle.faits[0] = ['centre-gravite', 'A', 'M', 'N', 'B']; });
+  pousse("A declare milieu de [PC]", parQuestion(2652, 5),
+    c => { c.controle.faits[0] = ['milieu', 'A', 'P', 'C']; });
+  pousse("E confondu avec P", parQuestion(2652, 6),
+    c => { c.controle.points.E = ['point', '-2', '1']; });
+  pousse("F pris sur la perpendiculaire menee par A", parQuestion(2652, 6),
+    c => { c.controle.points.Z = ['normale', 'A', 'A', 'B']; });
+
   pousse("C place a (3 ; -2) : (AC) n est plus verticale", parQuestion(2642, 0),
     c => { c.controle.points.C = ['point', '3', '-2']; });
   pousse("K place sur (OJ) au lieu de (OI)", parQuestion(2642, 1),
