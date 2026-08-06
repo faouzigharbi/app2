@@ -1077,7 +1077,98 @@
           sort: 'bibliothèque', ou: 'brevet ex71 — DOUBLON du 2025, séance 7 exercice 1 (partie 2)',
           pourquoi: 'b = (√11−5)(1−√3) vaut 5√3+√11−5−√33 — exactement le t de ex71, '
                   + 'celui dont les QUATRE termes avaient montré la limite honnête du '
-                  + 'noyau (la division par conjugué s\'arrête à deux termes)' }
+                  + 'noyau (la division par conjugué s\'arrête à deux termes)' },
+
+        // ── LA SÉANCE 6 EST LA SÉANCE 5 DU 2025, exercice pour exercice ─────
+        // Huit exercices, huit reprises. Le seul déplacement est le 6.3, qui
+        // vient de la séance 7. Pas une ligne neuve.
+        { n: '6.2', questions: 6,
+          notions: ['rectangle', 'relation métrique', 'milieu', 'losange', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex52 — DOUBLON du 2025, séance 5 exercice 2',
+          pourquoi: 'IA = 2 IC et IB = 2√2 — les mêmes données, et les SIX mêmes '
+                  + 'volets jusqu\'au losange CODJ et son aire' },
+        { n: '6.4', questions: 6,
+          notions: ['deux intervalles', 'encadrement d\'une somme', 'carré encadrant'],
+          sort: 'bibliothèque', ou: 'brevet ex54 — DOUBLON du 2025, séance 5 exercice 4',
+          pourquoi: 'I = [−2 ; 3] et J = [−5/2 ; −1], puis 0 ≤ (2x−1)² ≤ 25 qui donne '
+                  + '−1/4 ≤ x²−x ≤ 6 : le carré qui encadre ce qu\'on n\'encadre pas '
+                  + 'directement. Le 2026 ajoute une question de représentation' },
+        { n: '6.5', questions: 3,
+          notions: ['encadrement', 'deux valeurs absolues'],
+          sort: 'bibliothèque', ou: 'brevet ex55 — DOUBLON du 2025, séance 5 exercice 5',
+          pourquoi: '−5 < 3x−5 < −2 puis A = |3x−5| − |x−4| : sur ]0 ; 1[ les deux '
+                  + 'quantités sont négatives et les deux valeurs absolues se lèvent '
+                  + 'de la même façon' },
+        { n: '6.6', questions: 7,
+          notions: ['prisme droit', 'trapèze', 'droite ⊥ plan', 'médiane et demi-hypoténuse'],
+          sort: 'bibliothèque', ou: 'brevet ex56 — DOUBLON du 2025, séance 5 exercice 6',
+          pourquoi: 'BC = CD, IC = AD/2, et les sept mêmes questions jusqu\'à NBD '
+                  + 'isocèle. C\'est l\'exercice sans un seul nombre' },
+        { n: '6.7', questions: 4,
+          notions: ['M = 3x²−2x−5', 'factorisation', 'aire d\'un trapèze', 'équation'],
+          sort: 'bibliothèque', ou: 'brevet ex57 — DOUBLON du 2025, séance 5 exercice 7',
+          pourquoi: 'AB = 5, BC = 2, ECD équilatéral de côté 2x, et S₁ = √3 S₂ — les '
+                  + 'mêmes nombres' },
+        { n: '6.8', questions: 7,
+          notions: ['carré qui glisse', 'somme de deux aires', 'forme canonique',
+                    'repère', 'losange'],
+          sort: 'bibliothèque', ou: 'brevet ex58 — DOUBLON du 2025, séance 5 exercice 8',
+          pourquoi: 'AB = 8, AC = 4, MATH carré, TE = 2(4−x), Sb = 2(x−2)²+8 — '
+                  + 'identiques jusqu\'au losange HCEA. Le 2026 lui donne un titre, '
+                  + '« براهم و عفاس », que le 2025 n\'avait pas' },
+
+        // ── LA SÉANCE 7 EST LA SÉANCE 12 DU 2025 ────────────────────────────
+        { n: '7.QCM', questions: 3,
+          notions: ['comparer par les carrés', 'mode d\'une série', 'diagonale de face'],
+          sort: 'bibliothèque', ou: 'brevet ex121 — DOUBLON du 2025, séance 12 exercice 1',
+          pourquoi: 'les trois mêmes questions, y compris CELLE QUI N\'A PAS DE BONNE '
+                  + 'RÉPONSE : l\'ordre vrai est b < c < a, qui n\'est proposé nulle '
+                  + 'part. La coquille est reconduite telle quelle' },
+        { n: '7.1', questions: 11,
+          notions: ['M = a²+2a−2', 'repère', 'triangle rectangle qui redonne M = 0'],
+          sort: 'bibliothèque', ou: 'brevet ex122 — DOUBLON du 2025, séance 12 exercice 2',
+          pourquoi: 'a = √3/2, M+3 = (a+1)², DE² = 4a²+8a+8, BE² = 4a²+8a+40, et F '
+                  + 'symétrique de E par rapport à C — les mêmes' },
+        { n: '7.2', questions: 7,
+          notions: ['conjugués', 'triangle rectangle', 'relation métrique', 'Thalès'],
+          sort: 'bibliothèque', ou: 'brevet ex123 — DOUBLON du 2025, séance 12 exercice 3',
+          pourquoi: 'a = √7+1, b = √7−1, AB et AC les portent, BC = 4, AH = 3/2 — '
+                  + 'les mêmes' },
+        { n: '7.3', questions: 7,
+          notions: ['angle 60°', 'triangle équilatéral', 'losange', 'orthocentre'],
+          sort: 'bibliothèque', ou: 'brevet ex45 — DOUBLON du 2025, séance 4 exercice 5',
+          pourquoi: 'ACD rectangle en C, AC = 6, angle 60°, puis ACBH losange et B '
+                  + 'orthocentre de CDH — les mêmes' },
+
+        // ── LA SÉANCE 8 EST UN RECUEIL — reprises, puis des SCANS ───────────
+        { n: '8.g1', questions: 7,
+          notions: ['isocèle', 'symétrique', 'centre de gravité', 'losange', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex124 — DOUBLON du 2025, séance 12 exercice 4',
+          pourquoi: 'ABO isocèle de sommet O, AB = 6, OA = 5 — les mêmes' },
+        { n: '8.g2', questions: 9,
+          notions: ['équilatéral', 'symétrique', 'centre de gravité', 'rectangle', 'losange'],
+          sort: 'bibliothèque', ou: 'brevet ex125 — DOUBLON du 2025, séance 12 exercice 5',
+          pourquoi: 'AB = 6, O symétrique de B par rapport à A, GA/GC = 1/2 — les mêmes' },
+        { n: '8.2', questions: 6,
+          notions: ['a = 5−2√6', 'inverses', 'carré d\'un entier'],
+          sort: 'bibliothèque', ou: 'brevet ex62 — DOUBLON du 2025, séance 6 exercice 2',
+          pourquoi: 'a = (5√6−12)/√6 = 5−2√6 et b = √150+√(75/3)−√54 = 5+2√6 — les '
+                  + 'mêmes écritures, jusqu\'à (1−a)(2+√6) = 4' },
+        { n: '8.4', questions: 7,
+          notions: ['nombre d\'or', 'carré', 'cercle', 'triangle rectangle'],
+          sort: 'bibliothèque', ou: 'brevet ex65 — DOUBLON du 2025, séance 6 exercice 5 (منزه)',
+          pourquoi: 'ABCD carré, I milieu de [CD], le cercle de centre I passant par '
+                  + 'B — la construction classique du nombre d\'or' },
+        { n: '8.5p', questions: 7,
+          notions: ['pyramide régulière', 'droite ⊥ plan', 'projeté orthogonal'],
+          sort: 'bibliothèque', ou: 'brevet ex126 — DOUBLON du 2025, séance 12 exercice 6',
+          pourquoi: 'AB = 3√2 et SA = √2 × SO, puis « استنتج أن SA=6 » : la CINQUIÈME '
+                  + 'coquille du 2025 reproduite telle quelle. Avec AB = 6 tout se '
+                  + 'referme' },
+        { n: '8.5b', questions: 7,
+          notions: ['parallélépipède', 'droite ⊥ plan', 'médiane et demi-hypoténuse'],
+          sort: 'bibliothèque', ou: 'brevet ex66 — DOUBLON du 2025, séance 6 exercice 5 (bis)',
+          pourquoi: 'AEHD carré de côté 4, AB = 2√3, ENH isocèle — les mêmes' }
       ],
       machine: ['BALAYAGE ARITHMÉTIQUE ET RADICAUX FAIT sur les huit séances : les '
                 + 'CINQ exercices de radicaux repérés hors séance 1 sont TOUS des '
@@ -1087,7 +1178,13 @@
                 + 'la géométrie',
                 'les pages 26 à 38 (séance 8) n\'ont AUCUNE couche de texte : elles '
                 + 'sont scannées, et demandent une lecture visuelle page à page',
-                'restent les exercices de GÉOMÉTRIE des séances 2 à 8',
+                'BALAYAGE GÉOMÉTRIQUE FAIT sur les huit séances. Les séances 6 et '
+                + '7 n\'apportent RIEN de neuf : la 6 est la séance 5 du 2025 '
+                + 'exercice pour exercice (huit sur huit), la 7 est sa séance 12 '
+                + '(plus le 4.5). La séance 8 est un recueil : six reprises à couche '
+                + 'de texte, puis des scans. Le livre 2026 est donc une REFONTE dont '
+                + 'la géométrie est ENTIÈREMENT recyclée — ce qui est neuf tient dans '
+                + 'la séance 1 (arithmétique) et quatre exercices de repère',
                 'denombrer.js a gagné les nombres à QUATRE chiffres pour ce livre, '
                 + 'et trois relations de plus (diviseur commun, unité divise centaine, '
                 + 'dizaine sous centaine)'],

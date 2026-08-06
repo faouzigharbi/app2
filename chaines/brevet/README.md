@@ -284,6 +284,21 @@ distance de `(BC)` qu'il est de `A`.
 
 ## Séance 11 — la première séance ENTIÈRE du livre
 
+## Le livre 2026 — le balayage est terminé
+
+Les huit séances ont été lues. Le résultat tient en une phrase : **la géométrie
+du 2026 est entièrement recyclée**, et ce qui est neuf tient dans sa séance 1.
+
+| séance 2026 | ce qu'elle est |
+|---|---|
+| 6 | **la séance 5 du 2025, exercice pour exercice** — huit sur huit (`ex51`, `ex52`, `ex71`, `ex54`, `ex55`, `ex56`, `ex57`, `ex58`) |
+| 7 | **la séance 12 du 2025** (`ex121`, `ex122`, `ex123`) plus le `ex45` |
+| 8 | un **recueil** : six reprises à couche de texte (`ex124`, `ex125`, `ex62`, `ex65`, `ex126`, `ex66`), puis treize pages **scannées** |
+
+Le QCM sans bonne réponse de `ex121` y est reconduit tel quel, et la coquille
+`AB = 3√2` de la pyramide aussi : **cinq** coquilles du 2025 reparaissent
+intactes dans la nouvelle édition.
+
 Six exercices, six portés. Ni doublon, ni exercice d'espace, ni statistiques —
 c'est la première fois.
 
