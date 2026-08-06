@@ -250,6 +250,47 @@ C'est ce qui a permis de trouver la treizième coquille. Et c'est la
 falsification qui ouvre la séance : rejouer le `3^204` imprimé, et vérifier que
 `42` **ne** divise **pas**.
 
+## Séance 12 — cinq exercices, et un QCM sans bonne réponse
+
+Elle ne porte **aucune statistique**, contrairement à ce que l'estimation
+annonçait. Son exercice 6 est une pyramide régulière — de l'espace, sans
+chapitre. Les cinq autres sont portés entiers.
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex121.html` | التمرين 1 | 3 | QCM · comparer par les carrés · le **mode** d'une série · la diagonale de face d'un cube |
+| `ex122.html` | التمرين 2 | 11 | `M = a²+2a−2` · un repère où `BED` rectangle en `E` **redonne** `M = 0` |
+| `ex123.html` | التمرين 3 | 7 | `a = √7+1` et `b = √7−1` sont **les deux côtés du triangle** : `BC² = 16` sans un radical |
+| `ex124.html` | التمرين 4 | 7 | un isocèle qu'une symétrie redresse en 6-8-10 · deux médianes · un losange · une aire |
+| `ex125.html` | التمرين 5 | 9 | un équilatéral et son symétrique · centre de gravité · rectangle · losange |
+
+Deux choses que ces exercices cachent :
+
+- **ex124** — `C` symétrique de `A` par rapport à `O` fait de `O` à la fois le
+  milieu de `[AC]` **et** le centre du cercle circonscrit (`OA = OB = OC = 5`) :
+  `ABC` devient le triangle 6-8-10 sans qu'on ait rien à démontrer d'autre. Et
+  `(CI)` et `(BO)` deviennent alors deux **médianes**, d'où tout le reste.
+- **ex123** — les deux nombres de la partie I ne sont pas décoratifs : ce sont
+  **exactement** les deux côtés du triangle de la partie II. `(√7+1)² + (√7−1)²`
+  vaut 16 parce que les `2√7` se compensent, et `AH = (√7+1)(√7−1)/4 = 3/2`.
+
+## Séance 13 — l'exercice de statistiques
+
+`ex136.html` — six volets. C'est **le seul exercice de statistiques du livre**,
+et c'est pour lui que [`../stat9`](../stat9) a été ouvert ; son noyau
+(`stat.js`) est copié ici comme `repere.js` l'a été pour la géométrie.
+
+Deux effectifs y sont inconnus, et le tableau ne donne qu'une prise : « 30 % »
+sur la ligne des fréquences cumulées croissantes. Elle porte sur la **première**
+classe — c'est la seule lecture qui referme l'énoncé, puisqu'elle donne `b = 15`
+puis `a = 20`, les deux valeurs que la question 3 annonce. (Lue sur la deuxième
+classe elle donnerait `b = 7` et `a = 28`, que l'énoncé contredit. Une
+falsification rejoue cette lecture-là.)
+
+Et la médiane tombe juste : cumuls 15, 23, 43, 50, moitié 25, donc la lecture
+sur le polygone donne **exactement 62**. Rien à interpoler — c'est tout ce que
+le programme de 9ᵉ demande ici.
+
 ## Le repère — `repere.js`
 
 Les exercices 3 et 4 attendaient un fait que le moteur n'avait pas : les
@@ -283,13 +324,13 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 120            # 41 880 questions, 822 120 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 556/556
+    node verifier.js 120            # 47 040 questions, 874 200 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 617/617
     node _build.js .                # régénérer les pages
 
-## Quinze coquilles du livre, relevées par le calcul
+## Dix-huit coquilles du livre, relevées par le calcul
 
-Le validateur ne lit pas une intention : il recalcule. Quinze énoncés ne se
+Le validateur ne lit pas une intention : il recalcule. Dix-huit énoncés ne se
 referment pas sur eux-mêmes.
 
 1. **التمرين 1، 1)أ** — le livre écrit `(3√3 − 1)(4 − 5√3)`, qui vaut
@@ -383,7 +424,22 @@ referment pas sur eux-mêmes.
     `x² − 8x + 11 = 0` — l'équation de la partie I —, puis `x = 4 − √5` et
     `AN = 5/2`. **Le `/4` est tombé.**
 
-Ces quinze corrections sont écrites dans `seances.js` et signalées au maître ;
+16. **الحصّة 12، التمرين 1، 2** — d'un genre nouveau : un QCM dont **aucune
+    option n'est correcte**. De `a − 2√2 = b + 2√3 = c + 3` on tire
+    `a = b + 2√3 + 2√2` et `c = b + 2√3 − 3` ; comme `2√3 > 3` on a `c > b`, et
+    comme `2√2 + 3 > 0` on a `a > c`. L'ordre est donc **`b < c < a`**, qui
+    n'est proposé nulle part. La question est posée sans choix multiple.
+
+17. **الحصّة 12، التمرين 2، 2)أ** — « استنتج أن `CE = 2a+4` ». Avec `C(0 ; 3)`
+    et `E(2a+2 ; 3)`, `CE = 2a+2`. Les deux questions suivantes le confirment
+    sans appel : `BE² = 4a²+8a+40` et `DE² = 4a²+8a+8` ne sortent que d'une
+    abscisse égale à `2a+2`. **Le 4 est un 2.**
+
+18. **الحصّة 12، التمرين 3، I 1** — « بيّن أن `a = √7−1` و `a = √7+1` » : le
+    même nom deux fois. Le premier est `b`, et c'est ce que la question 2
+    (`a` inverse de `b/6`) exige.
+
+Ces dix-huit corrections sont écrites dans `seances.js` et signalées au maître ;
 elles ne sont pas glissées en silence.
 
 ## Ce que les falsifications ont appris

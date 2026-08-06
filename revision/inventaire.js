@@ -226,8 +226,14 @@
           // LA PREMIÈRE SÉANCE ENTIÈRE du livre : six exercices, six portés.
           // Ni doublon, ni exercice d'espace, ni statistiques.
           sujet: 'deux chiffres à trouver trois fois · sept nombres de deux mille chiffres · une expression et un triangle qui la redonne · deux expressions et leur facteur commun · un rectangle et une diagonale qui sort du cadre · un diamètre dont tout le reste découle' },
-        { seance: 12, pages: '40-43', exercices: 6, sujet: 'géométrie, espace et STATISTIQUES — la plus longue' },
-        { seance: 13, pages: '44-47', exercices: 6, sujet: 'géométrie, repère et statistiques — la séance de clôture' }
+        { seance: 12, pages: '40-43', exercices: 6, vu: true,
+          // COMPTAGE ET SUJET CORRIGÉS : la séance 12 ne porte AUCUNE
+          // statistique, contrairement à ce que l'estimation annonçait.
+          sujet: 'un QCM dont une question n\'a aucune bonne réponse · une expression et un repère qui la redonne · deux conjugués portés par un triangle · un isocèle qu\'une symétrie redresse · un équilatéral et son symétrique · une pyramide' },
+        { seance: 13, pages: '44-47', exercices: 6, vu: true,
+          // C'est la 13 — et elle seule — qui porte les statistiques : un seul
+          // exercice, le dernier du livre.
+          sujet: 'un repère et un parallélogramme · le nombre d\'or et deux cercles · un équilatéral, un losange et un cercle · une pyramide · un repère et un rectangle · LE SEUL EXERCICE DE STATISTIQUES DU LIVRE' }
       ],
       contenu: [
         { n: '1.1', questions: 3, notions: ['divisibilité par 12', 'reste d\'une puissance', 'arbre de choix'], sort: 'à faire' },
@@ -618,7 +624,58 @@
           sort: 'bibliothèque', ou: 'brevet ex116 — dix volets',
           pourquoi: 'BC = 4 sur un cercle de rayon 4 fait de OBC un ÉQUILATÉRAL, et '
                   + 'tout en découle : H est le milieu de [OB] donc AH = 6, CH = 2√3 '
-                  + 'est la hauteur, et ABE finit équilatéral de côté 8' }
+                  + 'est la hauteur, et ABE finit équilatéral de côté 8' },
+
+        // ── SÉANCE 12 — cinq exercices portés, un de l'espace ────────────────
+        { n: '12.1', questions: 3,
+          notions: ['comparer des radicaux par les carrés', 'mode d\'une série discrète',
+                    'diagonale de face d\'un cube'],
+          sort: 'bibliothèque', ou: 'brevet ex121 — trois volets',
+          pourquoi: 'la question 2 est un QCM SANS BONNE RÉPONSE : l\'ordre vrai est '
+                  + 'b < c < a, qui n\'est proposé nulle part. On pose la question '
+                  + 'sans choix multiple' },
+        { n: '12.2', questions: 11,
+          notions: ['valeur numérique', 'forme canonique', 'différence de deux carrés',
+                    'équation produit nul', 'repère', 'milieu', 'coordonnées',
+                    'distance entre deux points', 'Pythagore réciproque', 'alignement'],
+          sort: 'bibliothèque', ou: 'brevet ex122 — onze volets',
+          pourquoi: 'BED rectangle en E donne BE² + DE² = 64, c\'est-à-dire '
+                  + '8a² + 16a - 16 = 0 — exactement M = 0 de la partie I' },
+        { n: '12.3', questions: 7,
+          notions: ['rationaliser par le conjugué', 'valeur absolue', 'nombres inverses',
+                    'Pythagore', 'relation métrique', 'triangles semblables',
+                    'triangle isocèle'],
+          sort: 'bibliothèque', ou: 'brevet ex123 — sept volets',
+          pourquoi: 'a = √7+1 et b = √7−1 sont EXACTEMENT les deux côtés du triangle : '
+                  + 'AB² + AC² = 16 sans un radical, et AH = 6/4 = 3/2' },
+        { n: '12.4', questions: 7,
+          notions: ['symétrique et cercle de diamètre', 'Pythagore', 'droite des milieux',
+                    'relation métrique', 'centre de gravité', 'losange', 'aire'],
+          sort: 'bibliothèque', ou: 'brevet ex124 — sept volets',
+          pourquoi: 'C symétrique de A par rapport à O fait de O le centre du cercle '
+                  + 'circonscrit : ABC devient le triangle 6-8-10, et (CI) et (BO) '
+                  + 'sont deux médianes' },
+        { n: '12.5', questions: 9,
+          notions: ['hauteur d\'un équilatéral', 'symétrique', 'cercle de diamètre',
+                    'Pythagore', 'centre de gravité', 'droite des milieux',
+                    'rectangle', 'losange'],
+          sort: 'bibliothèque', ou: 'brevet ex125 — neuf volets',
+          pourquoi: 'A milieu de [OB] et AC = 6 = OB/2 : OBC est rectangle en C sans '
+                  + 'autre calcul, et [CA] en devient une médiane' },
+        { n: '12.6', questions: 8,
+          notions: ['pyramide régulière', 'section', 'perpendicularité dans l\'espace'],
+          sort: 'hors machinerie', pourquoi: 'géométrie de l\'ESPACE — aucun chapitre' },
+
+        // ── SÉANCE 13 — le seul exercice de statistiques du livre ────────────
+        { n: '13.6', questions: 6,
+          notions: ['série continue', 'effectifs inconnus', 'fréquence cumulée croissante',
+                    'cumuls', 'étendue', 'classe modale', 'moyenne par les centres',
+                    'MÉDIANE lue sur le polygone', 'probabilité'],
+          sort: 'bibliothèque', ou: 'brevet ex136 — six volets',
+          pourquoi: 'le « 30 % » du tableau porte sur la PREMIÈRE classe — c\'est la '
+                  + 'seule lecture qui donne b = 15 puis a = 20, les deux valeurs que '
+                  + 'l\'énoncé annonce. Et la médiane tombe juste : cumuls 15, 23, 43, '
+                  + '50, moitié 25, lecture exacte Me = 62 sans rien interpoler' }
       ],
       machine: ['l\'arbre de choix (dénombrement) n\'existe dans aucun chapitre',
                 'les restes de puissances — arith9 sait le faire, à relier',
@@ -695,6 +752,18 @@
         + 'font même pas un triangle. C\'est 2√5 dont le radical n\'a pas '
         + 'survécu à la mise en page : 4² + (2√5)² = 16 + 20 = 36 = 6², et le '
         + 'triangle est rectangle en A, ce que la question suivante demande.',
+        '12.1 q2 : « a − 2√2 = b + 2√3 = c + 3 donc… » suivi de trois ordres — '
+        + 'c<b<a, b<a<c, a<b<c. AUCUN n\'est correct : a = b + 2√3 + 2√2 et '
+        + 'c = b + 2√3 − 3, et comme 2√3 > 3 on a c > b, et comme 2√2 + 3 > 0 '
+        + 'on a a > c. L\'ordre vrai est b < c < a. La question est posée sans '
+        + 'choix multiple.',
+        '12.2 q2)أ : « استنتج أن CE = 2a+4 ». Avec C(0;3) et E(2a+2;3) on a '
+        + 'CE = 2a+2. Les deux questions suivantes le confirment sans appel : '
+        + 'BE² = 4a²+8a+40 et DE² = 4a²+8a+8 ne sortent que d\'une abscisse '
+        + 'égale à 2a+2. Le 4 est un 2.',
+        '12.3 I q1 : « بيّن أن a = √7−1 و a = √7+1 » — le même nom deux fois. '
+        + 'Le premier est b : a = √7+1 et b = √7−1, et c\'est ce que la '
+        + 'question 2 (a inverse de b/6) exige.',
         '11.3 II q4)أ : « S_AMN = 5√5 ». La question 2)ت vient de faire montrer '
         + 'que S ne dépasse pas 4√5 ≈ 8,94 ; or 5√5 ≈ 11,18. Avec 5√5/4 la '
         + 'condition donne exactement (4−x)² = 5, c\'est-à-dire x²−8x+11 = 0, '

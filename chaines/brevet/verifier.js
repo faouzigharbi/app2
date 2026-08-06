@@ -19,6 +19,7 @@
 const F = require('./noyau.js');
 const R = require('./repere.js');
 const E = require('./entiers.js');
+const T = require('./stat.js');
 require('./seances.js');
 require('./gens.js');
 
@@ -50,6 +51,17 @@ function rndPos() {
 //               longueurs, dans les deux ordres. Une étape qui écrirait
 //               « GN = 2√5 » est donc recalculée sur la figure, pas crue.
 function environnements(c) {
+  // Une SÉRIE STATISTIQUE. Le contrat est celui de la figure : on ne recopie
+  // pas les grandeurs, on les recalcule sur les seules données brutes — bornes
+  // (ou valeurs) et effectifs. Les noms disponibles aux étapes en sortent tout
+  // seuls : N, M, Me, E, na, ca, ra, fa, pa, ga, xa, ba…
+  if (c.serie) {
+    const s = T.serie(Object.assign({ nom: 'contrôle' }, c.serie));
+    const e = T.nommer(s);
+    for (const nom in (c.env || {})) e[nom] = F.analyser(c.env[nom], e);
+    e.__serie = s;
+    return [e];
+  }
   if (c.points) {
     // Deux passes, et l'ordre n'est pas arbitraire : un `env` peut SERVIR à
     // poser la figure — le x du carré ABCD —, ou au contraire en SORTIR —
@@ -204,6 +216,13 @@ function verifierBrut(brut) {
     const p = R.verifierFaits(c.faits, P, envs[0]);
     controles += (c.faits || []).length;
     probs.push(...p);
+  }
+  // LES FAITS DE LA SÉRIE — « la moyenne vaut 288/5 », « la médiane vaut 62 »,
+  // « le tableau cumulé est 15, 23, 43, 50 » : recalculés sur les effectifs.
+  if (c.serie) {
+    if (!(c.faits || []).length) probs.push('سلسلة بلا واقعة تُراقَب');
+    probs.push(...T.verifierFaits(c.faits, envs[0].__serie, envs[0]));
+    controles += (c.faits || []).length;
   }
   const t = brut.etapes.map(e => e.join(': '));
   if (new Set(t).size !== t.length) probs.push('مراحل مكرّرة');
@@ -1430,6 +1449,158 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.points.F = ['inter', 'O', 'G', 'A', 'E']; });
   pousse("OF annonce 8", parQuestion(116, 9),
     c => { c.controle.faits[2][3] = '8'; });
+
+  // ══ LA SÉANCE 12 ═══════════════════════════════════════════════════════
+  //
+  // ── التمرين 1 — le QCM, et la question sans bonne réponse ──────────────
+  //
+  // LA PREMIÈRE rejoue l'ordre « c < b < a » — la première des trois options
+  // imprimées. Elle exige 2√3 < 3, c'est-à-dire 12 < 9. Si le validateur
+  // l'acceptait, la seizième coquille n'aurait jamais été trouvée.
+  pousse("l ordre c < b < a, la premiere option du livre", parQuestion(121, 0),
+    c => { c.controle.claims[1][1] = "3 - 2√3"; });
+  pousse("2√3 et 3 compares a l envers", parQuestion(121, 0),
+    c => { c.etapes[5][1] = "2√3 < 3"; });
+  pousse("a - c calcule sans le 3", parQuestion(121, 0),
+    c => { c.controle.claims[0][1] = "2√2"; });
+  pousse("le 4 declare moyenne de la serie", parQuestion(121, 1),
+    c => { c.controle.faits.find(f => f[0] === 'moyenne')[1] = "4"; });
+  pousse("le 4 declare etendue de la serie", parQuestion(121, 1),
+    c => { c.controle.faits.find(f => f[0] === 'etendue')[1] = "4"; });
+  pousse("un effectif change : le mode se deplace", parQuestion(121, 1),
+    c => { c.controle.serie.effectifs[0] = 5; });
+  pousse("la diagonale de face prise egale au cote", parQuestion(121, 2),
+    c => { c.controle.claims[0][1] = "1"; });
+  pousse("le triangle declare rectangle : d² + d² = d²", parQuestion(121, 2),
+    c => { c.etapes[7][1] = "4 - d^2 = 0"; });
+
+  // ── التمرين 2 — l'expression et le repère ──────────────────────────────
+  //
+  // LA DEUXIÈME COQUILLE DE LA SÉANCE : CE = 2a+4 tel qu'imprimé. La figure
+  // le contredit — E est en 2a+2, et c'est ce que BE² et DE² confirment.
+  pousse("CE = 2a + 4, le nombre imprime dans le livre", parQuestion(122, 6),
+    c => { c.controle.faits.find(f => f[0] === 'longueur' && f[1] === 'C')[3] = '2a + 4'; });
+  pousse("M en √3/2 decale", parQuestion(122, 0),
+    c => { c.controle.claims[0][1] = "√3 - 1/4"; });
+  pousse("M + 3 lu (a + 1)^2 + 1", parQuestion(122, 1),
+    c => { c.controle.claims[0][1] = "(a + 1)^2 + 1"; });
+  pousse("factorisation avec √2 au lieu de √3", parQuestion(122, 2),
+    c => { c.controle.claims[0][1] = "(a + 1 - √2)(a + 1 + √2)"; });
+  pousse("la racine decalee", parQuestion(122, 3),
+    c => { c.controle.env.a = "-1 + √2"; });
+  pousse("B place en (0 ; -5)", parQuestion(122, 4),
+    c => { c.controle.points.B = ['point', '0', '-5']; });
+  pousse("OM annonce a", parQuestion(122, 5),
+    c => { c.controle.faits[1][3] = 'a'; });
+  pousse("E pris sur la parallele menee par D", parQuestion(122, 6),
+    c => { c.controle.points.W = ['translate', 'D', 'O', 'I']; });
+  pousse("l abscisse de E lue a + 1", parQuestion(122, 7),
+    c => { c.controle.faits[0][2] = 'a + 1'; });
+  pousse("BE² ecrit avec 4 au lieu de 40", parQuestion(122, 8),
+    c => { c.controle.faits[0][3] = '4a^2 + 8a + 4'; });
+  pousse("le triangle BED declare rectangle en B", parQuestion(122, 9),
+    c => { c.controle.faits[0] = ['rectangle-en', 'B', 'E', 'D']; });
+  pousse("F pris symetrique de E par rapport a D", parQuestion(122, 10),
+    c => { c.controle.points.F = ['sym', 'E', 'D']; });
+
+  // ── التمرين 3 — les deux conjugués et le triangle ──────────────────────
+  pousse("a et b confondus, comme dans l enonce imprime", parQuestion(123, 0),
+    c => { c.controle.claims[0][1] = "√7 - 1"; });
+  pousse("la valeur absolue laissee negative", parQuestion(123, 0),
+    c => { c.controle.env.b = c.controle.env.b.replace("|-√7 - 1|", "(-√7 - 1)"); });
+  pousse("le produit ab annonce 8", parQuestion(123, 1),
+    c => { c.controle.claims[0][1] = "8"; });
+  pousse("AB² developpe sans le double produit", parQuestion(123, 2),
+    c => { c.controle.faits[0][3] = '8'; });
+  pousse("C place a AC = √7 + 1", parQuestion(123, 2),
+    c => { c.controle.points.C = ['point', '0', '√7 + 1']; });
+  pousse("BC annonce 5", parQuestion(123, 3),
+    c => { c.controle.faits[0][3] = '5'; });
+  pousse("AH calcule sans diviser par le hypotenuse", parQuestion(123, 4),
+    c => { c.controle.faits[0][3] = '6'; });
+  pousse("IJ ecrit sans le quart", parQuestion(123, 5),
+    c => { c.controle.faits[0][3] = '(√7 - 1)x'; });
+  pousse("J pris projete de I sur (AC)", parQuestion(123, 5),
+    c => { c.controle.points.J = ['proj', 'I', 'A', 'C']; });
+  pousse("x decale d une unite", parQuestion(123, 6),
+    c => { c.controle.env.x = "4√7 - 7"; });
+
+  // ── التمرين 4 — l'isocèle redressé ─────────────────────────────────────
+  pousse("O place a OA = 4 : le triangle n est plus isocele", parQuestion(124, 0),
+    c => { c.controle.points.O = ['point', '3', '√7']; });
+  pousse("le triangle ABC declare rectangle en A", parQuestion(124, 0),
+    c => { c.controle.faits[0] = ['rectangle-en', 'A', 'B', 'C']; });
+  pousse("OI pris egal a BC", parQuestion(124, 1),
+    c => { c.controle.faits[1][3] = '8'; });
+  pousse("BK calcule avec le mauvais cote", parQuestion(124, 2),
+    c => { c.controle.faits[0][3] = '24/6'; });
+  pousse("K pris projete de B sur (AB)", parQuestion(124, 2),
+    c => { c.controle.points.K = ['proj', 'B', 'A', 'B']; });
+  pousse("le rapport IJ/IB annonce 2/3", parQuestion(124, 3),
+    c => { c.controle.faits[0][5] = '2/3'; });
+  pousse("G declare centre de gravite de ABO", parQuestion(124, 3),
+    c => { c.controle.faits[3] = ['centre-gravite', 'G', 'A', 'B', 'O']; });
+  pousse("AOBN declare carre", parQuestion(124, 4),
+    c => { c.controle.faits[0] = ['carre', 'A', 'O', 'B', 'N']; });
+  pousse("J declare centre de gravite de AON", parQuestion(124, 5),
+    c => { c.controle.faits[0] = ['centre-gravite', 'J', 'A', 'O', 'N']; });
+  pousse("l aire de ONP prise egale a celle de BON", parQuestion(124, 6),
+    c => { c.controle.faits[0][4] = '12'; });
+
+  // ── التمرين 5 — l'équilatéral et son symétrique ────────────────────────
+  pousse("AI calcule comme la moitie du cote", parQuestion(125, 0),
+    c => { c.controle.faits[0][3] = '3'; });
+  pousse("A deplace : le triangle n est plus equilateral", parQuestion(125, 0),
+    c => { c.controle.points.A = ['point', '3', '4']; });
+  pousse("le triangle OBC declare rectangle en B", parQuestion(125, 1),
+    c => { c.controle.faits[0] = ['rectangle-en', 'B', 'O', 'C']; });
+  pousse("O pris symetrique de A par rapport a B", parQuestion(125, 1),
+    c => { c.controle.points.O = ['sym', 'A', 'B']; });
+  pousse("OC annonce 6√2", parQuestion(125, 2),
+    c => { c.controle.faits[0][3] = '6√2'; });
+  pousse("le rapport GA/GC pris a l envers", parQuestion(125, 3),
+    c => { c.controle.faits[2][5] = '2'; });
+  pousse("G declare centre de gravite de ABC", parQuestion(125, 4),
+    c => { c.controle.faits[0] = ['centre-gravite', 'G', 'A', 'B', 'C']; });
+  pousse("IG pris egal au tiers de OI mal simplifie", parQuestion(125, 5),
+    c => { c.controle.faits[0][3] = '√13/3'; });
+  pousse("M pris milieu de [OB] au lieu de [OC]", parQuestion(125, 6),
+    c => { c.controle.points.M = ['milieu', 'O', 'B']; });
+  pousse("AMCI declare carre", parQuestion(125, 7),
+    c => { c.controle.faits[0] = ['carre', 'A', 'M', 'C', 'I']; });
+  pousse("D pris sur la parallele a (AC)", parQuestion(125, 8),
+    c => { c.controle.points.Z = ['translate', 'C', 'A', 'C']; });
+
+  // ══ LA SÉANCE 13 — l'exercice de STATISTIQUES ══════════════════════════
+  //
+  // Sur une série, la falsification qui compte est de CHANGER UN EFFECTIF. Si
+  // la série peut bouger sans que rien ne proteste, rien n'était recalculé.
+  pousse("un effectif change : toute la serie bouge", parQuestion(136, 3),
+    c => { c.controle.serie.effectifs[2] = 25; });
+  pousse("le 30% lu sur la deuxieme classe : b = 7 au lieu de 15",
+    parQuestion(136, 1), c => { c.controle.serie.effectifs[0] = 7; });
+  pousse("la serie declaree discrete", parQuestion(136, 0),
+    c => { c.controle.faits[0] = ['discrete']; });
+  pousse("les voitures sous 60 km/h comptees 15", parQuestion(136, 2),
+    c => { c.controle.faits[0][2] = '15'; });
+  pousse("la moyenne calculee sur les bornes basses", parQuestion(136, 3),
+    c => { c.controle.faits.find(f => f[0] === 'moyenne')[1] = '47.6'; });
+  pousse("la classe modale prise a la premiere", parQuestion(136, 3),
+    c => { const f = c.controle.faits.find(x => x[0] === 'classe-modale');
+           f[1] = '20'; f[2] = '40'; });
+  // La médiane, visée là où elle porte : au centre de la classe médiane, ce
+  // qui est l'erreur exacte que la lecture sur le polygone interdit.
+  pousse("mediane lue au centre de la classe mediane (70 au lieu de 62)",
+    parQuestion(136, 4), c => {
+      c.controle.faits.find(f => f[0] === 'mediane')[1] = '70'; });
+  pousse("mediane lue a l ordonnee N au lieu de N/2", parQuestion(136, 4),
+    c => { c.controle.faits.find(f => f[0] === 'mediane-au')[1] = 'N'; });
+  pousse("la probabilite ecrite comme un effectif", parQuestion(136, 5),
+    c => { c.controle.faits.find(f => f[0] === 'probabilite')[2] = '27'; });
+
+  // ── le garde-fou du contrat « série » ──────────────────────────────────
+  pousse("serie sans aucune fait a controler", parQuestion(136, 0),
+    c => { c.controle.faits = []; });
 
   // ── les garde-fous du contrat « grands entiers » ───────────────────────
   pousse("exercice en grands entiers sans aucun controle", parQuestion(112, 0),
