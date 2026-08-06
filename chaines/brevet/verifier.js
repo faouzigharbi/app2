@@ -33,6 +33,10 @@ function rnd() {
   while (n === 0) n = F.ent(-9, 9);
   return F.S(F.rat(n, F.ent(1, 6)));
 }
+// Un rationnel STRICTEMENT POSITIF — pour les lettres qui passent sous un radical.
+function rndPos() {
+  return F.S(F.rat(F.ent(1, 9), F.ent(1, 6)));
+}
 
 // Les environnements dans lesquels CHAQUE étape doit se vérifier.
 //   c.env     — des expressions nommées, évaluées dans l'ordre : le B du 18
@@ -62,9 +66,14 @@ function environnements(c) {
     return [e];
   }
   if (c.libres) {
+    // c.positifs — des lettres tirées STRICTEMENT POSITIVES. Sans cela une
+    // identité qui porte un √a ne pourrait pas être testée : le tirage rendrait
+    // un négatif une fois sur deux, et la vérification s'arrêterait sur une
+    // exception au lieu de dire quelque chose.
+    const pos = new Set(c.positifs || []);
     return Array.from({ length: ECHANTILLONS }, () => {
       const e = {};
-      c.libres.forEach(v => { e[v] = rnd(); });
+      c.libres.forEach(v => { e[v] = pos.has(v) ? rndPos() : rnd(); });
       for (const nom in (c.derives || {})) e[nom] = F.analyser(c.derives[nom], e);
       return e;
     });
@@ -912,6 +921,72 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.points.E = ['sym', 'L', 'I']; });
   pousse("IJ pris egal a AE", parQuestion(74, 7),
     c => { c.controle.faits[4][3] = '3'; });
+
+  // ══ LA SÉANCE 8 ════════════════════════════════════════════════════════
+  // ── التمرين 1 — l'expression, puis les trois moyennes ──────────────────
+  pousse("A en 3/4 decale", parQuestion(81, 0), c => { c.controle.claims[0][1] = '1'; });
+  pousse("le signe du terme median oublie", parQuestion(81, 1),
+    c => { c.controle.claims[0][1] = '-3/2'; });
+  pousse("le 1 remplace par 2 : le carre ne se ferme plus", parQuestion(81, 2),
+    c => { c.controle.claims[0][0] = 'A + 2'; });
+  pousse("factorisation de A avec les racines echangees", parQuestion(81, 3),
+    c => { c.controle.claims[0][1] = '(2x + 5/2)(2x + 1/2)'; });
+  pousse("le double produit oublie dans le developpement", parQuestion(81, 4),
+    c => { c.controle.claims[0][1] = '1/a + 1/b'; });
+  pousse("√a √b annonce √(a + b)", parQuestion(81, 4),
+    c => { c.controle.claims[1][1] = '√(a + b)'; });
+  pousse("la moyenne harmonique mal ecrite", parQuestion(81, 5),
+    c => { c.controle.claims[0][1] = 'a b/(a + b)'; });
+  pousse("le developpement de (√a - √b)^2 faux", parQuestion(81, 6),
+    c => { c.controle.claims[0][1] = 'a + b - √(a b)'; });
+  pousse("la proportion faussee : m h annonce differe de n^2", parQuestion(81, 7),
+    c => { c.controle.claims[0][1] = 'n'; });
+  pousse("m h annonce a + b", parQuestion(81, 7), c => { c.controle.claims[1][1] = 'a + b'; });
+
+  // ── التمرين 3 — l'équilatéral qui devient rectangle ────────────────────
+  pousse("O deplace : OBC n est plus equilateral", parQuestion(83, 0),
+    c => { c.controle.points.O = ['point', '2', '3√3']; });
+  pousse("BI annonce 4/3", parQuestion(83, 0), c => { c.controle.faits[0][3] = '4/3'; });
+  pousse("A pris symetrique de C par rapport a O", parQuestion(83, 1),
+    c => { c.controle.points.A = ['sym', 'C', 'O']; });
+  pousse("l angle droit annonce en O", parQuestion(83, 1),
+    c => { c.controle.faits[0] = ['rectangle-en', 'O', 'A', 'B']; });
+  pousse("I place au milieu de [BC]", parQuestion(83, 2),
+    c => { c.controle.points.I = ['milieu', 'B', 'C']; });
+  pousse("le rapport des deux tiers annonce 1/3", parQuestion(83, 2),
+    c => { c.controle.faits[2][5] = '1/3'; });
+  pousse("AMC declare rectangle en A", parQuestion(83, 3),
+    c => { c.controle.faits[0] = ['rectangle-en', 'A', 'M', 'C']; });
+  pousse("M declare milieu de [AC]", parQuestion(83, 4),
+    c => { c.controle.faits[0] = ['milieu', 'M', 'A', 'C']; });
+  pousse("N pris milieu de [OC]", parQuestion(83, 5),
+    c => { c.controle.faits[0] = ['milieu', 'N', 'O', 'C']; });
+  pousse("H declare orthocentre du mauvais triangle", parQuestion(83, 6),
+    c => { c.controle.faits[0] = ['orthocentre', 'H', 'O', 'B', 'C']; });
+  pousse("J pris milieu de [OB]", parQuestion(83, 6),
+    c => { c.controle.points.J = ['milieu', 'O', 'B']; });
+  pousse("CK annonce 4", parQuestion(83, 7), c => { c.controle.faits[4][3] = '4'; });
+  pousse("le rayon du cercle de centre G annonce 4", parQuestion(83, 8),
+    c => { c.controle.faits[1][3] = '4'; });
+  pousse("G pris milieu de [CK]", parQuestion(83, 8),
+    c => { c.controle.points.G = ['milieu', 'C', 'K']; });
+
+  // ── التمرين 5 — la factorisation cachée ────────────────────────────────
+  pousse("la factorisation de 3√2 - √6 fausse", parQuestion(85, 0),
+    c => { c.controle.claims[0][1] = '√2(3 + √3)'; });
+  pousse("a decale", parQuestion(85, 1), c => { c.controle.claims[0][1] = '3 + 3√5'; });
+  pousse("b decale", parQuestion(85, 1), c => { c.controle.claims[1][1] = '2 + 2√3'; });
+  pousse("le facteur commun du numerateur faux", parQuestion(85, 1),
+    c => { c.controle.claims[2][1] = '(1 + √3)(3 + √6)'; });
+  pousse("le carre de 2√5 faux", parQuestion(85, 2), c => { c.controle.claims[1][1] = '10'; });
+  pousse("la difference a - b faussee", parQuestion(85, 3),
+    c => { c.controle.claims[0][1] = '1 - 2√3 - 3√5'; });
+  pousse("la decomposition en deux negatifs fausse", parQuestion(85, 3),
+    c => { c.controle.claims[1][1] = '(2√3 - 2√5) + (1 + √5)'; });
+  pousse("le facteur commun de a faux", parQuestion(85, 4),
+    c => { c.controle.claims[0][1] = '3(1 + √5)'; });
+  pousse("3b^2 mal calcule", parQuestion(85, 5), c => { c.controle.claims[0][1] = '48 + 24√3'; });
+  pousse("3a^2 mal calcule", parQuestion(85, 5), c => { c.controle.claims[1][1] = '162 + 54√5'; });
 
   // ══ LA SÉANCE 9 ════════════════════════════════════════════════════════
   // ── التمرين 1 — la valeur absolue sous le radical, et les sens d'inégalité ──

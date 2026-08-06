@@ -84,6 +84,17 @@
   page(74, 'الحصّة 7 — التمرين 4 — ', 'العلاقة المترية، ثمّ مثلّث متقايس الأضلاع',
        S.seance7ex4, 8);
 
+  // La séance 8 : son exercice 2 REPREND mot pour mot les exercices 4 et 5 de la
+  // séance 5 — mêmes intervalles, mêmes expressions, jusqu'à la numérotation
+  // cassée (4, 5, 6 puis 4, 3, 4). ex54 et ex55 les portent déjà. Son exercice 4
+  // est une pyramide, donc de l'espace.
+  page(81, 'الحصّة 8 — التمرين 1 — ', 'عبارة، ثمّ سلسلة المعدّلات الثلاثة',
+       S.seance8ex1, 8);
+  page(83, 'الحصّة 8 — التمرين 3 — ', 'مثلّث متقايس الأضلاع يصير قائما',
+       S.seance8ex3, 9);
+  page(85, 'الحصّة 8 — التمرين 5 — ', 'قيمتان مطلقتان، و تفكيك مخفيّ',
+       S.seance8ex5, 6);
+
   // La séance 9 ne compte que trois pages : son exercice 3 est le MÊME que
   // celui de la séance 7 — mêmes données, mêmes questions, numérotation
   // continuée (IV, V, VI). On ne le double pas ; ex74 le porte déjà.

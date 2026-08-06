@@ -126,6 +126,23 @@ Trois choses que ces exercices disent et que l'énoncé tait :
   grise aux deux expressions : `2S = x² + 2x + 8`, donc `S = E + 23/2` et
   `S = (F + 11)/2`. D'où les deux valeurs demandées — `S = 23/2 ⟺ E = 0 ⟺ x = 3`.
 
+## Séance 8 — trois exercices portés
+
+| page | exercice | volets | ce qui s'y joue |
+|---|---|---|---|
+| `ex81.html` | التمرين 1 | 8 | le `5/4` est exactement ce qu'il faut pour qu'**un 1 de plus ferme le carré** ; puis deux carrés positifs démontrent `m ≥ n ≥ h` et `n² = m h` |
+| — | التمرين 2 | — | **doublon des exercices 4 et 5 de la séance 5**, fusionnés — mêmes intervalles, mêmes expressions, jusqu'à la numérotation cassée (4, 5, 6 puis 4, 3, 4). `ex54` et `ex55` les portent déjà. |
+| `ex83.html` | التمرين 3 | 9 | `C` est le milieu de `[OA]`, donc `[BC]` est une **médiane** de `OAB` — et `BI = 2BC/3` fait de `I` son centre de gravité. Tout s'enchaîne de là, jusqu'à quatre points concycliques |
+| `ex85.html` | التمرين 5 | 6 | le numérateur de `b` ne se réduit pas, il se **factorise** : `3(1−√3) + √6 − 3√2 = (1−√3)(3+√6)`, et le dénominateur s'en va |
+
+L'exercice 4 est une **pyramide** — de l'espace, sans chapitre.
+
+L'exercice 1 a demandé une pièce au validateur : `c.positifs`, un tirage
+**strictement positif** pour les lettres qui passent sous un radical. Sans lui,
+l'identité `(1/√a − 1/√b)² = 1/a + 1/b − 2/√(ab)` n'aurait pas pu être testée —
+le tirage aurait rendu un négatif une fois sur deux, et la vérification se
+serait arrêtée sur une exception au lieu de dire quelque chose.
+
 ## Séance 9 — lue en entier, trois pages
 
 | page | exercice | volets | ce qui s'y joue |
@@ -181,8 +198,8 @@ rebat que l'ordre des étapes. Ce que le validateur contrôle reste entier :
 chaque étape est réanalysée et **recalculée** en arithmétique exacte sur
 ℚ[√d], et chaque affirmation de l'énoncé aussi.
 
-    node verifier.js 40             # 10 120 questions, 155 360 relations, 0 erreur
-    CONTRE_EXEMPLES=1 node verifier.js   # 398/398
+    node verifier.js 40             # 11 040 questions, 184 600 relations, 0 erreur
+    CONTRE_EXEMPLES=1 node verifier.js   # 432/432
     node _build.js .                # régénérer les pages
 
 ## Dix coquilles du livre, relevées par le calcul

@@ -214,7 +214,8 @@
           sujet: 'un rectangle qui glisse et un 100 qui ne bouge pas · deux inverses et quatre expressions qui s\'effondrent · le triangle 6-8-10 dans un repère · un en-tête VIDE · le nombre d\'or dessiné par un carré · un parallélépipède' },
         { seance: 7, pages: '24-26', exercices: 4, vu: true,
           sujet: 'radicaux et ORDRE · deux cercles emboîtés jusqu\'à l\'orthocentre · intervalles et aire d\'un carré découpé · relation métrique et triangle équilatéral' },
-        { seance: 8, pages: '27-29', exercices: 5, sujet: 'géométrie et ESPACE — la plus chargée en solides' },
+        { seance: 8, pages: '27-29', exercices: 5, vu: true,
+          sujet: 'une expression puis la chaîne des trois moyennes · UN DOUBLON de la séance 5 · un équilatéral qui devient rectangle · une pyramide · deux valeurs absolues et une factorisation cachée' },
         { seance: 9, pages: '30-32', exercices: 4, vu: true,
           sujet: 'radicaux, encadrements et une inéquation · trapèze rectangle et deux médianes · UN DOUBLON de la séance 7 · trapèze où l\'angle droit se propage' },
         { seance: 10, pages: '33-36', exercices: 2, sujet: 'géométrie — deux longs exercices seulement' },
@@ -459,6 +460,37 @@
           sort: 'bibliothèque', ou: 'brevet ex74 — huit volets',
           pourquoi: 'BH = 3√3 par deux chemins — la relation métrique puis l\'aire — '
                   + 'et le 3 de AH n\'était pas choisi au hasard : AH = HI = AI = 3' },
+
+        // ── SÉANCE 8 — trois exercices portés ; un doublon, un espace ──────
+        { n: '8.1', questions: 8,
+          notions: ['valeur numérique', 'forme canonique', 'différence de deux carrés',
+                    'moyennes arithmétique, géométrique et harmonique', 'proportion'],
+          sort: 'bibliothèque', ou: 'brevet ex81 — huit volets',
+          pourquoi: 'le 5/4 est exactement ce qu\'il faut pour qu\'un 1 de plus ferme le '
+                  + 'carré ; puis deux carrés positifs démontrent m ≥ n ≥ h et n² = mh' },
+        { n: '8.2', questions: 8,
+          notions: ['intervalles', 'encadrement d\'un carré', 'valeur absolue'],
+          sort: 'bibliothèque',
+          ou: 'brevet ex54 et ex55 — c\'est le MÊME exercice que la séance 5, '
+            + 'exercices 4 et 5, fusionnés',
+          pourquoi: 'mêmes intervalles, mêmes expressions, jusqu\'à la numérotation '
+                  + 'cassée (4, 5, 6 puis 4, 3, 4). On ne double pas les pages' },
+        { n: '8.3', questions: 9,
+          notions: ['triangle équilatéral', 'symétrique', 'Pythagore réciproque',
+                    'centre de gravité', 'cercle de diamètre', 'droite des milieux',
+                    'orthocentre', 'points concycliques'],
+          sort: 'bibliothèque', ou: 'brevet ex83 — neuf volets',
+          pourquoi: 'C est le milieu de [OA], donc [BC] est une MÉDIANE de OAB — et '
+                  + 'BI = 2BC/3 fait de I son centre de gravité. Tout s\'enchaîne de là' },
+        { n: '8.4', questions: 8,
+          notions: ['pyramide', 'droite ⊥ plan', 'intersection de plans', 'volume'],
+          sort: 'hors machinerie', pourquoi: 'la géométrie de l\'espace n\'a aucun chapitre' },
+        { n: '8.5', questions: 6,
+          notions: ['valeur absolue', 'factorisation cachée d\'un numérateur',
+                    'signe', 'comparer', 'somme de trois inégalités'],
+          sort: 'bibliothèque', ou: 'brevet ex85 — six volets',
+          pourquoi: 'le numérateur de b ne se réduit pas, il se FACTORISE : '
+                  + '3(1−√3) + √6 − 3√2 = (1−√3)(3+√6), et le dénominateur s\'en va' },
 
         // ── SÉANCE 9 — LUE EN ENTIER ; son exercice 3 EST celui de la 7 ────
         { n: '9.1', questions: 9,
