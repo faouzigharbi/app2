@@ -90,7 +90,7 @@ const page = (n, titre) => `<!doctype html>
 </main>
 
 <script src="noyau.js"></script>
-<script src="seances.js"></script>
+<script <script src="repere.js"></script>\n  <script src="espace.js"></script>\n  <script src="figure.js"></script>\n  <script src="seances.js"></script>
 <script src="gens.js"></script>
 
 <script src="ex${n}.js"></script>

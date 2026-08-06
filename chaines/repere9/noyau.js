@@ -479,12 +479,36 @@
   //
   // `enonce` reste intact pour le validateur : chaque ligne n'est vérifiée
   // qu'une fois, dans le volet qui l'introduit.
+  // LA FIGURE ENTRE DANS L'ÉNONCÉ, une fois, au volet qui la pose. Elle se
+  // déduit des faits de TOUS les volets — même module, même principe que le
+  // brevet : le dessin sort de ce que le validateur recalcule, jamais d'un
+  // tracé écrit à la main.
+  function figurer(volets) {
+    const dessin = (typeof require === 'function' && typeof module !== 'undefined')
+      ? require('./figure.js') : racine.Figure;
+    if (!dessin) return null;
+    let decl = null;
+    const faits = [];
+    for (const v of volets) {
+      const c = v.controle || {};
+      if (!c.points) continue;
+      if (!decl) decl = c.points;
+      for (const f of (c.faits || [])) faits.push(f);
+    }
+    if (!decl) return null;
+    try { const svg = dessin.dessiner(decl, faits, {}); return svg ? { brut: svg } : null; }
+    catch (e) { return null; }
+  }
+
   function contextualiser(volets) {
     const pose = [];
+    const svg = figurer(volets);
+    let posee = false;
     return volets.map(v => {
       const lignes = (v.enonce || []).slice();
       const question = lignes.pop();
       for (const l of lignes) if (pose.indexOf(l) < 0) pose.push(l);
+      if (svg && !posee && (v.controle || {}).points) { pose.push(svg); posee = true; }
       return Object.assign({}, v, { enonceComplet: pose.concat([question]) });
     });
   }
