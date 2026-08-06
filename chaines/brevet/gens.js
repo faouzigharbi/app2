@@ -29,6 +29,11 @@
 
   page(2621, '2026 · الحصّة 2 — التمرين 1 — ', 'سلسلة حصر تنغلق على نفسها',
        S.livre26seance2ex1, 5);
+  // L'exercice 5 de cette séance N'EST PAS porté : voir le README — son A(1;2)
+  // ne donne aucun parallélogramme, alors que I(1;0) est bien le centre de
+  // gravité de B, C et D. À faire arbitrer par le maître.
+  page(2626, '2026 · الحصّة 2 — التمرين 6 — ', 'معلم حيث كلّ شيء يسقط على معيّن',
+       S.livre26seance2ex6, 6);
 
   // LA SÉANCE 1 — la plus longue du livre (douze exercices) et la dernière
   // ouverte, parce qu'elle vit presque entièrement d'ARBRE DE CHOIX. La pièce

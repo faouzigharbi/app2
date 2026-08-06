@@ -1468,6 +1468,27 @@ if (process.env.CONTRE_EXEMPLES) {
     c => { c.controle.faits[2][3] = '8'; });
 
   // ══ LE LIVRE 2026 ══════════════════════════════════════════════════════
+  pousse("A place a (-2 ; 4) : AC n est plus 3√5", parQuestion(2626, 0),
+    c => { c.controle.points.A = ['point', '-2', '4']; });
+  pousse("AM confondu avec AB", parQuestion(2626, 0),
+    c => { c.controle.faits[1][3] = '3'; });
+  pousse("le rapport AJ/AI annonce 3/2", parQuestion(2626, 1),
+    c => { c.controle.faits[1][5] = '3/2'; });
+  pousse("E pris sur (BI) au lieu de (BJ)", parQuestion(2626, 2),
+    c => { c.controle.points.E = ['inter', 'B', 'I', 'A', 'C']; });
+  pousse("l ordonnee de E lue 2/3", parQuestion(2626, 2),
+    c => { c.controle.faits[1][2] = '2/3'; });
+  pousse("F pris symetrique de E par rapport a O", parQuestion(2626, 3),
+    c => { c.controle.points.F = ['sym', 'E', 'O']; });
+  pousse("BECF declare carre", parQuestion(2626, 4),
+    c => { c.controle.faits[0] = ['carre', 'B', 'E', 'C', 'F']; });
+  pousse("l aire du losange comptee sans le demi", parQuestion(2626, 4),
+    c => { c.controle.faits[5][4] = '9'; });
+  pousse("BH calcule sur [BC] au lieu de [CF]", parQuestion(2626, 5),
+    c => { c.controle.faits[0][3] = '3/2'; });
+  pousse("H pris projete de B sur (CE)", parQuestion(2626, 5),
+    c => { c.controle.points.H = ['proj', 'B', 'C', 'E']; });
+
   pousse("a et b compares a l envers", parQuestion(2621, 0),
     c => { c.controle.claims[0][1] = "4√5 - 9"; });
   pousse("(4√5)² lu 20", parQuestion(2621, 0),

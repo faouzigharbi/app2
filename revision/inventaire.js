@@ -911,7 +911,14 @@
                   + 'quatre points A(1;2), B, C, D ne donne un parallélogramme — les trois '
                   + 'couples de milieux de diagonales diffèrent. Le A imprimé ne referme pas '
                   + 'la question 1' },
-        { n: '2.6', questions: 6, notions: ['repère', 'alignement', 'losange', 'aire', 'projection'], sort: 'à faire' },
+        { n: '2.6', questions: 6,
+          notions: ['repère', 'distances', 'alignement et rapport', 'intersection de droites',
+                    'symétrique', 'losange par les diagonales', 'aire', 'projection orthogonale'],
+          sort: 'bibliothèque', ou: 'brevet ex2626 — six volets',
+          pourquoi: 'E, l\'intersection de (BJ) et (AC), tombe en (1 ; 3/2) — exactement '
+                  + 'au-dessus de I(1 ; 0). Son symétrique par rapport à I donne alors un '
+                  + 'losange dont les diagonales se coupent en leur milieu ET '
+                  + 'perpendiculairement, sans mesurer un seul côté' },
 
         // ── LE BALAYAGE ARITHMÉTIQUE ET RADICAUX DES HUIT SÉANCES ───────────
         // Cinq exercices de radicaux hors séance 1, et les CINQ sont déjà dans
