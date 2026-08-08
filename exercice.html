@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تمرّن | Devoirati</title>
+<link rel="stylesheet" href="assets/css/pilier.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <div class="brand">Devoirati</div>
+    <h1 id="page-title">تمرّن</h1>
+    <p id="page-summary"></p>
+    <nav class="site-nav">
+      <a href="index.html">الفهرس</a>
+      <a href="fiche.html" id="link-fiche">إنشاء ورقة تمارين (PDF)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="breadcrumb"><a href="index.html">الرياضيات — التاسعة</a> ← <span id="crumb"></span></p>
+
+  <div class="panel">
+    <div class="toolbar">
+      <div class="field">
+        <label for="gen">التمرين</label>
+        <select id="gen"></select>
+      </div>
+      <div class="field">
+        <label for="level">المستوى</label>
+        <select id="level"></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="app"></div>
+</main>
+
+<script src="assets/js/core/frac.js"></script>
+<script src="assets/js/core/rng.js"></script>
+<script src="assets/js/core/render.js"></script>
+<script src="assets/js/core/registry.js"></script>
+<script src="assets/js/core/engine.js"></script>
+<script src="assets/js/generators/fractions.js"></script>
+<script src="assets/js/generators/puissances.js"></script>
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var genSelect = document.getElementById('gen');
+  var levelSelect = document.getElementById('level');
+  var app = document.getElementById('app');
+
+  var all = DV.registry.all();
+  var current = DV.registry.get(params.get('g')) || all[0];
+
+  DV.registry.chapters().forEach(function (ch) {
+    var group = document.createElement('optgroup');
+    group.label = ch.label;
+    ch.generators.forEach(function (g) {
+      var opt = new Option(g.title, g.id, false, g.id === current.id);
+      group.appendChild(opt);
+    });
+    genSelect.appendChild(group);
+  });
+
+  function fillLevels(gen, preferred) {
+    levelSelect.innerHTML = '';
+    gen.levels.forEach(function (l) {
+      levelSelect.appendChild(new Option(l.label, l.id, false, l.id === preferred));
+    });
+    if (!preferred) levelSelect.selectedIndex = 0;
+  }
+
+  function start() {
+    var gen = DV.registry.get(genSelect.value);
+    document.title = gen.title + ' | Devoirati';
+    document.getElementById('page-title').textContent = gen.title;
+    document.getElementById('page-summary').textContent = gen.summary;
+    document.getElementById('crumb').textContent = gen.title;
+    document.getElementById('link-fiche').href = 'fiche.html?g=' + encodeURIComponent(gen.id);
+
+    var url = new URL(location.href);
+    url.searchParams.set('g', gen.id);
+    url.searchParams.set('n', levelSelect.value);
+    history.replaceState(null, '', url);
+
+    DV.engine.mount(app, gen, levelSelect.value);
+  }
+
+  genSelect.addEventListener('change', function () {
+    fillLevels(DV.registry.get(genSelect.value));
+    start();
+  });
+  levelSelect.addEventListener('change', start);
+
+  fillLevels(current, params.get('n'));
+  start();
+})();
+</script>
+</body>
+</html>

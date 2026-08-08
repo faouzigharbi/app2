@@ -1,0 +1,260 @@
+/* Devoirati — pilier « الرياضيات — التاسعة أساسي »
+   Feuille unique : jetons de design, rendu mathématique, interface, impression. */
+
+:root {
+  --bleu: #1d4ed8;
+  --bleu-clair: #eff6ff;
+  --bleu-fonce: #1e3a8a;
+  --vert: #15803d;
+  --vert-clair: #f0fdf4;
+  --rouge: #b91c1c;
+  --rouge-clair: #fef2f2;
+  --ambre: #b45309;
+  --ambre-clair: #fffbeb;
+  --encre: #111827;
+  --encre-douce: #4b5563;
+  --trait: #e5e7eb;
+  --fond: #f6f7f9;
+  --carte: #ffffff;
+  --rayon: 12px;
+  --ombre: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 16px rgba(16, 24, 40, .06);
+  --police: 'Segoe UI', 'Noto Naskh Arabic', 'Amiri', Tahoma, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--police);
+  background: var(--fond);
+  color: var(--encre);
+  line-height: 1.7;
+  direction: rtl;
+  text-align: right;
+}
+
+a { color: var(--bleu); }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- en-tête du site ---------- */
+
+.site-head {
+  background: linear-gradient(135deg, var(--bleu-fonce), var(--bleu));
+  color: #fff;
+  padding: 28px 0 34px;
+}
+
+.site-head .brand { font-weight: 700; letter-spacing: .5px; opacity: .9; }
+.site-head h1 { margin: 6px 0 8px; font-size: clamp(1.5rem, 3.2vw, 2.2rem); }
+.site-head p { margin: 0; opacity: .92; max-width: 62ch; }
+
+.site-nav { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+.site-nav a {
+  color: #fff; text-decoration: none; padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, .45); border-radius: 999px; font-size: .95rem;
+}
+.site-nav a:hover, .site-nav a[aria-current="page"] { background: rgba(255, 255, 255, .16); }
+
+.breadcrumb { font-size: .9rem; color: var(--encre-douce); margin: 18px 0 4px; }
+.breadcrumb a { text-decoration: none; }
+
+/* ---------- cartes du catalogue ---------- */
+
+.chapter { margin: 34px 0; }
+.chapter > h2 {
+  margin: 0 0 4px; font-size: 1.35rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.chapter > h2::before {
+  content: ''; width: 6px; height: 22px; border-radius: 3px; background: var(--bleu);
+}
+.chapter > p { margin: 0 0 16px; color: var(--encre-douce); }
+
+.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+.card {
+  background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon);
+  padding: 18px; box-shadow: var(--ombre); display: flex; flex-direction: column; gap: 10px;
+}
+.card h3 { margin: 0; font-size: 1.08rem; }
+.card p { margin: 0; color: var(--encre-douce); font-size: .95rem; flex: 1; }
+.card .levels { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: .78rem; padding: 3px 10px; border-radius: 999px;
+  background: var(--bleu-clair); color: var(--bleu-fonce); border: 1px solid #dbeafe;
+}
+.card .card-actions { display: flex; gap: 8px; }
+
+/* ---------- boutons ---------- */
+
+.btn {
+  font-family: inherit; font-size: .95rem; padding: 9px 18px; border-radius: 9px;
+  border: 1px solid transparent; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background-color .15s, border-color .15s;
+}
+.btn-primary { background: var(--bleu); color: #fff; }
+.btn-primary:hover { background: var(--bleu-fonce); }
+.btn-secondary { background: var(--bleu-clair); color: var(--bleu-fonce); border-color: #dbeafe; }
+.btn-secondary:hover { background: #dbeafe; }
+.btn-ghost { background: transparent; color: var(--encre-douce); border-color: var(--trait); }
+.btn-ghost:hover { background: #f3f4f6; }
+.btn-choice { background: var(--carte); border-color: var(--trait); font-size: 1.05rem; padding: 10px 26px; }
+.btn-choice:hover { border-color: var(--bleu); color: var(--bleu); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- rendu mathématique ---------- */
+
+/* Une expression se lit toujours de gauche à droite, même dans une page RTL. */
+.m-expr {
+  direction: ltr; unicode-bidi: isolate;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: .3em; font-size: 1.15em;
+}
+.m-frac {
+  display: inline-flex; flex-direction: column; align-items: center;
+  vertical-align: middle; margin: 0 .08em; line-height: 1.25;
+}
+.m-num { border-bottom: 2px solid currentColor; padding: 0 .32em; }
+.m-den { padding: 0 .32em; }
+.m-int, .m-pow, .m-op, .m-paren, .m-sign { line-height: 1.25; }
+.m-op { margin: 0 .1em; color: var(--encre-douce); }
+.m-paren { font-size: 1.5em; color: var(--encre-douce); }
+.m-pow sup { font-size: .68em; }
+.m-unknown { color: var(--bleu); font-weight: 700; }
+.m-sep { direction: rtl; unicode-bidi: isolate; }
+
+/* Fraction étagée (« كسر طابقي ») */
+.m-stack { display: inline-flex; flex-direction: column; align-items: center; }
+.m-stack-top { border-bottom: 3px solid currentColor; padding: .15em .5em; }
+.m-stack-bot { padding: .15em .5em; }
+
+/* ---------- page exercice ---------- */
+
+.panel {
+  background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon);
+  box-shadow: var(--ombre); padding: 22px; margin: 20px 0;
+}
+
+.toolbar { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: .85rem; color: var(--encre-douce); }
+.field select, .field input {
+  font-family: inherit; font-size: .95rem; padding: 8px 10px;
+  border: 1px solid var(--trait); border-radius: 8px; background: #fff; min-width: 150px;
+}
+.field input[type="number"] { min-width: 90px; }
+
+.ex-instruction { color: var(--encre-douce); margin: 0 0 6px; }
+.ex-prompt {
+  text-align: center; font-size: 1.6rem; padding: 24px 12px;
+  background: var(--bleu-clair); border-radius: var(--rayon); margin-bottom: 18px;
+}
+.ex-input { display: flex; align-items: center; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+.ex-label { color: var(--encre-douce); }
+.ex-frac-input { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.ex-frac-input input { width: 78px; text-align: center; font-size: 1.1rem; padding: 6px; border: 1px solid var(--trait); border-radius: 6px; }
+.ex-frac-bar { width: 84px; height: 2px; background: var(--encre); }
+.ex-int-input { width: 130px; text-align: center; font-size: 1.1rem; padding: 8px; border: 1px solid var(--trait); border-radius: 6px; }
+
+.ex-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+.ex-feedback { min-height: 1.9em; text-align: center; margin-bottom: 10px; border-radius: 8px; padding: 8px 12px; }
+.ex-feedback:empty { padding: 0; }
+.ex-feedback.is-ok { background: var(--vert-clair); color: var(--vert); }
+.ex-feedback.is-ko { background: var(--rouge-clair); color: var(--rouge); }
+.ex-feedback.is-warn { background: var(--ambre-clair); color: var(--ambre); }
+
+.ex-solution { margin-top: 18px; padding: 16px 18px; background: #f9fafb; border: 1px solid var(--trait); border-radius: var(--rayon); }
+.ex-solution h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.steps { margin: 0; padding-inline-start: 22px; }
+.steps li { margin-bottom: 8px; }
+.ex-solution .final, .corr-final { margin: 12px 0 0; font-weight: 700; }
+.ex-score { text-align: center; margin-top: 14px; color: var(--encre-douce); }
+
+/* ---------- constructeur de fiche ---------- */
+
+.builder-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); align-items: start; }
+@media (max-width: 900px) { .builder-grid { grid-template-columns: 1fr; } }
+
+.sections-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.section-row {
+  display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; align-items: center;
+  padding: 10px; border: 1px solid var(--trait); border-radius: 10px; background: #fff;
+}
+.section-row select { font-family: inherit; padding: 6px 8px; border: 1px solid var(--trait); border-radius: 6px; max-width: 100%; }
+.section-row input[type="number"] { width: 72px; padding: 6px; border: 1px solid var(--trait); border-radius: 6px; text-align: center; }
+.section-row .remove { background: none; border: none; cursor: pointer; color: var(--rouge); font-size: 1.1rem; padding: 4px 8px; }
+
+.preview-shell { background: #e9ecf2; border-radius: var(--rayon); padding: 20px; overflow-x: auto; }
+.hint-text { color: var(--encre-douce); font-size: .9rem; }
+
+/* ---------- la fiche imprimable ---------- */
+
+.sheet {
+  background: #fff; color: #000; width: 210mm; min-height: 297mm;
+  padding: 14mm 13mm; margin: 0 auto 20px; box-shadow: var(--ombre);
+  font-size: 11.5pt; line-height: 1.65;
+}
+.sheet-head { border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 14px; }
+.head-top { display: flex; justify-content: space-between; font-size: .9em; color: #333; }
+.head-brand { font-weight: 700; letter-spacing: .5px; }
+.sheet-title { text-align: center; font-size: 1.45em; margin: 8px 0; }
+.head-meta { display: flex; flex-wrap: wrap; gap: 18px; font-size: .92em; }
+.head-field { display: inline-flex; align-items: baseline; gap: 6px; }
+.dots { display: inline-block; min-width: 190px; border-bottom: 1px dotted #555; }
+.dots.short { min-width: 90px; }
+.head-code { font-size: .8em; color: #555; margin-top: 6px; }
+
+.sheet-block { margin-bottom: 18px; }
+.block-title { font-size: 1.08em; margin: 0 0 2px; padding-bottom: 4px; border-bottom: 1px solid #bbb; }
+.block-level { font-weight: 400; color: #555; font-size: .9em; }
+.block-instruction { margin: 4px 0 10px; color: #333; font-size: .95em; }
+
+.ex-list { margin: 0; padding-inline-start: 24px; }
+.ex-list.cols-2 { columns: 2; column-gap: 12mm; }
+.ex-item { break-inside: avoid; page-break-inside: avoid; margin-bottom: 12px; }
+.ex-q { margin-bottom: 6px; }
+.ex-a { display: flex; justify-content: flex-start; margin-top: 4px; }
+
+.slot-line { display: inline-block; min-width: 120px; border-bottom: 1px dotted #666; height: 1.4em; }
+/* Emplacement de réponse : un seul cadre, avec la barre de fraction à l'intérieur. */
+.slot-frac {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  border: 1px dotted #666; border-radius: 4px; padding: 4px 8px;
+}
+.slot-cell { display: block; width: 44px; height: 1.25em; }
+.slot-bar { width: 44px; height: 1.5px; background: #000; }
+.slot-bool { display: inline-flex; gap: 8px; align-items: center; border: 1px dotted #666; padding: 2px 12px; border-radius: 4px; }
+.slot-sep { color: #888; }
+
+.sheet-foot {
+  display: flex; justify-content: space-between; font-size: .78em; color: #666;
+  border-top: 1px solid #ccc; padding-top: 6px; margin-top: 18px;
+}
+
+.correction-block .corr-sub { font-size: 1em; margin: 14px 0 6px; color: #1e3a8a; }
+.corr-short { columns: 3; column-gap: 8mm; padding-inline-start: 24px; margin: 0; }
+.corr-short li { break-inside: avoid; margin-bottom: 6px; }
+.corr-long { padding-inline-start: 24px; margin: 0; }
+.corr-long > li { break-inside: avoid; page-break-inside: avoid; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed #ddd; }
+.corr-long .steps { font-size: .93em; color: #222; }
+.corr-q { margin-bottom: 6px; }
+
+/* ---------- impression ---------- */
+
+@page { size: A4; margin: 12mm; }
+
+@media print {
+  body { background: #fff; }
+  .no-print, .site-head, .breadcrumb, .panel.no-print { display: none !important; }
+  .preview-shell { background: none; padding: 0; overflow: visible; }
+  .wrap { max-width: none; padding: 0; }
+  .sheet {
+    width: auto; min-height: 0; margin: 0; padding: 0;
+    box-shadow: none; font-size: 11pt;
+  }
+  .sheet + .sheet { page-break-before: always; break-before: page; }
+  a { color: #000; text-decoration: none; }
+}

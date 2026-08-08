@@ -1,0 +1,9 @@
+{
+  "name": "devoirati-maths-9eme",
+  "version": "1.0.0",
+  "description": "Générateurs d'exercices de mathématiques (fractions et puissances) — 9ème année de base",
+  "private": true,
+  "scripts": {
+    "test": "node tools/selftest.js"
+  }
+}

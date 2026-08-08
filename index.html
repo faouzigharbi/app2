@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الرياضيات — التاسعة أساسي | Devoirati</title>
+<meta name="description" content="مولّدات تمارين الرياضيات للسنة التاسعة أساسي: الكسور والقوى، مع تمارين تفاعلية وأوراق قابلة للطباعة بصيغة PDF مع الإصلاح.">
+<link rel="stylesheet" href="assets/css/pilier.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <div class="brand">Devoirati</div>
+    <h1>الرياضيات — التاسعة أساسي</h1>
+    <p>مولّدات تمارين لا تنتهي في الكسور والقوى: تمرّن مباشرة على الشاشة، أو أنشئ ورقة تمارين جاهزة للطباعة مع إصلاحها المفصّل.</p>
+    <nav class="site-nav">
+      <a href="index.html" aria-current="page">الفهرس</a>
+      <a href="fiche.html">إنشاء ورقة تمارين (PDF)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel" style="margin-top:24px">
+    <h2 style="margin-top:0">كيف تستعمل هذا الفضاء؟</h2>
+    <ol class="steps">
+      <li><strong>للتلميذ:</strong> اختر تمرينا من القائمة أسفله، وتمرّن بلا حدود — كل ضغطة على «تمرين جديد» تولّد تمرينا مختلفا مع الحل المفصّل.</li>
+      <li><strong>للأستاذ:</strong> انتقل إلى <a href="fiche.html">إنشاء ورقة تمارين</a>، اختر المحاور وعدد التمارين، ثم اطبع الورقة أو سجّلها بصيغة PDF مع الإصلاح.</li>
+      <li>كل ورقة لها <strong>رمز</strong>: إذا احتفظت به يمكنك إعادة إنتاج نفس الورقة ونفس الإصلاح في أي وقت.</li>
+    </ol>
+  </section>
+
+  <div id="catalog"></div>
+</main>
+
+<script src="assets/js/core/frac.js"></script>
+<script src="assets/js/core/rng.js"></script>
+<script src="assets/js/core/render.js"></script>
+<script src="assets/js/core/registry.js"></script>
+<script src="assets/js/generators/fractions.js"></script>
+<script src="assets/js/generators/puissances.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = DV.render.esc;
+  var host = document.getElementById('catalog');
+
+  var intros = {
+    fractions: 'الاختزال، الجمع والطرح، الضرب والقسمة، أولوية العمليات، الأقواس، الكسور العشرية والتحليل بالعامل المشترك.',
+    puissances: 'قواعد الجداء والخارج وقوة القوة، مع الأسس السالبة وتبسيط التعابير.'
+  };
+
+  DV.registry.chapters().forEach(function (ch) {
+    var sec = document.createElement('section');
+    sec.className = 'chapter';
+    var cards = ch.generators.map(function (g) {
+      var levels = g.levels.map(function (l) {
+        return '<span class="chip">' + esc(l.label) + '</span>';
+      }).join('');
+      var href = 'exercice.html?g=' + encodeURIComponent(g.id);
+      return '<article class="card">' +
+        '<h3>' + esc(g.title) + '</h3>' +
+        '<p>' + esc(g.summary) + '</p>' +
+        '<div class="levels">' + levels + '</div>' +
+        '<div class="card-actions">' +
+        '<a class="btn btn-primary" href="' + href + '">تمرّن</a>' +
+        '<a class="btn btn-secondary" href="fiche.html?g=' + encodeURIComponent(g.id) + '">ورقة PDF</a>' +
+        '</div></article>';
+    }).join('');
+
+    sec.innerHTML = '<h2>' + esc(ch.label) + '</h2>' +
+      '<p>' + esc(intros[ch.id] || '') + '</p>' +
+      '<div class="cards">' + cards + '</div>';
+    host.appendChild(sec);
+  });
+})();
+</script>
+</body>
+</html>

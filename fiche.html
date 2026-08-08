@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إنشاء ورقة تمارين (PDF) | Devoirati</title>
+<link rel="stylesheet" href="assets/css/pilier.css">
+</head>
+<body>
+
+<header class="site-head no-print">
+  <div class="wrap">
+    <div class="brand">Devoirati</div>
+    <h1>إنشاء ورقة تمارين</h1>
+    <p>اختر المحاور وعدد التمارين، ثم اطبع الورقة أو سجّلها بصيغة PDF. الإصلاح يُنتج آليا في صفحة منفصلة.</p>
+    <nav class="site-nav">
+      <a href="index.html">الفهرس</a>
+      <a href="fiche.html" aria-current="page">إنشاء ورقة تمارين (PDF)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="builder-grid">
+
+    <form class="panel no-print" id="builder">
+      <h2 style="margin-top:0">إعدادات الورقة</h2>
+
+      <div class="field" style="margin-bottom:10px">
+        <label for="title">عنوان الورقة</label>
+        <input id="title" type="text" value="سلسلة تمارين — الرياضيات" style="min-width:100%">
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label for="school">المؤسسة</label>
+        <input id="school" type="text" placeholder="مثال: المدرسة الإعدادية ..." style="min-width:100%">
+      </div>
+      <div class="toolbar" style="margin-bottom:12px">
+        <div class="field">
+          <label for="classe">القسم</label>
+          <input id="classe" type="text" value="9 أساسي">
+        </div>
+        <div class="field">
+          <label for="duree">المدة</label>
+          <input id="duree" type="text" placeholder="ساعة واحدة">
+        </div>
+      </div>
+
+      <h3>المحاور</h3>
+      <div class="sections-list" id="sections"></div>
+      <button type="button" class="btn btn-ghost" id="add-section">+ إضافة محور</button>
+
+      <h3>الشكل</h3>
+      <div class="toolbar">
+        <div class="field">
+          <label for="columns">التوزيع</label>
+          <select id="columns">
+            <option value="1">عمود واحد</option>
+            <option value="2" selected>عمودان</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="correction">الإصلاح</label>
+          <select id="correction">
+            <option value="detaillee" selected>مفصّل (خطوة بخطوة)</option>
+            <option value="courte">مختصر (النتائج فقط)</option>
+            <option value="aucune">بدون إصلاح</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="seed">رمز الورقة</label>
+          <input id="seed" type="text" placeholder="آلي">
+        </div>
+      </div>
+      <p class="hint-text">احتفظ برمز الورقة لإعادة إنتاج نفس التمارين ونفس الإصلاح لاحقا.</p>
+
+      <div class="ex-actions" style="justify-content:flex-start;margin-top:16px">
+        <button type="button" class="btn btn-secondary" id="regen">ورقة جديدة</button>
+        <button type="button" class="btn btn-primary" id="print">طباعة / حفظ PDF</button>
+      </div>
+      <p class="hint-text" id="status"></p>
+    </form>
+
+    <div class="preview-shell" id="preview"></div>
+  </div>
+</main>
+
+<script src="assets/js/core/frac.js"></script>
+<script src="assets/js/core/rng.js"></script>
+<script src="assets/js/core/render.js"></script>
+<script src="assets/js/core/registry.js"></script>
+<script src="assets/js/core/worksheet.js"></script>
+<script src="assets/js/generators/fractions.js"></script>
+<script src="assets/js/generators/puissances.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var sectionsHost = document.getElementById('sections');
+  var preview = document.getElementById('preview');
+  var status = document.getElementById('status');
+  var seedInput = document.getElementById('seed');
+  var params = new URLSearchParams(location.search);
+
+  function generatorOptions(selected) {
+    return DV.registry.chapters().map(function (ch) {
+      var opts = ch.generators.map(function (g) {
+        return '<option value="' + g.id + '"' + (g.id === selected ? ' selected' : '') + '>' +
+          DV.render.esc(g.title) + '</option>';
+      }).join('');
+      return '<optgroup label="' + DV.render.esc(ch.label) + '">' + opts + '</optgroup>';
+    }).join('');
+  }
+
+  function levelOptions(genId, selected) {
+    var gen = DV.registry.get(genId);
+    return gen.levels.map(function (l) {
+      return '<option value="' + l.id + '"' + (l.id === selected ? ' selected' : '') + '>' +
+        DV.render.esc(l.label) + '</option>';
+    }).join('');
+  }
+
+  function addSection(genId, levelId, count) {
+    genId = genId || DV.registry.all()[0].id;
+    var row = document.createElement('div');
+    row.className = 'section-row';
+    row.innerHTML =
+      '<select class="sec-gen">' + generatorOptions(genId) + '</select>' +
+      '<select class="sec-level">' + levelOptions(genId, levelId) + '</select>' +
+      '<input class="sec-count" type="number" min="1" max="40" value="' + (count || 6) + '">' +
+      '<button type="button" class="remove" title="حذف">✕</button>';
+
+    row.querySelector('.sec-gen').addEventListener('change', function () {
+      row.querySelector('.sec-level').innerHTML = levelOptions(this.value);
+      render();
+    });
+    row.querySelector('.sec-level').addEventListener('change', render);
+    row.querySelector('.sec-count').addEventListener('change', render);
+    row.querySelector('.remove').addEventListener('click', function () {
+      if (sectionsHost.children.length === 1) return;
+      row.remove();
+      render();
+    });
+
+    sectionsHost.appendChild(row);
+  }
+
+  function readSpec() {
+    var sections = Array.prototype.map.call(sectionsHost.children, function (row) {
+      return {
+        generatorId: row.querySelector('.sec-gen').value,
+        level: row.querySelector('.sec-level').value,
+        count: Math.max(1, Math.min(40, parseInt(row.querySelector('.sec-count').value, 10) || 1))
+      };
+    });
+    return {
+      title: document.getElementById('title').value,
+      school: document.getElementById('school').value,
+      className: document.getElementById('classe').value,
+      duration: document.getElementById('duree').value,
+      columns: parseInt(document.getElementById('columns').value, 10),
+      correction: document.getElementById('correction').value,
+      seed: seedInput.value.trim().toUpperCase(),
+      sections: sections
+    };
+  }
+
+  function render() {
+    var spec = readSpec();
+    if (!spec.seed) { spec.seed = DV.newSeed(); seedInput.value = spec.seed; }
+    try {
+      var out = DV.worksheet.build(spec);
+      preview.innerHTML = out.html;
+      status.textContent = out.count + ' تمرين — رمز الورقة ' + out.seed;
+    } catch (e) {
+      preview.innerHTML = '';
+      status.textContent = 'خطأ: ' + e.message;
+    }
+  }
+
+  document.getElementById('add-section').addEventListener('click', function () { addSection(); render(); });
+  document.getElementById('regen').addEventListener('click', function () {
+    seedInput.value = DV.newSeed();
+    render();
+  });
+  document.getElementById('print').addEventListener('click', function () { window.print(); });
+  ['title', 'school', 'classe', 'duree', 'columns', 'correction'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', render);
+  });
+  seedInput.addEventListener('change', render);
+
+  /* Arrivée depuis une carte du catalogue : la fiche démarre sur ce chapitre. */
+  var wanted = DV.registry.get(params.get('g'));
+  if (wanted) {
+    addSection(wanted.id, wanted.levels[0].id, 8);
+  } else {
+    addSection('fractions-somme', 'moyen', 6);
+    addSection('fractions-produit', 'facile', 4);
+  }
+  render();
+})();
+</script>
+</body>
+</html>
