@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>devoirati — تمارين الرياضيات</title>
+<style>
+  :root {
+    --bg: #f6f7fb; --card: #ffffff; --ink: #16181d; --muted: #5c6472;
+    --line: #e3e6ee; --accent: #2f5bd7; --accent-soft: #eaf0ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161c; --card: #1c1f27; --ink: #eef0f5; --muted: #a2abbd;
+      --line: #2b3040; --accent: #7fa0ff; --accent-soft: #232a3d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2rem 1rem 4rem;
+    font-family: system-ui, "Segoe UI", Tahoma, "Noto Naskh Arabic", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  h1 { margin: 0 0 .25rem; font-size: 1.9rem; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0; font-size: .95rem; }
+  h2 {
+    font-size: 1.05rem; margin: 2rem 0 .9rem; color: var(--muted);
+    font-weight: 600; text-transform: none;
+    border-bottom: 1px solid var(--line); padding-bottom: .5rem;
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem;
+       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  a.card {
+    display: block; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: .85rem 1rem; text-decoration: none;
+    color: inherit; transition: border-color .15s, transform .15s, background .15s;
+  }
+  a.card:hover, a.card:focus-visible {
+    border-color: var(--accent); background: var(--accent-soft);
+    transform: translateY(-2px); outline: none;
+  }
+  .t { font-weight: 600; display: block; }
+  .f { color: var(--muted); font-size: .78rem; direction: ltr; text-align: right;
+       display: block; margin-top: .2rem; word-break: break-all; }
+  footer { margin-top: 3rem; text-align: center; color: var(--muted); font-size: .82rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>devoirati</h1>
+    <p class="sub">تمارين تفاعلية في الرياضيات — Exercices interactifs de mathématiques</p>
+  </header>
+  <h2>الكسور — Fractions</h2>
+  <ul>
+    <li><a class="card" href="arabic-fraction-simplification.html"><span class="t">تبسيط الكسور</span><span class="f">arabic-fraction-simplification.html</span></a></li>
+    <li><a class="card" href="fraction-simplification-exercise.html"><span class="t">Simplification de Fractions</span><span class="f">fraction-simplification-exercise.html</span></a></li>
+    <li><a class="card" href="Fractions%20DEcimales.html"><span class="t">تمرين على الكسور العشرية</span><span class="f">Fractions DEcimales.html</span></a></li>
+    <li><a class="card" href="addition%20fractions.html"><span class="t">addition fractions</span><span class="f">addition fractions.html</span></a></li>
+    <li><a class="card" href="addition%20fractions2.html"><span class="t">تمارين على الكسور</span><span class="f">addition fractions2.html</span></a></li>
+    <li><a class="card" href="addition%20fractions3.html"><span class="t">تمارين على الكسور</span><span class="f">addition fractions3.html</span></a></li>
+    <li><a class="card" href="addition%20fractions4.html"><span class="t">تمارين على قسمة الكسور</span><span class="f">addition fractions4.html</span></a></li>
+    <li><a class="card" href="additionFractParenthese.html"><span class="t">تمارين الكسور</span><span class="f">additionFractParenthese.html</span></a></li>
+    <li><a class="card" href="Division%20fractions4.html"><span class="t">تمارين على قسمة الكسور</span><span class="f">Division fractions4.html</span></a></li>
+    <li><a class="card" href="operations%20fractions%20.html"><span class="t">تمارين على العمليات الحسابية للكسور</span><span class="f">operations fractions .html</span></a></li>
+    <li><a class="card" href="4%20op%C3%A9ration%20Fractions.html"><span class="t">سلسلة عمليات على الكسور</span><span class="f">4 opération Fractions.html</span></a></li>
+    <li><a class="card" href="Factorisation%20Fractions.html"><span class="t">تمارين على التحليل بالعامل المشترك</span><span class="f">Factorisation Fractions.html</span></a></li>
+    <li><a class="card" href="Factorisation%20Fractions%202.html"><span class="t">تمارين حساب الكسور</span><span class="f">Factorisation Fractions 2.html</span></a></li>
+    <li><a class="card" href="factorisatioon0.html"><span class="t">تمارين على التحليل بالعامل المشترك</span><span class="f">factorisatioon0.html</span></a></li>
+  </ul>
+  <h2>القوى — Puissances</h2>
+  <ul>
+    <li><a class="card" href="exe%20Puissance.html"><span class="t">تطبيق تبسيط التعبيرات</span><span class="f">exe Puissance.html</span></a></li>
+    <li><a class="card" href="exe%20Puissance2.html"><span class="t">تبسيط تعابير القوى</span><span class="f">exe Puissance2.html</span></a></li>
+    <li><a class="card" href="produit%20puisssance.html"><span class="t">تمارين القوى</span><span class="f">produit puisssance.html</span></a></li>
+    <li><a class="card" href="pUISSANCE%20PRODUIT%20%282%29.html"><span class="t">تمارين على ضرب القوى</span><span class="f">pUISSANCE PRODUIT (2).html</span></a></li>
+    <li><a class="card" href="puissance%20prod%202.html"><span class="t">حساب منتجات القوى</span><span class="f">puissance prod 2.html</span></a></li>
+    <li><a class="card" href="puissance%20prod%203.html"><span class="t">puissance prod 3</span><span class="f">puissance prod 3.html</span></a></li>
+    <li><a class="card" href="power-exponent-exercises.html"><span class="t">تمارين على عمليات الأسس</span><span class="f">power-exponent-exercises.html</span></a></li>
+  </ul>
+  <footer>faouzigharbi/app2 · 21 تمارين</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Ne jamais committer de clés API / secrets
+API*.txt
+*.key
+.env
