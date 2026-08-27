@@ -1,303 +1,456 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
-<title>Mon historique — Devoirati</title>
+<title>دفتري — Devoirati</title>
 <link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
+  /* ================================================================
+     Typographie arabe — trois regles qui portent tout le reste :
+       1. AUCUN letter-spacing. L'arabe est cursif : espacer les
+          lettres casse les liaisons et rend le mot illisible.
+       2. Pas d'italique, pas de majuscules : ca n'existe pas en arabe.
+          Pour insister : le gras et la couleur.
+       3. Corps plus grand (~+12 %) et interlignage genereux (1,8-1,9),
+          parce que les points et signes debordent au-dessus et en
+          dessous de la ligne.
+     Les chiffres restent latins (usage des maths au Maghreb) et les
+     formules, chemins et scores sont des ilots dir="ltr" : sinon
+     l'algorithme bidirectionnel retourne « 8/10 » et les parentheses.
+     ================================================================ */
   :root{
-    --fond:#f3f4f6; --carte:#fff; --texte:#111827; --doux:#6b7280;
-    --bord:#e5e7eb; --bleu:#2563eb; --vert:#16a34a; --rouge:#dc2626; --orange:#d97706;
+    --fond:#F5F6F8; --carte:#FFFFFF; --releve:#EEF0F4;
+    --texte:#141C2B; --doux:#5A667B; --bord:#E1E5EC;
+    --bleu:#2563EB; --bleu-pale:#EAF0FE;
+    --vert:#12805A; --vert-fond:#E6F4EE;
+    --rouge:#C33B2C; --rouge-fond:#FBEBE9;
+    --ambre:#9A6710; --ambre-fond:#FAF2E1;
+    --ombre:0 1px 2px rgba(20,28,43,.05), 0 8px 24px rgba(20,28,43,.06);
   }
   @media (prefers-color-scheme:dark){
-    :root{--fond:#111827;--carte:#1f2937;--texte:#f9fafb;--doux:#9ca3af;--bord:#374151}
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--fond);color:var(--texte);
-       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-       padding-bottom:calc(24px + env(safe-area-inset-bottom))}
-  header{background:var(--bleu);color:#fff;padding:18px 16px calc(18px + env(safe-area-inset-top));
-         padding-top:calc(18px + env(safe-area-inset-top))}
-  h1{font-size:20px}
-  header p{opacity:.85;font-size:13px;margin-top:3px}
-  .conteneur{max-width:760px;margin:0 auto;padding:14px}
-
-  /* --- barre d'onglets, defilante sur telephone --- */
-  .onglets{display:flex;gap:8px;overflow-x:auto;padding:12px 14px;
-           -webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .onglets::-webkit-scrollbar{display:none}
-  .onglet{flex:0 0 auto;border:1px solid var(--bord);background:var(--carte);color:var(--texte);
-          border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
-  .onglet[aria-selected="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff;font-weight:600}
-  .onglet .n{opacity:.65;margin-left:4px;font-variant-numeric:tabular-nums}
-
-  .recherche{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--bord);
-             background:var(--carte);color:var(--texte);font-size:15px;margin-bottom:12px}
-
-  /* --- liste --- */
-  .item{display:flex;align-items:center;gap:12px;background:var(--carte);border:1px solid var(--bord);
-        border-radius:12px;padding:12px;margin-bottom:8px;text-decoration:none;color:inherit}
-  .item:active{opacity:.7}
-  .pastille{flex:0 0 40px;height:40px;border-radius:10px;display:flex;align-items:center;
-            justify-content:center;font-size:19px;background:var(--fond)}
-  .infos{flex:1;min-width:0}
-  .nom{font-size:14px;font-weight:600;line-height:1.35;
-       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .meta{font-size:12px;color:var(--doux);margin-top:3px;
-        white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .coeur{flex:0 0 auto;border:none;background:none;font-size:20px;color:var(--rouge);
-         cursor:pointer;padding:6px}
-  .badge{font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600}
-  .b-ok{background:#dcfce7;color:#15803d}
-  .b-err{background:#fee2e2;color:#b91c1c}
-  .b-dur{background:#fef3c7;color:#b45309}
-
-  .rien{text-align:center;color:var(--doux);padding:48px 20px;font-size:14px;line-height:1.6}
-  .rien span{font-size:40px;display:block;margin-bottom:10px}
-
-  /* --- pied de page : sauvegarde --- */
-  .outils{margin-top:22px;background:var(--carte);border:1px solid var(--bord);
-          border-radius:12px;padding:14px}
-  .outils h2{font-size:14px;margin-bottom:6px}
-  .outils p{font-size:12.5px;color:var(--doux);line-height:1.55;margin-bottom:11px}
-  .boutons{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{border:1px solid var(--bord);background:var(--fond);color:var(--texte);border-radius:10px;
-       padding:9px 13px;font-size:13px;cursor:pointer}
-  .btn.principal{background:var(--bleu);border-color:var(--bleu);color:#fff;font-weight:600}
-  .btn.danger{color:var(--rouge)}
-</style>
-</head>
-<body>
-
-<header>
-  <h1>📚 Mon historique</h1>
-  <p id="resume">Chargement…</p>
-</header>
-
-<nav class="onglets" role="tablist" id="onglets">
-  <button class="onglet" role="tab" data-vue="recents" aria-selected="true">🕘 Récents <span class="n"></span></button>
-  <button class="onglet" role="tab" data-vue="favoris" aria-selected="false">♥ Enregistrés <span class="n"></span></button>
-  <button class="onglet" role="tab" data-vue="err"     aria-selected="false">❌ Mes erreurs <span class="n"></span></button>
-  <button class="onglet" role="tab" data-vue="dur"     aria-selected="false">😓 Difficiles <span class="n"></span></button>
-  <button class="onglet" role="tab" data-vue="ok"      aria-selected="false">✅ Réussis <span class="n"></span></button>
-  <button class="onglet" role="tab" data-vue="tout"    aria-selected="false">📄 Tout <span class="n"></span></button>
-</nav>
-
-<div class="conteneur">
-  <input class="recherche" id="recherche" type="search" placeholder="Rechercher un exercice…" autocomplete="off">
-  <div id="liste"></div>
-
-  <div class="outils">
-    <h2>Sauvegarder mon historique</h2>
-    <p>
-      Ton historique est enregistré <strong>uniquement sur cet appareil</strong> — il n'est envoyé
-      à personne. Si tu vides ton navigateur, ou si tu ne reviens pas pendant plusieurs jours
-      sur iPhone, il peut être effacé. Télécharge-le de temps en temps : c'est aussi ainsi que
-      tu le transfères de ton téléphone vers ton ordinateur.
-    </p>
-    <div class="boutons">
-      <button class="btn principal" id="exporter">⬇️ Télécharger</button>
-      <button class="btn" id="importer">⬆️ Restaurer</button>
-      <button class="btn danger" id="effacer">🗑️ Tout effacer</button>
-      <input type="file" id="fichier" accept="application/json,.json" hidden>
-    </div>
-  </div>
-</div>
-
-<script>
-(function () {
-  'use strict';
-
-  var CLE = 'devoirati.histo.v1';
-  var vue = 'recents';
-
-  function lire() {
-    try {
-      var d = JSON.parse(localStorage.getItem(CLE));
-      if (d && d.pages) { if (!d.recents) d.recents = []; return d; }
-    } catch (e) {}
-    return { v: 1, pages: {}, recents: [] };
-  }
-  function ecrire(d) {
-    try { localStorage.setItem(CLE, JSON.stringify(d)); } catch (e) {
-      alert("Impossible d'enregistrer : la mémoire du navigateur est pleine.");
+    :root:not([data-theme="light"]){
+      --fond:#0E131C; --carte:#171F2B; --releve:#121924;
+      --texte:#E9EDF4; --doux:#96A2B5; --bord:#28313F;
+      --bleu:#7BA2F7; --bleu-pale:#1A2436;
+      --vert:#5CC79A; --vert-fond:#123125;
+      --rouge:#EF8E7B; --rouge-fond:#2D1A17;
+      --ambre:#E0B267; --ambre-fond:#2A2313;
+      --ombre:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.34);
     }
   }
+  :root[data-theme="dark"]{
+    --fond:#0E131C; --carte:#171F2B; --releve:#121924;
+    --texte:#E9EDF4; --doux:#96A2B5; --bord:#28313F;
+    --bleu:#7BA2F7; --bleu-pale:#1A2436;
+    --vert:#5CC79A; --vert-fond:#123125;
+    --rouge:#EF8E7B; --rouge-fond:#2D1A17;
+    --ambre:#E0B267; --ambre-fond:#2A2313;
+    --ombre:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.34);
+  }
 
-  /* -- affichage des dates, en francais et en relatif -- */
+  *{box-sizing:border-box; margin:0; padding:0; letter-spacing:0}
+  body{
+    background:var(--fond); color:var(--texte);
+    font:400 17px/1.9 "IBM Plex Sans Arabic","Noto Naskh Arabic","Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:calc(32px + env(safe-area-inset-bottom));
+  }
+  .ltr{direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums}
+
+  .large{max-width:640px; margin-inline:auto; padding-inline:16px}
+
+  header{
+    background:var(--bleu); color:#fff;
+    padding-block:22px 20px; padding-top:calc(22px + env(safe-area-inset-top));
+  }
+  h1{font-size:26px; font-weight:700; line-height:1.5}
+  header p{opacity:.9; font-size:15px; line-height:1.7}
+
+  /* ---- onglets, defilants sur telephone ---- */
+  .onglets{display:flex; gap:8px; overflow-x:auto; padding-block:14px 4px; scrollbar-width:none}
+  .onglets::-webkit-scrollbar{display:none}
+  .onglet{
+    flex:0 0 auto; border:1px solid var(--bord); background:var(--carte); color:var(--doux);
+    border-radius:999px; padding:8px 15px; cursor:pointer; white-space:nowrap;
+    font:500 14.5px/1.6 inherit;
+  }
+  .onglet[aria-selected="true"]{background:var(--texte); border-color:var(--texte); color:var(--fond); font-weight:600}
+  .onglet .n{opacity:.6; margin-inline-start:5px; font-variant-numeric:tabular-nums}
+  .onglet:focus-visible{outline:2px solid var(--bleu); outline-offset:2px}
+
+  .chercher{
+    width:100%; padding:12px 15px; margin-block:12px;
+    border:1px solid var(--bord); border-radius:12px;
+    background:var(--carte); color:var(--texte); font:400 16px inherit;
+  }
+  .chercher:focus{outline:none; border-color:var(--bleu); box-shadow:0 0 0 3px var(--bleu-pale)}
+
+  /* ---- bilan ---- */
+  .bilan{display:flex; gap:8px; margin-top:14px}
+  .stat{flex:1; background:var(--carte); border:1px solid var(--bord); border-radius:13px; padding:13px 8px; text-align:center}
+  .stat .v{display:block; font-size:24px; font-weight:700; line-height:1.3; font-variant-numeric:tabular-nums}
+  .stat .l{display:block; font-size:12.5px; color:var(--doux); line-height:1.6}
+
+  /* ---- liste ---- */
+  .fiches{display:flex; flex-direction:column; gap:9px}
+  .fiche{
+    display:flex; align-items:center; gap:13px;
+    background:var(--carte); border:1px solid var(--bord); border-radius:13px;
+    padding:13px; text-decoration:none; color:inherit;
+  }
+  .fiche:hover{border-color:var(--bleu)}
+  .fiche:focus-visible{outline:2px solid var(--bleu); outline-offset:2px}
+  .jeton{flex:0 0 42px; height:42px; border-radius:11px; display:grid; place-items:center; font-size:18px; background:var(--releve)}
+  .jeton.ok{background:var(--vert-fond)} .jeton.err{background:var(--rouge-fond)} .jeton.dur{background:var(--ambre-fond)}
+  .corps{flex:1; min-width:0}
+  .nom{font-size:15.5px; font-weight:600; line-height:1.65;
+       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .sous{display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:2px;
+        font-size:13px; color:var(--doux); line-height:1.7}
+  .puce{padding:1px 9px; border-radius:999px; font-size:12.5px; font-weight:600}
+  .puce.ok{background:var(--vert-fond); color:var(--vert)}
+  .puce.err{background:var(--rouge-fond); color:var(--rouge)}
+  .puce.dur{background:var(--ambre-fond); color:var(--ambre)}
+  .coeur{flex:0 0 auto; border:none; background:none; font-size:21px; color:var(--rouge); cursor:pointer; padding:6px}
+  .coeur:focus-visible{outline:2px solid var(--bleu); outline-offset:2px; border-radius:8px}
+
+  .neant{text-align:center; color:var(--doux); padding:46px 18px; font-size:15px; line-height:1.9}
+  .neant span{display:block; font-size:38px; margin-bottom:10px; opacity:.8}
+
+  /* ---- blocs du bas ---- */
+  .bloc{margin-top:20px; background:var(--carte); border:1px solid var(--bord); border-radius:13px; padding:16px}
+  .bloc h2{font-size:17px; font-weight:700; line-height:1.6; margin-bottom:5px}
+  .bloc p{font-size:14px; color:var(--doux); line-height:1.85; margin-bottom:13px}
+  .boutons{display:flex; gap:8px; flex-wrap:wrap}
+  .btn{
+    border:1px solid var(--bord); background:var(--releve); color:var(--texte);
+    border-radius:11px; padding:11px 15px; cursor:pointer; font:600 14.5px inherit;
+  }
+  .btn.plein{background:var(--bleu); border-color:var(--bleu); color:#fff}
+  .btn.danger{color:var(--rouge)}
+  .btn:focus-visible{outline:2px solid var(--bleu); outline-offset:2px}
+
+  /* ---- le code de synchronisation ---- */
+  .code-boite{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:var(--bleu-pale); border:1px solid var(--bleu); border-radius:12px;
+    padding:13px 15px; margin-bottom:13px;
+  }
+  .code-val{
+    font:700 23px/1.4 ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    color:var(--bleu); direction:ltr; unicode-bidi:isolate;
+  }
+  .lier{display:flex; gap:8px; margin-top:13px}
+  .lier input{
+    flex:1; min-width:0; padding:11px 14px; border:1px solid var(--bord); border-radius:11px;
+    background:var(--carte); color:var(--texte);
+    font:600 17px ui-monospace,Menlo,monospace; direction:ltr; text-align:center; text-transform:uppercase;
+  }
+  .lier input:focus{outline:none; border-color:var(--bleu); box-shadow:0 0 0 3px var(--bleu-pale)}
+  .etat{font-size:13.5px; color:var(--doux); margin-top:10px; line-height:1.8; min-height:24px}
+  .etat.bon{color:var(--vert); font-weight:600}
+  .etat.mauvais{color:var(--rouge); font-weight:600}
+</style>
+</head>
+<body data-devoirati="historique">
+
+<header>
+  <div class="large">
+    <h1>📚 دفتري</h1>
+    <p id="resume">جارٍ التحميل…</p>
+  </div>
+</header>
+
+<div class="large">
+  <div class="bilan">
+    <div class="stat"><span class="v" id="s-vus">0</span><span class="l">تمارين فتحتها</span></div>
+    <div class="stat"><span class="v" id="s-fav">0</span><span class="l">محفوظة</span></div>
+    <div class="stat"><span class="v" id="s-rev">0</span><span class="l">للمراجعة</span></div>
+  </div>
+
+  <nav class="onglets" role="tablist" id="onglets">
+    <button class="onglet" role="tab" data-vue="recents" aria-selected="true">🕘 الأخيرة <span class="n"></span></button>
+    <button class="onglet" role="tab" data-vue="favoris" aria-selected="false">♥ المحفوظة <span class="n"></span></button>
+    <button class="onglet" role="tab" data-vue="err" aria-selected="false">❌ أخطائي <span class="n"></span></button>
+    <button class="onglet" role="tab" data-vue="dur" aria-selected="false">😓 الصعبة <span class="n"></span></button>
+    <button class="onglet" role="tab" data-vue="ok" aria-selected="false">✅ الناجحة <span class="n"></span></button>
+  </nav>
+
+  <input class="chercher" id="chercher" type="search" placeholder="ابحث عن تمرين…" autocomplete="off">
+  <div class="fiches" id="fiches"></div>
+
+  <!-- ---------- synchronisation ---------- -->
+  <section class="bloc">
+    <h2>🔗 المزامنة بين أجهزتك</h2>
+    <p>
+      اكتب هذا الرمز في هاتفك أو في حاسوبك الآخر، مرّة واحدة فقط، لتجد نفس التمارين
+      في كل مكان. لا حاجة إلى اسم ولا إلى كلمة سرّ — ولا حاجة إلى أن يكون الجهازان
+      مفتوحين في الوقت نفسه.
+    </p>
+    <div class="code-boite">
+      <span class="code-val" id="code">————</span>
+      <button class="btn" id="copier">نسخ</button>
+    </div>
+    <p style="margin-bottom:0">هل لديك رمز من جهاز آخر؟</p>
+    <div class="lier">
+      <input id="entree-code" type="text" inputmode="latin" maxlength="9"
+             placeholder="ABCD-EFGH" aria-label="رمز جهاز آخر">
+      <button class="btn plein" id="lier">ربط</button>
+    </div>
+    <div class="etat" id="etat-sync"></div>
+  </section>
+
+  <!-- ---------- sauvegarde ---------- -->
+  <section class="bloc">
+    <h2>💾 نسخة احتياطية</h2>
+    <p>
+      دفترك محفوظ على هذا الجهاز، والمزامنة تحفظه أيضاً عبر رمزك. نزّله من حين إلى آخر
+      إن أردت الاحتفاظ به عندك: هكذا لا تفقده إذا مسحت بيانات المتصفّح.
+    </p>
+    <div class="boutons">
+      <button class="btn plein" id="exporter">⬇️ تنزيل</button>
+      <button class="btn" id="importer">⬆️ استعادة</button>
+      <button class="btn danger" id="effacer">🗑️ مسح الكل</button>
+      <input type="file" id="fichier" accept="application/json,.json" hidden>
+    </div>
+  </section>
+</div>
+
+<script src="/devoirati-histo.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var D = window.Devoirati;
+  if (!D) return;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var vue = 'recents';
+
+  /* ================================================================
+     Pluriels arabes. L'arabe distingue le singulier, le DUEL, le
+     pluriel de 3 a 10, puis repasse au singulier a partir de 11.
+     Ecrire « 2 زيارات » ou « 12 زيارات » se voit immediatement.
+     ================================================================ */
+  function pluriel(n, f) {           // f = [1, 2, 3-10, 11+]
+    if (n === 1) return f[0];
+    if (n === 2) return f[1];
+    var c = n % 100;
+    return (c >= 3 && c <= 10) ? f[2].replace('#', n) : f[3].replace('#', n);
+  }
+
   function quand(ts) {
     if (!ts) return '';
     var s = (Date.now() - ts) / 1000;
-    if (s < 60)    return "a l'instant";
-    if (s < 3600)  return 'il y a ' + Math.floor(s / 60) + ' min';
-    if (s < 86400) return 'il y a ' + Math.floor(s / 3600) + ' h';
+    if (s < 60) return 'الآن';
+    if (s < 3600) {
+      var m = Math.floor(s / 60);
+      return 'منذ ' + pluriel(m, ['دقيقة', 'دقيقتين', '# دقائق', '# دقيقة']);
+    }
+    if (s < 86400) {
+      var h = Math.floor(s / 3600);
+      return 'منذ ' + pluriel(h, ['ساعة', 'ساعتين', '# ساعات', '# ساعة']);
+    }
     var j = Math.floor(s / 86400);
-    if (j === 1)   return 'hier';
-    if (j < 7)     return 'il y a ' + j + ' jours';
-    return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    if (j === 1) return 'أمس';
+    if (j < 7) return 'منذ ' + pluriel(j, ['يوم', 'يومين', '# أيام', '# يوماً']);
+    return new Date(ts).toLocaleDateString('ar-TN', { day: 'numeric', month: 'long' });
   }
 
-  /* -- selection selon l'onglet -- */
+  function visites(n) {
+    return pluriel(n, ['زيارة واحدة', 'زيارتان', '# زيارات', '# زيارة']);
+  }
+
+  /* ================================================================ */
+
   function selection(d, v) {
+    if (v === 'recents') return d.recents.filter(function (k) { return d.pages[k]; });
     var cles = Object.keys(d.pages);
-    if (v === 'recents') {
-      return d.recents.filter(function (k) { return d.pages[k]; });
-    }
     if (v === 'favoris') cles = cles.filter(function (k) { return d.pages[k].f; });
-    else if (v !== 'tout') cles = cles.filter(function (k) { return d.pages[k].s === v; });
+    else cles = cles.filter(function (k) { return d.pages[k].s === v; });
     return cles.sort(function (a, b) { return (d.pages[b].d || 0) - (d.pages[a].d || 0); });
   }
 
-  var VIDE = {
-    recents: ['🕘', "Aucun exercice pour l'instant.<br>Ouvre un exercice, il apparaîtra ici automatiquement."],
-    favoris: ['♡', "Aucun exercice enregistré.<br>Appuie sur le cœur en bas d'un exercice pour le retrouver ici."],
-    err:     ['❌', "Aucune erreur enregistrée.<br>Marque un exercice « Erreur » pour le revoir plus tard."],
-    dur:     ['😓', "Aucun exercice marqué difficile."],
-    ok:      ['✅', "Aucun exercice réussi pour l'instant. Ça viendra !"],
-    tout:    ['📄', "Ton historique est vide."]
+  var NEANT = {
+    recents: ['🕘', 'لم تفتح أيّ تمرين بعد.<br>كل تمرين تفتحه سيظهر هنا تلقائياً.'],
+    favoris: ['♡', 'لا يوجد تمرين محفوظ.<br>اضغط على القلب في أسفل أيّ تمرين لتحفظه هنا.'],
+    err:     ['❌', 'لا توجد أخطاء مسجّلة.<br>سِم تمريناً بـ «أخطأت» لتراجعه لاحقاً.'],
+    dur:     ['😓', 'لا يوجد تمرين موسوم بالصعب.'],
+    ok:      ['✅', 'لا يوجد تمرين ناجح بعد. ستأتي النتائج!']
   };
 
   function dessiner() {
-    var d = lire();
-    var q = document.getElementById('recherche').value.trim().toLowerCase();
-    var liste = document.getElementById('liste');
+    var d = D.lire();
+    var q = $('chercher').value.trim().toLowerCase();
 
-    /* compteurs des onglets */
-    document.querySelectorAll('.onglet').forEach(function (o) {
+    Array.prototype.forEach.call(document.querySelectorAll('.onglet'), function (o) {
       o.querySelector('.n').textContent = selection(d, o.dataset.vue).length || '';
-      o.setAttribute('aria-selected', o.dataset.vue === vue);
+      o.setAttribute('aria-selected', String(o.dataset.vue === vue));
     });
 
-    var total = Object.keys(d.pages).length;
-    var favs  = Object.keys(d.pages).filter(function (k) { return d.pages[k].f; }).length;
-    document.getElementById('resume').textContent =
-      total ? total + ' exercice' + (total > 1 ? 's' : '') + ' vu' + (total > 1 ? 's' : '') +
-              ' · ' + favs + ' enregistré' + (favs > 1 ? 's' : '')
-            : 'Rien pour le moment';
+    var cles = Object.keys(d.pages);
+    $('s-vus').textContent = cles.length;
+    $('s-fav').textContent = cles.filter(function (k) { return d.pages[k].f; }).length;
+    $('s-rev').textContent = cles.filter(function (k) {
+      return d.pages[k].s === 'err' || d.pages[k].s === 'dur';
+    }).length;
 
-    var cles = selection(d, vue).filter(function (k) {
+    $('resume').textContent = cles.length
+      ? pluriel(cles.length, ['تمرين واحد', 'تمرينان', '# تمارين', '# تمريناً']) + ' في دفترك'
+      : 'دفترك فارغ في انتظار أوّل تمرين';
+
+    var liste = selection(d, vue).filter(function (k) {
       if (!q) return true;
-      var p = d.pages[k];
-      return ((p.t || '') + ' ' + k).toLowerCase().indexOf(q) !== -1;
+      return ((d.pages[k].t || '') + ' ' + k).toLowerCase().indexOf(q) !== -1;
     });
 
-    if (!cles.length) {
-      var v = VIDE[vue];
-      liste.innerHTML = '<div class="rien"><span>' + (q ? '🔍' : v[0]) + '</span>' +
-                        (q ? 'Aucun résultat pour « ' + q.replace(/</g, '&lt;') + ' »' : v[1]) + '</div>';
+    var boite = $('fiches');
+    boite.textContent = '';
+
+    if (!liste.length) {
+      var n = NEANT[vue];
+      var vd = document.createElement('div');
+      vd.className = 'neant';
+      vd.innerHTML = '<span>' + (q ? '🔍' : n[0]) + '</span>' +
+        (q ? 'لا نتيجة تطابق بحثك.' : n[1]);
+      boite.appendChild(vd);
       return;
     }
 
-    liste.innerHTML = '';
-    cles.forEach(function (k) {
+    liste.forEach(function (k) {
       var p = d.pages[k];
       var a = document.createElement('a');
-      a.className = 'item';
+      a.className = 'fiche';
       a.href = k;
 
-      var icone = p.s === 'ok' ? '✅' : p.s === 'err' ? '❌' : p.s === 'dur' ? '😓' : '📄';
-      var meta  = [];
-      if (p.c) meta.push(p.c);
-      meta.push(quand(p.d));
-      if (p.n > 1) meta.push(p.n + ' visites');
-      if (p.b) meta.push('meilleur : ' + p.b[0] + '/' + p.b[1]);
+      var ic = p.s === 'ok' ? '✅' : p.s === 'err' ? '❌' : p.s === 'dur' ? '😓' : '📄';
+      var mots = [];
+      mots.push(quand(p.d));
+      if (p.n > 1) mots.push(visites(p.n));
 
       a.innerHTML =
-        '<div class="pastille">' + icone + '</div>' +
-        '<div class="infos">' +
-          '<div class="nom"></div>' +
-          '<div class="meta">' + meta.join(' · ') + '</div>' +
-        '</div>';
+        '<span class="jeton ' + (p.s || '') + '">' + ic + '</span>' +
+        '<span class="corps"><span class="nom"></span><span class="sous">' +
+          (p.s ? '<span class="puce ' + p.s + '">' +
+                 (p.s === 'ok' ? 'ناجح' : p.s === 'err' ? 'خطأ' : 'صعب') + '</span>' : '') +
+          '<span>' + mots.join(' · ') + '</span>' +
+          (p.b ? '<span>أفضل نتيجة: <span class="ltr">' + p.b[0] + '/' + p.b[1] + '</span></span>' : '') +
+        '</span></span>';
       a.querySelector('.nom').textContent = p.t || k.split('/').pop();
 
-      var coeur = document.createElement('button');
-      coeur.className = 'coeur';
-      coeur.type = 'button';
-      coeur.textContent = p.f ? '♥' : '♡';
-      coeur.setAttribute('aria-label', p.f ? 'Retirer des enregistrés' : 'Enregistrer');
-      coeur.addEventListener('click', function (ev) {
-        ev.preventDefault(); ev.stopPropagation();   // ne pas suivre le lien
-        var dd = lire();
-        if (dd.pages[k]) { dd.pages[k].f = dd.pages[k].f ? 0 : 1; ecrire(dd); dessiner(); }
+      var c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'coeur';
+      c.textContent = p.f ? '♥' : '♡';
+      c.setAttribute('aria-label', p.f ? 'إزالة من المحفوظة' : 'حفظ التمرين');
+      c.addEventListener('click', function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        var dd = D.lire();
+        if (!dd.pages[k]) return;
+        dd.pages[k].f = dd.pages[k].f ? 0 : 1;
+        dd.pages[k].fd = Date.now();
+        D.ecrire(dd); dessiner();
       });
-      a.appendChild(coeur);
-      liste.appendChild(a);
+      a.appendChild(c);
+      boite.appendChild(a);
     });
   }
 
-  /* ---- onglets & recherche ---- */
-  document.getElementById('onglets').addEventListener('click', function (e) {
+  $('onglets').addEventListener('click', function (e) {
     var o = e.target.closest('.onglet');
     if (!o) return;
     vue = o.dataset.vue;
     dessiner();
   });
-  document.getElementById('recherche').addEventListener('input', dessiner);
+  $('chercher').addEventListener('input', dessiner);
 
-  /* ---- sauvegarde / restauration ---- */
-  document.getElementById('exporter').addEventListener('click', function () {
-    var contenu = JSON.stringify(lire(), null, 1);
-    var url = URL.createObjectURL(new Blob([contenu], { type: 'application/json' }));
+  /* ---------------- synchronisation ---------------- */
+
+  function dire(msg, classe) {
+    var e = $('etat-sync');
+    e.textContent = msg;
+    e.className = 'etat' + (classe ? ' ' + classe : '');
+  }
+
+  $('code').textContent = D.code();
+
+  $('copier').addEventListener('click', function () {
+    var c = D.code();
+    var fini = function () { dire('تمّ نسخ الرمز.', 'bon'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(c).then(fini, function () { dire('انسخ الرمز يدوياً: ' + c); });
+    } else { dire('انسخ الرمز يدوياً: ' + c); }
+  });
+
+  $('lier').addEventListener('click', function () {
+    var v = $('entree-code').value;
+    if (!v.trim()) { dire('اكتب الرمز أوّلاً.', 'mauvais'); return; }
+    dire('جارٍ الربط…');
+    D.lierCode(v, function (ok, pourquoi) {
+      if (ok) {
+        $('code').textContent = D.code();
+        $('entree-code').value = '';
+        dire('تمّ الربط. دُمجت تمارين الجهازين.', 'bon');
+        dessiner();
+      } else if (pourquoi === 'format') {
+        dire('الرمز غير صحيح: ثمانية أحرف وأرقام، مثل ABCD-EFGH.', 'mauvais');
+      } else {
+        dire('تعذّر الاتصال بالخادم. حاول مرّة أخرى بعد قليل.', 'mauvais');
+      }
+    });
+  });
+
+  /* ---------------- sauvegarde ---------------- */
+
+  $('exporter').addEventListener('click', function () {
+    var url = URL.createObjectURL(new Blob([JSON.stringify(D.lire(), null, 1)],
+                                           { type: 'application/json' }));
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'devoirati-historique-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = 'devoirati-' + new Date().toISOString().slice(0, 10) + '.json';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   });
 
-  document.getElementById('importer').addEventListener('click', function () {
-    document.getElementById('fichier').click();
-  });
+  $('importer').addEventListener('click', function () { $('fichier').click(); });
 
-  document.getElementById('fichier').addEventListener('change', function (e) {
+  $('fichier').addEventListener('change', function (e) {
     var f = e.target.files[0];
     if (!f) return;
-    var lecteur = new FileReader();
-    lecteur.onload = function () {
+    var l = new FileReader();
+    l.onload = function () {
       try {
-        var entrant = JSON.parse(lecteur.result);
+        var entrant = JSON.parse(l.result);
         if (!entrant || !entrant.pages) throw new Error('format');
-        /* fusion, et non remplacement : on ne veut pas perdre ce qui est
-           deja sur cet appareil en restaurant une vieille sauvegarde */
-        var d = lire();
-        Object.keys(entrant.pages).forEach(function (k) {
-          var a = d.pages[k], b = entrant.pages[k];
-          if (!a) { d.pages[k] = b; return; }
-          a.n = Math.max(a.n || 0, b.n || 0);
-          a.d = Math.max(a.d || 0, b.d || 0);
-          a.f = a.f || b.f;
-          a.t = a.t || b.t;
-          a.c = a.c || b.c;
-          if (!a.s && b.s) { a.s = b.s; a.m = b.m; }
-          if (b.b && (!a.b || (b.b[0] / b.b[1]) > (a.b[0] / a.b[1]))) a.b = b.b;
-        });
-        /* on refait l'ordre a partir des dates : concatener les deux listes
-           telles quelles remonterait de vieilles pages au-dessus des recentes */
-        d.recents = (entrant.recents || []).concat(d.recents)
-                      .filter(function (k, i, t) { return t.indexOf(k) === i && d.pages[k]; })
-                      .sort(function (x, y) { return (d.pages[y].d || 0) - (d.pages[x].d || 0); })
-                      .slice(0, 60);
-        ecrire(d);
+        // fusion, jamais remplacement : restaurer une vieille sauvegarde
+        // ne doit pas effacer ce qui a ete fait depuis sur cet appareil
+        D.ecrire(D.fusionner(D.lire(), entrant));
         dessiner();
-        alert('Historique restauré.');
+        dire('تمّت الاستعادة.', 'bon');
       } catch (err) {
-        alert("Ce fichier n'est pas un historique Devoirati valide.");
+        dire('هذا الملفّ ليس دفتر Devoirati صالحاً.', 'mauvais');
       }
       e.target.value = '';
     };
-    lecteur.readAsText(f);
+    l.readAsText(f);
   });
 
-  document.getElementById('effacer').addEventListener('click', function () {
-    if (!confirm('Effacer tout ton historique et tes exercices enregistrés ? Cette action est définitive.')) return;
-    try { localStorage.removeItem(CLE); } catch (e) {}
+  $('effacer').addEventListener('click', function () {
+    if (!confirm('هل تريد مسح كلّ سجلّك وتمارينك المحفوظة على هذا الجهاز؟ لا يمكن التراجع.')) return;
+    try { localStorage.removeItem(D.cle); } catch (e) {}
     dessiner();
+    dire('تمّ مسح الدفتر على هذا الجهاز.');
   });
 
   dessiner();
-})();
+  // on redescend chercher le carnet du serveur, au cas ou un autre
+  // appareil aurait travaille depuis
+  D.tirer(function (recu) { if (recu) dessiner(); });
+});
 </script>
 </body>
 </html>
