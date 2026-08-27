@@ -1,0 +1,11 @@
+; ---------------------------------------------------------------
+; Devoirati — a placer a la racine du site (public_html/.user.ini)
+; Adapter le chemin : il doit etre ABSOLU (visible dans cPanel >
+; Gestionnaire de fichiers, du type /home/xxxxxxx/public_html/...).
+;
+; Attention : sur o2switch, un .user.ini n'est relu que toutes les
+; 5 minutes environ (user_ini.cache_ttl). Ne pas s'inquieter si le
+; changement n'est pas immediat.
+; ---------------------------------------------------------------
+
+auto_append_file = /home/VOTRECOMPTE/public_html/injection.php

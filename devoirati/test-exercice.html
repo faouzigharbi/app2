@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test — Addition de fractions</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:24px;line-height:1.6}
+  .score{margin-top:20px;font-weight:600}
+  button{padding:9px 14px;margin-right:6px;border-radius:8px;border:1px solid #ccc;
+         background:#f8f8f8;cursor:pointer}
+  .note{margin-top:28px;padding:12px;background:#eff6ff;border-radius:8px;font-size:14px}
+</style>
+</head>
+<body>
+
+<h1>Addition de fractions</h1>
+<p>Page de test : elle imite une vraie page d'exercice (avec un compteur
+   <code>#score</code> / <code>#total</code>) pour verifier que l'historique fonctionne.</p>
+
+<button onclick="juste()">Bonne reponse</button>
+<button onclick="faux()">Mauvaise reponse</button>
+
+<div class="score">Score : <span id="score">0</span> / <span id="total">0</span></div>
+
+<div class="note">
+  Le bouton flottant en bas a droite est ajoute automatiquement par
+  <code>devoirati-histo.js</code> : aucune ligne n'a ete ajoutee au corps de cette page,
+  en dehors de la balise &lt;script&gt; ci-dessous — celle que <code>injection.php</code>
+  posera toute seule sur le serveur.
+  <br><br>
+  <a href="historique.html">→ Voir mon historique</a>
+</div>
+
+<script>
+  var s = 0, t = 0;
+  function maj(){ document.getElementById('score').textContent = s;
+                  document.getElementById('total').textContent = t; }
+  function juste(){ s++; t++; maj(); }
+  function faux(){ t++; maj(); }
+</script>
+
+<!-- La seule ligne a injecter sur les 50 000 pages : -->
+<script src="devoirati-histo.js" defer></script>
+</body>
+</html>

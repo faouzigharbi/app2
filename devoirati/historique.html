@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>Mon historique — Devoirati</title>
+<link rel="manifest" href="/manifest.json">
+<style>
+  :root{
+    --fond:#f3f4f6; --carte:#fff; --texte:#111827; --doux:#6b7280;
+    --bord:#e5e7eb; --bleu:#2563eb; --vert:#16a34a; --rouge:#dc2626; --orange:#d97706;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--fond:#111827;--carte:#1f2937;--texte:#f9fafb;--doux:#9ca3af;--bord:#374151}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--fond);color:var(--texte);
+       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+  header{background:var(--bleu);color:#fff;padding:18px 16px calc(18px + env(safe-area-inset-top));
+         padding-top:calc(18px + env(safe-area-inset-top))}
+  h1{font-size:20px}
+  header p{opacity:.85;font-size:13px;margin-top:3px}
+  .conteneur{max-width:760px;margin:0 auto;padding:14px}
+
+  /* --- barre d'onglets, defilante sur telephone --- */
+  .onglets{display:flex;gap:8px;overflow-x:auto;padding:12px 14px;
+           -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .onglets::-webkit-scrollbar{display:none}
+  .onglet{flex:0 0 auto;border:1px solid var(--bord);background:var(--carte);color:var(--texte);
+          border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+  .onglet[aria-selected="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff;font-weight:600}
+  .onglet .n{opacity:.65;margin-left:4px;font-variant-numeric:tabular-nums}
+
+  .recherche{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--bord);
+             background:var(--carte);color:var(--texte);font-size:15px;margin-bottom:12px}
+
+  /* --- liste --- */
+  .item{display:flex;align-items:center;gap:12px;background:var(--carte);border:1px solid var(--bord);
+        border-radius:12px;padding:12px;margin-bottom:8px;text-decoration:none;color:inherit}
+  .item:active{opacity:.7}
+  .pastille{flex:0 0 40px;height:40px;border-radius:10px;display:flex;align-items:center;
+            justify-content:center;font-size:19px;background:var(--fond)}
+  .infos{flex:1;min-width:0}
+  .nom{font-size:14px;font-weight:600;line-height:1.35;
+       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .meta{font-size:12px;color:var(--doux);margin-top:3px;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .coeur{flex:0 0 auto;border:none;background:none;font-size:20px;color:var(--rouge);
+         cursor:pointer;padding:6px}
+  .badge{font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600}
+  .b-ok{background:#dcfce7;color:#15803d}
+  .b-err{background:#fee2e2;color:#b91c1c}
+  .b-dur{background:#fef3c7;color:#b45309}
+
+  .rien{text-align:center;color:var(--doux);padding:48px 20px;font-size:14px;line-height:1.6}
+  .rien span{font-size:40px;display:block;margin-bottom:10px}
+
+  /* --- pied de page : sauvegarde --- */
+  .outils{margin-top:22px;background:var(--carte);border:1px solid var(--bord);
+          border-radius:12px;padding:14px}
+  .outils h2{font-size:14px;margin-bottom:6px}
+  .outils p{font-size:12.5px;color:var(--doux);line-height:1.55;margin-bottom:11px}
+  .boutons{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{border:1px solid var(--bord);background:var(--fond);color:var(--texte);border-radius:10px;
+       padding:9px 13px;font-size:13px;cursor:pointer}
+  .btn.principal{background:var(--bleu);border-color:var(--bleu);color:#fff;font-weight:600}
+  .btn.danger{color:var(--rouge)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Mon historique</h1>
+  <p id="resume">Chargement…</p>
+</header>
+
+<nav class="onglets" role="tablist" id="onglets">
+  <button class="onglet" role="tab" data-vue="recents" aria-selected="true">🕘 Récents <span class="n"></span></button>
+  <button class="onglet" role="tab" data-vue="favoris" aria-selected="false">♥ Enregistrés <span class="n"></span></button>
+  <button class="onglet" role="tab" data-vue="err"     aria-selected="false">❌ Mes erreurs <span class="n"></span></button>
+  <button class="onglet" role="tab" data-vue="dur"     aria-selected="false">😓 Difficiles <span class="n"></span></button>
+  <button class="onglet" role="tab" data-vue="ok"      aria-selected="false">✅ Réussis <span class="n"></span></button>
+  <button class="onglet" role="tab" data-vue="tout"    aria-selected="false">📄 Tout <span class="n"></span></button>
+</nav>
+
+<div class="conteneur">
+  <input class="recherche" id="recherche" type="search" placeholder="Rechercher un exercice…" autocomplete="off">
+  <div id="liste"></div>
+
+  <div class="outils">
+    <h2>Sauvegarder mon historique</h2>
+    <p>
+      Ton historique est enregistré <strong>uniquement sur cet appareil</strong> — il n'est envoyé
+      à personne. Si tu vides ton navigateur, ou si tu ne reviens pas pendant plusieurs jours
+      sur iPhone, il peut être effacé. Télécharge-le de temps en temps : c'est aussi ainsi que
+      tu le transfères de ton téléphone vers ton ordinateur.
+    </p>
+    <div class="boutons">
+      <button class="btn principal" id="exporter">⬇️ Télécharger</button>
+      <button class="btn" id="importer">⬆️ Restaurer</button>
+      <button class="btn danger" id="effacer">🗑️ Tout effacer</button>
+      <input type="file" id="fichier" accept="application/json,.json" hidden>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CLE = 'devoirati.histo.v1';
+  var vue = 'recents';
+
+  function lire() {
+    try {
+      var d = JSON.parse(localStorage.getItem(CLE));
+      if (d && d.pages) { if (!d.recents) d.recents = []; return d; }
+    } catch (e) {}
+    return { v: 1, pages: {}, recents: [] };
+  }
+  function ecrire(d) {
+    try { localStorage.setItem(CLE, JSON.stringify(d)); } catch (e) {
+      alert("Impossible d'enregistrer : la mémoire du navigateur est pleine.");
+    }
+  }
+
+  /* -- affichage des dates, en francais et en relatif -- */
+  function quand(ts) {
+    if (!ts) return '';
+    var s = (Date.now() - ts) / 1000;
+    if (s < 60)    return "a l'instant";
+    if (s < 3600)  return 'il y a ' + Math.floor(s / 60) + ' min';
+    if (s < 86400) return 'il y a ' + Math.floor(s / 3600) + ' h';
+    var j = Math.floor(s / 86400);
+    if (j === 1)   return 'hier';
+    if (j < 7)     return 'il y a ' + j + ' jours';
+    return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
+
+  /* -- selection selon l'onglet -- */
+  function selection(d, v) {
+    var cles = Object.keys(d.pages);
+    if (v === 'recents') {
+      return d.recents.filter(function (k) { return d.pages[k]; });
+    }
+    if (v === 'favoris') cles = cles.filter(function (k) { return d.pages[k].f; });
+    else if (v !== 'tout') cles = cles.filter(function (k) { return d.pages[k].s === v; });
+    return cles.sort(function (a, b) { return (d.pages[b].d || 0) - (d.pages[a].d || 0); });
+  }
+
+  var VIDE = {
+    recents: ['🕘', "Aucun exercice pour l'instant.<br>Ouvre un exercice, il apparaîtra ici automatiquement."],
+    favoris: ['♡', "Aucun exercice enregistré.<br>Appuie sur le cœur en bas d'un exercice pour le retrouver ici."],
+    err:     ['❌', "Aucune erreur enregistrée.<br>Marque un exercice « Erreur » pour le revoir plus tard."],
+    dur:     ['😓', "Aucun exercice marqué difficile."],
+    ok:      ['✅', "Aucun exercice réussi pour l'instant. Ça viendra !"],
+    tout:    ['📄', "Ton historique est vide."]
+  };
+
+  function dessiner() {
+    var d = lire();
+    var q = document.getElementById('recherche').value.trim().toLowerCase();
+    var liste = document.getElementById('liste');
+
+    /* compteurs des onglets */
+    document.querySelectorAll('.onglet').forEach(function (o) {
+      o.querySelector('.n').textContent = selection(d, o.dataset.vue).length || '';
+      o.setAttribute('aria-selected', o.dataset.vue === vue);
+    });
+
+    var total = Object.keys(d.pages).length;
+    var favs  = Object.keys(d.pages).filter(function (k) { return d.pages[k].f; }).length;
+    document.getElementById('resume').textContent =
+      total ? total + ' exercice' + (total > 1 ? 's' : '') + ' vu' + (total > 1 ? 's' : '') +
+              ' · ' + favs + ' enregistré' + (favs > 1 ? 's' : '')
+            : 'Rien pour le moment';
+
+    var cles = selection(d, vue).filter(function (k) {
+      if (!q) return true;
+      var p = d.pages[k];
+      return ((p.t || '') + ' ' + k).toLowerCase().indexOf(q) !== -1;
+    });
+
+    if (!cles.length) {
+      var v = VIDE[vue];
+      liste.innerHTML = '<div class="rien"><span>' + (q ? '🔍' : v[0]) + '</span>' +
+                        (q ? 'Aucun résultat pour « ' + q.replace(/</g, '&lt;') + ' »' : v[1]) + '</div>';
+      return;
+    }
+
+    liste.innerHTML = '';
+    cles.forEach(function (k) {
+      var p = d.pages[k];
+      var a = document.createElement('a');
+      a.className = 'item';
+      a.href = k;
+
+      var icone = p.s === 'ok' ? '✅' : p.s === 'err' ? '❌' : p.s === 'dur' ? '😓' : '📄';
+      var meta  = [];
+      if (p.c) meta.push(p.c);
+      meta.push(quand(p.d));
+      if (p.n > 1) meta.push(p.n + ' visites');
+      if (p.b) meta.push('meilleur : ' + p.b[0] + '/' + p.b[1]);
+
+      a.innerHTML =
+        '<div class="pastille">' + icone + '</div>' +
+        '<div class="infos">' +
+          '<div class="nom"></div>' +
+          '<div class="meta">' + meta.join(' · ') + '</div>' +
+        '</div>';
+      a.querySelector('.nom').textContent = p.t || k.split('/').pop();
+
+      var coeur = document.createElement('button');
+      coeur.className = 'coeur';
+      coeur.type = 'button';
+      coeur.textContent = p.f ? '♥' : '♡';
+      coeur.setAttribute('aria-label', p.f ? 'Retirer des enregistrés' : 'Enregistrer');
+      coeur.addEventListener('click', function (ev) {
+        ev.preventDefault(); ev.stopPropagation();   // ne pas suivre le lien
+        var dd = lire();
+        if (dd.pages[k]) { dd.pages[k].f = dd.pages[k].f ? 0 : 1; ecrire(dd); dessiner(); }
+      });
+      a.appendChild(coeur);
+      liste.appendChild(a);
+    });
+  }
+
+  /* ---- onglets & recherche ---- */
+  document.getElementById('onglets').addEventListener('click', function (e) {
+    var o = e.target.closest('.onglet');
+    if (!o) return;
+    vue = o.dataset.vue;
+    dessiner();
+  });
+  document.getElementById('recherche').addEventListener('input', dessiner);
+
+  /* ---- sauvegarde / restauration ---- */
+  document.getElementById('exporter').addEventListener('click', function () {
+    var contenu = JSON.stringify(lire(), null, 1);
+    var url = URL.createObjectURL(new Blob([contenu], { type: 'application/json' }));
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'devoirati-historique-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  document.getElementById('importer').addEventListener('click', function () {
+    document.getElementById('fichier').click();
+  });
+
+  document.getElementById('fichier').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var lecteur = new FileReader();
+    lecteur.onload = function () {
+      try {
+        var entrant = JSON.parse(lecteur.result);
+        if (!entrant || !entrant.pages) throw new Error('format');
+        /* fusion, et non remplacement : on ne veut pas perdre ce qui est
+           deja sur cet appareil en restaurant une vieille sauvegarde */
+        var d = lire();
+        Object.keys(entrant.pages).forEach(function (k) {
+          var a = d.pages[k], b = entrant.pages[k];
+          if (!a) { d.pages[k] = b; return; }
+          a.n = Math.max(a.n || 0, b.n || 0);
+          a.d = Math.max(a.d || 0, b.d || 0);
+          a.f = a.f || b.f;
+          a.t = a.t || b.t;
+          a.c = a.c || b.c;
+          if (!a.s && b.s) { a.s = b.s; a.m = b.m; }
+          if (b.b && (!a.b || (b.b[0] / b.b[1]) > (a.b[0] / a.b[1]))) a.b = b.b;
+        });
+        /* on refait l'ordre a partir des dates : concatener les deux listes
+           telles quelles remonterait de vieilles pages au-dessus des recentes */
+        d.recents = (entrant.recents || []).concat(d.recents)
+                      .filter(function (k, i, t) { return t.indexOf(k) === i && d.pages[k]; })
+                      .sort(function (x, y) { return (d.pages[y].d || 0) - (d.pages[x].d || 0); })
+                      .slice(0, 60);
+        ecrire(d);
+        dessiner();
+        alert('Historique restauré.');
+      } catch (err) {
+        alert("Ce fichier n'est pas un historique Devoirati valide.");
+      }
+      e.target.value = '';
+    };
+    lecteur.readAsText(f);
+  });
+
+  document.getElementById('effacer').addEventListener('click', function () {
+    if (!confirm('Effacer tout ton historique et tes exercices enregistrés ? Cette action est définitive.')) return;
+    try { localStorage.removeItem(CLE); } catch (e) {}
+    dessiner();
+  });
+
+  dessiner();
+})();
+</script>
+</body>
+</html>

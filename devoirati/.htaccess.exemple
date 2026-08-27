@@ -1,0 +1,22 @@
+# ---------------------------------------------------------------
+# Devoirati — a placer dans le ou les DOSSIERS D'EXERCICES
+# (ex. public_html/exercices/.htaccess), et surtout pas a la racine
+# du site : faire passer 50 000 pages par PHP coute cher, on limite
+# donc le traitement aux pages ou l'historique a un sens.
+#
+# Le nom du handler depend de la version de PHP active dans
+# cPanel > MultiPHP Manager. Verifier la version puis adapter :
+#   PHP 8.1 -> application/x-httpd-ea-php81
+#   PHP 8.2 -> application/x-httpd-ea-php82
+#   PHP 8.3 -> application/x-httpd-ea-php83
+# ---------------------------------------------------------------
+
+AddHandler application/x-httpd-ea-php82 .html
+
+# Le HTML passant par PHP n'est plus mis en cache automatiquement :
+# on le redit explicitement, sinon chaque page est recalculee.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
